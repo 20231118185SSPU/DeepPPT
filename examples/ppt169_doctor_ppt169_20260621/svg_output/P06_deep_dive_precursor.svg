@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1280 720">
+    <g id="background">
+        <rect width="1280" height="720" fill="#1C1C1C" />
+        <image href="images/web_assets/dim1_rhodes_island_bg.png" x="0" y="0" width="1280" height="720" preserveAspectRatio="xMidYMid slice" />
+        <rect x="0" y="0" width="1280" height="720" fill="#1C1C1C" fill-opacity="0.82" />
+    </g>
+    <g id="header">
+        <rect x="60" y="35" width="90" height="24" fill="#8B1A1A" rx="4" />
+        <text x="105" y="52" text-anchor="middle" fill="#FFFFFF" font-family="Microsoft YaHei, Arial, sans-serif" font-size="11" font-weight="bold">DEEP DIVE</text>
+        <text x="170" y="56" fill="#E8E8E8" font-family="Source Han Sans SC, Microsoft YaHei, sans-serif" font-size="28" font-weight="bold">前文明完整设定</text>
+        <line x1="60" y1="72" x2="1220" y2="72" stroke="#8B1A1A" stroke-width="1" stroke-opacity="0.25" />
+    </g>
+    <g id="card-1">
+        <rect x="60" y="95" width="540" height="130" fill="#FFFFFF" fill-opacity="0.04" rx="8" />
+        <rect x="60" y="95" width="4" height="130" fill="#8B1A1A" rx="2" />
+        <text x="84" y="125" fill="#C0C0C0" font-family="Microsoft YaHei, Arial, sans-serif" font-size="11" fill-opacity="0.6">01</text>
+        <text x="108" y="125" fill="#E8E8E8" font-family="Microsoft YaHei, Arial, sans-serif" font-size="17" font-weight="bold">源石起源</text>
+        <text x="84" y="155" fill="#E8E8E8" fill-opacity="0.85" font-family="Microsoft YaHei, Arial, sans-serif" font-size="14">前文明创造的万能能源</text>
+        <text x="84" y="178" fill="#E8E8E8" fill-opacity="0.6" font-family="Microsoft YaHei, Arial, sans-serif" font-size="13">同时是矿石病的根源——无药可治</text>
+        <text x="84" y="201" fill="#C0C0C0" fill-opacity="0.5" font-family="Microsoft YaHei, Arial, sans-serif" font-size="12">源石为整个泰拉大陆提供能源，但也在缓慢吞噬有机生命</text>
+    </g>
+    <g id="card-2">
+        <rect x="640" y="95" width="580" height="130" fill="#FFFFFF" fill-opacity="0.04" rx="8" />
+        <rect x="640" y="95" width="4" height="130" fill="#C0C0C0" rx="2" />
+        <text x="664" y="125" fill="#C0C0C0" font-family="Microsoft YaHei, Arial, sans-serif" font-size="11" fill-opacity="0.6">02</text>
+        <text x="688" y="125" fill="#E8E8E8" font-family="Microsoft YaHei, Arial, sans-serif" font-size="17" font-weight="bold">方舟计划</text>
+        <text x="664" y="155" fill="#E8E8E8" fill-opacity="0.85" font-family="Microsoft YaHei, Arial, sans-serif" font-size="14">前文明为应对"大崩溃"制定的计划</text>
+        <text x="664" y="178" fill="#E8E8E8" fill-opacity="0.6" font-family="Microsoft YaHei, Arial, sans-serif" font-size="13">博士是核心执行者——沉睡不是意外，是计划的一部分</text>
+        <text x="664" y="201" fill="#C0C0C0" fill-opacity="0.5" font-family="Microsoft YaHei, Arial, sans-serif" font-size="12">"人类种子计划"——保存文明火种的最后手段</text>
+    </g>
+    <g id="card-3">
+        <rect x="60" y="250" width="540" height="130" fill="#FFFFFF" fill-opacity="0.04" rx="8" />
+        <rect x="60" y="250" width="4" height="130" fill="#8B1A1A" rx="2" />
+        <text x="84" y="280" fill="#C0C0C0" font-family="Microsoft YaHei, Arial, sans-serif" font-size="11" fill-opacity="0.6">03</text>
+        <text x="108" y="280" fill="#E8E8E8" font-family="Microsoft YaHei, Arial, sans-serif" font-size="17" font-weight="bold">石棺技术</text>
+        <text x="84" y="310" fill="#E8E8E8" fill-opacity="0.85" font-family="Microsoft YaHei, Arial, sans-serif" font-size="14">冷冻保存系统，博士沉睡超过万年</text>
+        <text x="84" y="333" fill="#E8E8E8" fill-opacity="0.6" font-family="Microsoft YaHei, Arial, sans-serif" font-size="13">位于切尔诺伯格地下</text>
+        <text x="84" y="356" fill="#C0C0C0" fill-opacity="0.5" font-family="Microsoft YaHei, Arial, sans-serif" font-size="12">由凯尔希和少数人知道其存在</text>
+    </g>
+    <g id="card-4">
+        <rect x="640" y="250" width="580" height="130" fill="#FFFFFF" fill-opacity="0.04" rx="8" />
+        <rect x="640" y="250" width="4" height="130" fill="#C0C0C0" rx="2" />
+        <text x="664" y="280" fill="#C0C0C0" font-family="Microsoft YaHei, Arial, sans-serif" font-size="11" fill-opacity="0.6">04</text>
+        <text x="688" y="280" fill="#E8E8E8" font-family="Microsoft YaHei, Arial, sans-serif" font-size="17" font-weight="bold">凯尔希与Mon3tr</text>
+        <text x="664" y="310" fill="#E8E8E8" fill-opacity="0.85" font-family="Microsoft YaHei, Arial, sans-serif" font-size="14">同属前文明遗存的证据链</text>
+        <text x="664" y="333" fill="#E8E8E8" fill-opacity="0.6" font-family="Microsoft YaHei, Arial, sans-serif" font-size="13">凯尔希寿命以千年计</text>
+        <text x="664" y="356" fill="#C0C0C0" fill-opacity="0.5" font-family="Microsoft YaHei, Arial, sans-serif" font-size="12">Mon3tr是前文明创造的生物兵器——都指向同一个来源</text>
+    </g>
+    <g id="key-insight">
+        <rect x="60" y="410" width="1160" height="70" fill="#8B1A1A" fill-opacity="0.08" rx="8" />
+        <rect x="60" y="410" width="1160" height="2" fill="#8B1A1A" fill-opacity="0.3" />
+        <text x="640" y="445" text-anchor="middle" fill="#C0C0C0" font-family="Microsoft YaHei, Arial, sans-serif" font-size="15" font-weight="bold">核心线索</text>
+        <text x="640" y="468" text-anchor="middle" fill="#E8E8E8" fill-opacity="0.7" font-family="Microsoft YaHei, Arial, sans-serif" font-size="13">源石 → 方舟计划 → 石棺 → 凯尔希/Mon3tr → 全部指向同一个来源：前文明</text>
+    </g>
+    <g id="footer">
+        <rect x="0" y="660" width="1280" height="60" fill="#000000" fill-opacity="0.3" />
+        <text x="60" y="695" fill="#A0A0A0" font-family="Microsoft YaHei, Arial, sans-serif" font-size="11">素材来源：PRTS Wiki / Arknights Fandom</text>
+    </g>
+</svg>

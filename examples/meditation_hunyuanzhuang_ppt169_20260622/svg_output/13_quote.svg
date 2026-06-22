@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1280 720" width="1280" height="720">
+  <rect width="1280" height="720" fill="#F5F0E6"/>
+  <image href="images/P13_quote_bg.png" x="0" y="0" width="1280" height="720" preserveAspectRatio="xMidYMid slice"/>
+  <rect x="0" y="0" width="1280" height="720" fill="#F5F0E6" fill-opacity="0.82"/>
+  <line x1="540" y1="250" x2="740" y2="250" stroke="#789262" stroke-width="1.5"/>
+  <text x="640" y="290" text-anchor="middle" font-family="KaiTi, Georgia, serif" font-size="36" fill="#2D2D2D">无听之以耳而听之以心，</text>
+  <text x="640" y="340" text-anchor="middle" font-family="KaiTi, Georgia, serif" font-size="36" fill="#2D2D2D">无听之以心而听之以气。</text>
+  <text x="640" y="400" text-anchor="middle" font-family="&quot;Microsoft YaHei&quot;, Arial, sans-serif" font-size="20" fill="#555555">——《庄子·人间世·心斋》</text>
+  <text x="640" y="580" text-anchor="middle" font-family="&quot;Microsoft YaHei&quot;, Arial, sans-serif" font-size="14" fill="#999999">站桩最安全的入门心法——听息法的原始出处</text>
+</svg>

@@ -1,0 +1,119 @@
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 1280 720" width="1280" height="720">
+  <!-- Background -->
+  <image href="../images/mon3tr_scene_显扬.png" x="0" y="0" width="1280" height="720" preserveAspectRatio="xMidYMid slice"/>
+  <rect x="0" y="0" width="1280" height="720" fill="#0D1117" fill-opacity="0.75"/>
+
+  <!-- Section label -->
+  <rect x="80" y="50" width="60" height="2" fill="#58A6FF"/>
+  <text x="80" y="85" font-family="Microsoft YaHei, Arial, sans-serif" font-size="14" fill="#58A6FF" letter-spacing="2">
+    人物关系
+  </text>
+
+  <!-- Title -->
+  <text x="80" y="125" font-family="Microsoft YaHei, Arial, sans-serif" font-size="36" font-weight="bold" fill="#FFFFFF">
+    交织的命运
+  </text>
+  <text x="80" y="155" font-family="Microsoft YaHei, Arial, sans-serif" font-size="16" fill="#8B949E">
+    INTERTWINED DESTINIES
+  </text>
+
+  <!-- Divider -->
+  <rect x="80" y="175" width="1120" height="1" fill="#30363D"/>
+
+  <!-- Relationship 1: Theresa -->
+  <rect x="80" y="210" width="350" height="220" rx="8" fill="#161B22" stroke="#58A6FF" stroke-width="1"/>
+  <rect x="80" y="210" width="350" height="4" rx="2" fill="#58A6FF"/>
+
+  <use data-icon="tabler-outline/history" x="100" y="230" width="24" height="24" fill="none" stroke="#58A6FF" stroke-width="2"/>
+  <text x="135" y="248" font-family="Microsoft YaHei, Arial, sans-serif" font-size="18" font-weight="bold" fill="#FFFFFF">
+    特蕾西娅
+  </text>
+  <text x="135" y="268" font-family="Microsoft YaHei, Arial, sans-serif" font-size="12" fill="#8B949E">
+    跨越极长时间的同伴
+  </text>
+
+  <rect x="100" y="290" width="310" height="1" fill="#30363D"/>
+  <text x="100" y="320" font-family="Georgia, SimSun, serif" font-size="14" fill="#C9D1D9" font-style="italic">
+    "我不是你的同类，凯尔希。
+  </text>
+  <text x="100" y="345" font-family="Georgia, SimSun, serif" font-size="14" fill="#C9D1D9" font-style="italic">
+    我没法开解你的疑惑。
+  </text>
+  <text x="100" y="370" font-family="Georgia, SimSun, serif" font-size="14" fill="#58A6FF" font-style="italic">
+    但我一直是你的同伴。"
+  </text>
+  <text x="100" y="405" font-family="Microsoft YaHei, Arial, sans-serif" font-size="11" fill="#6E7681">
+    — 特蕾西娅的信
+  </text>
+
+  <!-- Relationship 2: Doctor -->
+  <rect x="465" y="210" width="350" height="220" rx="8" fill="#161B22" stroke="#3FB950" stroke-width="1"/>
+  <rect x="465" y="210" width="350" height="4" rx="2" fill="#3FB950"/>
+
+  <use data-icon="tabler-outline/users" x="485" y="230" width="24" height="24" fill="none" stroke="#3FB950" stroke-width="2"/>
+  <text x="520" y="248" font-family="Microsoft YaHei, Arial, sans-serif" font-size="18" font-weight="bold" fill="#FFFFFF">
+    博士
+  </text>
+  <text x="520" y="268" font-family="Microsoft YaHei, Arial, sans-serif" font-size="12" fill="#8B949E">
+    复杂的过去与守护的承诺
+  </text>
+
+  <rect x="485" y="290" width="310" height="1" fill="#30363D"/>
+  <text x="485" y="320" font-family="Georgia, SimSun, serif" font-size="14" fill="#C9D1D9" font-style="italic">
+    "我的愿望就是守护好
+  </text>
+  <text x="485" y="345" font-family="Georgia, SimSun, serif" font-size="14" fill="#3FB950" font-style="italic">
+    你和阿米娅的愿望。
+  </text>
+  <text x="485" y="370" font-family="Georgia, SimSun, serif" font-size="14" fill="#C9D1D9" font-style="italic">
+    博士，我立下的誓言
+  </text>
+  <text x="485" y="395" font-family="Georgia, SimSun, serif" font-size="14" fill="#C9D1D9" font-style="italic">
+    我永远不会背弃。"
+  </text>
+
+  <!-- Relationship 3: Amiya -->
+  <rect x="850" y="210" width="350" height="220" rx="8" fill="#161B22" stroke="#D4AF37" stroke-width="1"/>
+  <rect x="850" y="210" width="350" height="4" rx="2" fill="#D4AF37"/>
+
+  <use data-icon="tabler-outline/info-circle" x="870" y="230" width="24" height="24" fill="none" stroke="#D4AF37" stroke-width="2"/>
+  <text x="905" y="248" font-family="Microsoft YaHei, Arial, sans-serif" font-size="18" font-weight="bold" fill="#FFFFFF">
+    阿米娅
+  </text>
+  <text x="905" y="268" font-family="Microsoft YaHei, Arial, sans-serif" font-size="12" fill="#8B949E">
+    严谨到病态的监护
+  </text>
+
+  <rect x="870" y="290" width="310" height="1" fill="#30363D"/>
+  <text x="870" y="320" font-family="Microsoft YaHei, Arial, sans-serif" font-size="14" fill="#C9D1D9">
+    凯尔希是阿米娅的直接辅导者
+  </text>
+  <text x="870" y="345" font-family="Microsoft YaHei, Arial, sans-serif" font-size="14" fill="#C9D1D9">
+    对阿米娅的监护被评价为
+  </text>
+  <text x="870" y="370" font-family="Microsoft YaHei, Arial, sans-serif" font-size="14" fill="#D4AF37" font-weight="bold">
+    "严谨到了病态的地步"
+  </text>
+  <text x="870" y="405" font-family="Microsoft YaHei, Arial, sans-serif" font-size="11" fill="#6E7681">
+    巴别塔倒塌后："我会抚养她。"
+  </text>
+
+  <!-- Bottom note -->
+  <rect x="80" y="470" width="1120" height="1" fill="#30363D"/>
+  <text x="80" y="510" font-family="Microsoft YaHei, Arial, sans-serif" font-size="15" fill="#8B949E">
+    三位关键人物，构成了凯尔希情感世界的核心——
+  </text>
+  <text x="80" y="540" font-family="Microsoft YaHei, Arial, sans-serif" font-size="15" fill="#C9D1D9">
+    同伴、守护、监护——三种不同的羁绊，同一个「家」的渴望。
+  </text>
+
+  <!-- Decorative K -->
+  <text x="1100" y="620" font-family="Microsoft YaHei, Arial, sans-serif" font-size="100" fill="#161B22" fill-opacity="0.3" text-anchor="middle">
+    K
+  </text>
+
+  <!-- Page number -->
+  <text x="1220" y="690" font-family="Microsoft YaHei, Arial, sans-serif" font-size="12" fill="#6E7681" text-anchor="end">
+    07 / 10
+  </text>
+</svg>

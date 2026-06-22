@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1280 720">
+    <!-- ==================== 背景 ==================== -->
+    <rect width="1280" height="720" fill="#F8FAFC" />
+    <!-- 封面专属 AI 背景图 -->
+    <image href="../images/P01_cover_bg.png" x="0" y="0" width="1280" height="720" preserveAspectRatio="xMidYMid slice" />
+
+    <!-- 底部渐变遮罩（浅色调），确保标题可读 -->
+    <rect x="0" y="320" width="1280" height="400" fill="#F8FAFC" fill-opacity="0.75" />
+    <rect x="0" y="500" width="1280" height="220" fill="#F8FAFC" fill-opacity="0.5" />
+
+    <!-- ==================== 装饰线 ==================== -->
+    <rect x="440" y="368" width="400" height="3" rx="1.5" fill="#2563EB" />
+
+    <!-- ==================== 主标题区域 ==================== -->
+    <text x="640" y="430" text-anchor="middle" fill="#1E293B" font-family="Microsoft YaHei, PingFang SC, Segoe UI, sans-serif"
+        font-size="72" font-weight="bold">
+        AI 生图攻略
+    </text>
+
+    <!-- 副标题 / 标语 -->
+    <text x="640" y="485" text-anchor="middle" fill="#64748B" font-family="Microsoft YaHei, PingFang SC, Segoe UI, sans-serif"
+        font-size="24">
+        从零到一掌握 AI 图片生成
+    </text>
+
+    <!-- ==================== 底部信息栏 ==================== -->
+    <rect x="0" y="660" width="1280" height="60" fill="#E8EDF2" fill-opacity="0.8" />
+    <text x="60" y="695" fill="#64748B" font-family="Microsoft YaHei, PingFang SC, Segoe UI, sans-serif"
+        font-size="14">
+        培训讲义
+    </text>
+    <text x="1220" y="695" text-anchor="end" fill="#64748B" font-family="Microsoft YaHei, PingFang SC, Segoe UI, sans-serif"
+        font-size="14">
+        2026
+    </text>
+</svg>

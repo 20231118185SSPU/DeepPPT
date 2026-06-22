@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1280 720">
+    <g id="background"><rect width="1280" height="720" fill="#1C1C1C" /></g>
+    <g id="header"><text x="60" y="55" fill="#8B1A1A" fill-opacity="0.6" font-family="Microsoft YaHei, Arial, sans-serif" font-size="13">战术 · 03</text><text x="60" y="85" fill="#E8E8E8" font-family="Source Han Sans SC, Microsoft YaHei, sans-serif" font-size="34" font-weight="bold">失忆抹不去的能力</text><line x1="60" y1="98" x2="360" y2="98" stroke="#8B1A1A" stroke-width="2" stroke-opacity="0.3" /></g>
+    <g id="core-image"><image href="images/p11_content_tactics.png" x="60" y="115" width="1160" height="425" preserveAspectRatio="xMidYMid slice" /></g>
+    <g id="caption"><text x="60" y="570" fill="#E8E8E8" fill-opacity="0.65" font-family="Microsoft YaHei, Arial, sans-serif" font-size="15">杜宾教官的评价：博士的战术水平不是"学习"出来的</text></g>
+    <g id="takeaway"><line x1="60" y1="600" x2="1220" y2="600" stroke="#8B1A1A" stroke-width="1" stroke-opacity="0.15" /><text x="60" y="638" fill="#C0C0C0" font-family="Microsoft YaHei, Arial, sans-serif" font-size="21" font-weight="bold">前文明知识积淀内化为本能 + 不被源石技艺思维框架束缚</text><rect x="1200" y="618" width="20" height="3" fill="#C0C0C0" fill-opacity="0.3" /><rect x="1200" y="626" width="14" height="3" fill="#C0C0C0" fill-opacity="0.2" /></g>
+</svg>

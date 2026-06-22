@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1280 720" width="1280" height="720">
+  <rect width="1280" height="720" fill="#F5F0E6"/>
+  <image href="images/P24_ending_bg.png" x="0" y="0" width="1280" height="720" preserveAspectRatio="xMidYMid slice"/>
+  <rect x="0" y="0" width="1280" height="720" fill="#2D2D2D" fill-opacity="0.3"/>
+  <text x="640" y="300" text-anchor="middle" font-family="SimSun, Georgia, serif" font-size="44" font-weight="bold" fill="#FFFFFF">身心合一，动静皆修</text>
+  <line x1="580" y1="360" x2="700" y2="360" stroke="#D4C5A9" stroke-width="2"/>
+  <text x="640" y="400" text-anchor="middle" font-family="&quot;Microsoft YaHei&quot;, Arial, sans-serif" font-size="24" fill="#FFFFFF">从今天开始，站5分钟</text>
+  <text x="640" y="660" text-anchor="middle" font-family="&quot;Microsoft YaHei&quot;, Arial, sans-serif" font-size="14" fill="#FFFFFF">冥想与混元桩 · 身心修炼的入口</text>
+</svg>

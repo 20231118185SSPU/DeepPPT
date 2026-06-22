@@ -1,0 +1,18 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1280 720">
+  <!-- Full-bleed background -->
+  <image href="images/P24_ending_bg.png" x="0" y="0" width="1280" height="720"/>
+  <!-- Overlay -->
+  <rect x="0" y="0" width="1280" height="720" fill="#2D2D3D" fill-opacity="0.25"/>
+
+  <!-- Main title -->
+  <text x="640" y="280" text-anchor="middle" font-family="SimSun, Georgia, serif" font-size="48" font-weight="bold" fill="#FFFFFF">冰封记忆中的少女</text>
+
+  <!-- Decorative line -->
+  <rect x="540" y="330" width="200" height="3" fill="#FFD6E8"/>
+
+  <!-- Subtitle -->
+  <text x="640" y="380" text-anchor="middle" font-family="&quot;Microsoft YaHei&quot;, Arial, sans-serif" font-size="24" fill="#FFFFFF">用相机和冰晶，重新定义了自己是谁</text>
+
+  <!-- Footer -->
+  <text x="640" y="660" text-anchor="middle" font-family="&quot;Microsoft YaHei&quot;, Arial, sans-serif" font-size="15" fill="#FFFFFF">崩坏：星穹铁道 · 三月七 · 角色全解析</text>
+</svg>

@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1280 720">
+    <rect width="1280" height="720" fill="#F8FAFC" />
+    <image href="../images/P07_trans2_bg.png" x="0" y="0" width="1280" height="720" preserveAspectRatio="xMidYMid slice" />
+    <rect x="0" y="0" width="1280" height="720" fill="#F8FAFC" fill-opacity="0.7" />
+
+    <text x="60" y="200" fill="#94A3B8" font-family="Microsoft YaHei, PingFang SC, Segoe UI, sans-serif" font-size="14">理解了底层逻辑和核心公式</text>
+    <text x="60" y="240" fill="#64748B" font-family="Microsoft YaHei, PingFang SC, Segoe UI, sans-serif" font-size="20">接下来，准备我们的工具</text>
+
+    <text x="60" y="370" fill="#2563EB" fill-opacity="0.12" font-family="Segoe UI, Arial, sans-serif" font-size="120" font-weight="bold">02</text>
+    <text x="60" y="440" fill="#1E293B" font-family="Microsoft YaHei, PingFang SC, Segoe UI, sans-serif" font-size="48" font-weight="bold">工具准备</text>
+    <text x="60" y="490" fill="#64748B" font-family="Microsoft YaHei, PingFang SC, Segoe UI, sans-serif" font-size="20">三大工具各司其职</text>
+
+    <line x1="60" y1="540" x2="400" y2="540" stroke="#2563EB" stroke-width="1.5" stroke-opacity="0.3" />
+    <text x="60" y="580" fill="#64748B" font-family="Microsoft YaHei, PingFang SC, Segoe UI, sans-serif" font-size="18">工欲善其事，必先利其器</text>
+</svg>

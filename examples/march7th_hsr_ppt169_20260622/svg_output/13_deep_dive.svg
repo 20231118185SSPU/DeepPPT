@@ -1,0 +1,75 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1280 720">
+
+  <!-- Background -->
+  <rect x="0" y="0" width="1280" height="720" fill="#F8F4F0"/>
+
+  <!-- Bottom 30% image -->
+  <image href="images/web_assets/dd_p13_comparison.png" x="0" y="504" width="1280" height="216" preserveAspectRatio="xMidYMid slice"/>
+  <rect x="0" y="504" width="1280" height="216" fill="#F8F4F0" fill-opacity="0.4"/>
+
+  <!-- Top text area (y=50-480) -->
+
+  <!-- Title -->
+  <text x="640" y="55" text-anchor="middle" font-family="SimSun, Georgia, serif" font-size="36" font-weight="bold" fill="#D4789C">存护 vs 巡猎 vs 极·三月七</text>
+
+  <!-- Column dividers -->
+  <line x1="426" y1="100" x2="426" y2="470" stroke="#D0C8D8" stroke-width="1" stroke-dasharray="6,4"/>
+  <line x1="853" y1="100" x2="853" y2="470" stroke="#D0C8D8" stroke-width="1" stroke-dasharray="6,4"/>
+
+  <!-- Column 1: 存护 -->
+  <rect x="30" y="110" width="370" height="350" rx="12" fill="#F0ECF4" stroke="#7EB8D8" stroke-width="2"/>
+  <text x="215" y="150" text-anchor="middle" font-family="SimSun, Georgia, serif" font-size="28" font-weight="bold" fill="#7EB8D8">存护</text>
+
+  <text x="215" y="190" text-anchor="middle" font-family="&quot;Microsoft YaHei&quot;, Arial, sans-serif" font-size="16" fill="#6B6B80">属性</text>
+  <text x="215" y="212" text-anchor="middle" font-family="&quot;Microsoft YaHei&quot;, Arial, sans-serif" font-size="18" font-weight="bold" fill="#2D2D3D">冰</text>
+
+  <text x="215" y="245" text-anchor="middle" font-family="&quot;Microsoft YaHei&quot;, Arial, sans-serif" font-size="16" fill="#6B6B80">武器</text>
+  <text x="215" y="267" text-anchor="middle" font-family="&quot;Microsoft YaHei&quot;, Arial, sans-serif" font-size="18" font-weight="bold" fill="#2D2D3D">弓箭</text>
+
+  <text x="215" y="300" text-anchor="middle" font-family="&quot;Microsoft YaHei&quot;, Arial, sans-serif" font-size="16" fill="#6B6B80">定位</text>
+  <text x="215" y="322" text-anchor="middle" font-family="&quot;Microsoft YaHei&quot;, Arial, sans-serif" font-size="18" font-weight="bold" fill="#2D2D3D">盾辅</text>
+
+  <text x="215" y="355" text-anchor="middle" font-family="&quot;Microsoft YaHei&quot;, Arial, sans-serif" font-size="16" fill="#6B6B80">强度</text>
+  <text x="215" y="377" text-anchor="middle" font-family="&quot;Microsoft YaHei&quot;, Arial, sans-serif" font-size="18" font-weight="bold" fill="#2D2D3D">T2-T3</text>
+
+  <text x="215" y="410" text-anchor="middle" font-family="&quot;Microsoft YaHei&quot;, Arial, sans-serif" font-size="16" fill="#6B6B80">获取</text>
+  <text x="215" y="432" text-anchor="middle" font-family="&quot;Microsoft YaHei&quot;, Arial, sans-serif" font-size="18" font-weight="bold" fill="#2D2D3D">初始赠送</text>
+
+  <!-- Column 2: 巡猎 -->
+  <rect x="453" y="110" width="370" height="350" rx="12" fill="#F0ECF4" stroke="#9B72CF" stroke-width="2"/>
+  <text x="638" y="150" text-anchor="middle" font-family="SimSun, Georgia, serif" font-size="28" font-weight="bold" fill="#9B72CF">巡猎</text>
+
+  <text x="638" y="190" text-anchor="middle" font-family="&quot;Microsoft YaHei&quot;, Arial, sans-serif" font-size="16" fill="#6B6B80">属性</text>
+  <text x="638" y="212" text-anchor="middle" font-family="&quot;Microsoft YaHei&quot;, Arial, sans-serif" font-size="18" font-weight="bold" fill="#2D2D3D">虚数</text>
+
+  <text x="638" y="245" text-anchor="middle" font-family="&quot;Microsoft YaHei&quot;, Arial, sans-serif" font-size="16" fill="#6B6B80">武器</text>
+  <text x="638" y="267" text-anchor="middle" font-family="&quot;Microsoft YaHei&quot;, Arial, sans-serif" font-size="18" font-weight="bold" fill="#2D2D3D">剑</text>
+
+  <text x="638" y="300" text-anchor="middle" font-family="&quot;Microsoft YaHei&quot;, Arial, sans-serif" font-size="16" fill="#6B6B80">定位</text>
+  <text x="638" y="322" text-anchor="middle" font-family="&quot;Microsoft YaHei&quot;, Arial, sans-serif" font-size="18" font-weight="bold" fill="#2D2D3D">追击副C</text>
+
+  <text x="638" y="355" text-anchor="middle" font-family="&quot;Microsoft YaHei&quot;, Arial, sans-serif" font-size="16" fill="#6B6B80">强度</text>
+  <text x="638" y="377" text-anchor="middle" font-family="&quot;Microsoft YaHei&quot;, Arial, sans-serif" font-size="18" font-weight="bold" fill="#2D2D3D">T1.5</text>
+
+  <text x="638" y="410" text-anchor="middle" font-family="&quot;Microsoft YaHei&quot;, Arial, sans-serif" font-size="16" fill="#6B6B80">获取</text>
+  <text x="638" y="432" text-anchor="middle" font-family="&quot;Microsoft YaHei&quot;, Arial, sans-serif" font-size="18" font-weight="bold" fill="#2D2D3D">剧情免费</text>
+
+  <!-- Column 3: 极·三月七 -->
+  <rect x="880" y="110" width="370" height="350" rx="12" fill="#F0ECF4" stroke="#D4789C" stroke-width="2"/>
+  <text x="1065" y="150" text-anchor="middle" font-family="SimSun, Georgia, serif" font-size="28" font-weight="bold" fill="#D4789C">极·三月七</text>
+
+  <text x="1065" y="190" text-anchor="middle" font-family="&quot;Microsoft YaHei&quot;, Arial, sans-serif" font-size="16" fill="#6B6B80">属性</text>
+  <text x="1065" y="212" text-anchor="middle" font-family="&quot;Microsoft YaHei&quot;, Arial, sans-serif" font-size="18" font-weight="bold" fill="#2D2D3D">量子</text>
+
+  <text x="1065" y="245" text-anchor="middle" font-family="&quot;Microsoft YaHei&quot;, Arial, sans-serif" font-size="16" fill="#6B6B80">武器</text>
+  <text x="1065" y="267" text-anchor="middle" font-family="&quot;Microsoft YaHei&quot;, Arial, sans-serif" font-size="18" font-weight="bold" fill="#2D2D3D">裁·流光拾遗</text>
+
+  <text x="1065" y="300" text-anchor="middle" font-family="&quot;Microsoft YaHei&quot;, Arial, sans-serif" font-size="16" fill="#6B6B80">命途</text>
+  <text x="1065" y="322" text-anchor="middle" font-family="&quot;Microsoft YaHei&quot;, Arial, sans-serif" font-size="18" font-weight="bold" fill="#2D2D3D">巡猎</text>
+
+  <text x="1065" y="355" text-anchor="middle" font-family="&quot;Microsoft YaHei&quot;, Arial, sans-serif" font-size="16" fill="#6B6B80">强度</text>
+  <text x="1065" y="377" text-anchor="middle" font-family="&quot;Microsoft YaHei&quot;, Arial, sans-serif" font-size="18" font-weight="bold" fill="#2D2D3D">TBD</text>
+
+  <text x="1065" y="410" text-anchor="middle" font-family="&quot;Microsoft YaHei&quot;, Arial, sans-serif" font-size="16" fill="#6B6B80">获取</text>
+  <text x="1065" y="432" text-anchor="middle" font-family="&quot;Microsoft YaHei&quot;, Arial, sans-serif" font-size="18" font-weight="bold" fill="#2D2D3D">活动免费</text>
+</svg>

@@ -1,0 +1,33 @@
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 1280 720" width="1280" height="720">
+  <image href="../images/theresa_avatar_敌人_特蕾西娅.png" x="0" y="0" width="1280" height="720" preserveAspectRatio="xMidYMid slice"/>
+  <rect x="0" y="0" width="1280" height="720" fill="#0D1117" fill-opacity="0.75"/>
+  <rect x="80" y="50" width="60" height="2" fill="#58A6FF"/>
+  <text x="80" y="85" font-family="Microsoft YaHei, Arial, sans-serif" font-size="14" fill="#58A6FF" letter-spacing="2">第五章 · 语音精选</text>
+  <text x="80" y="125" font-family="Microsoft YaHei, Arial, sans-serif" font-size="36" font-weight="bold" fill="#FFFFFF">关键语音</text>
+  <rect x="80" y="145" width="1120" height="1" fill="#30363D"/>
+  
+  <rect x="80" y="170" width="540" height="120" rx="8" fill="#161B22" stroke="#58A6FF" stroke-width="1"/>
+  <text x="100" y="205" font-family="Microsoft YaHei, Arial, sans-serif" font-size="14" font-weight="bold" fill="#58A6FF">任命助理</text>
+  <text x="100" y="235" font-family="Microsoft YaHei, Arial, sans-serif" font-size="13" fill="#C9D1D9">凯尔希要查看博士身体状况</text>
+  <text x="100" y="260" font-family="Microsoft YaHei, Arial, sans-serif" font-size="13" fill="#C9D1D9">强调这对她"有着相当重要的意义"</text>
+
+  <rect x="660" y="170" width="540" height="120" rx="8" fill="#161B22" stroke="#3FB950" stroke-width="1"/>
+  <text x="680" y="205" font-family="Microsoft YaHei, Arial, sans-serif" font-size="14" font-weight="bold" fill="#3FB950">信赖200%</text>
+  <text x="680" y="235" font-family="Microsoft YaHei, Arial, sans-serif" font-size="13" fill="#C9D1D9">"我的愿望就是守护好你和阿米娅的愿望"</text>
+  <text x="680" y="260" font-family="Microsoft YaHei, Arial, sans-serif" font-size="13" fill="#C9D1D9">"博士，我立下的誓言我永远不会背弃。"</text>
+
+  <rect x="80" y="310" width="540" height="120" rx="8" fill="#161B22" stroke="#D4AF37" stroke-width="1"/>
+  <text x="100" y="345" font-family="Microsoft YaHei, Arial, sans-serif" font-size="14" font-weight="bold" fill="#D4AF37">精英2晋升</text>
+  <text x="100" y="375" font-family="Microsoft YaHei, Arial, sans-serif" font-size="13" fill="#C9D1D9">"Mon3tr和我会保护所有人的"</text>
+  <text x="100" y="400" font-family="Microsoft YaHei, Arial, sans-serif" font-size="13" fill="#C9D1D9">"特别是博士你。"</text>
+
+  <rect x="660" y="310" width="540" height="120" rx="8" fill="#161B22" stroke="#F85149" stroke-width="1"/>
+  <text x="680" y="345" font-family="Microsoft YaHei, Arial, sans-serif" font-size="14" font-weight="bold" fill="#F85149">战斗中</text>
+  <text x="680" y="375" font-family="Microsoft YaHei, Arial, sans-serif" font-size="13" fill="#C9D1D9">提及源石潮会将自己分解</text>
+  <text x="680" y="400" font-family="Microsoft YaHei, Arial, sans-serif" font-size="13" fill="#C9D1D9">但之后可以重新联络</text>
+
+  <rect x="80" y="450" width="1120" height="80" rx="8" fill="#161B22" fill-opacity="0.5" stroke="#30363D" stroke-width="1"/>
+  <text x="100" y="485" font-family="Microsoft YaHei, Arial, sans-serif" font-size="14" fill="#FFFFFF">语音特点</text>
+  <text x="100" y="510" font-family="Microsoft YaHei, Arial, sans-serif" font-size="13" fill="#C9D1D9">凯尔希的语音透露出她对博士和阿米娅深深的守护之情，以及她作为万年旅者的孤独与坚定</text>
+  <text x="1220" y="690" font-family="Microsoft YaHei, Arial, sans-serif" font-size="12" fill="#6E7681" text-anchor="end">23 / 32</text>
+</svg>

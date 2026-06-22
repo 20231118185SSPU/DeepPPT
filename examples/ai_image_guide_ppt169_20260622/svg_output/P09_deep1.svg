@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1280 720">
+    <rect width="1280" height="720" fill="#F8FAFC" />
+
+    <!-- 标题区 -->
+    <text x="60" y="55" fill="#94A3B8" font-family="Microsoft YaHei, PingFang SC, Segoe UI, sans-serif" font-size="13">§2 工具准备</text>
+    <text x="60" y="85" fill="#1E293B" font-family="Microsoft YaHei, PingFang SC, Segoe UI, sans-serif" font-size="32" font-weight="bold">工具配置步骤</text>
+    <rect x="60" y="98" width="300" height="2" fill="#2563EB" fill-opacity="0.3" />
+
+    <!-- 左侧：步骤说明 -->
+    <rect x="60" y="130" width="560" height="460" fill="#FFFFFF" rx="12" stroke="#CBD5E1" stroke-width="1" />
+
+    <!-- Step 1 -->
+    <rect x="85" y="155" width="36" height="36" fill="#2563EB" rx="8" />
+    <text x="103" y="179" text-anchor="middle" fill="#FFFFFF" font-family="Segoe UI, Arial, sans-serif" font-size="18" font-weight="bold">1</text>
+    <text x="135" y="179" fill="#1E293B" font-family="Microsoft YaHei, PingFang SC, Segoe UI, sans-serif" font-size="18" font-weight="bold">注册账号</text>
+    <text x="135" y="205" fill="#64748B" font-family="Microsoft YaHei, PingFang SC, Segoe UI, sans-serif" font-size="14">访问 vip.123everything.com，用邮箱注册</text>
+    <text x="135" y="225" fill="#64748B" font-family="Microsoft YaHei, PingFang SC, Segoe UI, sans-serif" font-size="14">赠送 $0.2 额度，点击控制台进入数据看板</text>
+
+    <!-- Step 2 -->
+    <rect x="85" y="260" width="36" height="36" fill="#10B981" rx="8" />
+    <text x="103" y="284" text-anchor="middle" fill="#FFFFFF" font-family="Segoe UI, Arial, sans-serif" font-size="18" font-weight="bold">2</text>
+    <text x="135" y="284" fill="#1E293B" font-family="Microsoft YaHei, PingFang SC, Segoe UI, sans-serif" font-size="18" font-weight="bold">获取 API 密钥</text>
+    <text x="135" y="310" fill="#64748B" font-family="Microsoft YaHei, PingFang SC, Segoe UI, sans-serif" font-size="14">控制台 → API 密钥 → 复制保存</text>
+    <text x="135" y="330" fill="#F97316" font-family="Microsoft YaHei, PingFang SC, Segoe UI, sans-serif" font-size="13">⚠ 请妥善保管，不要泄露</text>
+
+    <!-- Step 3 -->
+    <rect x="85" y="370" width="36" height="36" fill="#F97316" rx="8" />
+    <text x="103" y="394" text-anchor="middle" fill="#FFFFFF" font-family="Segoe UI, Arial, sans-serif" font-size="18" font-weight="bold">3</text>
+    <text x="135" y="394" fill="#1E293B" font-family="Microsoft YaHei, PingFang SC, Segoe UI, sans-serif" font-size="18" font-weight="bold">配置 GPT-Image 工具</text>
+    <text x="135" y="420" fill="#64748B" font-family="Microsoft YaHei, PingFang SC, Segoe UI, sans-serif" font-size="14">小米工具箱 → GPT-Image2 生成器</text>
+    <text x="135" y="440" fill="#64748B" font-family="Microsoft YaHei, PingFang SC, Segoe UI, sans-serif" font-size="14">右上角设置 → 填入 URL 和 API Key</text>
+
+    <!-- 配置信息框 -->
+    <rect x="85" y="470" width="510" height="70" fill="#E8EDF2" rx="8" />
+    <text x="105" y="495" fill="#1E293B" font-family="Consolas, Courier New, monospace" font-size="13">URL: https://vip.123everything.com/v1</text>
+    <text x="105" y="518" fill="#1E293B" font-family="Consolas, Courier New, monospace" font-size="13">API Key: 你的密钥</text>
+
+    <!-- 右侧：截图 -->
+    <rect x="650" y="130" width="570" height="460" fill="#FFFFFF" rx="12" stroke="#CBD5E1" stroke-width="1" />
+    <image href="../images/image_007.png" x="665" y="145" width="540" height="430" preserveAspectRatio="xMidYMid meet" />
+
+    <!-- Takeaway -->
+    <rect x="60" y="640" width="1160" height="1" fill="#CBD5E1" />
+    <rect x="60" y="655" width="6" height="30" fill="#2563EB" rx="3" />
+    <text x="80" y="680" fill="#1E293B" font-family="Microsoft YaHei, PingFang SC, Segoe UI, sans-serif" font-size="22" font-weight="bold">三步配置完成，即可开始创作</text>
+</svg>

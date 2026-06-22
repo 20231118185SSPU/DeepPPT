@@ -1,0 +1,64 @@
+<svg viewBox="0 0 1280 720" xmlns="http://www.w3.org/2000/svg">
+  <!-- Background -->
+  <rect x="0" y="0" width="1280" height="720" fill="#F5F0E6"/>
+
+  <!-- Title -->
+  <text x="640" y="50" text-anchor="middle" font-family="SimSun, Georgia, serif" font-size="36" font-weight="bold" fill="#425066">呼吸与意念：站桩的内在维度</text>
+
+  <!-- Center divider -->
+  <line x1="640" y1="100" x2="640" y2="600" stroke="#C8C0B0" stroke-width="1"/>
+
+  <!-- LEFT COLUMN: 呼吸三阶 -->
+  <text x="320" y="110" text-anchor="middle" font-family="SimSun, Georgia, serif" font-size="26" font-weight="bold" fill="#425066">呼吸三阶</text>
+
+  <!-- Block 1: 自然呼吸 -->
+  <rect x="50" y="140" width="8" height="80" rx="4" fill="#789262"/>
+  <rect x="70" y="140" width="500" height="80" rx="8" fill="#EDE7D9" stroke="#C8C0B0" stroke-width="1"/>
+  <text x="320" y="168" text-anchor="middle" font-family="&quot;Microsoft YaHei&quot;, Arial, sans-serif" font-size="22" font-weight="bold" fill="#425066">自然呼吸</text>
+  <text x="320" y="195" text-anchor="middle" font-family="&quot;Microsoft YaHei&quot;, Arial, sans-serif" font-size="16" fill="#555555">初学者首选·不控制·姿势对了呼吸就对了</text>
+  <text x="320" y="213" text-anchor="middle" font-family="&quot;Microsoft YaHei&quot;, Arial, sans-serif" font-size="14" fill="#999999">适用：第1-3月</text>
+
+  <!-- Block 2: 顺腹式呼吸 -->
+  <rect x="50" y="240" width="8" height="80" rx="4" fill="#425066"/>
+  <rect x="70" y="240" width="500" height="80" rx="8" fill="#EDE7D9" stroke="#C8C0B0" stroke-width="1"/>
+  <text x="320" y="268" text-anchor="middle" font-family="&quot;Microsoft YaHei&quot;, Arial, sans-serif" font-size="22" font-weight="bold" fill="#425066">顺腹式呼吸</text>
+  <text x="320" y="295" text-anchor="middle" font-family="&quot;Microsoft YaHei&quot;, Arial, sans-serif" font-size="16" fill="#555555">吸气腹部膨胀·呼气腹部收缩·轻柔缓慢</text>
+  <text x="320" y="313" text-anchor="middle" font-family="&quot;Microsoft YaHei&quot;, Arial, sans-serif" font-size="14" fill="#999999">适用：第3月+</text>
+
+  <!-- Block 3: 逆腹式呼吸 -->
+  <rect x="50" y="340" width="8" height="80" rx="4" fill="#7A5230"/>
+  <rect x="70" y="340" width="500" height="80" rx="8" fill="#EDE7D9" stroke="#C8C0B0" stroke-width="1"/>
+  <text x="320" y="368" text-anchor="middle" font-family="&quot;Microsoft YaHei&quot;, Arial, sans-serif" font-size="22" font-weight="bold" fill="#425066">逆腹式呼吸</text>
+  <text x="320" y="395" text-anchor="middle" font-family="&quot;Microsoft YaHei&quot;, Arial, sans-serif" font-size="16" fill="#555555">吸气腹部内收·呼气腹部膨胀·需明师指导</text>
+  <text x="320" y="413" text-anchor="middle" font-family="&quot;Microsoft YaHei&quot;, Arial, sans-serif" font-size="14" fill="#999999">适用：6月+</text>
+
+  <!-- RIGHT COLUMN: 意念心法 -->
+  <text x="960" y="110" text-anchor="middle" font-family="SimSun, Georgia, serif" font-size="26" font-weight="bold" fill="#425066">意念心法</text>
+
+  <!-- Block 1: 听息法 -->
+  <rect x="670" y="140" width="8" height="80" rx="4" fill="#789262"/>
+  <rect x="690" y="140" width="500" height="80" rx="8" fill="#EDE7D9" stroke="#C8C0B0" stroke-width="1"/>
+  <text x="960" y="168" text-anchor="middle" font-family="&quot;Microsoft YaHei&quot;, Arial, sans-serif" font-size="22" font-weight="bold" fill="#425066">听息法</text>
+  <text x="960" y="195" text-anchor="middle" font-family="&quot;Microsoft YaHei&quot;, Arial, sans-serif" font-size="16" fill="#555555">最安全·源自庄子·不控制呼吸只是听</text>
+  <text x="960" y="213" text-anchor="middle" font-family="&quot;Microsoft YaHei&quot;, Arial, sans-serif" font-size="14" fill="#999999">全阶段适用·首选</text>
+
+  <!-- Block 2: 守丹田 -->
+  <rect x="670" y="240" width="8" height="80" rx="4" fill="#425066"/>
+  <rect x="690" y="240" width="500" height="80" rx="8" fill="#EDE7D9" stroke="#C8C0B0" stroke-width="1"/>
+  <text x="960" y="268" text-anchor="middle" font-family="&quot;Microsoft YaHei&quot;, Arial, sans-serif" font-size="22" font-weight="bold" fill="#425066">守丹田</text>
+  <text x="960" y="295" text-anchor="middle" font-family="&quot;Microsoft YaHei&quot;, Arial, sans-serif" font-size="16" fill="#555555">似守非守·若有若离·不可死守</text>
+  <text x="960" y="313" text-anchor="middle" font-family="&quot;Microsoft YaHei&quot;, Arial, sans-serif" font-size="14" fill="#999999">适用：3月+</text>
+
+  <!-- Block 3: 抱球意象 -->
+  <rect x="670" y="340" width="8" height="80" rx="4" fill="#7A5230"/>
+  <rect x="690" y="340" width="500" height="80" rx="8" fill="#EDE7D9" stroke="#C8C0B0" stroke-width="1"/>
+  <text x="960" y="368" text-anchor="middle" font-family="&quot;Microsoft YaHei&quot;, Arial, sans-serif" font-size="22" font-weight="bold" fill="#425066">抱球意象</text>
+  <text x="960" y="395" text-anchor="middle" font-family="&quot;Microsoft YaHei&quot;, Arial, sans-serif" font-size="16" fill="#555555">想象双臂间有充气大球·体会争力感</text>
+  <text x="960" y="413" text-anchor="middle" font-family="&quot;Microsoft YaHei&quot;, Arial, sans-serif" font-size="14" fill="#999999">适用：全阶段</text>
+
+  <!-- Bottom mantra -->
+  <text x="640" y="620" text-anchor="middle" font-family="KaiTi, Georgia, serif" font-size="18" fill="#7A5230">口诀：深·长·匀·细 · 形松意紧 · 外静内动</text>
+
+  <!-- Source -->
+  <text x="640" y="680" text-anchor="middle" font-family="&quot;Microsoft YaHei&quot;, Arial, sans-serif" font-size="11" fill="#999999">来源：庄子《心斋》; 意拳传人教学资料</text>
+</svg>

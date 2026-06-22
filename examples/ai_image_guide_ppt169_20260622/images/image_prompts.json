@@ -1,0 +1,92 @@
+{
+  "deck_style_anchor": "story_driven light-theme flat cool-tech",
+  "color_scheme": {
+    "background": "#F8FAFC",
+    "primary": "#2563EB",
+    "accent": "#F97316",
+    "secondary_accent": "#10B981"
+  },
+  "items": [
+    {
+      "filename": "P01_cover_bg.png",
+      "prompt": "Flat vector illustration, a person sitting at a desk with a laptop computer, the screen displaying colorful digital artwork being generated, light clean background with soft blue and teal gradients, geometric shapes floating around representing AI creativity, minimalist style, no text, 16:9 composition, light color palette with white background, blue #2563EB and teal #10B981 accents, modern tech aesthetic",
+      "aspect_ratio": "16:9",
+      "image_size": "2K",
+      "status": "Generated",
+      "purpose": "Cover page background",
+      "type": "Background"
+    },
+    {
+      "filename": "P02_toc_bg.png",
+      "prompt": "Flat vector illustration, abstract technology pattern with connected nodes and flowing lines forming a knowledge map, light clean background, geometric circles and rectangles linked by thin lines, soft blue and green color palette, minimalist tech design, no text, 16:9 composition, white background with blue #2563EB and teal #10B981 decorative elements, clean and organized layout",
+      "aspect_ratio": "16:9",
+      "image_size": "2K",
+      "status": "Generated",
+      "purpose": "Table of contents background",
+      "type": "Background"
+    },
+    {
+      "filename": "P03_trans1_bg.png",
+      "prompt": "Flat vector illustration, scattered image fragments and puzzle pieces being reorganized into a neat grid by glowing algorithm lines, transition from chaos to order, light clean background, blue and teal color scheme, geometric shapes, minimalist style, no text, 16:9 composition, white background with blue #2563EB accent lines",
+      "aspect_ratio": "16:9",
+      "image_size": "2K",
+      "status": "Generated",
+      "purpose": "Transition page 1 - from confusion to structure",
+      "type": "Background"
+    },
+    {
+      "filename": "P05_content_ai.png",
+      "prompt": "Flat vector infographic showing a 6-step workflow pipeline from left to right: idea bubble, text document, layout grid, code prompt, image frame, refresh arrows forming a loop, connected by arrows, light clean background, blue #2563EB primary color with orange #F97316 and green #10B981 accents, minimalist tech style, no text labels, 16:9 composition",
+      "aspect_ratio": "16:9",
+      "image_size": "2K",
+      "status": "Generated",
+      "purpose": "Content page - core formula flow diagram",
+      "type": "Diagram"
+    },
+    {
+      "filename": "P07_trans2_bg.png",
+      "prompt": "Flat vector illustration, an open toolbox revealing AI tool icons, a chat bubble for DeepSeek and an image generation symbol for GPT-Image, tools floating out ready to use, light clean background, blue and orange color palette, minimalist tech aesthetic, no text, 16:9 composition, white background with blue #2563EB and orange #F97316 accents",
+      "aspect_ratio": "16:9",
+      "image_size": "2K",
+      "status": "Generated",
+      "purpose": "Transition page 2 - tools ready",
+      "type": "Background"
+    },
+    {
+      "filename": "P10_trans3_bg.png",
+      "prompt": "Flat vector illustration, a digital canvas being painted by a glowing digital brush, AI-generated artwork emerging from light particles, creative generation process visualization, light clean background, blue and purple gradient accents, minimalist style, no text, 16:9 composition, white background with blue #2563EB glow effects",
+      "aspect_ratio": "16:9",
+      "image_size": "2K",
+      "status": "Generated",
+      "purpose": "Transition page 3 - entering generation phase",
+      "type": "Background"
+    },
+    {
+      "filename": "P12_trans4_bg.png",
+      "prompt": "Flat vector illustration, a circular arrow loop around an image that evolves from rough sketch to polished artwork in stages, iteration and improvement concept, light clean background, green #10B981 and blue #2563EB color scheme, minimalist tech style, no text, 16:9 composition, white background",
+      "aspect_ratio": "16:9",
+      "image_size": "2K",
+      "status": "Generated",
+      "purpose": "Transition page 4 - iteration and optimization",
+      "type": "Background"
+    },
+    {
+      "filename": "P15_closing_bg.png",
+      "prompt": "Flat vector illustration, a panoramic collage of multiple AI-generated artwork samples arranged in a harmonious mosaic, showcasing diverse styles and subjects, light clean background, rich but harmonious colors with blue green and orange accents, creative abundance visualization, no text, 16:9 composition, white background with colorful art pieces",
+      "aspect_ratio": "16:9",
+      "image_size": "2K",
+      "status": "Generated",
+      "purpose": "Summary/quote page background",
+      "type": "Background"
+    },
+    {
+      "filename": "P16_ending_bg.png",
+      "prompt": "Flat vector illustration, a wider view of a creative workspace with multiple screens showing AI-generated art, a person surrounded by floating digital artworks and tools, creative ecosystem visualization, echoing the cover but more expansive, light clean background, blue teal and orange color palette, minimalist tech aesthetic, no text, 16:9 composition",
+      "aspect_ratio": "16:9",
+      "image_size": "2K",
+      "status": "Generated",
+      "purpose": "Ending page background",
+      "type": "Background"
+    }
+  ]
+}

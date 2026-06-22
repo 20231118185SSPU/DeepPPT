@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1280 720" width="1280" height="720">
+  <rect width="1280" height="720" fill="#F5F0E6"/>
+  <image href="images/P01_cover_bg.png" x="0" y="0" width="1280" height="720" preserveAspectRatio="xMidYMid slice"/>
+  <rect x="0" y="0" width="1280" height="720" fill="#425066" fill-opacity="0.35"/>
+  <text x="640" y="280" text-anchor="middle" font-family="SimSun, Georgia, serif" font-size="60" font-weight="bold" fill="#FFFFFF">冥想与混元桩</text>
+  <text x="640" y="340" text-anchor="middle" font-family="&quot;Microsoft YaHei&quot;, Arial, sans-serif" font-size="26" fill="#FFFFFF">身心修炼的入口</text>
+  <line x1="580" y1="360" x2="700" y2="360" stroke="#789262" stroke-width="2"/>
+  <text x="640" y="660" text-anchor="middle" font-family="&quot;Microsoft YaHei&quot;, Arial, sans-serif" font-size="15" fill="#FFFFFF">从科学到传统 · 从静坐到站立</text>
+</svg>

@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1280 720">
+    <!-- P29 Deep Dive Compare - story_driven -->
+    <rect width="1280" height="720" fill="#16162A" />
+
+    <!-- Section label -->
+    <text x="60" y="60" fill="#FFFFFF" fill-opacity="0.45" font-family="Microsoft YaHei, Arial, sans-serif" font-size="13">§7 · 对比分析</text>
+
+    <!-- Page title -->
+    <text x="60" y="100" fill="#FFFFFF" font-family="Microsoft YaHei, Arial, sans-serif" font-size="32" font-weight="bold">DeepSeek vs Llama</text>
+
+    <!-- Three dots -->
+    <circle cx="60" cy="128" r="3" fill="#FFFFFF" fill-opacity="0.35" />
+    <circle cx="74" cy="128" r="3" fill="#FFFFFF" fill-opacity="0.25" />
+    <circle cx="88" cy="128" r="3" fill="#FFFFFF" fill-opacity="0.15" />
+
+    <!-- Divider line -->
+    <line x1="60" y1="145" x2="1220" y2="145" stroke="#FFFFFF" stroke-width="1" stroke-opacity="0.15" />
+
+    <!-- Left card: DeepSeek -->
+    <rect x="60" y="170" width="560" height="430" fill="#FFFFFF" fill-opacity="0.08" rx="8" />
+    <text x="340" y="220" text-anchor="middle" fill="#FFFFFF" font-family="Microsoft YaHei, Arial, sans-serif" font-size="36" font-weight="bold">DeepSeek</text>
+    <text x="340" y="255" text-anchor="middle" fill="#FFFFFF" fill-opacity="0.7" font-family="Microsoft YaHei, Arial, sans-serif" font-size="18" font-weight="bold">效率极致</text>
+    <line x1="180" y1="275" x2="500" y2="275" stroke="#FFFFFF" stroke-width="1" stroke-opacity="0.15" />
+    <text x="340" y="310" text-anchor="middle" fill="#FFFFFF" fill-opacity="0.7" font-family="Microsoft YaHei, Arial, sans-serif" font-size="16">MLA + DeepSeekMoE 架构</text>
+    <text x="340" y="345" text-anchor="middle" fill="#FFFFFF" fill-opacity="0.7" font-family="Microsoft YaHei, Arial, sans-serif" font-size="16">训练成本仅 $5.57M</text>
+    <text x="340" y="380" text-anchor="middle" fill="#FFFFFF" fill-opacity="0.7" font-family="Microsoft YaHei, Arial, sans-serif" font-size="16">2048 张 H800 完成训练</text>
+    <line x1="180" y1="405" x2="500" y2="405" stroke="#FFFFFF" stroke-width="1" stroke-opacity="0.15" />
+    <text x="340" y="440" text-anchor="middle" fill="#FFFFFF" fill-opacity="0.85" font-family="Microsoft YaHei, Arial, sans-serif" font-size="16" font-weight="bold">核心优势：技术密度</text>
+    <text x="340" y="470" text-anchor="middle" fill="#FFFFFF" fill-opacity="0.6" font-family="Microsoft YaHei, Arial, sans-serif" font-size="14">用最少资源产出最强模型</text>
+
+    <!-- Center divider line -->
+    <line x1="640" y1="180" x2="640" y2="590" stroke="#FFFFFF" stroke-width="1" stroke-opacity="0.2" />
+
+    <!-- Right card: Llama -->
+    <rect x="660" y="170" width="560" height="430" fill="#FFFFFF" fill-opacity="0.08" rx="8" />
+    <text x="940" y="220" text-anchor="middle" fill="#FFFFFF" font-family="Microsoft YaHei, Arial, sans-serif" font-size="36" font-weight="bold">Llama</text>
+    <text x="940" y="255" text-anchor="middle" fill="#FFFFFF" fill-opacity="0.7" font-family="Microsoft YaHei, Arial, sans-serif" font-size="18" font-weight="bold">生态广度</text>
+    <line x1="780" y1="275" x2="1100" y2="275" stroke="#FFFFFF" stroke-width="1" stroke-opacity="0.15" />
+    <text x="940" y="310" text-anchor="middle" fill="#FFFFFF" fill-opacity="0.7" font-family="Microsoft YaHei, Arial, sans-serif" font-size="16">Dense Transformer 架构</text>
+    <text x="940" y="345" text-anchor="middle" fill="#FFFFFF" fill-opacity="0.7" font-family="Microsoft YaHei, Arial, sans-serif" font-size="16">Meta 资源支持 · 650 亿投资</text>
+    <text x="940" y="380" text-anchor="middle" fill="#FFFFFF" fill-opacity="0.7" font-family="Microsoft YaHei, Arial, sans-serif" font-size="16">社区最大 · 下载量数十亿</text>
+    <line x1="780" y1="405" x2="1100" y2="405" stroke="#FFFFFF" stroke-width="1" stroke-opacity="0.15" />
+    <text x="940" y="440" text-anchor="middle" fill="#FFFFFF" fill-opacity="0.85" font-family="Microsoft YaHei, Arial, sans-serif" font-size="16" font-weight="bold">核心优势：生态规模</text>
+    <text x="940" y="470" text-anchor="middle" fill="#FFFFFF" fill-opacity="0.6" font-family="Microsoft YaHei, Arial, sans-serif" font-size="14">最多开发者、最广部署场景</text>
+
+    <!-- Page number -->
+    <text x="1220" y="708" text-anchor="end" fill="#FFFFFF" fill-opacity="0.4" font-family="Microsoft YaHei, Arial, sans-serif" font-size="11">29 / 30</text>
+</svg>

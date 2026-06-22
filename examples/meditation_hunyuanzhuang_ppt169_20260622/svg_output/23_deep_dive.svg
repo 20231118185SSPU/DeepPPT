@@ -1,0 +1,57 @@
+<svg viewBox="0 0 1280 720" xmlns="http://www.w3.org/2000/svg">
+  <!-- Background -->
+  <rect x="0" y="0" width="1280" height="720" fill="#F5F0E6"/>
+
+  <!-- Title -->
+  <text x="640" y="50" text-anchor="middle" font-family="SimSun, Georgia, serif" font-size="36" font-weight="bold" fill="#425066">开始修炼前的常见问题</text>
+
+  <!-- Left column -->
+  <!-- Q1 -->
+  <rect x="60" y="120" width="550" height="140" rx="10" fill="#EDE7D9" stroke="#C8C0B0" stroke-width="1"/>
+  <text x="335" y="155" text-anchor="middle" font-family="&quot;Microsoft YaHei&quot;, Arial, sans-serif" font-size="20" font-weight="bold" fill="#425066">站桩腿抖怎么办？</text>
+  <line x1="120" y1="170" x2="550" y2="170" stroke="#C8C0B0" stroke-width="0.5"/>
+  <text x="335" y="200" text-anchor="middle" font-family="&quot;Microsoft YaHei&quot;, Arial, sans-serif" font-size="16" fill="#2D2D2D">正常反应·说明肌肉在适应</text>
+  <text x="335" y="228" text-anchor="middle" font-family="&quot;Microsoft YaHei&quot;, Arial, sans-serif" font-size="16" fill="#2D2D2D">缩短时间即可·不要硬撑</text>
+
+  <!-- Q2 -->
+  <rect x="60" y="280" width="550" height="140" rx="10" fill="#EDE7D9" stroke="#C8C0B0" stroke-width="1"/>
+  <text x="335" y="315" text-anchor="middle" font-family="&quot;Microsoft YaHei&quot;, Arial, sans-serif" font-size="20" font-weight="bold" fill="#425066">每天要练多久？</text>
+  <line x1="120" y1="330" x2="550" y2="330" stroke="#C8C0B0" stroke-width="0.5"/>
+  <text x="335" y="360" text-anchor="middle" font-family="&quot;Microsoft YaHei&quot;, Arial, sans-serif" font-size="16" fill="#2D2D2D">初学者5-10分钟即可</text>
+  <text x="335" y="388" text-anchor="middle" font-family="&quot;Microsoft YaHei&quot;, Arial, sans-serif" font-size="16" fill="#2D2D2D">质量大于时长·宁短不懈</text>
+
+  <!-- Q3 -->
+  <rect x="60" y="440" width="550" height="140" rx="10" fill="#EDE7D9" stroke="#C8C0B0" stroke-width="1"/>
+  <text x="335" y="475" text-anchor="middle" font-family="&quot;Microsoft YaHei&quot;, Arial, sans-serif" font-size="20" font-weight="bold" fill="#425066">饭后能练吗？</text>
+  <line x1="120" y1="490" x2="550" y2="490" stroke="#C8C0B0" stroke-width="0.5"/>
+  <text x="335" y="520" text-anchor="middle" font-family="&quot;Microsoft YaHei&quot;, Arial, sans-serif" font-size="16" fill="#2D2D2D">饭后至少1小时再练</text>
+  <text x="335" y="548" text-anchor="middle" font-family="&quot;Microsoft YaHei&quot;, Arial, sans-serif" font-size="16" fill="#2D2D2D">练后半小时内不宜冷水浴</text>
+
+  <!-- Right column -->
+  <!-- Q4 -->
+  <rect x="670" y="120" width="550" height="140" rx="10" fill="#EDE7D9" stroke="#C8C0B0" stroke-width="1"/>
+  <text x="945" y="155" text-anchor="middle" font-family="&quot;Microsoft YaHei&quot;, Arial, sans-serif" font-size="20" font-weight="bold" fill="#425066">需要找老师吗？</text>
+  <line x1="730" y1="170" x2="1160" y2="170" stroke="#C8C0B0" stroke-width="0.5"/>
+  <text x="945" y="200" text-anchor="middle" font-family="&quot;Microsoft YaHei&quot;, Arial, sans-serif" font-size="16" fill="#2D2D2D">基础姿势可自学</text>
+  <text x="945" y="228" text-anchor="middle" font-family="&quot;Microsoft YaHei&quot;, Arial, sans-serif" font-size="16" fill="#2D2D2D">呼吸和意念进阶建议找有经验的老师指导</text>
+
+  <!-- Q5 -->
+  <rect x="670" y="280" width="550" height="140" rx="10" fill="#EDE7D9" stroke="#C8C0B0" stroke-width="1"/>
+  <text x="945" y="315" text-anchor="middle" font-family="&quot;Microsoft YaHei&quot;, Arial, sans-serif" font-size="20" font-weight="bold" fill="#425066">多久能见效？</text>
+  <line x1="730" y1="330" x2="1160" y2="330" stroke="#C8C0B0" stroke-width="0.5"/>
+  <text x="945" y="360" text-anchor="middle" font-family="&quot;Microsoft YaHei&quot;, Arial, sans-serif" font-size="16" fill="#2D2D2D">2-4周可感受身体变化</text>
+  <text x="945" y="388" text-anchor="middle" font-family="&quot;Microsoft YaHei&quot;, Arial, sans-serif" font-size="16" fill="#2D2D2D">3个月精力和睡眠改善·千日筑基</text>
+
+  <!-- Q6 -->
+  <rect x="670" y="440" width="550" height="140" rx="10" fill="#EDE7D9" stroke="#C8C0B0" stroke-width="1"/>
+  <text x="945" y="475" text-anchor="middle" font-family="&quot;Microsoft YaHei&quot;, Arial, sans-serif" font-size="20" font-weight="bold" fill="#425066">能替代吃药吗？</text>
+  <line x1="730" y1="490" x2="1160" y2="490" stroke="#C8C0B0" stroke-width="0.5"/>
+  <text x="945" y="520" text-anchor="middle" font-family="&quot;Microsoft YaHei&quot;, Arial, sans-serif" font-size="16" fill="#2D2D2D">不能·冥想和站桩是辅助手段</text>
+  <text x="945" y="548" text-anchor="middle" font-family="&quot;Microsoft YaHei&quot;, Arial, sans-serif" font-size="16" fill="#2D2D2D">不可替代正规医疗</text>
+
+  <!-- Bottom principle -->
+  <text x="640" y="640" text-anchor="middle" font-family="KaiTi, Georgia, serif" font-size="18" fill="#7A5230">核心原则：宁短不懈，宁轻不伤</text>
+
+  <!-- Source -->
+  <text x="640" y="680" text-anchor="middle" font-family="&quot;Microsoft YaHei&quot;, Arial, sans-serif" font-size="11" fill="#999999">来源：意拳传人教学资料; 综合调研</text>
+</svg>

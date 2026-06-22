@@ -1,0 +1,31 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1280 720">
+  <!-- Background -->
+  <rect x="0" y="0" width="1280" height="720" fill="#F5F0E6"/>
+
+  <!-- Top 40%: background image -->
+  <image href="images/P16_content_bg.png" x="0" y="0" width="1280" height="288" preserveAspectRatio="xMidYMid slice"/>
+  <rect x="0" y="0" width="1280" height="288" fill="#F5F0E6" fill-opacity="0.3"/>
+
+  <!-- Title -->
+  <text x="640" y="340" font-family="SimSun, Georgia, serif" font-size="36" font-weight="bold" fill="#425066" text-anchor="middle">从5分钟开始</text>
+
+  <!-- Progression bars -->
+  <rect x="140" y="370" width="1000" height="44" rx="6" fill="#789262"/>
+  <text x="640" y="398" font-family="&quot;Microsoft YaHei&quot;, Arial, sans-serif" font-size="16" fill="#FFFFFF" text-anchor="middle">第1-2周 · 5-10分钟 · 正确站姿、逐节放松</text>
+
+  <rect x="140" y="422" width="1000" height="44" rx="6" fill="#789262"/>
+  <text x="640" y="450" font-family="&quot;Microsoft YaHei&quot;, Arial, sans-serif" font-size="16" fill="#FFFFFF" text-anchor="middle">第3-4周 · 10-20分钟 · 系统放松、感受身体</text>
+
+  <rect x="140" y="474" width="1000" height="44" rx="6" fill="#425066"/>
+  <text x="640" y="502" font-family="&quot;Microsoft YaHei&quot;, Arial, sans-serif" font-size="16" fill="#FFFFFF" text-anchor="middle">第2-3月 · 20-30分钟 · 自然深长呼吸、轻柔意念</text>
+
+  <rect x="140" y="526" width="1000" height="44" rx="6" fill="#425066"/>
+  <text x="640" y="554" font-family="&quot;Microsoft YaHei&quot;, Arial, sans-serif" font-size="16" fill="#FFFFFF" text-anchor="middle">第3-6月 · 30-40分钟 · 入静能力增强、气感明显</text>
+
+  <rect x="140" y="578" width="1000" height="44" rx="6" fill="#7A5230"/>
+  <text x="640" y="606" font-family="&quot;Microsoft YaHei&quot;, Arial, sans-serif" font-size="16" fill="#FFFFFF" text-anchor="middle">6月+ · 40-60分钟 · 内外合一</text>
+
+  <!-- Bottom takeaway bar -->
+  <rect x="0" y="660" width="1280" height="60" fill="#425066"/>
+  <text x="640" y="696" font-family="&quot;Microsoft YaHei&quot;, Arial, sans-serif" font-size="18" fill="#FFFFFF" text-anchor="middle">宁短不懈，宁轻不伤——短时间高质量胜过长时间硬撑</text>
+</svg>

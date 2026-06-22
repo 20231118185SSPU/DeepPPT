@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1280 720">
+    <!-- P14 Transition - Ch04: 技术演进 -->
+    <rect width="1280" height="720" fill="#12122A" />
+    <image href="images/P14_trans_ch4.png" x="0" y="0" width="1280" height="720" preserveAspectRatio="xMidYMid slice" />
+    <rect width="1280" height="720" fill="#0D0D1A" fill-opacity="0.55" />
+
+    <!-- Previous label -->
+    <text x="60" y="200" fill="#FFFFFF" fill-opacity="0.45" font-family="Microsoft YaHei, Arial, sans-serif" font-size="13">§3 幻方量化的底牌</text>
+    <!-- Previous summary -->
+    <text x="60" y="228" fill="#FFFFFF" fill-opacity="0.7" font-family="Microsoft YaHei, Arial, sans-serif" font-size="16">四代模型进化</text>
+
+    <!-- Chapter number (big) -->
+    <text x="60" y="340" fill="#FFFFFF" fill-opacity="0.15" font-family="Microsoft YaHei, Arial, sans-serif" font-size="120" font-weight="bold">04</text>
+
+    <!-- Chapter title -->
+    <text x="60" y="420" fill="#FFFFFF" font-family="Microsoft YaHei, Arial, sans-serif" font-size="48" font-weight="bold">技术演进</text>
+
+    <!-- Chapter description -->
+    <text x="60" y="465" fill="#FFFFFF" fill-opacity="0.75" font-family="Microsoft YaHei, Arial, sans-serif" font-size="18">四代模型的进化之路</text>
+
+    <!-- Next hook -->
+    <text x="60" y="520" fill="#FFFFFF" fill-opacity="0.6" font-family="Microsoft YaHei, Arial, sans-serif" font-size="16">他们是怎么做到的？</text>
+
+    <!-- Three dots -->
+    <circle cx="60" cy="102" r="3" fill="#FFFFFF" fill-opacity="0.35" />
+    <circle cx="74" cy="102" r="3" fill="#FFFFFF" fill-opacity="0.25" />
+    <circle cx="88" cy="102" r="3" fill="#FFFFFF" fill-opacity="0.15" />
+
+    <!-- Page number -->
+    <text x="1220" y="708" text-anchor="end" fill="#FFFFFF" fill-opacity="0.4" font-family="Microsoft YaHei, Arial, sans-serif" font-size="11">14 / 30</text>
+</svg>

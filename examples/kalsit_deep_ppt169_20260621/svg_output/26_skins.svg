@@ -1,0 +1,33 @@
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 1280 720" width="1280" height="720">
+  <image href="../images/amiya_scene_始发.png" x="0" y="0" width="1280" height="720" preserveAspectRatio="xMidYMid slice"/>
+  <rect x="0" y="0" width="1280" height="720" fill="#0D1117" fill-opacity="0.75"/>
+  <rect x="80" y="50" width="60" height="2" fill="#58A6FF"/>
+  <text x="80" y="85" font-family="Microsoft YaHei, Arial, sans-serif" font-size="14" fill="#58A6FF" letter-spacing="2">第五章 · 角色皮肤</text>
+  <text x="80" y="125" font-family="Microsoft YaHei, Arial, sans-serif" font-size="36" font-weight="bold" fill="#FFFFFF">皮肤介绍</text>
+  <rect x="80" y="145" width="1120" height="1" fill="#30363D"/>
+  
+  <rect x="80" y="170" width="540" height="300" rx="8" fill="#161B22" stroke="#58A6FF" stroke-width="1"/>
+  <rect x="80" y="170" width="540" height="4" rx="2" fill="#58A6FF"/>
+  <text x="100" y="210" font-family="Microsoft YaHei, Arial, sans-serif" font-size="18" font-weight="bold" fill="#58A6FF">残余</text>
+  <text x="100" y="235" font-family="Microsoft YaHei, Arial, sans-serif" font-size="13" fill="#8B949E">动态皮肤</text>
+  <rect x="100" y="255" width="500" height="1" fill="#30363D"/>
+  <text x="100" y="285" font-family="Microsoft YaHei, Arial, sans-serif" font-size="14" fill="#C9D1D9">皮肤语音中涉及源石末世背景设定</text>
+  <text x="100" y="310" font-family="Microsoft YaHei, Arial, sans-serif" font-size="14" fill="#C9D1D9">包括抗源石通讯回路、方舟维护</text>
+  <text x="100" y="335" font-family="Microsoft YaHei, Arial, sans-serif" font-size="14" fill="#C9D1D9">源石潮等内容</text>
+  <text x="100" y="360" font-family="Microsoft YaHei, Arial, sans-serif" font-size="14" fill="#C9D1D9">呈现出一个文明衰退后的未来时间线</text>
+  <text x="100" y="385" font-family="Microsoft YaHei, Arial, sans-serif" font-size="14" fill="#C9D1D9">中的凯尔希</text>
+  <text x="100" y="415" font-family="Microsoft YaHei, Arial, sans-serif" font-size="12" fill="#8B949E">展现了凯尔希在不同时间线的可能性</text>
+
+  <rect x="660" y="170" width="540" height="300" rx="8" fill="#161B22" stroke="#3FB950" stroke-width="1"/>
+  <rect x="660" y="170" width="540" height="4" rx="2" fill="#3FB950"/>
+  <text x="680" y="210" font-family="Microsoft YaHei, Arial, sans-serif" font-size="18" font-weight="bold" fill="#3FB950">时遗</text>
+  <text x="680" y="235" font-family="Microsoft YaHei, Arial, sans-serif" font-size="13" fill="#8B949E">动态皮肤</text>
+  <rect x="680" y="255" width="500" height="1" fill="#30363D"/>
+  <text x="680" y="285" font-family="Microsoft YaHei, Arial, sans-serif" font-size="14" fill="#C9D1D9">另一款风格独特的皮肤</text>
+  <text x="680" y="310" font-family="Microsoft YaHei, Arial, sans-serif" font-size="14" fill="#C9D1D9">展现了凯尔希不同时间线的形象</text>
+  <text x="680" y="335" font-family="Microsoft YaHei, Arial, sans-serif" font-size="14" fill="#C9D1D9">体现了她跨越万年的旅者身份</text>
+  <text x="680" y="360" font-family="Microsoft YaHei, Arial, sans-serif" font-size="14" fill="#C9D1D9">皮肤设计融合了未来科技与古典元素</text>
+  <text x="680" y="385" font-family="Microsoft YaHei, Arial, sans-serif" font-size="14" fill="#C9D1D9">呼应了她古老而神秘的本质</text>
+  <text x="680" y="415" font-family="Microsoft YaHei, Arial, sans-serif" font-size="12" fill="#8B949E">两款皮肤都展现了凯尔希的不同侧面</text>
+  <text x="1220" y="690" font-family="Microsoft YaHei, Arial, sans-serif" font-size="12" fill="#6E7681" text-anchor="end">24 / 32</text>
+</svg>

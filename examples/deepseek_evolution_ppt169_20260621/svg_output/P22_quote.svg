@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1280 720">
+    <!-- P22 Quote - story_driven -->
+    <rect width="1280" height="720" fill="#1A1A2E" />
+    <image href="images/P22_quote_aha.png" x="0" y="0" width="1280" height="720" preserveAspectRatio="xMidYMid slice" />
+    <rect width="1280" height="720" fill="#0D0D1A" fill-opacity="0.7" />
+
+    <!-- Large centered quote -->
+    <text x="640" y="280" text-anchor="middle" fill="#FFFFFF" font-family="Microsoft YaHei, Arial, sans-serif"
+        font-size="88" font-weight="bold" fill-opacity="0.9">
+        aha moment
+    </text>
+
+    <!-- Attribution -->
+    <text x="640" y="360" text-anchor="middle" fill="#FFFFFF" fill-opacity="0.75" font-family="Microsoft YaHei, Arial, sans-serif"
+        font-size="24">
+        模型自发涌现反思的那一刻
+    </text>
+
+    <!-- Context text -->
+    <text x="640" y="450" text-anchor="middle" fill="#FFFFFF" fill-opacity="0.6" font-family="Microsoft YaHei, Arial, sans-serif"
+        font-size="16">
+        R1-Zero 在训练过程中自主学会了验证推理、回溯错误、修正答案
+    </text>
+    <text x="640" y="485" text-anchor="middle" fill="#FFFFFF" fill-opacity="0.6" font-family="Microsoft YaHei, Arial, sans-serif"
+        font-size="16">
+        这种能力没有在任何训练数据中明确教过——它从 RL 中涌现
+    </text>
+
+    <!-- Page number -->
+    <text x="1220" y="708" text-anchor="end" fill="#FFFFFF" fill-opacity="0.4" font-family="Microsoft YaHei, Arial, sans-serif" font-size="11">22 / 30</text>
+</svg>

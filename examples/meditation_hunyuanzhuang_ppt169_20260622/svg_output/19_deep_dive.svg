@@ -1,0 +1,79 @@
+<svg viewBox="0 0 1280 720" xmlns="http://www.w3.org/2000/svg">
+  <!-- Background -->
+  <rect x="0" y="0" width="1280" height="720" fill="#F5F0E6"/>
+
+  <!-- Title -->
+  <text x="640" y="50" text-anchor="middle" font-family="SimSun, Georgia, serif" font-size="36" font-weight="bold" fill="#425066">静坐·站桩·太极：三位一体练习方案</text>
+
+  <!-- Stage 1: 入门 -->
+  <rect x="60" y="120" width="350" height="250" rx="12" fill="#EDE7D9" stroke="#C8C0B0" stroke-width="1"/>
+  <rect x="60" y="120" width="350" height="50" rx="12" fill="#789262"/>
+  <rect x="60" y="158" width="350" height="12" fill="#789262"/>
+  <text x="235" y="153" text-anchor="middle" font-family="&quot;Microsoft YaHei&quot;, Arial, sans-serif" font-size="22" font-weight="bold" fill="#FFFFFF">入门（1-4周）</text>
+  <text x="235" y="210" text-anchor="middle" font-family="&quot;Microsoft YaHei&quot;, Arial, sans-serif" font-size="18" fill="#2D2D2D">呼吸冥想 10分钟</text>
+  <text x="235" y="245" text-anchor="middle" font-family="&quot;Microsoft YaHei&quot;, Arial, sans-serif" font-size="18" fill="#2D2D2D">浑圆桩 5分钟</text>
+  <line x1="110" y1="270" x2="360" y2="270" stroke="#C8C0B0" stroke-width="1"/>
+  <text x="235" y="300" text-anchor="middle" font-family="KaiTi, Georgia, serif" font-size="18" fill="#7A5230">重点：建立习惯</text>
+
+  <!-- Arrow 1 -->
+  <text x="430" y="245" text-anchor="middle" font-family="&quot;Microsoft YaHei&quot;, Arial, sans-serif" font-size="32" fill="#425066">→</text>
+
+  <!-- Stage 2: 进阶 -->
+  <rect x="465" y="120" width="350" height="250" rx="12" fill="#EDE7D9" stroke="#C8C0B0" stroke-width="1"/>
+  <rect x="465" y="120" width="350" height="50" rx="12" fill="#425066"/>
+  <rect x="465" y="158" width="350" height="12" fill="#425066"/>
+  <text x="640" y="153" text-anchor="middle" font-family="&quot;Microsoft YaHei&quot;, Arial, sans-serif" font-size="22" font-weight="bold" fill="#FFFFFF">进阶（5-12周）</text>
+  <text x="640" y="210" text-anchor="middle" font-family="&quot;Microsoft YaHei&quot;, Arial, sans-serif" font-size="18" fill="#2D2D2D">正念冥想 20分钟</text>
+  <text x="640" y="245" text-anchor="middle" font-family="&quot;Microsoft YaHei&quot;, Arial, sans-serif" font-size="18" fill="#2D2D2D">站桩 15-20分钟</text>
+  <line x1="515" y1="270" x2="765" y2="270" stroke="#C8C0B0" stroke-width="1"/>
+  <text x="640" y="300" text-anchor="middle" font-family="KaiTi, Georgia, serif" font-size="18" fill="#7A5230">可选：太极/八段锦</text>
+
+  <!-- Arrow 2 -->
+  <text x="835" y="245" text-anchor="middle" font-family="&quot;Microsoft YaHei&quot;, Arial, sans-serif" font-size="32" fill="#425066">→</text>
+
+  <!-- Stage 3: 成熟 -->
+  <rect x="870" y="120" width="350" height="250" rx="12" fill="#EDE7D9" stroke="#C8C0B0" stroke-width="1"/>
+  <rect x="870" y="120" width="350" height="50" rx="12" fill="#7A5230"/>
+  <rect x="870" y="158" width="350" height="12" fill="#7A5230"/>
+  <text x="1045" y="153" text-anchor="middle" font-family="&quot;Microsoft YaHei&quot;, Arial, sans-serif" font-size="22" font-weight="bold" fill="#FFFFFF">成熟（3月+）</text>
+  <text x="1045" y="210" text-anchor="middle" font-family="&quot;Microsoft YaHei&quot;, Arial, sans-serif" font-size="18" fill="#2D2D2D">站桩 20-30分钟</text>
+  <text x="1045" y="245" text-anchor="middle" font-family="&quot;Microsoft YaHei&quot;, Arial, sans-serif" font-size="18" fill="#2D2D2D">静坐 20分钟</text>
+  <line x1="920" y1="270" x2="1170" y2="270" stroke="#C8C0B0" stroke-width="1"/>
+  <text x="1045" y="300" text-anchor="middle" font-family="KaiTi, Georgia, serif" font-size="18" fill="#7A5230">每周2-3次太极</text>
+
+  <!-- Demographic section header -->
+  <text x="640" y="415" text-anchor="middle" font-family="&quot;Microsoft YaHei&quot;, Arial, sans-serif" font-size="22" font-weight="bold" fill="#425066">按人群推荐</text>
+
+  <!-- Row 1: 久坐上班族 -->
+  <rect x="140" y="440" width="200" height="32" rx="6" fill="#789262"/>
+  <text x="240" y="462" text-anchor="middle" font-family="&quot;Microsoft YaHei&quot;, Arial, sans-serif" font-size="14" fill="#FFFFFF">久坐上班族</text>
+  <text x="440" y="462" text-anchor="middle" font-family="&quot;Microsoft YaHei&quot;, Arial, sans-serif" font-size="16" fill="#2D2D2D">→</text>
+  <text x="620" y="462" text-anchor="middle" font-family="&quot;Microsoft YaHei&quot;, Arial, sans-serif" font-size="16" fill="#2D2D2D">站桩优先 + 短冥想</text>
+
+  <!-- Row 2: 焦虑/压力 -->
+  <rect x="140" y="482" width="200" height="32" rx="6" fill="#425066"/>
+  <text x="240" y="504" text-anchor="middle" font-family="&quot;Microsoft YaHei&quot;, Arial, sans-serif" font-size="14" fill="#FFFFFF">焦虑/压力</text>
+  <text x="440" y="504" text-anchor="middle" font-family="&quot;Microsoft YaHei&quot;, Arial, sans-serif" font-size="16" fill="#2D2D2D">→</text>
+  <text x="620" y="504" text-anchor="middle" font-family="&quot;Microsoft YaHei&quot;, Arial, sans-serif" font-size="16" fill="#2D2D2D">冥想优先 + 站桩</text>
+
+  <!-- Row 3: 老年人 -->
+  <rect x="140" y="524" width="200" height="32" rx="6" fill="#7A5230"/>
+  <text x="240" y="546" text-anchor="middle" font-family="&quot;Microsoft YaHei&quot;, Arial, sans-serif" font-size="14" fill="#FFFFFF">老年人</text>
+  <text x="440" y="546" text-anchor="middle" font-family="&quot;Microsoft YaHei&quot;, Arial, sans-serif" font-size="16" fill="#2D2D2D">→</text>
+  <text x="620" y="546" text-anchor="middle" font-family="&quot;Microsoft YaHei&quot;, Arial, sans-serif" font-size="16" fill="#2D2D2D">站桩 + 简易冥想 + 太极</text>
+
+  <!-- Row 4: 运动员 -->
+  <rect x="140" y="566" width="200" height="32" rx="6" fill="#425066"/>
+  <text x="240" y="588" text-anchor="middle" font-family="&quot;Microsoft YaHei&quot;, Arial, sans-serif" font-size="14" fill="#FFFFFF">运动员</text>
+  <text x="440" y="588" text-anchor="middle" font-family="&quot;Microsoft YaHei&quot;, Arial, sans-serif" font-size="16" fill="#2D2D2D">→</text>
+  <text x="620" y="588" text-anchor="middle" font-family="&quot;Microsoft YaHei&quot;, Arial, sans-serif" font-size="16" fill="#2D2D2D">站桩 + 冥想</text>
+
+  <!-- Row 5: 身心整合 -->
+  <rect x="140" y="608" width="200" height="32" rx="6" fill="#789262"/>
+  <text x="240" y="630" text-anchor="middle" font-family="&quot;Microsoft YaHei&quot;, Arial, sans-serif" font-size="14" fill="#FFFFFF">身心整合</text>
+  <text x="440" y="630" text-anchor="middle" font-family="&quot;Microsoft YaHei&quot;, Arial, sans-serif" font-size="16" fill="#2D2D2D">→</text>
+  <text x="620" y="630" text-anchor="middle" font-family="&quot;Microsoft YaHei&quot;, Arial, sans-serif" font-size="16" fill="#2D2D2D">三者并修</text>
+
+  <!-- Source -->
+  <text x="640" y="680" text-anchor="middle" font-family="&quot;Microsoft YaHei&quot;, Arial, sans-serif" font-size="11" fill="#999999">来源：综合调研</text>
+</svg>

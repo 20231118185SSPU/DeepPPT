@@ -1,0 +1,29 @@
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 1280 720" width="1280" height="720">
+  <image href="../images/kalsit_main_avatar_凯尔希·思衡托.png" x="0" y="0" width="1280" height="720" preserveAspectRatio="xMidYMid slice"/>
+  <rect x="0" y="0" width="1280" height="720" fill="#0D1117" fill-opacity="0.75"/>
+  <rect x="80" y="50" width="60" height="2" fill="#58A6FF"/>
+  <text x="80" y="85" font-family="Microsoft YaHei, Arial, sans-serif" font-size="14" fill="#58A6FF" letter-spacing="2">第五章 · 内在世界</text>
+  <text x="80" y="125" font-family="Microsoft YaHei, Arial, sans-serif" font-size="36" font-weight="bold" fill="#FFFFFF">档案资料续</text>
+  <rect x="80" y="145" width="1120" height="1" fill="#30363D"/>
+  
+  <rect x="80" y="170" width="1120" height="150" rx="8" fill="#161B22" stroke="#30363D" stroke-width="1"/>
+  <rect x="80" y="170" width="4" height="150" fill="#58A6FF"/>
+  <text x="110" y="205" font-family="Microsoft YaHei, Arial, sans-serif" font-size="15" font-weight="bold" fill="#58A6FF">档案资料四（信赖200%）</text>
+  <text x="110" y="235" font-family="Microsoft YaHei, Arial, sans-serif" font-size="14" fill="#C9D1D9">一段第一人称叙述（疑似可露希尔）</text>
+  <text x="110" y="260" font-family="Microsoft YaHei, Arial, sans-serif" font-size="14" fill="#C9D1D9">被叫到机房后发现凯尔希留下的权限资料库</text>
+  <text x="110" y="285" font-family="Microsoft YaHei, Arial, sans-serif" font-size="14" fill="#C9D1D9">发现不属于PRTS的独立系统、罗德岛结构图上存在空洞</text>
+  <text x="110" y="305" font-family="Microsoft YaHei, Arial, sans-serif" font-size="12" fill="#8B949E">《第三代阻断药物理论设计》和《源石对物种与生命形态的总体性影响》等机密文件</text>
+
+  <rect x="80" y="340" width="1120" height="180" rx="8" fill="#161B22" stroke="#30363D" stroke-width="1"/>
+  <rect x="80" y="340" width="4" height="180" fill="#3FB950"/>
+  <text x="110" y="375" font-family="Microsoft YaHei, Arial, sans-serif" font-size="15" font-weight="bold" fill="#3FB950">档案资料五（通关15-21解锁）</text>
+  <text x="110" y="405" font-family="Microsoft YaHei, Arial, sans-serif" font-size="14" fill="#C9D1D9">凯尔希的随笔式文字</text>
+  <text x="110" y="430" font-family="Microsoft YaHei, Arial, sans-serif" font-size="14" fill="#C9D1D9">描述她从一万年前源石尚未扩散时就开始在泰拉大地上的漫长旅途</text>
+  <text x="110" y="455" font-family="Microsoft YaHei, Arial, sans-serif" font-size="14" fill="#C9D1D9">她提到自己"没有过去，也没有将来"，回忆起上一次死亡，感慨时间不多</text>
+  <text x="110" y="480" font-family="Microsoft YaHei, Arial, sans-serif" font-size="14" fill="#C9D1D9">她注视着卡兹戴尔，考虑取回魔王的古老力量</text>
+  <text x="110" y="505" font-family="Microsoft YaHei, Arial, sans-serif" font-size="12" fill="#8B949E">记录了一段她与特蕾西娅的对话</text>
+
+  <rect x="80" y="540" width="1120" height="60" rx="8" fill="#161B22" fill-opacity="0.5" stroke="#30363D" stroke-width="1"/>
+  <text x="100" y="575" font-family="Georgia, SimSun, serif" font-size="16" fill="#58A6FF" font-style="italic">"比你所见的片段还要漫长，漫长千倍万倍，特蕾西娅。"</text>
+  <text x="1220" y="690" font-family="Microsoft YaHei, Arial, sans-serif" font-size="12" fill="#6E7681" text-anchor="end">21 / 32</text>
+</svg>

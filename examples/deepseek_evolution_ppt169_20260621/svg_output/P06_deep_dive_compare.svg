@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1280 720">
+    <!-- P06 Deep Dive Compare - story_driven -->
+    <rect width="1280" height="720" fill="#16162A" />
+
+    <!-- Section label -->
+    <text x="60" y="60" fill="#FFFFFF" fill-opacity="0.45" font-family="Microsoft YaHei, Arial, sans-serif" font-size="13">§1 · 对比分析</text>
+
+    <!-- Page title -->
+    <text x="60" y="100" fill="#FFFFFF" font-family="Microsoft YaHei, Arial, sans-serif" font-size="32" font-weight="bold">Sputnik 时刻：1957 vs 2025</text>
+
+    <!-- Three dots -->
+    <circle cx="60" cy="128" r="3" fill="#FFFFFF" fill-opacity="0.35" />
+    <circle cx="74" cy="128" r="3" fill="#FFFFFF" fill-opacity="0.25" />
+    <circle cx="88" cy="128" r="3" fill="#FFFFFF" fill-opacity="0.15" />
+
+    <!-- Divider line -->
+    <line x1="60" y1="145" x2="1220" y2="145" stroke="#FFFFFF" stroke-width="1" stroke-opacity="0.15" />
+
+    <!-- Left card: 1957 -->
+    <rect x="60" y="170" width="560" height="430" fill="#FFFFFF" fill-opacity="0.08" rx="8" />
+    <text x="340" y="220" text-anchor="middle" fill="#FFFFFF" font-family="Microsoft YaHei, Arial, sans-serif" font-size="48" font-weight="bold">1957</text>
+    <text x="340" y="260" text-anchor="middle" fill="#FFFFFF" font-family="Microsoft YaHei, Arial, sans-serif" font-size="22" font-weight="bold">Sputnik 卫星</text>
+    <line x1="180" y1="280" x2="500" y2="280" stroke="#FFFFFF" stroke-width="1" stroke-opacity="0.15" />
+    <text x="340" y="320" text-anchor="middle" fill="#FFFFFF" fill-opacity="0.7" font-family="Microsoft YaHei, Arial, sans-serif" font-size="16">苏联抢先发射第一颗人造卫星</text>
+    <text x="340" y="360" text-anchor="middle" fill="#FFFFFF" fill-opacity="0.7" font-family="Microsoft YaHei, Arial, sans-serif" font-size="16">美国震惊：被认为落后的对手超越了自己</text>
+    <text x="340" y="420" text-anchor="middle" fill="#FFFFFF" fill-opacity="0.85" font-family="Microsoft YaHei, Arial, sans-serif" font-size="18" font-weight="bold">触发 NASA 成立 + 太空竞赛</text>
+
+    <!-- Center divider line -->
+    <line x1="640" y1="180" x2="640" y2="590" stroke="#FFFFFF" stroke-width="1" stroke-opacity="0.2" />
+
+    <!-- Right card: 2025 -->
+    <rect x="660" y="170" width="560" height="430" fill="#FFFFFF" fill-opacity="0.08" rx="8" />
+    <text x="940" y="220" text-anchor="middle" fill="#FFFFFF" font-family="Microsoft YaHei, Arial, sans-serif" font-size="48" font-weight="bold">2025</text>
+    <text x="940" y="260" text-anchor="middle" fill="#FFFFFF" font-family="Microsoft YaHei, Arial, sans-serif" font-size="22" font-weight="bold">DeepSeek R1</text>
+    <line x1="780" y1="280" x2="1100" y2="280" stroke="#FFFFFF" stroke-width="1" stroke-opacity="0.15" />
+    <text x="940" y="320" text-anchor="middle" fill="#FFFFFF" fill-opacity="0.7" font-family="Microsoft YaHei, Arial, sans-serif" font-size="16">中国实验室以极低成本做出顶级 AI</text>
+    <text x="940" y="360" text-anchor="middle" fill="#FFFFFF" fill-opacity="0.7" font-family="Microsoft YaHei, Arial, sans-serif" font-size="16">华尔街震惊：算力为王的假设被颠覆</text>
+    <text x="940" y="420" text-anchor="middle" fill="#FFFFFF" fill-opacity="0.85" font-family="Microsoft YaHei, Arial, sans-serif" font-size="18" font-weight="bold">触发 AI 投资逻辑重构</text>
+
+    <!-- Page number -->
+    <text x="1220" y="708" text-anchor="end" fill="#FFFFFF" fill-opacity="0.4" font-family="Microsoft YaHei, Arial, sans-serif" font-size="11">6 / 30</text>
+</svg>

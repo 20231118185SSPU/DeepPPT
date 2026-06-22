@@ -1,0 +1,98 @@
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 1280 720" width="1280" height="720">
+  <!-- Background -->
+  <image href="../images/mon3tr_scene_足迹.png" x="0" y="0" width="1280" height="720" preserveAspectRatio="xMidYMid slice"/>
+  <rect x="0" y="0" width="1280" height="720" fill="#0D1117" fill-opacity="0.75"/>
+
+  <!-- Section label -->
+  <rect x="80" y="50" width="60" height="2" fill="#58A6FF"/>
+  <text x="80" y="85" font-family="Microsoft YaHei, Arial, sans-serif" font-size="14" fill="#58A6FF" letter-spacing="2">
+    综合体检
+  </text>
+
+  <!-- Title -->
+  <text x="80" y="125" font-family="Microsoft YaHei, Arial, sans-serif" font-size="36" font-weight="bold" fill="#FFFFFF">
+    COMBAT ASSESSMENT
+  </text>
+  <text x="80" y="155" font-family="Microsoft YaHei, Arial, sans-serif" font-size="16" fill="#8B949E">
+    综合体检测试客观数据
+  </text>
+
+  <!-- Divider -->
+  <rect x="80" y="175" width="1120" height="1" fill="#30363D"/>
+
+  <!-- Stats cards - 3x2 grid -->
+  <!-- Row 1 -->
+  <!-- Physical Strength -->
+  <rect x="80" y="200" width="350" height="100" rx="8" fill="#161B22" stroke="#30363D" stroke-width="1"/>
+  <text x="100" y="230" font-family="Microsoft YaHei, Arial, sans-serif" font-size="13" fill="#8B949E">物理强度</text>
+  <text x="100" y="270" font-family="Microsoft YaHei, Arial, sans-serif" font-size="24" font-weight="bold" fill="#C9D1D9">普通</text>
+  <rect x="250" y="250" width="150" height="6" rx="3" fill="#30363D"/>
+  <rect x="250" y="250" width="75" height="6" rx="3" fill="#8B949E"/>
+
+  <!-- Mobility -->
+  <rect x="465" y="200" width="350" height="100" rx="8" fill="#161B22" stroke="#30363D" stroke-width="1"/>
+  <text x="485" y="230" font-family="Microsoft YaHei, Arial, sans-serif" font-size="13" fill="#8B949E">战场机动</text>
+  <text x="485" y="270" font-family="Microsoft YaHei, Arial, sans-serif" font-size="24" font-weight="bold" fill="#C9D1D9">普通</text>
+  <rect x="635" y="250" width="150" height="6" rx="3" fill="#30363D"/>
+  <rect x="635" y="250" width="75" height="6" rx="3" fill="#8B949E"/>
+
+  <!-- Physical Durability -->
+  <rect x="850" y="200" width="350" height="100" rx="8" fill="#161B22" stroke="#30363D" stroke-width="1"/>
+  <text x="870" y="230" font-family="Microsoft YaHei, Arial, sans-serif" font-size="13" fill="#8B949E">生理耐受</text>
+  <text x="870" y="270" font-family="Microsoft YaHei, Arial, sans-serif" font-size="24" font-weight="bold" fill="#C9D1D9">普通</text>
+  <rect x="1020" y="250" width="150" height="6" rx="3" fill="#30363D"/>
+  <rect x="1020" y="250" width="75" height="6" rx="3" fill="#8B949E"/>
+
+  <!-- Row 2 -->
+  <!-- Tactical Planning - CLASSIFIED -->
+  <rect x="80" y="320" width="350" height="100" rx="8" fill="#161B22" stroke="#F85149" stroke-width="1"/>
+  <text x="100" y="350" font-family="Microsoft YaHei, Arial, sans-serif" font-size="13" fill="#F85149">战术规划</text>
+  <text x="100" y="390" font-family="Microsoft YaHei, Arial, sans-serif" font-size="24" font-weight="bold" fill="#F85149">■■ 机密</text>
+  <rect x="250" y="370" width="150" height="6" rx="3" fill="#30363D"/>
+  <rect x="250" y="370" width="150" height="6" rx="3" fill="#F85149" fill-opacity="0.5"/>
+
+  <!-- Combat Skills -->
+  <rect x="465" y="320" width="350" height="100" rx="8" fill="#161B22" stroke="#30363D" stroke-width="1"/>
+  <text x="485" y="350" font-family="Microsoft YaHei, Arial, sans-serif" font-size="13" fill="#8B949E">战斗技巧</text>
+  <text x="485" y="390" font-family="Microsoft YaHei, Arial, sans-serif" font-size="24" font-weight="bold" fill="#C9D1D9">普通</text>
+  <rect x="635" y="370" width="150" height="6" rx="3" fill="#30363D"/>
+  <rect x="635" y="370" width="75" height="6" rx="3" fill="#8B949E"/>
+
+  <!-- Originium Arts -->
+  <rect x="850" y="320" width="350" height="100" rx="8" fill="#161B22" stroke="#30363D" stroke-width="1"/>
+  <text x="870" y="350" font-family="Microsoft YaHei, Arial, sans-serif" font-size="13" fill="#8B949E">源石技艺适应性</text>
+  <text x="870" y="390" font-family="Microsoft YaHei, Arial, sans-serif" font-size="24" font-weight="bold" fill="#C9D1D9">标准</text>
+  <rect x="1020" y="370" width="150" height="6" rx="3" fill="#30363D"/>
+  <rect x="1020" y="370" width="90" height="6" rx="3" fill="#8B949E"/>
+
+  <!-- Insight box -->
+  <rect x="80" y="460" width="1120" height="120" rx="8" fill="#161B22" fill-opacity="0.5" stroke="#30363D" stroke-width="1"/>
+  <rect x="80" y="460" width="4" height="120" fill="#58A6FF"/>
+  <text x="110" y="495" font-family="Microsoft YaHei, Arial, sans-serif" font-size="15" fill="#FFFFFF">
+    数据之外的真相
+  </text>
+  <text x="110" y="525" font-family="Microsoft YaHei, Arial, sans-serif" font-size="14" fill="#C9D1D9">
+    凯尔希的表面数据看似普通，但「战术规划」被列为机密——暗示其真实能力远超表面数据。
+  </text>
+  <text x="110" y="555" font-family="Microsoft YaHei, Arial, sans-serif" font-size="14" fill="#8B949E">
+    三年的战斗经验记录，或许只是她漫长旅途中最微不足道的一段。
+  </text>
+
+  <!-- Combat stats summary -->
+  <rect x="80" y="610" width="260" height="60" rx="8" fill="#161B22" stroke="#30363D" stroke-width="1"/>
+  <text x="100" y="635" font-family="Microsoft YaHei, Arial, sans-serif" font-size="12" fill="#8B949E">生命上限 (E2 MAX)</text>
+  <text x="100" y="658" font-family="Microsoft YaHei, Arial, sans-serif" font-size="20" font-weight="bold" fill="#58A6FF">1633</text>
+
+  <rect x="360" y="610" width="260" height="60" rx="8" fill="#161B22" stroke="#30363D" stroke-width="1"/>
+  <text x="380" y="635" font-family="Microsoft YaHei, Arial, sans-serif" font-size="12" fill="#8B949E">攻击力 (E2 MAX)</text>
+  <text x="380" y="658" font-family="Microsoft YaHei, Arial, sans-serif" font-size="20" font-weight="bold" fill="#3FB950">490</text>
+
+  <rect x="640" y="610" width="260" height="60" rx="8" fill="#161B22" stroke="#30363D" stroke-width="1"/>
+  <text x="660" y="635" font-family="Microsoft YaHei, Arial, sans-serif" font-size="12" fill="#8B949E">防御力 (E2 MAX)</text>
+  <text x="660" y="658" font-family="Microsoft YaHei, Arial, sans-serif" font-size="20" font-weight="bold" fill="#C9D1D9">215</text>
+
+  <!-- Page number -->
+  <text x="1220" y="690" font-family="Microsoft YaHei, Arial, sans-serif" font-size="12" fill="#6E7681" text-anchor="end">
+    05 / 10
+  </text>
+</svg>

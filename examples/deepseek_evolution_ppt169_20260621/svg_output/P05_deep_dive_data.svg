@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1280 720">
+    <!-- P05 Deep Dive Data - story_driven -->
+    <rect width="1280" height="720" fill="#16162A" />
+
+    <!-- Section label -->
+    <text x="60" y="60" fill="#FFFFFF" fill-opacity="0.45" font-family="Microsoft YaHei, Arial, sans-serif" font-size="13">§1 · 数据展开</text>
+
+    <!-- Page title -->
+    <text x="60" y="100" fill="#FFFFFF" font-family="Microsoft YaHei, Arial, sans-serif" font-size="32" font-weight="bold">NVIDIA 市值损失数据</text>
+
+    <!-- Three dots -->
+    <circle cx="60" cy="128" r="3" fill="#FFFFFF" fill-opacity="0.35" />
+    <circle cx="74" cy="128" r="3" fill="#FFFFFF" fill-opacity="0.25" />
+    <circle cx="88" cy="128" r="3" fill="#FFFFFF" fill-opacity="0.15" />
+
+    <!-- Divider line -->
+    <line x1="60" y1="145" x2="1220" y2="145" stroke="#FFFFFF" stroke-width="1" stroke-opacity="0.15" />
+
+    <!-- Web asset image (left) -->
+    <rect x="56" y="160" width="528" height="370" fill="none" stroke="#FFFFFF" stroke-width="1" stroke-opacity="0.12" rx="6" />
+    <image href="images/web_assets/web_nvidia_crash_data.png" x="60" y="164" width="520" height="350" preserveAspectRatio="xMidYMid slice" />
+
+    <!-- Data points (right) -->
+    <text x="620" y="200" fill="#FFFFFF" font-family="Microsoft YaHei, Arial, sans-serif" font-size="52" font-weight="bold">-17%</text>
+    <text x="620" y="230" fill="#FFFFFF" fill-opacity="0.6" font-family="Microsoft YaHei, Arial, sans-serif" font-size="16">NVIDIA 单日跌幅 (2025-01-27)</text>
+
+    <line x1="620" y1="250" x2="1220" y2="250" stroke="#FFFFFF" stroke-width="1" stroke-opacity="0.15" />
+
+    <text x="620" y="300" fill="#FFFFFF" font-family="Microsoft YaHei, Arial, sans-serif" font-size="44" font-weight="bold">$593B</text>
+    <text x="620" y="330" fill="#FFFFFF" fill-opacity="0.6" font-family="Microsoft YaHei, Arial, sans-serif" font-size="16">市值蒸发 — 美股史上单只个股最大单日损失</text>
+
+    <line x1="620" y1="350" x2="1220" y2="350" stroke="#FFFFFF" stroke-width="1" stroke-opacity="0.15" />
+
+    <text x="620" y="400" fill="#FFFFFF" font-family="Microsoft YaHei, Arial, sans-serif" font-size="40" font-weight="bold">&gt;$1T</text>
+    <text x="620" y="430" fill="#FFFFFF" fill-opacity="0.6" font-family="Microsoft YaHei, Arial, sans-serif" font-size="16">AI 板块总蒸发市值</text>
+
+    <line x1="620" y1="450" x2="1220" y2="450" stroke="#FFFFFF" stroke-width="1" stroke-opacity="0.15" />
+
+    <text x="620" y="490" fill="#FFFFFF" font-family="Microsoft YaHei, Arial, sans-serif" font-size="18" font-weight="bold">连锁反应</text>
+    <text x="620" y="520" fill="#FFFFFF" fill-opacity="0.6" font-family="Microsoft YaHei, Arial, sans-serif" font-size="15">Microsoft ▼2% · Google ▼3% · Broadcom ▼17% · AMD ▼6%</text>
+
+    <!-- Source -->
+    <text x="60" y="680" fill="#FFFFFF" fill-opacity="0.4" font-family="Microsoft YaHei, Arial, sans-serif" font-size="12">Source: Google Finance NVDA, 2025-01-27</text>
+
+    <!-- Page number -->
+    <text x="1220" y="708" text-anchor="end" fill="#FFFFFF" fill-opacity="0.4" font-family="Microsoft YaHei, Arial, sans-serif" font-size="11">5 / 30</text>
+</svg>

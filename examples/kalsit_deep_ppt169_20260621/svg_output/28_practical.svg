@@ -1,0 +1,32 @@
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 1280 720" width="1280" height="720">
+  <image href="../images/babel_avatar_敌人_温顺的武装大驮兽.png" x="0" y="0" width="1280" height="720" preserveAspectRatio="xMidYMid slice"/>
+  <rect x="0" y="0" width="1280" height="720" fill="#0D1117" fill-opacity="0.75"/>
+  <rect x="80" y="50" width="60" height="2" fill="#58A6FF"/>
+  <text x="80" y="85" font-family="Microsoft YaHei, Arial, sans-serif" font-size="14" fill="#58A6FF" letter-spacing="2">第五章 · 实战价值</text>
+  <text x="80" y="125" font-family="Microsoft YaHei, Arial, sans-serif" font-size="36" font-weight="bold" fill="#FFFFFF">游戏实战</text>
+  <rect x="80" y="145" width="1120" height="1" fill="#30363D"/>
+  
+  <rect x="80" y="170" width="540" height="200" rx="8" fill="#161B22" stroke="#58A6FF" stroke-width="1"/>
+  <text x="100" y="210" font-family="Microsoft YaHei, Arial, sans-serif" font-size="18" font-weight="bold" fill="#58A6FF">核心优势</text>
+  <rect x="100" y="230" width="500" height="1" fill="#30363D"/>
+  <text x="100" y="260" font-family="Microsoft YaHei, Arial, sans-serif" font-size="14" fill="#C9D1D9">医师职业但拥有强力召唤物输出</text>
+  <text x="100" y="285" font-family="Microsoft YaHei, Arial, sans-serif" font-size="14" fill="#C9D1D9">Mon3tr可以充当阻挡单位</text>
+  <text x="100" y="310" font-family="Microsoft YaHei, Arial, sans-serif" font-size="14" fill="#C9D1D9">真实伤害在面对高防敌人时极为有效</text>
+  <text x="100" y="335" font-family="Microsoft YaHei, Arial, sans-serif" font-size="14" fill="#C9D1D9">模组系统提供了多样化的玩法选择</text>
+
+  <rect x="660" y="170" width="540" height="200" rx="8" fill="#161B22" stroke="#3FB950" stroke-width="1"/>
+  <text x="680" y="210" font-family="Microsoft YaHei, Arial, sans-serif" font-size="18" font-weight="bold" fill="#3FB950">适用场景</text>
+  <rect x="680" y="230" width="500" height="1" fill="#30363D"/>
+  <text x="680" y="260" font-family="Microsoft YaHei, Arial, sans-serif" font-size="14" fill="#C9D1D9">高难关卡：真实伤害无视防御</text>
+  <text x="680" y="285" font-family="Microsoft YaHei, Arial, sans-serif" font-size="14" fill="#C9D1D9">BOSS战：Mon3tr的阻挡+输出</text>
+  <text x="680" y="310" font-family="Microsoft YaHei, Arial, sans-serif" font-size="14" fill="#C9D1D9">集成战略：ISW-α模组专属强化</text>
+  <text x="680" y="335" font-family="Microsoft YaHei, Arial, sans-serif" font-size="14" fill="#C9D1D9">日常推图：攻守兼备的全能型</text>
+
+  <rect x="80" y="400" width="1120" height="120" rx="8" fill="#161B22" fill-opacity="0.5" stroke="#30363D" stroke-width="1"/>
+  <rect x="80" y="400" width="4" height="120" fill="#58A6FF"/>
+  <text x="110" y="435" font-family="Microsoft YaHei, Arial, sans-serif" font-size="15" fill="#FFFFFF">实战评价</text>
+  <text x="110" y="465" font-family="Microsoft YaHei, Arial, sans-serif" font-size="14" fill="#C9D1D9">凯尔希是明日方舟中独特的"能打能奶"角色，她的存在打破了传统医疗干员的定位</text>
+  <text x="110" y="490" font-family="Microsoft YaHei, Arial, sans-serif" font-size="14" fill="#C9D1D9">Mon3tr的加入让她成为一个既能治疗又能输出的全能型干员</text>
+  <text x="110" y="510" font-family="Microsoft YaHei, Arial, sans-serif" font-size="12" fill="#8B949E">在高难关卡中，凯尔希的真实伤害是突破高防敌人的关键</text>
+  <text x="1220" y="690" font-family="Microsoft YaHei, Arial, sans-serif" font-size="12" fill="#6E7681" text-anchor="end">25 / 32</text>
+</svg>

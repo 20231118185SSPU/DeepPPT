@@ -1,0 +1,46 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1280 720">
+  <defs>
+    <clipPath id="tocClip">
+      <rect x="0" y="0" width="1280" height="720"/>
+    </clipPath>
+  </defs>
+
+  <!-- Full-bleed background image -->
+  <image href="images/P02_toc_bg.png" x="0" y="0" width="1280" height="720" clip-path="url(#tocClip)" preserveAspectRatio="xMidYMid slice"/>
+
+  <!-- Light overlay -->
+  <rect x="0" y="0" width="1280" height="720" fill="#F8F4F0" fill-opacity="0.75"/>
+
+  <!-- Title -->
+  <text x="100" y="100" text-anchor="start" font-family="SimSun, Georgia, serif" font-size="44" font-weight="bold" fill="#D4789C">目录</text>
+
+  <!-- TOC Item 1 -->
+  <circle cx="130" cy="205" r="5" fill="#7EB8D8"/>
+  <text x="150" y="200" text-anchor="start" font-family="SimSun, Georgia, serif" font-size="36" font-weight="bold" fill="#D4789C">01</text>
+  <text x="210" y="200" text-anchor="start" font-family="&quot;Microsoft YaHei&quot;, Arial, sans-serif" font-size="22" fill="#2D2D3D">冰中醒来的少女 — 身世之谜</text>
+
+  <!-- TOC Item 2 -->
+  <circle cx="130" cy="265" r="5" fill="#7EB8D8"/>
+  <text x="150" y="260" text-anchor="start" font-family="SimSun, Georgia, serif" font-size="36" font-weight="bold" fill="#D4789C">02</text>
+  <text x="210" y="260" text-anchor="start" font-family="&quot;Microsoft YaHei&quot;, Arial, sans-serif" font-size="22" fill="#2D2D3D">视觉DNA — 设计师与角色设计</text>
+
+  <!-- TOC Item 3 -->
+  <circle cx="130" cy="325" r="5" fill="#7EB8D8"/>
+  <text x="150" y="320" text-anchor="start" font-family="SimSun, Georgia, serif" font-size="36" font-weight="bold" fill="#D4789C">03</text>
+  <text x="210" y="320" text-anchor="start" font-family="&quot;Microsoft YaHei&quot;, Arial, sans-serif" font-size="22" fill="#2D2D3D">从盾到剑 — 三种形态的战斗成长</text>
+
+  <!-- TOC Item 4 -->
+  <circle cx="130" cy="385" r="5" fill="#7EB8D8"/>
+  <text x="150" y="380" text-anchor="start" font-family="SimSun, Georgia, serif" font-size="36" font-weight="bold" fill="#D4789C">04</text>
+  <text x="210" y="380" text-anchor="start" font-family="&quot;Microsoft YaHei&quot;, Arial, sans-serif" font-size="22" fill="#2D2D3D">版本叙事弧 — 从1.0到3.4</text>
+
+  <!-- TOC Item 5 -->
+  <circle cx="130" cy="445" r="5" fill="#7EB8D8"/>
+  <text x="150" y="440" text-anchor="start" font-family="SimSun, Georgia, serif" font-size="36" font-weight="bold" fill="#D4789C">05</text>
+  <text x="210" y="440" text-anchor="start" font-family="&quot;Microsoft YaHei&quot;, Arial, sans-serif" font-size="22" fill="#2D2D3D">星穹铁道的看板娘 — 文化符号</text>
+
+  <!-- TOC Item 6 -->
+  <circle cx="130" cy="505" r="5" fill="#7EB8D8"/>
+  <text x="150" y="500" text-anchor="start" font-family="SimSun, Georgia, serif" font-size="36" font-weight="bold" fill="#D4789C">06</text>
+  <text x="210" y="500" text-anchor="start" font-family="&quot;Microsoft YaHei&quot;, Arial, sans-serif" font-size="22" fill="#2D2D3D">冰封记忆中的春天 — 结语</text>
+</svg>

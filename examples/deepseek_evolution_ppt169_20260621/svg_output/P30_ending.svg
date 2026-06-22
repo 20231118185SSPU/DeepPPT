@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1280 720">
+    <!-- P30 Ending - story_driven -->
+    <rect width="1280" height="720" fill="#1A1A2E" />
+    <image href="images/P30_ending_bg.png" x="0" y="0" width="1280" height="720" preserveAspectRatio="xMidYMid slice" />
+    <rect width="1280" height="720" fill="#0D0D1A" fill-opacity="0.6" />
+
+    <!-- Main closing text -->
+    <text x="640" y="320" text-anchor="middle" fill="#FFFFFF" font-family="Microsoft YaHei, Arial, sans-serif"
+        font-size="48" font-weight="bold">
+        当创新门槛被拉低
+    </text>
+
+    <!-- Tagline -->
+    <text x="640" y="400" text-anchor="middle" fill="#FFFFFF" fill-opacity="0.75" font-family="Microsoft YaHei, Arial, sans-serif"
+        font-size="28">
+        下一个颠覆者是谁？
+    </text>
+
+    <!-- Context lines -->
+    <text x="640" y="480" text-anchor="middle" fill="#FFFFFF" fill-opacity="0.6" font-family="Microsoft YaHei, Arial, sans-serif"
+        font-size="16">
+        DeepSeek 证明了：算力不是护城河，创新才是
+    </text>
+    <text x="640" y="515" text-anchor="middle" fill="#FFFFFF" fill-opacity="0.6" font-family="Microsoft YaHei, Arial, sans-serif"
+        font-size="16">
+        开源让每一家公司都有机会重新定义 AI
+    </text>
+
+    <!-- Bottom info bar -->
+    <rect x="0" y="660" width="1280" height="60" fill="#000000" fill-opacity="0.35" />
+    <text x="60" y="695" fill="#FFFFFF" fill-opacity="0.7" font-family="Microsoft YaHei, Arial, sans-serif" font-size="13">
+        2026.06
+    </text>
+    <text x="1220" y="695" text-anchor="end" fill="#FFFFFF" fill-opacity="0.7" font-family="Microsoft YaHei, Arial, sans-serif" font-size="13">
+        DeepSeek Evolution
+    </text>
+
+    <!-- Page number -->
+    <text x="1220" y="708" text-anchor="end" fill="#FFFFFF" fill-opacity="0.4" font-family="Microsoft YaHei, Arial, sans-serif" font-size="11">30 / 30</text>
+</svg>

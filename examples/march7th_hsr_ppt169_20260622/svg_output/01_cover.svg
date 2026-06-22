@@ -1,0 +1,25 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1280 720">
+  <defs>
+    <clipPath id="coverClip">
+      <rect x="0" y="0" width="1280" height="720"/>
+    </clipPath>
+  </defs>
+
+  <!-- Full-bleed background image -->
+  <image href="images/P01_cover_bg.png" x="0" y="0" width="1280" height="720" clip-path="url(#coverClip)" preserveAspectRatio="xMidYMid slice"/>
+
+  <!-- Dark overlay -->
+  <rect x="0" y="0" width="1280" height="720" fill="#D4789C" fill-opacity="0.25"/>
+
+  <!-- Title -->
+  <text x="640" y="280" text-anchor="middle" font-family="SimSun, Georgia, serif" font-size="60" font-weight="bold" fill="#FFFFFF">三月七</text>
+
+  <!-- Subtitle -->
+  <text x="640" y="340" text-anchor="middle" font-family="&quot;Microsoft YaHei&quot;, Arial, sans-serif" font-size="26" fill="#FFFFFF">冰封记忆中的少女</text>
+
+  <!-- Decorative line -->
+  <rect x="540" y="370" width="200" height="3" fill="#7EB8D8"/>
+
+  <!-- Bottom info -->
+  <text x="640" y="660" text-anchor="middle" font-family="&quot;Microsoft YaHei&quot;, Arial, sans-serif" font-size="15" fill="#FFFFFF">崩坏：星穹铁道 · 角色全解析</text>
+</svg>

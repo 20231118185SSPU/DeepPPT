@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1280 720">
+    <!-- 冰白背景 -->
+    <rect width="1280" height="720" fill="#F8F4F0" />
+
+    <!-- 章节指示 -->
+    <text x="60" y="55" fill="#6B6B80" font-family="&quot;Microsoft YaHei&quot;, Arial, sans-serif"
+        font-size="13">
+        第三章 · 从盾到剑
+    </text>
+
+    <!-- 页面标题 -->
+    <text x="60" y="85" fill="#D4789C" font-family="SimSun, Georgia, serif"
+        font-size="32" font-weight="bold">
+        三种形态的战斗成长
+    </text>
+
+    <!-- 标题下方细线装饰 (Variant A) -->
+    <line x1="60" y1="98" x2="360" y2="98" stroke="#D4789C" stroke-width="2" stroke-opacity="0.3" />
+
+    <!-- 核心视觉区：内容页专属 AI 图 -->
+    <image href="images/P12_content_bg.png" x="60" y="115" width="1160" height="425" preserveAspectRatio="xMidYMid slice" />
+
+    <!-- 图片下方补充说明文字 -->
+    <text x="60" y="570" fill="#6B6B80" font-family="&quot;Microsoft YaHei&quot;, Arial, sans-serif"
+        font-size="16">
+        存护·冰（弓箭守护）→ 巡猎·虚数（剑术输出）→ 极·量子（记忆重构）
+    </text>
+
+    <!-- 分隔线 -->
+    <line x1="60" y1="600" x2="1220" y2="600" stroke="#D0C8D8" stroke-width="1" />
+
+    <!-- 核心结论 -->
+    <text x="60" y="640" fill="#D4789C" font-family="SimSun, Georgia, serif"
+        font-size="22" font-weight="bold">
+        从持弓守护到持剑进攻——映射角色从依赖到独立的成长弧
+    </text>
+
+    <!-- 右侧装饰条 -->
+    <rect x="1200" y="620" width="20" height="3" fill="#D4789C" fill-opacity="0.3" />
+    <rect x="1200" y="628" width="14" height="3" fill="#D4789C" fill-opacity="0.3" />
+</svg>

@@ -1,0 +1,49 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1280 720">
+  <rect width="1280" height="720" fill="#F5F0E6"/>
+  <!-- Title -->
+  <text x="640" y="60" text-anchor="middle" font-family="SimSun, Georgia, serif" font-size="36" font-weight="bold" fill="#425066">冥想的循证医学证据</text>
+
+  <!-- Hero Number -->
+  <text x="640" y="170" text-anchor="middle" font-family="SimSun, Georgia, serif" font-size="72" font-weight="bold" fill="#7A5230">d = 0.38</text>
+  <text x="640" y="210" text-anchor="middle" font-family="&quot;Microsoft YaHei&quot;, Arial, sans-serif" font-size="16" fill="#555555">焦虑效果量 · Goyal 2014 JAMA Internal Medicine</text>
+
+  <!-- Decorative line under hero -->
+  <line x1="440" y1="230" x2="840" y2="230" stroke="#C8C0B0" stroke-width="1"/>
+
+  <!-- 3 Data Cards Row (y=260) -->
+  <!-- Card 1: JAMA 2014 -->
+  <rect x="65" y="260" width="350" height="170" rx="12" fill="#EDE7D9" stroke="#C8C0B0" stroke-width="1"/>
+  <text x="240" y="320" text-anchor="middle" font-family="SimSun, Georgia, serif" font-size="36" font-weight="bold" fill="#425066">47项RCT</text>
+  <text x="240" y="358" text-anchor="middle" font-family="&quot;Microsoft YaHei&quot;, Arial, sans-serif" font-size="16" fill="#2D2D2D">3,515名参与者</text>
+  <text x="240" y="388" text-anchor="middle" font-family="&quot;Microsoft YaHei&quot;, Arial, sans-serif" font-size="14" fill="#999999">JAMA 2014</text>
+
+  <!-- Card 2: BMJ 2024 -->
+  <rect x="465" y="260" width="350" height="170" rx="12" fill="#EDE7D9" stroke="#C8C0B0" stroke-width="1"/>
+  <text x="640" y="320" text-anchor="middle" font-family="SimSun, Georgia, serif" font-size="36" font-weight="bold" fill="#425066">200项RCT</text>
+  <text x="640" y="358" text-anchor="middle" font-family="&quot;Microsoft YaHei&quot;, Arial, sans-serif" font-size="16" fill="#2D2D2D">14,000+人</text>
+  <text x="640" y="388" text-anchor="middle" font-family="&quot;Microsoft YaHei&quot;, Arial, sans-serif" font-size="14" fill="#999999">BMJ 2024</text>
+
+  <!-- Card 3: JAMA 2024 -->
+  <rect x="865" y="260" width="350" height="170" rx="12" fill="#EDE7D9" stroke="#C8C0B0" stroke-width="1"/>
+  <text x="1040" y="320" text-anchor="middle" font-family="SimSun, Georgia, serif" font-size="36" font-weight="bold" fill="#7A5230">74%</text>
+  <text x="1040" y="358" text-anchor="middle" font-family="&quot;Microsoft YaHei&quot;, Arial, sans-serif" font-size="16" fill="#2D2D2D">MBCT vs 抗抑郁药</text>
+  <text x="1040" y="388" text-anchor="middle" font-family="&quot;Microsoft YaHei&quot;, Arial, sans-serif" font-size="14" fill="#999999">JAMA 2024</text>
+
+  <!-- Divider line -->
+  <line x1="100" y1="455" x2="1180" y2="455" stroke="#C8C0B0" stroke-width="1"/>
+
+  <!-- Key Findings (y=460) -->
+  <text x="640" y="490" text-anchor="middle" font-family="SimSun, Georgia, serif" font-size="20" font-weight="bold" fill="#425066">核心发现</text>
+
+  <rect x="100" y="510" width="1080" height="42" rx="8" fill="#EDE7D9" stroke="none"/>
+  <text x="640" y="538" text-anchor="middle" font-family="&quot;Microsoft YaHei&quot;, Arial, sans-serif" font-size="20" fill="#2D2D2D">焦虑 d=0.38  |  抑郁 d=0.30  |  疼痛 d=0.33</text>
+
+  <rect x="100" y="564" width="1080" height="42" rx="8" fill="#EDE7D9" stroke="none"/>
+  <text x="640" y="592" text-anchor="middle" font-family="&quot;Microsoft YaHei&quot;, Arial, sans-serif" font-size="20" fill="#2D2D2D">MBCT预防抑郁复发效果等同抗抑郁药</text>
+
+  <rect x="100" y="618" width="1080" height="42" rx="8" fill="#EDE7D9" stroke="none"/>
+  <text x="640" y="646" text-anchor="middle" font-family="&quot;Microsoft YaHei&quot;, Arial, sans-serif" font-size="18" fill="#2D2D2D">冥想增强免疫：MBSR组流感疫苗抗体滴度显著更高</text>
+
+  <!-- Source -->
+  <text x="640" y="695" text-anchor="middle" font-family="&quot;Microsoft YaHei&quot;, Arial, sans-serif" font-size="11" fill="#999999">来源：Goyal et al. 2014; BMJ Mental Health 2024; Davidson et al. 2003</text>
+</svg>

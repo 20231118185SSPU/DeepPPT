@@ -1,0 +1,174 @@
+{
+  "project": "ppt169_arknights_amiya",
+  "deck_style_anchor": "Semi-realistic dark fantasy (半厚涂暗色调) — thick-paint aesthetic with cinematic depth of field, strong chiaroscuro from single dominant light source, atmospheric fog and crystal particle effects. Shapes organic and layered. Backgrounds dark and textured with industrial-military surfaces. Focal elements receive rim-lighting and crystal glow.",
+  "color_scheme": {
+    "bg": "#0A0E1A",
+    "primary": "#D4A848",
+    "accent": "#E87B3D",
+    "secondary": "#8A94A6"
+  },
+  "items": [
+    {
+      "filename": "P01_cover_bg.png",
+      "prompt": "Semi-realistic dark fantasy digital painting, thick-paint brushwork with visible texture, cinematic depth of field, strong chiaroscuro from single dominant light source, atmospheric fog and crystal particle effects. Shapes are organic and layered, not geometric. Rich material texture on surfaces. Deep navy base covers approximately 40% of canvas. Gold-amber appears as rim lighting and ceremonial highlights at 15%. Originium orange surfaces in crystalline glow and energy emanations at 8%. Steel blue fills atmospheric haze and shadowed surfaces at 20%. Remaining surface uses desaturated cool grays and muted earth tones. A young woman with long dark hair and rabbit ears penetrating through a hooded cloak gazes at the viewer with steady yet sorrowful eyes. Behind her, the massive dark silhouette of a landship stretches across the upper background. Originium crystal particles drift from lower-right to upper-left. Main light source from upper-left 45 degrees, rim-lighting her face and ear edges. Bottom third left dark for title overlay. Centered half-body portrait, low-angle upward tilt.",
+      "aspect_ratio": "16:9",
+      "image_size": "2K",
+      "status": "Generated",
+      "purpose": "Cover hero background — sets emotional tone and introduces protagonist",
+      "type": "Background"
+    },
+    {
+      "filename": "P02_toc_bg.png",
+      "prompt": "Semi-realistic dark fantasy digital painting, thick-paint brushwork with visible texture, cinematic depth of field, strong chiaroscuro from single dominant light source, atmospheric fog and crystal particle effects. Shapes are organic and layered, not geometric. Rich material texture on surfaces. Deep navy base covers approximately 40% of canvas. Gold-amber appears as rim lighting and ceremonial highlights at 15%. Originium orange surfaces in crystalline glow and energy emanations at 8%. Steel blue fills atmospheric haze and shadowed surfaces at 20%. Remaining surface uses desaturated cool grays and muted earth tones. Wide panoramic view of a barren wasteland. Foreground: cracked desolate ground with clusters of small Originium crystals. Midground: silhouettes of ruined industrial cities along the horizon. Sky: heavy cloud cover with single golden light beam piercing through a gap, casting warm light on desolate scene. Overall cool tone with golden beam as only warm accent. Wide-angle, horizon at lower third, vast open space above for overlay text.",
+      "aspect_ratio": "16:9",
+      "image_size": "2K",
+      "status": "Generated",
+      "purpose": "Table of contents background — establishes world atmosphere and thematic scope",
+      "type": "Background"
+    },
+    {
+      "filename": "P03_transition_origin.png",
+      "prompt": "Semi-realistic dark fantasy digital painting, thick-paint brushwork with visible texture, cinematic depth of field, strong chiaroscuro from single dominant light source, atmospheric fog and crystal particle effects. Shapes are organic and layered, not geometric. Rich material texture on surfaces. Deep navy base covers approximately 40% of canvas. Gold-amber appears as rim lighting and ceremonial highlights at 15%. Originium orange surfaces in crystalline glow and energy emanations at 8%. Steel blue fills atmospheric haze and shadowed surfaces at 20%. Remaining surface uses desaturated cool grays and muted earth tones. Low-angle upward shot. A small girl silhouette with Cautus ears stands with back to viewer at right lower-third golden-ratio point. She faces massive ruined buildings on the left. Sky fills upper half with ominous orange-red glow from the horizon. Originium dust fog forms translucent layers in midground. Ground debris and rubble textures detailed, implying war. Child at small scale against vast destruction, conveying vulnerability.",
+      "aspect_ratio": "16:9",
+      "image_size": "2K",
+      "status": "Generated",
+      "purpose": "Transition page — origin backstory narrative bridge",
+      "type": "Background"
+    },
+    {
+      "filename": "P04_content_amiya_origin.png",
+      "prompt": "Semi-realistic dark fantasy digital painting, thick-paint brushwork with visible texture, cinematic depth of field, strong chiaroscuro from single dominant light source, atmospheric fog and crystal particle effects. Shapes are organic and layered, not geometric. Rich material texture on surfaces. Deep navy base covers approximately 40% of canvas. Gold-amber appears as rim lighting and ceremonial highlights at 15%. Originium orange surfaces in crystalline glow and energy emanations at 8%. Steel blue fills atmospheric haze and shadowed surfaces at 20%. Remaining surface uses desaturated cool grays and muted earth tones. Indoor scene. Light from a wall gap on the left and an oil lamp on a table. Kal'tsit stands on left, posture slightly bent, facing young Amiya on right who looks up at her. Background contains blurred refugee figures. Warm light limited to area between two figures, fading to darkness around edges. Rough stone and metal shelter with improvised medical cots in background.",
+      "aspect_ratio": "21:9",
+      "image_size": "1K",
+      "status": "Generated",
+      "purpose": "Content illustration — Amiya's origin and early encounter with Kal'tsit",
+      "type": "Illustration"
+    },
+    {
+      "filename": "P05_content_rhodes_island.png",
+      "prompt": "Semi-realistic dark fantasy digital painting, thick-paint brushwork with visible texture, cinematic depth of field, strong chiaroscuro from single dominant light source, atmospheric fog and crystal particle effects. Shapes are organic and layered, not geometric. Rich material texture on surfaces. Deep navy base covers approximately 40% of canvas. Gold-amber appears as rim lighting and ceremonial highlights at 15%. Originium orange surfaces in crystalline glow and energy emanations at 8%. Steel blue fills atmospheric haze and shadowed surfaces at 20%. Remaining surface uses desaturated cool grays and muted earth tones. Medium shot, front-facing. Amiya stands center-right facing viewer but with gaze slightly left toward holographic blue strategic map projection. Blue holo-light illuminates her face. Left midground shows control consoles and operator silhouettes in motion. Empty chair at lower-right with faint backlight suggesting Doctor's presence. Cool blue-gray command room tone with Amiya's clothing retaining subtle warm accents.",
+      "aspect_ratio": "21:9",
+      "image_size": "1K",
+      "status": "Generated",
+      "purpose": "Content illustration — Rhodes Island command center and Amiya as leader",
+      "type": "Illustration"
+    },
+    {
+      "filename": "P06_transition_infection.png",
+      "prompt": "Semi-realistic dark fantasy digital painting, thick-paint brushwork with visible texture, cinematic depth of field, strong chiaroscuro from single dominant light source, atmospheric fog and crystal particle effects. Shapes are organic and layered, not geometric. Rich material texture on surfaces. Deep navy base covers approximately 40% of canvas. Gold-amber appears as rim lighting and ceremonial highlights at 15%. Originium orange surfaces in crystalline glow and energy emanations at 8%. Steel blue fills atmospheric haze and shadowed surfaces at 20%. Remaining surface uses desaturated cool grays and muted earth tones. Extreme close-up macro. A dark-skinned hand with rough knuckles extends from bottom toward center. Originium crystals grow from fingertips toward wrist, translucent with dark-red light pulsing inside. Background heavily blurred city neon bokeh. Focus on growing edge of crystal formation. Deep shadows with selective illumination on crystal surfaces.",
+      "aspect_ratio": "16:9",
+      "image_size": "2K",
+      "status": "Generated",
+      "purpose": "Transition page — Originium infection crisis narrative bridge",
+      "type": "Background"
+    },
+    {
+      "filename": "P07_content_skullshatterer.png",
+      "prompt": "Semi-realistic dark fantasy digital painting, thick-paint brushwork with visible texture, cinematic depth of field, strong chiaroscuro from single dominant light source, atmospheric fog and crystal particle effects. Shapes are organic and layered, not geometric. Rich material texture on surfaces. Deep navy base covers approximately 40% of canvas. Gold-amber appears as rim lighting and ceremonial highlights at 15%. Originium orange surfaces in crystalline glow and energy emanations at 8%. Steel blue fills atmospheric haze and shadowed surfaces at 20%. Remaining surface uses desaturated cool grays and muted earth tones. Dynamic diagonal composition. Amiya in lower-left, staff extended toward upper-right, Arts energy streaming from staff tip in arc. Skullshatterer in upper-right, bone mask partially shattering under Arts light, revealing young face beneath. Space between filled with explosive particles and Originium fragments forming visual conflict axis. Cool-purple Arts energy and warm-orange explosions creating strong warm-cold contrast.",
+      "aspect_ratio": "21:9",
+      "image_size": "1K",
+      "status": "Generated",
+      "purpose": "Content illustration — confrontation with Skullshatterer",
+      "type": "Illustration"
+    },
+    {
+      "filename": "P08_content_frostnova.png",
+      "prompt": "Semi-realistic dark fantasy digital painting, thick-paint brushwork with visible texture, cinematic depth of field, strong chiaroscuro from single dominant light source, atmospheric fog and crystal particle effects. Shapes are organic and layered, not geometric. Rich material texture on surfaces. Deep navy base covers approximately 40% of canvas. Gold-amber appears as rim lighting and ceremonial highlights at 15%. Originium orange surfaces in crystalline glow and energy emanations at 8%. Steel blue fills atmospheric haze and shadowed surfaces at 20%. Remaining surface uses desaturated cool grays and muted earth tones. Horizontal composition. FrostNova at center-right, half-kneeling in snow, ice crystals radiating outward and dissolving like falling petals. Amiya on left, arm reaching toward FrostNova but with visible distance between them. Blizzard blowing right to left, snow and ice particles filling frame. Cool white and pale blue dominant, FrostNova's dissolving crystals carrying faint purple glow. Emotional weight conveyed through gap between reaching hand and dissolving figure.",
+      "aspect_ratio": "21:9",
+      "image_size": "1K",
+      "status": "Generated",
+      "purpose": "Content illustration — emotional farewell with FrostNova",
+      "type": "Illustration"
+    },
+    {
+      "filename": "P09_transition_awakening.png",
+      "prompt": "Semi-realistic dark fantasy digital painting, thick-paint brushwork with visible texture, cinematic depth of field, strong chiaroscuro from single dominant light source, atmospheric fog and crystal particle effects. Shapes are organic and layered, not geometric. Rich material texture on surfaces. Deep navy base covers approximately 40% of canvas. Gold-amber appears as rim lighting and ceremonial highlights at 15%. Originium orange surfaces in crystalline glow and energy emanations at 8%. Steel blue fills atmospheric haze and shadowed surfaces at 20%. Remaining surface uses desaturated cool grays and muted earth tones. Extreme close-up of Amiya's Sarkaz horn growing from forehead, starting from horn base extending to tip. Horn surface gradient: natural horn-textured base transitioning to Originium crystal coverage, dark-purple energy veins flowing inside crystals. Background pure black, only faint purple glow from horn tip provides edge-light silhouette. Horn tip extends past frame top edge. Mesmerizing, unsettling beauty.",
+      "aspect_ratio": "16:9",
+      "image_size": "2K",
+      "status": "Generated",
+      "purpose": "Transition page — Sarkaz bloodline awakening narrative bridge",
+      "type": "Background"
+    },
+    {
+      "filename": "P10_content_demon_king.png",
+      "prompt": "Semi-realistic dark fantasy digital painting, thick-paint brushwork with visible texture, cinematic depth of field, strong chiaroscuro from single dominant light source, atmospheric fog and crystal particle effects. Shapes are organic and layered, not geometric. Rich material texture on surfaces. Deep navy base covers approximately 40% of canvas. Gold-amber appears as rim lighting and ceremonial highlights at 15%. Originium orange surfaces in crystalline glow and energy emanations at 8%. Steel blue fills atmospheric haze and shadowed surfaces at 20%. Remaining surface uses desaturated cool grays and muted earth tones. Center-symmetric composition. Amiya suspended at exact center, body slightly curved, arms spread wide. Originium wing-structures extend to both sides filling most of frame width creating symmetrical oppressive grandeur. Spatial rifts radiate from four corners toward center. Collapsing building fragments and crystal shards spiral around Amiya in vortex trajectory. Deep purple and black primary palette, but Amiya's eyes and core Arts array emit gold-white light as sole hope-source.",
+      "aspect_ratio": "21:9",
+      "image_size": "1K",
+      "status": "Generated",
+      "purpose": "Content illustration — the Demon King awakening form",
+      "type": "Illustration"
+    },
+    {
+      "filename": "P11_content_three_forms.png",
+      "prompt": "Semi-realistic dark fantasy digital painting, thick-paint brushwork with visible texture, cinematic depth of field, strong chiaroscuro from single dominant light source, atmospheric fog and crystal particle effects. Shapes are organic and layered, not geometric. Rich material texture on surfaces. Deep navy base covers approximately 40% of canvas. Gold-amber appears as rim lighting and ceremonial highlights at 15%. Originium orange surfaces in crystalline glow and energy emanations at 8%. Steel blue fills atmospheric haze and shadowed surfaces at 20%. Remaining surface uses desaturated cool grays and muted earth tones. Triptych composition. Three Amiyas spaced evenly across frame, each facing different direction with feet aligned on same baseline. Each form has own color domain: Caster blue, Guard dark-purple, Medic white-gold. Originium vein patterns connect three forms along baseline suggesting shared origin. Background gradient varies per form but merges into unified gold light band across center.",
+      "aspect_ratio": "21:9",
+      "image_size": "1K",
+      "status": "Generated",
+      "purpose": "Content illustration — Amiya's three combat forms",
+      "type": "Illustration"
+    },
+    {
+      "filename": "P12_transition_relationships.png",
+      "prompt": "Semi-realistic dark fantasy digital painting, thick-paint brushwork with visible texture, cinematic depth of field, strong chiaroscuro from single dominant light source, atmospheric fog and crystal particle effects. Shapes are organic and layered, not geometric. Rich material texture on surfaces. Deep navy base covers approximately 40% of canvas. Gold-amber appears as rim lighting and ceremonial highlights at 15%. Originium orange surfaces in crystalline glow and energy emanations at 8%. Steel blue fills atmospheric haze and shadowed surfaces at 20%. Remaining surface uses desaturated cool grays and muted earth tones. Corridor perspective with vanishing point at upper-center. Left wall casts Amiya's clear shadow with distinct ear outlines; right wall casts Doctor's blurred human-form shadow. Two shadows converge toward corridor end. Faint corridor lights along both walls, reflective metal floor surface. Real figures do not appear, only shadows and corridor space. Cool blue-gray tone with faint warm glow where shadows merge at far end.",
+      "aspect_ratio": "16:9",
+      "image_size": "2K",
+      "status": "Generated",
+      "purpose": "Transition page — relationships narrative bridge",
+      "type": "Background"
+    },
+    {
+      "filename": "P13_content_doctor_bond.png",
+      "prompt": "Semi-realistic dark fantasy digital painting, thick-paint brushwork with visible texture, cinematic depth of field, strong chiaroscuro from single dominant light source, atmospheric fog and crystal particle effects. Shapes are organic and layered, not geometric. Rich material texture on surfaces. Deep navy base covers approximately 40% of canvas. Gold-amber appears as rim lighting and ceremonial highlights at 15%. Originium orange surfaces in crystalline glow and energy emanations at 8%. Steel blue fills atmospheric haze and shadowed surfaces at 20%. Remaining surface uses desaturated cool grays and muted earth tones. Wide cinematic composition. Two figures from behind occupy lower third, sitting on deck railing. Doctor on left, Amiya on right, comfortable spacing but relaxed postures. They face open night vista with faint city lights forming glow band on distant horizon, sky with stars replaced by tiny Originium particles. Focus on connection between figures and vast world ahead. Deep blue night sky dominant, city lights providing warm orange accent points.",
+      "aspect_ratio": "21:9",
+      "image_size": "1K",
+      "status": "Generated",
+      "purpose": "Content illustration — bond between Amiya and Doctor",
+      "type": "Illustration"
+    },
+    {
+      "filename": "P14_content_chen_parallel.png",
+      "prompt": "Semi-realistic dark fantasy digital painting, thick-paint brushwork with visible texture, cinematic depth of field, strong chiaroscuro from single dominant light source, atmospheric fog and crystal particle effects. Shapes are organic and layered, not geometric. Rich material texture on surfaces. Deep navy base covers approximately 40% of canvas. Gold-amber appears as rim lighting and ceremonial highlights at 15%. Originium orange surfaces in crystalline glow and energy emanations at 8%. Steel blue fills atmospheric haze and shadowed surfaces at 20%. Remaining surface uses desaturated cool grays and muted earth tones. Medium confrontation composition. Amiya on left, Ch'en on right, approximately two steps apart. Wind-caught umbrella rises between them along central vertical axis as visual separator. Rain pours from above, wet cobblestone reflects background neon in pink, blue-purple, orange. Both figures' expressions show complex emotions with understanding, reluctant respect, and kinship. Cool base with rich warm neon reflections.",
+      "aspect_ratio": "21:9",
+      "image_size": "1K",
+      "status": "Generated",
+      "purpose": "Content illustration — parallel relationship with Ch'en",
+      "type": "Illustration"
+    },
+    {
+      "filename": "P15_transition_visual_design.png",
+      "prompt": "Semi-realistic dark fantasy digital painting, thick-paint brushwork with visible texture, cinematic depth of field, strong chiaroscuro from single dominant light source, atmospheric fog and crystal particle effects. Shapes are organic and layered, not geometric. Rich material texture on surfaces. Deep navy base covers approximately 40% of canvas. Gold-amber appears as rim lighting and ceremonial highlights at 15%. Originium orange surfaces in crystalline glow and energy emanations at 8%. Steel blue fills atmospheric haze and shadowed surfaces at 20%. Remaining surface uses desaturated cool grays and muted earth tones. Flat-lay top-down on dark wood-textured desk. Scattered elements include character costume line-art details, Originium crystal geometry analysis diagrams, color sample swatches, and horn structural cross-sections. Elements connected by annotation arrows and measurement lines. Design tools scattered between sheets. Paper cream and off-white with graphite-gray line art, desk dark wood grain.",
+      "aspect_ratio": "16:9",
+      "image_size": "2K",
+      "status": "Generated",
+      "purpose": "Transition page — visual design analysis narrative bridge",
+      "type": "Background"
+    },
+    {
+      "filename": "P16_content_design_symbolism.png",
+      "prompt": "Semi-realistic dark fantasy digital painting, thick-paint brushwork with visible texture, cinematic depth of field, strong chiaroscuro from single dominant light source, atmospheric fog and crystal particle effects. Shapes are organic and layered, not geometric. Rich material texture on surfaces. Deep navy base covers approximately 40% of canvas. Gold-amber appears as rim lighting and ceremonial highlights at 15%. Originium orange surfaces in crystalline glow and energy emanations at 8%. Steel blue fills atmospheric haze and shadowed surfaces at 20%. Remaining surface uses desaturated cool grays and muted earth tones. Center-radiation composition. Amiya's full-body silhouette at exact center, filled solid black. From six key feature points, analysis leader lines extend outward: rabbit ears upper-left, staff or weapon upper-right, costume structure left-center, crystal texture right-center, three-form color domains lower-left, Sarkaz horn evolution lower-right. Each line terminates in magnified detail. Dark background, analysis elements in white line-art with color accent.",
+      "aspect_ratio": "21:9",
+      "image_size": "1K",
+      "status": "Generated",
+      "purpose": "Content illustration — design symbolism breakdown",
+      "type": "Illustration"
+    },
+    {
+      "filename": "P17_content_community_impact.png",
+      "prompt": "Semi-realistic dark fantasy digital painting, thick-paint brushwork with visible texture, cinematic depth of field, strong chiaroscuro from single dominant light source, atmospheric fog and crystal particle effects. Shapes are organic and layered, not geometric. Rich material texture on surfaces. Deep navy base covers approximately 40% of canvas. Gold-amber appears as rim lighting and ceremonial highlights at 15%. Originium orange surfaces in crystalline glow and energy emanations at 8%. Steel blue fills atmospheric haze and shadowed surfaces at 20%. Remaining surface uses desaturated cool grays and muted earth tones. Mosaic collage composition. Frame divided into irregular rectangular tiles of varying sizes, each containing different art style representation of Amiya. Central area preserves clean Amiya silhouette outline as negative space contrasting with dense surrounding mosaic. Rich color variety from diverse styles converging, central outline in white stroke forming visual focal point.",
+      "aspect_ratio": "21:9",
+      "image_size": "1K",
+      "status": "Generated",
+      "purpose": "Content illustration — community impact and fan art diversity",
+      "type": "Illustration"
+    },
+    {
+      "filename": "P18_ending_bg.png",
+      "prompt": "Semi-realistic dark fantasy digital painting, thick-paint brushwork with visible texture, cinematic depth of field, strong chiaroscuro from single dominant light source, atmospheric fog and crystal particle effects. Shapes are organic and layered, not geometric. Rich material texture on surfaces. Deep navy base covers approximately 40% of canvas. Gold-amber appears as rim lighting and ceremonial highlights at 15%. Originium orange surfaces in crystalline glow and energy emanations at 8%. Steel blue fills atmospheric haze and shadowed surfaces at 20%. Remaining surface uses desaturated cool grays and muted earth tones. Low-angle upward shot. Amiya stands at deck forward railing at center-right, body slightly leaning toward sunrise. Golden morning light from right horizon backlights complete silhouette and flowing hair. Behind her, full Rhodes Island deck spreads across frame with crew member silhouettes. Sky transitions from deep blue left to gold-orange at horizon. Overall palette moves cool to warm, left to right, echoing full emotional arc from darkness to hope.",
+      "aspect_ratio": "16:9",
+      "image_size": "2K",
+      "status": "Generated",
+      "purpose": "Ending background — sunrise hope, emotional resolution",
+      "type": "Background"
+    }
+  ]
+}

@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1280 720">
+    <!-- P01 Cover - story_driven -->
+    <rect width="1280" height="720" fill="#1A1A2E" />
+    <image href="images/P01_cover_bg.png" x="0" y="0" width="1280" height="720" preserveAspectRatio="xMidYMid slice" />
+    <rect width="1280" height="720" fill="#0D0D1A" fill-opacity="0.6" />
+
+    <!-- Main title -->
+    <text x="640" y="370" text-anchor="middle" fill="#FFFFFF" font-family="Microsoft YaHei, Arial, sans-serif"
+        font-size="56" font-weight="bold">
+        DeepSeek
+    </text>
+    <!-- Subtitle -->
+    <text x="640" y="430" text-anchor="middle" fill="#FFFFFF" font-family="Microsoft YaHei, Arial, sans-serif"
+        font-size="24">
+        从零到震撼 AI 界
+    </text>
+
+    <!-- Bottom info bar -->
+    <rect x="0" y="660" width="1280" height="60" fill="#000000" fill-opacity="0.35" />
+    <text x="60" y="695" fill="#FFFFFF" fill-opacity="0.7" font-family="Microsoft YaHei, Arial, sans-serif"
+        font-size="13">
+        2026.06
+    </text>
+    <text x="1220" y="695" text-anchor="end" fill="#FFFFFF" fill-opacity="0.7" font-family="Microsoft YaHei, Arial, sans-serif"
+        font-size="13">
+        DeepSeek Evolution
+    </text>
+
+    <!-- Page number -->
+    <text x="1220" y="708" text-anchor="end" fill="#FFFFFF" fill-opacity="0.4" font-family="Microsoft YaHei, Arial, sans-serif"
+        font-size="11">
+        1 / 30
+    </text>
+</svg>

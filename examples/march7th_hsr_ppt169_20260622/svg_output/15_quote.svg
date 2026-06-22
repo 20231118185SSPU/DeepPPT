@@ -1,0 +1,20 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1280 720">
+
+  <!-- Full-bleed background image -->
+  <image href="images/P15_quote_bg.png" x="0" y="0" width="1280" height="720" preserveAspectRatio="xMidYMid slice"/>
+
+  <!-- Heavy overlay -->
+  <rect x="0" y="0" width="1280" height="720" fill="#F8F4F0" fill-opacity="0.82"/>
+
+  <!-- Decorative line -->
+  <rect x="540" y="250" width="200" height="3" fill="#D4789C"/>
+
+  <!-- Quote -->
+  <text x="640" y="310" text-anchor="middle" font-family="KaiTi, Georgia, serif" font-size="40" fill="#2D2D3D">我忍你很久了！</text>
+
+  <!-- Attribution -->
+  <text x="640" y="380" text-anchor="middle" font-family="&quot;Microsoft YaHei&quot;, Arial, sans-serif" font-size="20" fill="#6B6B80">——三月七 · 战斗语音</text>
+
+  <!-- Small note -->
+  <text x="640" y="580" text-anchor="middle" font-family="&quot;Microsoft YaHei&quot;, Arial, sans-serif" font-size="14" fill="#6B6B80">从活泼少女到果断战士的反差魅力</text>
+</svg>

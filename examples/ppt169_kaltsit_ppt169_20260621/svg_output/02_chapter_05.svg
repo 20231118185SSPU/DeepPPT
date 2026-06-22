@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1280 720">
+    <rect width="1280" height="720" fill="#0A1628" />
+    <image href="images/P15_transition_design.png" x="0" y="0" width="1280" height="720" preserveAspectRatio="xMidYMid slice" />
+    <rect x="0" y="0" width="1280" height="720" fill="#0A1628" fill-opacity="0.55" />
+    <text x="60" y="200" fill="#E8E8E8" fill-opacity="0.45" font-family="Microsoft YaHei, Arial, sans-serif" font-size="14">棋局</text>
+    <text x="60" y="240" fill="#E8E8E8" fill-opacity="0.7" font-family="Microsoft YaHei, Arial, sans-serif" font-size="20">凯尔希的政治遗产——从龙门到维多利亚，跨越整个泰拉</text>
+    <text x="60" y="360" fill="#1A5C5C" fill-opacity="0.15" font-family="Source Han Sans SC, Microsoft YaHei, sans-serif" font-size="120" font-weight="bold">05</text>
+    <text x="60" y="430" fill="#E8E8E8" font-family="Source Han Sans SC, Microsoft YaHei, sans-serif" font-size="48" font-weight="bold">设计语言</text>
+    <text x="60" y="480" fill="#E8E8E8" fill-opacity="0.75" font-family="Microsoft YaHei, Arial, sans-serif" font-size="20">鹰角如何用白大褂、琥珀瞳、猫耳讲述一个万年存在的故事</text>
+    <line x1="60" y1="530" x2="400" y2="530" stroke="#1A5C5C" stroke-width="1" stroke-opacity="0.3" />
+    <text x="60" y="570" fill="#E8E8E8" fill-opacity="0.6" font-family="Microsoft YaHei, Arial, sans-serif" font-size="18">真正的力量不需要宣告自己——凯尔希的视觉设计哲学</text>
+</svg>

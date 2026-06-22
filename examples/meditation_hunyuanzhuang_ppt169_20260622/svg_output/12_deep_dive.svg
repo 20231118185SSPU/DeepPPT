@@ -1,0 +1,77 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1280 720">
+  <rect width="1280" height="720" fill="#F5F0E6"/>
+  <!-- Title -->
+  <text x="640" y="50" text-anchor="middle" font-family="SimSun, Georgia, serif" font-size="36" font-weight="bold" fill="#425066">站桩的生理密码：放松中维持结构</text>
+
+  <!-- 3 Mechanism Cards Row (y=100) -->
+  <!-- Card 1: 自主神经 -->
+  <rect x="30" y="100" width="380" height="280" rx="12" fill="#EDE7D9" stroke="#C8C0B0" stroke-width="1"/>
+  <rect x="30" y="100" width="380" height="45" rx="12" fill="#425066" stroke="none"/>
+  <rect x="30" y="133" width="380" height="12" fill="#425066" stroke="none"/>
+  <text x="220" y="130" text-anchor="middle" font-family="SimSun, Georgia, serif" font-size="20" font-weight="bold" fill="#FFFFFF">自主神经</text>
+  <text x="220" y="178" text-anchor="middle" font-family="&quot;Microsoft YaHei&quot;, Arial, sans-serif" font-size="18" font-weight="bold" fill="#2D2D2D">心率变异性(HRV)提升</text>
+  <text x="220" y="215" text-anchor="middle" font-family="&quot;Microsoft YaHei&quot;, Arial, sans-serif" font-size="16" fill="#555555">副交感神经张力增强</text>
+  <text x="220" y="248" text-anchor="middle" font-family="&quot;Microsoft YaHei&quot;, Arial, sans-serif" font-size="16" fill="#555555">交感-副交感平衡改善</text>
+  <line x1="80" y1="270" x2="360" y2="270" stroke="#C8C0B0" stroke-width="1"/>
+  <text x="220" y="300" text-anchor="middle" font-family="&quot;Microsoft YaHei&quot;, Arial, sans-serif" font-size="14" fill="#999999">2025年站桩专项研究支持</text>
+
+  <!-- Card 2: 筋膜系统 -->
+  <rect x="445" y="100" width="380" height="280" rx="12" fill="#EDE7D9" stroke="#C8C0B0" stroke-width="1"/>
+  <rect x="445" y="100" width="380" height="45" rx="12" fill="#789262" stroke="none"/>
+  <rect x="445" y="133" width="380" height="12" fill="#789262" stroke="none"/>
+  <text x="635" y="130" text-anchor="middle" font-family="SimSun, Georgia, serif" font-size="20" font-weight="bold" fill="#FFFFFF">筋膜系统</text>
+  <text x="635" y="178" text-anchor="middle" font-family="&quot;Microsoft YaHei&quot;, Arial, sans-serif" font-size="18" font-weight="bold" fill="#2D2D2D">胶原重塑与组织再水化</text>
+  <text x="635" y="215" text-anchor="middle" font-family="&quot;Microsoft YaHei&quot;, Arial, sans-serif" font-size="16" fill="#555555">力学传导激活成纤维细胞</text>
+  <text x="635" y="248" text-anchor="middle" font-family="&quot;Microsoft YaHei&quot;, Arial, sans-serif" font-size="16" fill="#555555">张力整体(Tensegrity)优化</text>
+  <line x1="495" y1="270" x2="775" y2="270" stroke="#C8C0B0" stroke-width="1"/>
+  <text x="635" y="300" text-anchor="middle" font-family="&quot;Microsoft YaHei&quot;, Arial, sans-serif" font-size="14" fill="#999999">Robert Schleip 乌尔姆大学</text>
+
+  <!-- Card 3: 肌骨系统 -->
+  <rect x="860" y="100" width="380" height="280" rx="12" fill="#EDE7D9" stroke="#C8C0B0" stroke-width="1"/>
+  <rect x="860" y="100" width="380" height="45" rx="12" fill="#7A5230" stroke="none"/>
+  <rect x="860" y="133" width="380" height="12" fill="#7A5230" stroke="none"/>
+  <text x="1050" y="130" text-anchor="middle" font-family="SimSun, Georgia, serif" font-size="20" font-weight="bold" fill="#FFFFFF">肌骨系统</text>
+  <text x="1050" y="178" text-anchor="middle" font-family="&quot;Microsoft YaHei&quot;, Arial, sans-serif" font-size="18" font-weight="bold" fill="#2D2D2D">深层稳定肌群激活</text>
+  <text x="1050" y="215" text-anchor="middle" font-family="&quot;Microsoft YaHei&quot;, Arial, sans-serif" font-size="16" fill="#555555">慢肌纤维(I型)募集</text>
+  <text x="1050" y="248" text-anchor="middle" font-family="&quot;Microsoft YaHei&quot;, Arial, sans-serif" font-size="16" fill="#555555">姿势控制提升47%</text>
+  <line x1="910" y1="270" x2="1190" y2="270" stroke="#C8C0B0" stroke-width="1"/>
+  <text x="1050" y="300" text-anchor="middle" font-family="&quot;Microsoft YaHei&quot;, Arial, sans-serif" font-size="14" fill="#999999">Taylor &amp; Francis 2020</text>
+
+  <!-- Comparison Section -->
+  <text x="640" y="425" text-anchor="middle" font-family="SimSun, Georgia, serif" font-size="24" font-weight="bold" fill="#425066">站桩 vs 靠墙静蹲</text>
+
+  <!-- Table Header -->
+  <rect x="140" y="445" width="200" height="40" rx="6" fill="#425066" stroke="none"/>
+  <text x="240" y="472" text-anchor="middle" font-family="&quot;Microsoft YaHei&quot;, Arial, sans-serif" font-size="16" font-weight="bold" fill="#FFFFFF">对比维度</text>
+  <rect x="345" y="445" width="390" height="40" rx="6" fill="#789262" stroke="none"/>
+  <text x="540" y="472" text-anchor="middle" font-family="&quot;Microsoft YaHei&quot;, Arial, sans-serif" font-size="16" font-weight="bold" fill="#FFFFFF">站桩</text>
+  <rect x="740" y="445" width="390" height="40" rx="6" fill="#B85C38" stroke="none"/>
+  <text x="935" y="472" text-anchor="middle" font-family="&quot;Microsoft YaHei&quot;, Arial, sans-serif" font-size="16" font-weight="bold" fill="#FFFFFF">靠墙静蹲</text>
+
+  <!-- Table Row 1 -->
+  <rect x="140" y="490" width="200" height="50" rx="0" fill="#EDE7D9" stroke="#C8C0B0" stroke-width="1"/>
+  <text x="240" y="522" text-anchor="middle" font-family="&quot;Microsoft YaHei&quot;, Arial, sans-serif" font-size="16" font-weight="bold" fill="#2D2D2D">肌肉策略</text>
+  <rect x="345" y="490" width="390" height="50" rx="0" fill="#F5F0E6" stroke="#C8C0B0" stroke-width="1"/>
+  <text x="540" y="522" text-anchor="middle" font-family="&quot;Microsoft YaHei&quot;, Arial, sans-serif" font-size="16" fill="#2D2D2D">最小化收缩·深层稳定肌</text>
+  <rect x="740" y="490" width="390" height="50" rx="0" fill="#F5F0E6" stroke="#C8C0B0" stroke-width="1"/>
+  <text x="935" y="522" text-anchor="middle" font-family="&quot;Microsoft YaHei&quot;, Arial, sans-serif" font-size="16" fill="#2D2D2D">最大化收缩·股四头肌</text>
+
+  <!-- Table Row 2 -->
+  <rect x="140" y="545" width="200" height="50" rx="0" fill="#EDE7D9" stroke="#C8C0B0" stroke-width="1"/>
+  <text x="240" y="577" text-anchor="middle" font-family="&quot;Microsoft YaHei&quot;, Arial, sans-serif" font-size="16" font-weight="bold" fill="#2D2D2D">神经效应</text>
+  <rect x="345" y="545" width="390" height="50" rx="0" fill="#FFFFFF" stroke="#C8C0B0" stroke-width="1"/>
+  <text x="540" y="577" text-anchor="middle" font-family="&quot;Microsoft YaHei&quot;, Arial, sans-serif" font-size="16" fill="#789262">副交感激活(放松)</text>
+  <rect x="740" y="545" width="390" height="50" rx="0" fill="#FFFFFF" stroke="#C8C0B0" stroke-width="1"/>
+  <text x="935" y="577" text-anchor="middle" font-family="&quot;Microsoft YaHei&quot;, Arial, sans-serif" font-size="16" fill="#B85C38">交感应激(紧张)</text>
+
+  <!-- Table Row 3 -->
+  <rect x="140" y="600" width="200" height="50" rx="0" fill="#EDE7D9" stroke="#C8C0B0" stroke-width="1"/>
+  <text x="240" y="632" text-anchor="middle" font-family="&quot;Microsoft YaHei&quot;, Arial, sans-serif" font-size="16" font-weight="bold" fill="#2D2D2D">可持续时长</text>
+  <rect x="345" y="600" width="390" height="50" rx="0" fill="#F5F0E6" stroke="#C8C0B0" stroke-width="1"/>
+  <text x="540" y="632" text-anchor="middle" font-family="&quot;Microsoft YaHei&quot;, Arial, sans-serif" font-size="16" fill="#2D2D2D">10-60+分钟</text>
+  <rect x="740" y="600" width="390" height="50" rx="0" fill="#F5F0E6" stroke="#C8C0B0" stroke-width="1"/>
+  <text x="935" y="632" text-anchor="middle" font-family="&quot;Microsoft YaHei&quot;, Arial, sans-serif" font-size="16" fill="#2D2D2D">30秒-数分钟</text>
+
+  <!-- Source -->
+  <text x="640" y="680" text-anchor="middle" font-family="&quot;Microsoft YaHei&quot;, Arial, sans-serif" font-size="11" fill="#999999">来源：Preprints.org 2025; Taylor &amp; Francis 2020; Schleip fasciaresearch.de</text>
+</svg>

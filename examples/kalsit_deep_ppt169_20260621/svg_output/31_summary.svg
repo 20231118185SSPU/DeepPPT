@@ -1,0 +1,22 @@
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 1280 720" width="1280" height="720">
+  <rect x="0" y="0" width="1280" height="720" fill="#0D1117"/>
+  <rect x="80" y="50" width="60" height="2" fill="#58A6FF"/>
+  <text x="80" y="85" font-family="Microsoft YaHei, Arial, sans-serif" font-size="14" fill="#58A6FF" letter-spacing="2">第六章 · 结语</text>
+  <text x="80" y="125" font-family="Microsoft YaHei, Arial, sans-serif" font-size="36" font-weight="bold" fill="#FFFFFF">角色总结</text>
+  <rect x="80" y="145" width="1120" height="1" fill="#30363D"/>
+  
+  <image href="../images/kalsit_main_scene_始发.png" x="0" y="0" width="1280" height="720" preserveAspectRatio="xMidYMid slice"/>
+  <rect x="0" y="0" width="1280" height="720" fill="#0D1117" fill-opacity="0.7"/>
+  <rect x="100" y="160" width="60" height="2" fill="#58A6FF"/>
+  <text x="100" y="195" font-family="Microsoft YaHei, Arial, sans-serif" font-size="14" fill="#58A6FF" letter-spacing="2">第六章 · 结语</text>
+  <text x="100" y="240" font-family="Microsoft YaHei, Arial, sans-serif" font-size="42" font-weight="bold" fill="#FFFFFF">凯尔希的意义</text>
+  <text x="100" y="280" font-family="Microsoft YaHei, Arial, sans-serif" font-size="18" fill="#8B949E">THE SIGNIFICANCE OF KAL'TSIT</text>
+  <rect x="100" y="310" width="1080" height="1" fill="#30363D"/>
+  <text x="100" y="350" font-family="Microsoft YaHei, Arial, sans-serif" font-size="16" fill="#C9D1D9">万年旅者 · 守护者 · 见证者 · 罗德岛的灵魂</text>
+  <text x="100" y="380" font-family="Microsoft YaHei, Arial, sans-serif" font-size="16" fill="#C9D1D9">她见证了泰拉文明的兴衰，承载着无数记忆与责任</text>
+  <text x="100" y="410" font-family="Microsoft YaHei, Arial, sans-serif" font-size="16" fill="#C9D1D9">她守护着博士和阿米娅，守护着罗德岛的每一个人</text>
+  <text x="100" y="440" font-family="Microsoft YaHei, Arial, sans-serif" font-size="16" fill="#C9D1D9">她的故事不仅是关于力量，更是关于时间、记忆与爱</text>
+  <rect x="100" y="470" width="1080" height="1" fill="#30363D"/>
+  <text x="100" y="510" font-family="Georgia, SimSun, serif" font-size="20" fill="#58A6FF" font-style="italic">"她来自过去。她属于现在。她走向未来。"</text>
+  <text x="1220" y="690" font-family="Microsoft YaHei, Arial, sans-serif" font-size="12" fill="#6E7681" text-anchor="end">28 / 32</text>
+</svg>

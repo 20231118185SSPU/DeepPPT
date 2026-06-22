@@ -1,0 +1,91 @@
+<svg viewBox="0 0 1280 720" xmlns="http://www.w3.org/2000/svg">
+  <!-- Background -->
+  <rect x="0" y="0" width="1280" height="720" fill="#F5F0E6"/>
+
+  <!-- Title -->
+  <text x="640" y="45" text-anchor="middle" font-family="SimSun, Georgia, serif" font-size="36" font-weight="bold" fill="#425066">混元桩七步要领与进阶路线</text>
+
+  <!-- Row 1: 4 cards -->
+  <!-- Card 1: 脚位 -->
+  <rect x="50" y="100" width="260" height="80" rx="10" fill="#EDE7D9" stroke="#C8C0B0" stroke-width="1"/>
+  <circle cx="80" cy="140" r="16" fill="#FFFFFF" stroke="#7A5230" stroke-width="1.5"/>
+  <text x="80" y="146" text-anchor="middle" font-family="&quot;Microsoft YaHei&quot;, Arial, sans-serif" font-size="18" font-weight="bold" fill="#7A5230">①</text>
+  <text x="160" y="133" text-anchor="middle" font-family="&quot;Microsoft YaHei&quot;, Arial, sans-serif" font-size="20" font-weight="bold" fill="#425066">脚位</text>
+  <text x="160" y="155" text-anchor="middle" font-family="&quot;Microsoft YaHei&quot;, Arial, sans-serif" font-size="14" fill="#555555">与肩同宽·重心均匀</text>
+
+  <!-- Card 2: 膝盖 -->
+  <rect x="330" y="100" width="260" height="80" rx="10" fill="#EDE7D9" stroke="#C8C0B0" stroke-width="1"/>
+  <circle cx="360" cy="140" r="16" fill="#FFFFFF" stroke="#7A5230" stroke-width="1.5"/>
+  <text x="360" y="146" text-anchor="middle" font-family="&quot;Microsoft YaHei&quot;, Arial, sans-serif" font-size="18" font-weight="bold" fill="#7A5230">②</text>
+  <text x="440" y="133" text-anchor="middle" font-family="&quot;Microsoft YaHei&quot;, Arial, sans-serif" font-size="20" font-weight="bold" fill="#425066">膝盖</text>
+  <text x="440" y="155" text-anchor="middle" font-family="&quot;Microsoft YaHei&quot;, Arial, sans-serif" font-size="14" fill="#555555">微屈·不过脚尖</text>
+
+  <!-- Card 3: 腰胯 -->
+  <rect x="610" y="100" width="260" height="80" rx="10" fill="#EDE7D9" stroke="#C8C0B0" stroke-width="1"/>
+  <circle cx="640" cy="140" r="16" fill="#FFFFFF" stroke="#7A5230" stroke-width="1.5"/>
+  <text x="640" y="146" text-anchor="middle" font-family="&quot;Microsoft YaHei&quot;, Arial, sans-serif" font-size="18" font-weight="bold" fill="#7A5230">③</text>
+  <text x="720" y="133" text-anchor="middle" font-family="&quot;Microsoft YaHei&quot;, Arial, sans-serif" font-size="20" font-weight="bold" fill="#425066">腰胯</text>
+  <text x="720" y="155" text-anchor="middle" font-family="&quot;Microsoft YaHei&quot;, Arial, sans-serif" font-size="14" fill="#555555">松腰落胯·尾闾微收</text>
+
+  <!-- Card 4: 脊柱 -->
+  <rect x="890" y="100" width="260" height="80" rx="10" fill="#EDE7D9" stroke="#C8C0B0" stroke-width="1"/>
+  <circle cx="920" cy="140" r="16" fill="#FFFFFF" stroke="#7A5230" stroke-width="1.5"/>
+  <text x="920" y="146" text-anchor="middle" font-family="&quot;Microsoft YaHei&quot;, Arial, sans-serif" font-size="18" font-weight="bold" fill="#7A5230">④</text>
+  <text x="1000" y="133" text-anchor="middle" font-family="&quot;Microsoft YaHei&quot;, Arial, sans-serif" font-size="20" font-weight="bold" fill="#425066">脊柱</text>
+  <text x="1000" y="155" text-anchor="middle" font-family="&quot;Microsoft YaHei&quot;, Arial, sans-serif" font-size="14" fill="#555555">含胸拔背·自然正直</text>
+
+  <!-- Row 2: 3 cards -->
+  <!-- Card 5: 手臂 -->
+  <rect x="70" y="200" width="340" height="80" rx="10" fill="#EDE7D9" stroke="#C8C0B0" stroke-width="1"/>
+  <circle cx="100" cy="240" r="16" fill="#FFFFFF" stroke="#7A5230" stroke-width="1.5"/>
+  <text x="100" y="246" text-anchor="middle" font-family="&quot;Microsoft YaHei&quot;, Arial, sans-serif" font-size="18" font-weight="bold" fill="#7A5230">⑤</text>
+  <text x="210" y="233" text-anchor="middle" font-family="&quot;Microsoft YaHei&quot;, Arial, sans-serif" font-size="20" font-weight="bold" fill="#425066">手臂</text>
+  <text x="210" y="255" text-anchor="middle" font-family="&quot;Microsoft YaHei&quot;, Arial, sans-serif" font-size="14" fill="#555555">环抱如抱球·沉肩坠肘</text>
+
+  <!-- Card 6: 头部 -->
+  <rect x="440" y="200" width="340" height="80" rx="10" fill="#EDE7D9" stroke="#C8C0B0" stroke-width="1"/>
+  <circle cx="470" cy="240" r="16" fill="#FFFFFF" stroke="#7A5230" stroke-width="1.5"/>
+  <text x="470" y="246" text-anchor="middle" font-family="&quot;Microsoft YaHei&quot;, Arial, sans-serif" font-size="18" font-weight="bold" fill="#7A5230">⑥</text>
+  <text x="580" y="233" text-anchor="middle" font-family="&quot;Microsoft YaHei&quot;, Arial, sans-serif" font-size="20" font-weight="bold" fill="#425066">头部</text>
+  <text x="580" y="255" text-anchor="middle" font-family="&quot;Microsoft YaHei&quot;, Arial, sans-serif" font-size="14" fill="#555555">虚灵顶劲·舌抵上颚</text>
+
+  <!-- Card 7: 校验 -->
+  <rect x="810" y="200" width="340" height="80" rx="10" fill="#EDE7D9" stroke="#C8C0B0" stroke-width="1"/>
+  <circle cx="840" cy="240" r="16" fill="#FFFFFF" stroke="#7A5230" stroke-width="1.5"/>
+  <text x="840" y="246" text-anchor="middle" font-family="&quot;Microsoft YaHei&quot;, Arial, sans-serif" font-size="18" font-weight="bold" fill="#7A5230">⑦</text>
+  <text x="950" y="233" text-anchor="middle" font-family="&quot;Microsoft YaHei&quot;, Arial, sans-serif" font-size="20" font-weight="bold" fill="#425066">校验</text>
+  <text x="950" y="255" text-anchor="middle" font-family="&quot;Microsoft YaHei&quot;, Arial, sans-serif" font-size="14" fill="#555555">耳肩髋踝一条线</text>
+
+  <!-- Core principle -->
+  <text x="640" y="310" text-anchor="middle" font-family="KaiTi, Georgia, serif" font-size="24" fill="#7A5230">松而不懈，紧而不僵</text>
+
+  <!-- Progression header -->
+  <text x="640" y="355" text-anchor="middle" font-family="&quot;Microsoft YaHei&quot;, Arial, sans-serif" font-size="24" font-weight="bold" fill="#425066">进阶路线</text>
+
+  <!-- 5-stage progression bars -->
+  <!-- Bar 1 -->
+  <rect x="140" y="375" width="1000" height="36" rx="6" fill="#789262"/>
+  <text x="640" y="399" text-anchor="middle" font-family="&quot;Microsoft YaHei&quot;, Arial, sans-serif" font-size="14" fill="#FFFFFF">第1-2周 · 5-10分钟 · 正确站姿</text>
+
+  <!-- Bar 2 -->
+  <rect x="140" y="420" width="1000" height="36" rx="6" fill="#789262"/>
+  <text x="640" y="444" text-anchor="middle" font-family="&quot;Microsoft YaHei&quot;, Arial, sans-serif" font-size="14" fill="#FFFFFF">第3-4周 · 10-20分钟 · 系统放松</text>
+
+  <!-- Bar 3 -->
+  <rect x="140" y="465" width="1000" height="36" rx="6" fill="#425066"/>
+  <text x="640" y="489" text-anchor="middle" font-family="&quot;Microsoft YaHei&quot;, Arial, sans-serif" font-size="14" fill="#FFFFFF">第2-3月 · 20-30分钟 · 自然呼吸</text>
+
+  <!-- Bar 4 -->
+  <rect x="140" y="510" width="1000" height="36" rx="6" fill="#425066"/>
+  <text x="640" y="534" text-anchor="middle" font-family="&quot;Microsoft YaHei&quot;, Arial, sans-serif" font-size="14" fill="#FFFFFF">第3-6月 · 30-40分钟 · 入静增强</text>
+
+  <!-- Bar 5 -->
+  <rect x="140" y="555" width="1000" height="36" rx="6" fill="#7A5230"/>
+  <text x="640" y="579" text-anchor="middle" font-family="&quot;Microsoft YaHei&quot;, Arial, sans-serif" font-size="14" fill="#FFFFFF">6月+ · 40-60分钟 · 内外合一</text>
+
+  <!-- Bottom quote -->
+  <text x="640" y="620" text-anchor="middle" font-family="&quot;Microsoft YaHei&quot;, Arial, sans-serif" font-size="16" fill="#2D2D2D">宁短不懈，宁轻不伤——短时间高质量胜过长时间硬撑</text>
+
+  <!-- Source -->
+  <text x="640" y="680" text-anchor="middle" font-family="&quot;Microsoft YaHei&quot;, Arial, sans-serif" font-size="11" fill="#999999">来源：王芗斋《意拳正轨》; 姚宗勋桩功理论; 于永年《大成拳养生法》</text>
+</svg>

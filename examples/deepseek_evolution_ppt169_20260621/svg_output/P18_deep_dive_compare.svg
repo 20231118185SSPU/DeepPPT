@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1280 720">
+    <!-- P18 Deep Dive Compare - story_driven -->
+    <rect width="1280" height="720" fill="#16162A" />
+
+    <!-- Section label -->
+    <text x="60" y="60" fill="#FFFFFF" fill-opacity="0.45" font-family="Microsoft YaHei, Arial, sans-serif" font-size="13">§4 · 对比分析</text>
+
+    <!-- Page title -->
+    <text x="60" y="100" fill="#FFFFFF" font-family="Microsoft YaHei, Arial, sans-serif" font-size="32" font-weight="bold">V3 vs GPT-4 全面对比</text>
+
+    <!-- Three dots -->
+    <circle cx="60" cy="128" r="3" fill="#FFFFFF" fill-opacity="0.35" />
+    <circle cx="74" cy="128" r="3" fill="#FFFFFF" fill-opacity="0.25" />
+    <circle cx="88" cy="128" r="3" fill="#FFFFFF" fill-opacity="0.15" />
+
+    <!-- Divider line -->
+    <line x1="60" y1="145" x2="1220" y2="145" stroke="#FFFFFF" stroke-width="1" stroke-opacity="0.15" />
+
+    <!-- Benchmarks image (left) -->
+    <rect x="56" y="160" width="528" height="260" fill="none" stroke="#FFFFFF" stroke-width="1" stroke-opacity="0.12" rx="6" />
+    <image href="images/web_assets/web_v3_benchmarks.png" x="60" y="164" width="520" height="250" preserveAspectRatio="xMidYMid slice" />
+
+    <!-- Comparison cards (right) -->
+    <rect x="620" y="160" width="600" height="68" fill="#FFFFFF" fill-opacity="0.08" rx="8" />
+    <text x="640" y="185" fill="#FFFFFF" font-family="Microsoft YaHei, Arial, sans-serif" font-size="14" font-weight="bold">训练成本</text>
+    <text x="640" y="210" fill="#FFFFFF" fill-opacity="0.6" font-family="Microsoft YaHei, Arial, sans-serif" font-size="13">DeepSeek-V3: $5.57M vs GPT-4: ~$100M</text>
+
+    <rect x="620" y="238" width="600" height="68" fill="#FFFFFF" fill-opacity="0.08" rx="8" />
+    <text x="640" y="263" fill="#FFFFFF" font-family="Microsoft YaHei, Arial, sans-serif" font-size="14" font-weight="bold">硬件配置</text>
+    <text x="640" y="288" fill="#FFFFFF" fill-opacity="0.6" font-family="Microsoft YaHei, Arial, sans-serif" font-size="13">DeepSeek-V3: 2048 H800 vs GPT-4: 25000 A100</text>
+
+    <rect x="620" y="316" width="600" height="68" fill="#FFFFFF" fill-opacity="0.08" rx="8" />
+    <text x="640" y="341" fill="#FFFFFF" font-family="Microsoft YaHei, Arial, sans-serif" font-size="14" font-weight="bold">性能表现</text>
+    <text x="640" y="366" fill="#FFFFFF" fill-opacity="0.6" font-family="Microsoft YaHei, Arial, sans-serif" font-size="13">多数基准持平或超越 GPT-4，数学推理显著领先</text>
+
+    <rect x="620" y="394" width="600" height="68" fill="#FFFFFF" fill-opacity="0.08" rx="8" />
+    <text x="640" y="419" fill="#FFFFFF" font-family="Microsoft YaHei, Arial, sans-serif" font-size="14" font-weight="bold">训练效率</text>
+    <text x="640" y="444" fill="#FFFFFF" fill-opacity="0.6" font-family="Microsoft YaHei, Arial, sans-serif" font-size="13">仅需 2 个月 · FP8 混合精度 · MLA + MoE</text>
+
+    <!-- Comparison image (bottom) -->
+    <rect x="56" y="440" width="528" height="208" fill="none" stroke="#FFFFFF" stroke-width="1" stroke-opacity="0.12" rx="6" />
+    <image href="images/web_assets/web_v3_comparison.png" x="60" y="444" width="520" height="200" preserveAspectRatio="xMidYMid slice" />
+
+    <!-- Source -->
+    <text x="60" y="680" fill="#FFFFFF" fill-opacity="0.4" font-family="Microsoft YaHei, Arial, sans-serif" font-size="12">Source: DeepSeek-V3 Technical Report / OpenAI GPT-4 System Card</text>
+
+    <!-- Page number -->
+    <text x="1220" y="708" text-anchor="end" fill="#FFFFFF" fill-opacity="0.4" font-family="Microsoft YaHei, Arial, sans-serif" font-size="11">18 / 30</text>
+</svg>

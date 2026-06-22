@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1280 720">
+    <rect width="1280" height="720" fill="#0A1628" />
+    <image href="images/P12_transition_chess.png" x="0" y="0" width="1280" height="720" preserveAspectRatio="xMidYMid slice" />
+    <rect x="0" y="0" width="1280" height="720" fill="#0A1628" fill-opacity="0.55" />
+    <text x="60" y="200" fill="#E8E8E8" fill-opacity="0.45" font-family="Microsoft YaHei, Arial, sans-serif" font-size="14">冷面</text>
+    <text x="60" y="240" fill="#E8E8E8" fill-opacity="0.7" font-family="Microsoft YaHei, Arial, sans-serif" font-size="20">她的温暖从不宣之于口——但每一个行动都在诉说</text>
+    <text x="60" y="360" fill="#D4A848" fill-opacity="0.15" font-family="Source Han Sans SC, Microsoft YaHei, sans-serif" font-size="120" font-weight="bold">04</text>
+    <text x="60" y="430" fill="#E8E8E8" font-family="Source Han Sans SC, Microsoft YaHei, sans-serif" font-size="48" font-weight="bold">棋局</text>
+    <text x="60" y="480" fill="#E8E8E8" fill-opacity="0.75" font-family="Microsoft YaHei, Arial, sans-serif" font-size="20">凯尔希不只是一个角色——她是一枚在泰拉棋盘上走了万年的棋子</text>
+    <line x1="60" y1="530" x2="400" y2="530" stroke="#D4A848" stroke-width="1" stroke-opacity="0.3" />
+    <text x="60" y="570" fill="#E8E8E8" fill-opacity="0.6" font-family="Microsoft YaHei, Arial, sans-serif" font-size="18">从龙门到维多利亚——她的政治遗产跨越了整个泰拉大陆</text>
+</svg>

@@ -1,0 +1,64 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1280 720">
+  <rect width="1280" height="720" fill="#F5F0E6"/>
+  <!-- Title -->
+  <text x="640" y="60" text-anchor="middle" font-family="SimSun, Georgia, serif" font-size="36" font-weight="bold" fill="#425066">8周改变大脑：关键MRI研究数据</text>
+
+  <!-- Top Section: 4 Data Callouts (y=120-280) -->
+  <!-- Callout 1 -->
+  <text x="175" y="160" text-anchor="middle" font-family="SimSun, Georgia, serif" font-size="48" font-weight="bold" fill="#7A5230">2005</text>
+  <text x="175" y="190" text-anchor="middle" font-family="&quot;Microsoft YaHei&quot;, Arial, sans-serif" font-size="14" fill="#999999">Sara Lazar · Harvard</text>
+  <text x="175" y="218" text-anchor="middle" font-family="&quot;Microsoft YaHei&quot;, Arial, sans-serif" font-size="16" fill="#2D2D2D">首次MRI证明冥想改变脑结构</text>
+
+  <!-- Callout 2 -->
+  <text x="445" y="160" text-anchor="middle" font-family="SimSun, Georgia, serif" font-size="48" font-weight="bold" fill="#7A5230">8周</text>
+  <text x="445" y="190" text-anchor="middle" font-family="&quot;Microsoft YaHei&quot;, Arial, sans-serif" font-size="14" fill="#999999">Holzel 2011</text>
+  <text x="445" y="218" text-anchor="middle" font-family="&quot;Microsoft YaHei&quot;, Arial, sans-serif" font-size="16" fill="#2D2D2D">可测量的脑结构变化</text>
+
+  <!-- Callout 3 -->
+  <text x="715" y="160" text-anchor="middle" font-family="SimSun, Georgia, serif" font-size="36" font-weight="bold" fill="#789262">+灰质</text>
+  <text x="715" y="190" text-anchor="middle" font-family="&quot;Microsoft YaHei&quot;, Arial, sans-serif" font-size="14" fill="#999999">海马体 &amp; 前额叶</text>
+  <text x="715" y="218" text-anchor="middle" font-family="&quot;Microsoft YaHei&quot;, Arial, sans-serif" font-size="16" fill="#2D2D2D">学习·决策·情绪调节</text>
+
+  <!-- Callout 4 -->
+  <text x="985" y="160" text-anchor="middle" font-family="SimSun, Georgia, serif" font-size="36" font-weight="bold" fill="#B85C38">-灰质</text>
+  <text x="985" y="190" text-anchor="middle" font-family="&quot;Microsoft YaHei&quot;, Arial, sans-serif" font-size="14" fill="#999999">杏仁核</text>
+  <text x="985" y="218" text-anchor="middle" font-family="&quot;Microsoft YaHei&quot;, Arial, sans-serif" font-size="16" fill="#2D2D2D">恐惧·压力反应减弱</text>
+
+  <!-- Divider line -->
+  <line x1="100" y1="270" x2="1180" y2="270" stroke="#C8C0B0" stroke-width="1"/>
+
+  <!-- Section label -->
+  <text x="640" y="310" text-anchor="middle" font-family="&quot;Microsoft YaHei&quot;, Arial, sans-serif" font-size="18" fill="#555555">关键脑区变化</text>
+
+  <!-- Bottom Section: 4 Brain Region Cards (y=340-580) -->
+  <!-- Card 1: 前额叶皮层 -->
+  <rect x="45" y="340" width="270" height="200" rx="12" fill="#EDE7D9" stroke="#C8C0B0" stroke-width="1"/>
+  <text x="180" y="390" text-anchor="middle" font-family="SimSun, Georgia, serif" font-size="20" font-weight="bold" fill="#425066">前额叶皮层</text>
+  <text x="180" y="425" text-anchor="middle" font-family="&quot;Microsoft YaHei&quot;, Arial, sans-serif" font-size="18" fill="#789262">灰质增厚</text>
+  <text x="180" y="460" text-anchor="middle" font-family="&quot;Microsoft YaHei&quot;, Arial, sans-serif" font-size="16" fill="#2D2D2D">决策力·情绪调节 ↑</text>
+  <text x="180" y="500" text-anchor="middle" font-family="&quot;Microsoft YaHei&quot;, Arial, sans-serif" font-size="14" fill="#999999">认知控制中枢</text>
+
+  <!-- Card 2: 海马体 -->
+  <rect x="345" y="340" width="270" height="200" rx="12" fill="#EDE7D9" stroke="#C8C0B0" stroke-width="1"/>
+  <text x="480" y="390" text-anchor="middle" font-family="SimSun, Georgia, serif" font-size="20" font-weight="bold" fill="#425066">海马体</text>
+  <text x="480" y="425" text-anchor="middle" font-family="&quot;Microsoft YaHei&quot;, Arial, sans-serif" font-size="18" fill="#789262">灰质密度增加</text>
+  <text x="480" y="460" text-anchor="middle" font-family="&quot;Microsoft YaHei&quot;, Arial, sans-serif" font-size="16" fill="#2D2D2D">学习·记忆 ↑</text>
+  <text x="480" y="500" text-anchor="middle" font-family="&quot;Microsoft YaHei&quot;, Arial, sans-serif" font-size="14" fill="#999999">神经发生核心区</text>
+
+  <!-- Card 3: 杏仁核 -->
+  <rect x="645" y="340" width="270" height="200" rx="12" fill="#EDE7D9" stroke="#C8C0B0" stroke-width="1"/>
+  <text x="780" y="390" text-anchor="middle" font-family="SimSun, Georgia, serif" font-size="20" font-weight="bold" fill="#425066">杏仁核</text>
+  <text x="780" y="425" text-anchor="middle" font-family="&quot;Microsoft YaHei&quot;, Arial, sans-serif" font-size="18" fill="#B85C38">体积缩小</text>
+  <text x="780" y="460" text-anchor="middle" font-family="&quot;Microsoft YaHei&quot;, Arial, sans-serif" font-size="16" fill="#2D2D2D">恐惧·压力 ↓</text>
+  <text x="780" y="500" text-anchor="middle" font-family="&quot;Microsoft YaHei&quot;, Arial, sans-serif" font-size="14" fill="#999999">情绪反应减弱</text>
+
+  <!-- Card 4: 默认模式网络 -->
+  <rect x="945" y="340" width="270" height="200" rx="12" fill="#EDE7D9" stroke="#C8C0B0" stroke-width="1"/>
+  <text x="1080" y="390" text-anchor="middle" font-family="SimSun, Georgia, serif" font-size="20" font-weight="bold" fill="#425066">默认模式网络</text>
+  <text x="1080" y="425" text-anchor="middle" font-family="&quot;Microsoft YaHei&quot;, Arial, sans-serif" font-size="18" fill="#B85C38">活动减少</text>
+  <text x="1080" y="460" text-anchor="middle" font-family="&quot;Microsoft YaHei&quot;, Arial, sans-serif" font-size="16" fill="#2D2D2D">走神·自我参照 ↓</text>
+  <text x="1080" y="500" text-anchor="middle" font-family="&quot;Microsoft YaHei&quot;, Arial, sans-serif" font-size="14" fill="#999999">专注力提升</text>
+
+  <!-- Source -->
+  <text x="640" y="680" text-anchor="middle" font-family="&quot;Microsoft YaHei&quot;, Arial, sans-serif" font-size="11" fill="#999999">来源：Lazar et al. 2005 NeuroReport; Holzel et al. 2011</text>
+</svg>

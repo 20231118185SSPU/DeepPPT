@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1280 720">
+    <rect width="1280" height="720" fill="#0A0E1A" />
+    <image href="images/P18_ending_bg.png" x="0" y="0" width="1280" height="720" preserveAspectRatio="xMidYMid slice" />
+    <rect x="0" y="220" width="1280" height="340" fill="#0A0E1A" fill-opacity="0.6" />
+    <!-- Decorative gold line -->
+    <line x1="440" y1="310" x2="840" y2="310" stroke="#D4A848" stroke-width="2" stroke-opacity="0.5" />
+    <!-- Quote -->
+    <text x="640" y="365" text-anchor="middle" fill="#E8E8E8" font-family="Microsoft YaHei, Arial, sans-serif" font-size="24" font-style="italic">
+        "博士，我们的脚下，是一条漫长的道路......
+    </text>
+    <text x="640" y="405" text-anchor="middle" fill="#E8E8E8" font-family="Microsoft YaHei, Arial, sans-serif" font-size="24" font-style="italic">
+        也许这是一次没有终点的旅行，
+    </text>
+    <text x="640" y="445" text-anchor="middle" fill="#E8E8E8" font-family="Microsoft YaHei, Arial, sans-serif" font-size="24" font-style="italic">
+        但如果是和您一起，我觉得，非常幸福。"
+    </text>
+    <text x="640" y="495" text-anchor="middle" fill="#D4A848" font-family="Microsoft YaHei, Arial, sans-serif" font-size="18">
+        ——阿米娅
+    </text>
+    <!-- Bottom bar -->
+    <rect x="0" y="660" width="1280" height="60" fill="#000000" fill-opacity="0.35" />
+    <text x="640" y="695" text-anchor="middle" fill="#E8E8E8" fill-opacity="0.7" font-family="Microsoft YaHei, Arial, sans-serif" font-size="14">
+        明日方舟深度研究 | 2026
+    </text>
+</svg>

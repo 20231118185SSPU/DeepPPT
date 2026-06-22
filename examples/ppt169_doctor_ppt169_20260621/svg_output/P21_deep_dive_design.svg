@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1280 720">
+    <g id="background">
+        <rect width="1280" height="720" fill="#1C1C1C" />
+        <image href="images/web_assets/dim6_doctor_concept.jpg" x="0" y="0" width="1280" height="720" preserveAspectRatio="xMidYMid slice" />
+        <rect x="0" y="0" width="1280" height="720" fill="#1C1C1C" fill-opacity="0.82" />
+    </g>
+    <g id="header">
+        <rect x="60" y="35" width="90" height="24" fill="#8B1A1A" rx="4" />
+        <text x="105" y="52" text-anchor="middle" fill="#FFFFFF" font-family="Microsoft YaHei, Arial, sans-serif" font-size="11" font-weight="bold">DEEP DIVE</text>
+        <text x="170" y="56" fill="#E8E8E8" font-family="Source Han Sans SC, Microsoft YaHei, sans-serif" font-size="28" font-weight="bold">面具设计与角色谱系</text>
+        <line x1="60" y1="72" x2="1220" y2="72" stroke="#8B1A1A" stroke-width="1" stroke-opacity="0.25" />
+    </g>
+    <g id="symbol-mirror">
+        <rect x="60" y="95" width="260" height="220" fill="#FFFFFF" fill-opacity="0.04" rx="8" />
+        <rect x="60" y="95" width="260" height="3" fill="#8B1A1A" fill-opacity="0.5" />
+        <text x="190" y="135" text-anchor="middle" fill="#8B1A1A" font-family="Microsoft YaHei, Arial, sans-serif" font-size="40" font-weight="bold">面具</text>
+        <text x="190" y="165" text-anchor="middle" fill="#C0C0C0" font-family="Microsoft YaHei, Arial, sans-serif" font-size="14">=</text>
+        <text x="190" y="195" text-anchor="middle" fill="#E8E8E8" font-family="Microsoft YaHei, Arial, sans-serif" font-size="20" font-weight="bold">镜子</text>
+        <text x="190" y="230" text-anchor="middle" fill="#E8E8E8" fill-opacity="0.6" font-family="Microsoft YaHei, Arial, sans-serif" font-size="13">反射每个注视者的想象</text>
+        <text x="190" y="255" text-anchor="middle" fill="#C0C0C0" fill-opacity="0.5" font-family="Microsoft YaHei, Arial, sans-serif" font-size="12">二游主角设计中最极端的案例</text>
+    </g>
+    <g id="symbol-hood">
+        <rect x="340" y="95" width="260" height="220" fill="#FFFFFF" fill-opacity="0.04" rx="8" />
+        <rect x="340" y="95" width="260" height="3" fill="#C0C0C0" fill-opacity="0.5" />
+        <text x="470" y="135" text-anchor="middle" fill="#8B1A1A" font-family="Microsoft YaHei, Arial, sans-serif" font-size="40" font-weight="bold">兜帽</text>
+        <text x="470" y="165" text-anchor="middle" fill="#C0C0C0" font-family="Microsoft YaHei, Arial, sans-serif" font-size="14">=</text>
+        <text x="470" y="195" text-anchor="middle" fill="#E8E8E8" font-family="Microsoft YaHei, Arial, sans-serif" font-size="20" font-weight="bold">茧</text>
+        <text x="470" y="230" text-anchor="middle" fill="#E8E8E8" fill-opacity="0.6" font-family="Microsoft YaHei, Arial, sans-serif" font-size="13">包裹从一个时代到另一个时代的蜕变</text>
+        <text x="470" y="255" text-anchor="middle" fill="#C0C0C0" fill-opacity="0.5" font-family="Microsoft YaHei, Arial, sans-serif" font-size="12">保护观众的代入空间</text>
+    </g>
+    <g id="symbol-sarcophagus">
+        <rect x="620" y="95" width="260" height="220" fill="#FFFFFF" fill-opacity="0.04" rx="8" />
+        <rect x="620" y="95" width="260" height="3" fill="#8B1A1A" fill-opacity="0.5" />
+        <text x="750" y="135" text-anchor="middle" fill="#8B1A1A" font-family="Microsoft YaHei, Arial, sans-serif" font-size="40" font-weight="bold">石棺</text>
+        <text x="750" y="165" text-anchor="middle" fill="#C0C0C0" font-family="Microsoft YaHei, Arial, sans-serif" font-size="14">=</text>
+        <text x="750" y="195" text-anchor="middle" fill="#E8E8E8" font-family="Microsoft YaHei, Arial, sans-serif" font-size="20" font-weight="bold">子宫/坟墓</text>
+        <text x="750" y="230" text-anchor="middle" fill="#E8E8E8" fill-opacity="0.6" font-family="Microsoft YaHei, Arial, sans-serif" font-size="13">同一个容器中的死亡与重生</text>
+        <text x="750" y="255" text-anchor="middle" fill="#C0C0C0" fill-opacity="0.5" font-family="Microsoft YaHei, Arial, sans-serif" font-size="12">"旧我"的死亡和"新我"的诞生</text>
+    </g>
+    <g id="symbol-gender">
+        <rect x="900" y="95" width="320" height="220" fill="#FFFFFF" fill-opacity="0.04" rx="8" />
+        <rect x="900" y="95" width="320" height="3" fill="#C0C0C0" fill-opacity="0.5" />
+        <text x="1060" y="135" text-anchor="middle" fill="#8B1A1A" font-family="Microsoft YaHei, Arial, sans-serif" font-size="40" font-weight="bold">性别</text>
+        <text x="1060" y="165" text-anchor="middle" fill="#C0C0C0" font-family="Microsoft YaHei, Arial, sans-serif" font-size="14">=</text>
+        <text x="1060" y="195" text-anchor="middle" fill="#E8E8E8" font-family="Microsoft YaHei, Arial, sans-serif" font-size="20" font-weight="bold">模糊</text>
+        <text x="1060" y="230" text-anchor="middle" fill="#E8E8E8" fill-opacity="0.6" font-family="Microsoft YaHei, Arial, sans-serif" font-size="13">官方从未指定博士性别</text>
+        <text x="1060" y="255" text-anchor="middle" fill="#C0C0C0" fill-opacity="0.5" font-family="Microsoft YaHei, Arial, sans-serif" font-size="12">"不属于任何分类"的核心设定</text>
+    </g>
+    <g id="gacha-spectrum">
+        <rect x="60" y="340" width="1160" height="180" fill="#FFFFFF" fill-opacity="0.03" rx="8" />
+        <text x="84" y="372" fill="#C0C0C0" font-family="Microsoft YaHei, Arial, sans-serif" font-size="11" fill-opacity="0.6">GACHA 主角设计谱系</text>
+        <line x1="120" y1="430" x2="1180" y2="430" stroke="#3A3A3A" stroke-width="1" />
+        <text x="120" y="415" fill="#A0A0A0" font-family="Microsoft YaHei, Arial, sans-serif" font-size="11">极少过去信息</text>
+        <text x="1120" y="415" fill="#A0A0A0" font-family="Microsoft YaHei, Arial, sans-serif" font-size="11">极多过去信息</text>
+        <circle cx="250" cy="430" r="8" fill="#C0C0C0" fill-opacity="0.5" />
+        <text x="250" y="455" text-anchor="middle" fill="#C0C0C0" font-family="Microsoft YaHei, Arial, sans-serif" font-size="12">FGO</text>
+        <text x="250" y="472" text-anchor="middle" fill="#A0A0A0" font-family="Microsoft YaHei, Arial, sans-serif" font-size="10">极高代入感</text>
+        <circle cx="500" cy="430" r="8" fill="#C0C0C0" fill-opacity="0.5" />
+        <text x="500" y="455" text-anchor="middle" fill="#C0C0C0" font-family="Microsoft YaHei, Arial, sans-serif" font-size="12">原神</text>
+        <circle cx="1000" cy="430" r="10" fill="#8B1A1A" />
+        <text x="1000" y="455" text-anchor="middle" fill="#8B1A1A" font-family="Microsoft YaHei, Arial, sans-serif" font-size="13" font-weight="bold">博士</text>
+        <text x="1000" y="472" text-anchor="middle" fill="#C0C0C0" font-family="Microsoft YaHei, Arial, sans-serif" font-size="10">中等偏低代入感</text>
+        <line x1="1000" y1="420" x2="1000" y2="395" stroke="#8B1A1A" stroke-width="1" stroke-opacity="0.5" />
+        <text x="1000" y="390" text-anchor="middle" fill="#8B1A1A" font-family="Microsoft YaHei, Arial, sans-serif" font-size="11" font-weight="bold">最极端案例</text>
+    </g>
+    <g id="footer">
+        <rect x="0" y="660" width="1280" height="60" fill="#000000" fill-opacity="0.3" />
+        <text x="60" y="695" fill="#A0A0A0" font-family="Microsoft YaHei, Arial, sans-serif" font-size="11">素材来源：官方概念设计图</text>
+    </g>
+</svg>

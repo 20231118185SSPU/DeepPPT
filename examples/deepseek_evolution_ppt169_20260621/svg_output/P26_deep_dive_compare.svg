@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1280 720">
+    <!-- P26 Deep Dive Compare - story_driven -->
+    <rect width="1280" height="720" fill="#16162A" />
+
+    <!-- Section label -->
+    <text x="60" y="60" fill="#FFFFFF" fill-opacity="0.45" font-family="Microsoft YaHei, Arial, sans-serif" font-size="13">§6 · 对比分析</text>
+
+    <!-- Page title -->
+    <text x="60" y="100" fill="#FFFFFF" font-family="Microsoft YaHei, Arial, sans-serif" font-size="32" font-weight="bold">行业巨头反应</text>
+
+    <!-- Three dots -->
+    <circle cx="60" cy="128" r="3" fill="#FFFFFF" fill-opacity="0.35" />
+    <circle cx="74" cy="128" r="3" fill="#FFFFFF" fill-opacity="0.25" />
+    <circle cx="88" cy="128" r="3" fill="#FFFFFF" fill-opacity="0.15" />
+
+    <!-- Divider line -->
+    <line x1="60" y1="145" x2="1220" y2="145" stroke="#FFFFFF" stroke-width="1" stroke-opacity="0.15" />
+
+    <!-- Card 1: OpenAI -->
+    <rect x="60" y="170" width="370" height="440" fill="#FFFFFF" fill-opacity="0.08" rx="8" />
+    <text x="245" y="220" text-anchor="middle" fill="#FFFFFF" font-family="Microsoft YaHei, Arial, sans-serif" font-size="32" font-weight="bold">OpenAI</text>
+    <text x="245" y="255" text-anchor="middle" fill="#FFFFFF" fill-opacity="0.7" font-family="Microsoft YaHei, Arial, sans-serif" font-size="18" font-weight="bold">加速迭代</text>
+    <line x1="130" y1="275" x2="360" y2="275" stroke="#FFFFFF" stroke-width="1" stroke-opacity="0.15" />
+    <text x="245" y="310" text-anchor="middle" fill="#FFFFFF" fill-opacity="0.6" font-family="Microsoft YaHei, Arial, sans-serif" font-size="14">加速发布 o1/o3 模型</text>
+    <text x="245" y="340" text-anchor="middle" fill="#FFFFFF" fill-opacity="0.6" font-family="Microsoft YaHei, Arial, sans-serif" font-size="14">推出 $200/月 Pro 计划</text>
+    <text x="245" y="370" text-anchor="middle" fill="#FFFFFF" fill-opacity="0.6" font-family="Microsoft YaHei, Arial, sans-serif" font-size="14">强化推理能力差异化</text>
+    <line x1="130" y1="395" x2="360" y2="395" stroke="#FFFFFF" stroke-width="1" stroke-opacity="0.15" />
+    <text x="245" y="430" text-anchor="middle" fill="#FFFFFF" fill-opacity="0.85" font-family="Microsoft YaHei, Arial, sans-serif" font-size="15" font-weight="bold">以速度应对挑战</text>
+
+    <!-- Card 2: Meta -->
+    <rect x="455" y="170" width="370" height="440" fill="#FFFFFF" fill-opacity="0.08" rx="8" />
+    <text x="640" y="220" text-anchor="middle" fill="#FFFFFF" font-family="Microsoft YaHei, Arial, sans-serif" font-size="32" font-weight="bold">Meta</text>
+    <text x="640" y="255" text-anchor="middle" fill="#FFFFFF" fill-opacity="0.7" font-family="Microsoft YaHei, Arial, sans-serif" font-size="18" font-weight="bold">加大开源</text>
+    <line x1="525" y1="275" x2="755" y2="275" stroke="#FFFFFF" stroke-width="1" stroke-opacity="0.15" />
+    <text x="640" y="310" text-anchor="middle" fill="#FFFFFF" fill-opacity="0.6" font-family="Microsoft YaHei, Arial, sans-serif" font-size="14">Llama 3/4 加速发布</text>
+    <text x="640" y="340" text-anchor="middle" fill="#FFFFFF" fill-opacity="0.6" font-family="Microsoft YaHei, Arial, sans-serif" font-size="14">开源策略成为竞争壁垒</text>
+    <text x="640" y="370" text-anchor="middle" fill="#FFFFFF" fill-opacity="0.6" font-family="Microsoft YaHei, Arial, sans-serif" font-size="14">投入 650 亿美元 AI 基建</text>
+    <line x1="525" y1="395" x2="755" y2="395" stroke="#FFFFFF" stroke-width="1" stroke-opacity="0.15" />
+    <text x="640" y="430" text-anchor="middle" fill="#FFFFFF" fill-opacity="0.85" font-family="Microsoft YaHei, Arial, sans-serif" font-size="15" font-weight="bold">以生态应对挑战</text>
+
+    <!-- Card 3: Google -->
+    <rect x="850" y="170" width="370" height="440" fill="#FFFFFF" fill-opacity="0.08" rx="8" />
+    <text x="1035" y="220" text-anchor="middle" fill="#FFFFFF" font-family="Microsoft YaHei, Arial, sans-serif" font-size="32" font-weight="bold">Google</text>
+    <text x="1035" y="255" text-anchor="middle" fill="#FFFFFF" fill-opacity="0.7" font-family="Microsoft YaHei, Arial, sans-serif" font-size="18" font-weight="bold">调整策略</text>
+    <line x1="920" y1="275" x2="1150" y2="275" stroke="#FFFFFF" stroke-width="1" stroke-opacity="0.15" />
+    <text x="1035" y="310" text-anchor="middle" fill="#FFFFFF" fill-opacity="0.6" font-family="Microsoft YaHei, Arial, sans-serif" font-size="14">Gemini 2.0 推出 Flash 版</text>
+    <text x="1035" y="340" text-anchor="middle" fill="#FFFFFF" fill-opacity="0.6" font-family="Microsoft YaHei, Arial, sans-serif" font-size="14">更注重效率而非规模</text>
+    <text x="1035" y="370" text-anchor="middle" fill="#FFFFFF" fill-opacity="0.6" font-family="Microsoft YaHei, Arial, sans-serif" font-size="14">云服务整合推理能力</text>
+    <line x1="920" y1="395" x2="1150" y2="395" stroke="#FFFFFF" stroke-width="1" stroke-opacity="0.15" />
+    <text x="1035" y="430" text-anchor="middle" fill="#FFFFFF" fill-opacity="0.85" font-family="Microsoft YaHei, Arial, sans-serif" font-size="15" font-weight="bold">以效率应对挑战</text>
+
+    <!-- Page number -->
+    <text x="1220" y="708" text-anchor="end" fill="#FFFFFF" fill-opacity="0.4" font-family="Microsoft YaHei, Arial, sans-serif" font-size="11">26 / 30</text>
+</svg>

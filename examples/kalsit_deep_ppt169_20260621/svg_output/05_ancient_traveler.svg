@@ -1,0 +1,69 @@
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 1280 720" width="1280" height="720">
+  <!-- Background image -->
+  <image href="../images/scene_departure.png" x="0" y="0" width="1280" height="720" preserveAspectRatio="xMidYMid slice"/>
+
+  <!-- Heavy dark overlay -->
+  <rect x="0" y="0" width="1280" height="720" fill="#0D1117" fill-opacity="0.65"/>
+
+  <!-- Section label -->
+  <rect x="100" y="120" width="60" height="2" fill="#58A6FF"/>
+  <text x="100" y="155" font-family="Microsoft YaHei, Arial, sans-serif" font-size="14" fill="#58A6FF" letter-spacing="2">
+    超越常人
+  </text>
+
+  <!-- Hero title -->
+  <text x="100" y="240" font-family="Microsoft YaHei, Arial, sans-serif" font-size="56" font-weight="bold" fill="#FFFFFF" letter-spacing="4">
+    万年旅者
+  </text>
+
+  <!-- English subtitle -->
+  <text x="100" y="280" font-family="Microsoft YaHei, Arial, sans-serif" font-size="18" fill="#8B949E">
+    THE ETERNAL WANDERER
+  </text>
+
+  <!-- Quote block -->
+  <rect x="100" y="340" width="3" height="80" fill="#58A6FF"/>
+  <text x="120" y="370" font-family="Georgia, SimSun, serif" font-size="22" fill="#C9D1D9" font-style="italic">
+    "比你所见的片段还要漫长，
+  </text>
+  <text x="120" y="400" font-family="Georgia, SimSun, serif" font-size="22" fill="#C9D1D9" font-style="italic">
+    漫长千倍万倍，特蕾西娅。"
+  </text>
+
+  <!-- Key facts -->
+  <rect x="100" y="480" width="500" height="1" fill="#30363D" fill-opacity="0.5"/>
+
+  <text x="100" y="520" font-family="Microsoft YaHei, Arial, sans-serif" font-size="15" fill="#8B949E">
+    旅途起点可追溯至
+  </text>
+  <text x="100" y="555" font-family="Microsoft YaHei, Arial, sans-serif" font-size="36" font-weight="bold" fill="#58A6FF">
+    10,000+
+  </text>
+  <text x="250" y="555" font-family="Microsoft YaHei, Arial, sans-serif" font-size="18" fill="#8B949E">
+    年前
+  </text>
+
+  <text x="100" y="595" font-family="Microsoft YaHei, Arial, sans-serif" font-size="14" fill="#6E7681">
+    从源石尚未扩散的时代，她就开始在泰拉大地上漫长旅途
+  </text>
+
+  <!-- Tactical planning stat -->
+  <rect x="700" y="480" width="200" height="80" rx="8" fill="#161B22" fill-opacity="0.8" stroke="#30363D" stroke-width="1"/>
+  <text x="720" y="510" font-family="Microsoft YaHei, Arial, sans-serif" font-size="13" fill="#8B949E">战术规划</text>
+  <text x="720" y="545" font-family="Microsoft YaHei, Arial, sans-serif" font-size="28" font-weight="bold" fill="#F85149">
+    ■■
+  </text>
+  <text x="790" y="545" font-family="Microsoft YaHei, Arial, sans-serif" font-size="14" fill="#F85149">
+    机密
+  </text>
+
+  <!-- Another quote -->
+  <text x="700" y="600" font-family="Georgia, SimSun, serif" font-size="16" fill="#6E7681" font-style="italic">
+    "没有过去，也没有将来。"
+  </text>
+
+  <!-- Page number -->
+  <text x="1220" y="690" font-family="Microsoft YaHei, Arial, sans-serif" font-size="12" fill="#6E7681" text-anchor="end">
+    04 / 10
+  </text>
+</svg>

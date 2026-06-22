@@ -1,0 +1,49 @@
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 1280 720" width="1280" height="720">
+  <!-- Background image -->
+  <image href="../images/scene_footprint.png" x="0" y="0" width="1280" height="720" preserveAspectRatio="xMidYMid slice"/>
+
+  <!-- Heavy dark overlay -->
+  <rect x="0" y="0" width="1280" height="720" fill="#0D1117" fill-opacity="0.7"/>
+
+  <!-- Centered content -->
+
+  <!-- Decorative top line -->
+  <rect x="590" y="200" width="100" height="2" fill="#58A6FF" fill-opacity="0.6"/>
+
+  <!-- Main quote -->
+  <text x="640" y="290" font-family="Georgia, SimSun, serif" font-size="28" fill="#FFFFFF" text-anchor="middle" font-style="italic">
+    "我希望这艘罗德岛
+  </text>
+  <text x="640" y="330" font-family="Georgia, SimSun, serif" font-size="28" fill="#58A6FF" text-anchor="middle" font-style="italic">
+    能成为你的家。"
+  </text>
+
+  <!-- Attribution -->
+  <text x="640" y="390" font-family="Microsoft YaHei, Arial, sans-serif" font-size="16" fill="#8B949E" text-anchor="middle">
+    — 特蕾西娅
+  </text>
+
+  <!-- Decorative divider -->
+  <rect x="540" y="430" width="200" height="1" fill="#30363D"/>
+
+  <!-- Closing message -->
+  <text x="640" y="480" font-family="Microsoft YaHei, Arial, sans-serif" font-size="18" fill="#C9D1D9" text-anchor="middle">
+    从万年前的孤独旅人，到罗德岛的守护者
+  </text>
+  <text x="640" y="515" font-family="Microsoft YaHei, Arial, sans-serif" font-size="18" fill="#C9D1D9" text-anchor="middle">
+    凯尔希的故事，仍在继续
+  </text>
+
+  <!-- Character name -->
+  <text x="640" y="600" font-family="Microsoft YaHei, Arial, sans-serif" font-size="14" fill="#6E7681" text-anchor="middle" letter-spacing="4">
+    ARKNIGHTS · KAL'TSIT
+  </text>
+
+  <!-- Decorative bottom line -->
+  <rect x="590" y="630" width="100" height="2" fill="#58A6FF" fill-opacity="0.6"/>
+
+  <!-- Page number -->
+  <text x="1220" y="690" font-family="Microsoft YaHei, Arial, sans-serif" font-size="12" fill="#6E7681" text-anchor="end">
+    10 / 10
+  </text>
+</svg>

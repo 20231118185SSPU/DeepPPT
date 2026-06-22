@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1280 720">
+    <rect width="1280" height="720" fill="#F8FAFC" />
+
+    <!-- 标题区 -->
+    <text x="60" y="55" fill="#94A3B8" font-family="Microsoft YaHei, PingFang SC, Segoe UI, sans-serif" font-size="13">§3 标准工作流</text>
+    <text x="60" y="85" fill="#1E293B" font-family="Microsoft YaHei, PingFang SC, Segoe UI, sans-serif" font-size="32" font-weight="bold">提示词优化技巧</text>
+    <rect x="60" y="98" width="300" height="2" fill="#2563EB" fill-opacity="0.3" />
+
+    <!-- 左侧：技巧卡片 -->
+    <rect x="60" y="130" width="560" height="460" fill="#FFFFFF" rx="12" stroke="#CBD5E1" stroke-width="1" />
+
+    <!-- 技巧1: 审阅提示词 -->
+    <rect x="85" y="155" width="32" height="32" fill="#2563EB" fill-opacity="0.12" rx="8" />
+    <text x="101" y="177" text-anchor="middle" fill="#2563EB" font-size="18">✦</text>
+    <text x="130" y="177" fill="#1E293B" font-family="Microsoft YaHei, PingFang SC, Segoe UI, sans-serif" font-size="17" font-weight="bold">审阅 DeepSeek 输出</text>
+    <text x="130" y="200" fill="#64748B" font-family="Microsoft YaHei, PingFang SC, Segoe UI, sans-serif" font-size="14">盯对文案细节，不满意就修改</text>
+
+    <!-- 技巧2: 添加负面提示词 -->
+    <rect x="85" y="230" width="32" height="32" fill="#F97316" fill-opacity="0.12" rx="8" />
+    <text x="101" y="252" text-anchor="middle" fill="#F97316" font-size="18">✦</text>
+    <text x="130" y="252" fill="#1E293B" font-family="Microsoft YaHei, PingFang SC, Segoe UI, sans-serif" font-size="17" font-weight="bold">添加负面提示词</text>
+    <text x="130" y="275" fill="#64748B" font-family="Microsoft YaHei, PingFang SC, Segoe UI, sans-serif" font-size="14">排除不想要的风格和元素</text>
+
+    <!-- 负面提示词列表 -->
+    <rect x="85" y="295" width="510" height="170" fill="#F0F4F8" rx="8" />
+    <text x="105" y="320" fill="#64748B" font-family="Microsoft YaHei, PingFang SC, Segoe UI, sans-serif" font-size="13">推荐负面提示词：</text>
+    <text x="105" y="345" fill="#64748B" font-family="Microsoft YaHei, PingFang SC, Segoe UI, sans-serif" font-size="13">不要卡通风 · 不要花哨插画 · 不要复杂 3D 效果</text>
+    <text x="105" y="368" fill="#64748B" font-family="Microsoft YaHei, PingFang SC, Segoe UI, sans-serif" font-size="13">不要拥挤排版 · 不要杂乱背景 · 不要强烈霓虹色</text>
+    <text x="105" y="391" fill="#64748B" font-family="Microsoft YaHei, PingFang SC, Segoe UI, sans-serif" font-size="13">不要暗黑背景 · 不要人物照片 · 不要商业广告风</text>
+    <text x="105" y="414" fill="#64748B" font-family="Microsoft YaHei, PingFang SC, Segoe UI, sans-serif" font-size="13">不要大量英文 · 不要文字变形 · 不要低清晰度</text>
+    <text x="105" y="437" fill="#64748B" font-family="Microsoft YaHei, PingFang SC, Segoe UI, sans-serif" font-size="13">不要信息堆砌 · 背景不要有图案</text>
+
+    <!-- 技巧3: 示例提示词模板 -->
+    <rect x="85" y="490" width="32" height="32" fill="#10B981" fill-opacity="0.12" rx="8" />
+    <text x="101" y="512" text-anchor="middle" fill="#10B981" font-size="18">✦</text>
+    <text x="130" y="512" fill="#1E293B" font-family="Microsoft YaHei, PingFang SC, Segoe UI, sans-serif" font-size="17" font-weight="bold">使用示例提示词模板</text>
+    <text x="130" y="535" fill="#64748B" font-family="Microsoft YaHei, PingFang SC, Segoe UI, sans-serif" font-size="14">"以结构化方式输出，科研绘图风格，颜色限定为白蓝绿橙"</text>
+
+    <!-- 右侧：截图 -->
+    <rect x="650" y="130" width="570" height="460" fill="#FFFFFF" rx="12" stroke="#CBD5E1" stroke-width="1" />
+    <image href="../images/image_008.png" x="665" y="145" width="540" height="430" preserveAspectRatio="xMidYMid meet" />
+
+    <!-- Takeaway -->
+    <rect x="60" y="640" width="1160" height="1" fill="#CBD5E1" />
+    <rect x="60" y="655" width="6" height="30" fill="#F97316" rx="3" />
+    <text x="80" y="680" fill="#1E293B" font-family="Microsoft YaHei, PingFang SC, Segoe UI, sans-serif" font-size="22" font-weight="bold">负面提示词是排除干扰的利器</text>
+</svg>

@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1280 720">
+    <rect width="1280" height="720" fill="#F0F4F8" />
+
+    <!-- 标题区 -->
+    <text x="60" y="55" fill="#94A3B8" font-family="Microsoft YaHei, PingFang SC, Segoe UI, sans-serif" font-size="13">§4 生成图片</text>
+    <text x="60" y="85" fill="#1E293B" font-family="Microsoft YaHei, PingFang SC, Segoe UI, sans-serif" font-size="32" font-weight="bold">生成与提示词结构</text>
+    <!-- 圆点装饰 -->
+    <circle cx="60" cy="102" r="3" fill="#2563EB" fill-opacity="0.5" />
+    <circle cx="74" cy="102" r="3" fill="#2563EB" fill-opacity="0.35" />
+    <circle cx="88" cy="102" r="3" fill="#2563EB" fill-opacity="0.2" />
+
+    <!-- 左侧：GPT-Image 截图 -->
+    <rect x="60" y="130" width="560" height="400" fill="#FFFFFF" rx="12" stroke="#CBD5E1" stroke-width="1" />
+    <image href="../images/image_009.png" x="75" y="145" width="530" height="370" preserveAspectRatio="xMidYMid meet" />
+
+    <!-- 右侧：六要素结构 -->
+    <rect x="650" y="130" width="570" height="400" fill="#FFFFFF" rx="12" stroke="#CBD5E1" stroke-width="1" />
+    <text x="935" y="170" text-anchor="middle" fill="#1E293B" font-family="Microsoft YaHei, PingFang SC, Segoe UI, sans-serif" font-size="22" font-weight="bold">优秀提示词六大要素</text>
+    <rect x="690" y="185" width="490" height="2" fill="#E8EDF2" />
+
+    <!-- 六要素 -->
+    <rect x="690" y="205" width="490" height="45" fill="#2563EB" fill-opacity="0.06" rx="8" />
+    <text x="710" y="234" fill="#2563EB" font-family="Segoe UI, Arial, sans-serif" font-size="20" font-weight="bold">①</text>
+    <text x="745" y="234" fill="#1E293B" font-family="Microsoft YaHei, PingFang SC, Segoe UI, sans-serif" font-size="17" font-weight="bold">主题</text>
+    <text x="800" y="234" fill="#64748B" font-family="Microsoft YaHei, PingFang SC, Segoe UI, sans-serif" font-size="14">— 画面核心内容是什么</text>
+
+    <rect x="690" y="260" width="490" height="45" fill="#F97316" fill-opacity="0.06" rx="8" />
+    <text x="710" y="289" fill="#F97316" font-family="Segoe UI, Arial, sans-serif" font-size="20" font-weight="bold">②</text>
+    <text x="745" y="289" fill="#1E293B" font-family="Microsoft YaHei, PingFang SC, Segoe UI, sans-serif" font-size="17" font-weight="bold">风格</text>
+    <text x="800" y="289" fill="#64748B" font-family="Microsoft YaHei, PingFang SC, Segoe UI, sans-serif" font-size="14">— 扁平、写实、3D、插画等</text>
+
+    <rect x="690" y="315" width="490" height="45" fill="#10B981" fill-opacity="0.06" rx="8" />
+    <text x="710" y="344" fill="#10B981" font-family="Segoe UI, Arial, sans-serif" font-size="20" font-weight="bold">③</text>
+    <text x="745" y="344" fill="#1E293B" font-family="Microsoft YaHei, PingFang SC, Segoe UI, sans-serif" font-size="17" font-weight="bold">构图</text>
+    <text x="800" y="344" fill="#64748B" font-family="Microsoft YaHei, PingFang SC, Segoe UI, sans-serif" font-size="14">— 居中、对称、三分法等</text>
+
+    <rect x="690" y="370" width="490" height="45" fill="#2563EB" fill-opacity="0.06" rx="8" />
+    <text x="710" y="399" fill="#2563EB" font-family="Segoe UI, Arial, sans-serif" font-size="20" font-weight="bold">④</text>
+    <text x="745" y="399" fill="#1E293B" font-family="Microsoft YaHei, PingFang SC, Segoe UI, sans-serif" font-size="17" font-weight="bold">色彩</text>
+    <text x="800" y="399" fill="#64748B" font-family="Microsoft YaHei, PingFang SC, Segoe UI, sans-serif" font-size="14">— 主色调和配色方案</text>
+
+    <rect x="690" y="425" width="490" height="45" fill="#F97316" fill-opacity="0.06" rx="8" />
+    <text x="710" y="454" fill="#F97316" font-family="Segoe UI, Arial, sans-serif" font-size="20" font-weight="bold">⑤</text>
+    <text x="745" y="454" fill="#1E293B" font-family="Microsoft YaHei, PingFang SC, Segoe UI, sans-serif" font-size="17" font-weight="bold">文字布局</text>
+    <text x="830" y="454" fill="#64748B" font-family="Microsoft YaHei, PingFang SC, Segoe UI, sans-serif" font-size="14">— 标题、正文、标注位置</text>
+
+    <rect x="690" y="480" width="490" height="45" fill="#10B981" fill-opacity="0.06" rx="8" />
+    <text x="710" y="509" fill="#10B981" font-family="Segoe UI, Arial, sans-serif" font-size="20" font-weight="bold">⑥</text>
+    <text x="745" y="509" fill="#1E293B" font-family="Microsoft YaHei, PingFang SC, Segoe UI, sans-serif" font-size="17" font-weight="bold">细节要求</text>
+    <text x="845" y="509" fill="#64748B" font-family="Microsoft YaHei, PingFang SC, Segoe UI, sans-serif" font-size="14">— 精度、附加约束</text>
+
+    <!-- Takeaway -->
+    <rect x="60" y="600" width="1160" height="1" fill="#CBD5E1" />
+    <rect x="60" y="615" width="6" height="30" fill="#2563EB" rx="3" />
+    <text x="80" y="640" fill="#1E293B" font-family="Microsoft YaHei, PingFang SC, Segoe UI, sans-serif" font-size="22" font-weight="bold">六要素缺一不可</text>
+</svg>

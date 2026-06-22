@@ -1,0 +1,42 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1280 720">
+  <!-- Background -->
+  <rect x="0" y="0" width="1280" height="720" fill="#F8F4F0"/>
+
+  <!-- Title -->
+  <text x="640" y="50" text-anchor="middle" font-family="SimSun, Georgia, serif" font-size="36" font-weight="bold" fill="#D4789C">经典台词与名场面</text>
+
+  <!-- Left column -->
+  <!-- Card 1 -->
+  <rect x="60" y="120" width="540" height="120" rx="12" fill="#F0ECF4" stroke="#D0C8D8"/>
+  <text x="330" y="162" text-anchor="middle" font-family="KaiTi, Georgia, serif" font-size="18" fill="#2D2D3D">我叫三月七！虽然我也不记得自己为什么叫这个名字了</text>
+  <text x="330" y="210" text-anchor="middle" font-family="&quot;Microsoft YaHei&quot;, Arial, sans-serif" font-size="14" fill="#6B6B80">——自我介绍·失忆设定起点</text>
+
+  <!-- Card 2 -->
+  <rect x="60" y="270" width="540" height="120" rx="12" fill="#F0ECF4" stroke="#D0C8D8"/>
+  <text x="330" y="312" text-anchor="middle" font-family="KaiTi, Georgia, serif" font-size="18" fill="#2D2D3D">这回我可没惹麻烦，还救了大家，所以我就不谦虚了，我真厉害！</text>
+  <text x="330" y="360" text-anchor="middle" font-family="&quot;Microsoft YaHei&quot;, Arial, sans-serif" font-size="14" fill="#6B6B80">——自我肯定·元气满满</text>
+
+  <!-- Card 3 -->
+  <rect x="60" y="420" width="540" height="120" rx="12" fill="#F0ECF4" stroke="#D0C8D8"/>
+  <text x="330" y="462" text-anchor="middle" font-family="KaiTi, Georgia, serif" font-size="18" fill="#2D2D3D">我要拍下来！</text>
+  <text x="330" y="510" text-anchor="middle" font-family="&quot;Microsoft YaHei&quot;, Arial, sans-serif" font-size="14" fill="#6B6B80">——最高频表情包素材</text>
+
+  <!-- Right column -->
+  <!-- Card 4 -->
+  <rect x="680" y="120" width="540" height="120" rx="12" fill="#F0ECF4" stroke="#D0C8D8"/>
+  <text x="950" y="162" text-anchor="middle" font-family="KaiTi, Georgia, serif" font-size="18" fill="#2D2D3D">照片才不小！</text>
+  <text x="950" y="210" text-anchor="middle" font-family="&quot;Microsoft YaHei&quot;, Arial, sans-serif" font-size="14" fill="#6B6B80">——被吐槽后的可爱反驳</text>
+
+  <!-- Card 5 -->
+  <rect x="680" y="270" width="540" height="120" rx="12" fill="#F0ECF4" stroke="#D0C8D8"/>
+  <text x="950" y="312" text-anchor="middle" font-family="KaiTi, Georgia, serif" font-size="18" fill="#2D2D3D">为自己准备了六十七个身世故事</text>
+  <text x="950" y="360" text-anchor="middle" font-family="&quot;Microsoft YaHei&quot;, Arial, sans-serif" font-size="14" fill="#6B6B80">——用想象力填补记忆空白</text>
+
+  <!-- Card 6 -->
+  <rect x="680" y="420" width="540" height="120" rx="12" fill="#F0ECF4" stroke="#D0C8D8"/>
+  <text x="950" y="462" text-anchor="middle" font-family="KaiTi, Georgia, serif" font-size="18" fill="#2D2D3D">仙舟罗浮情感爆发</text>
+  <text x="950" y="510" text-anchor="middle" font-family="&quot;Microsoft YaHei&quot;, Arial, sans-serif" font-size="14" fill="#6B6B80">——展现角色深度的名场面</text>
+
+  <!-- Source -->
+  <text x="640" y="680" text-anchor="middle" font-family="&quot;Microsoft YaHei&quot;, Arial, sans-serif" font-size="11" fill="#6B6B80">来源：游戏内语音 / Fandom Wiki</text>
+</svg>

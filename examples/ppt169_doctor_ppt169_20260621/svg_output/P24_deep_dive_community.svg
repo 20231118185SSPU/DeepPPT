@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1280 720">
+    <g id="background">
+        <rect width="1280" height="720" fill="#1C1C1C" />
+        <image href="images/web_assets/dim6_doctor_full_art.png" x="0" y="0" width="1280" height="720" preserveAspectRatio="xMidYMid slice" />
+        <rect x="0" y="0" width="1280" height="720" fill="#1C1C1C" fill-opacity="0.82" />
+    </g>
+    <g id="header">
+        <rect x="60" y="35" width="90" height="24" fill="#8B1A1A" rx="4" />
+        <text x="105" y="52" text-anchor="middle" fill="#FFFFFF" font-family="Microsoft YaHei, Arial, sans-serif" font-size="11" font-weight="bold">DEEP DIVE</text>
+        <text x="170" y="56" fill="#E8E8E8" font-family="Source Han Sans SC, Microsoft YaHei, sans-serif" font-size="28" font-weight="bold">社区理论与争议</text>
+        <line x1="60" y1="72" x2="1220" y2="72" stroke="#8B1A1A" stroke-width="1" stroke-opacity="0.25" />
+    </g>
+    <g id="platform-nga">
+        <rect x="60" y="95" width="360" height="200" fill="#FFFFFF" fill-opacity="0.04" rx="8" />
+        <rect x="60" y="95" width="4" height="200" fill="#8B1A1A" rx="2" />
+        <text x="84" y="125" fill="#8B1A1A" font-family="Microsoft YaHei, Arial, sans-serif" font-size="22" font-weight="bold">NGA</text>
+        <text x="84" y="152" fill="#C0C0C0" font-family="Microsoft YaHei, Arial, sans-serif" font-size="11" fill-opacity="0.6">中文考据社区</text>
+        <text x="84" y="182" fill="#E8E8E8" fill-opacity="0.85" font-family="Microsoft YaHei, Arial, sans-serif" font-size="14">前文明执政官理论</text>
+        <text x="84" y="208" fill="#E8E8E8" fill-opacity="0.6" font-family="Microsoft YaHei, Arial, sans-serif" font-size="13">系统性论证博士的前文明身份</text>
+        <text x="84" y="234" fill="#C0C0C0" fill-opacity="0.5" font-family="Microsoft YaHei, Arial, sans-serif" font-size="12">最详细的中文考据，每条线索都有出处</text>
+        <text x="84" y="272" fill="#8B1A1A" fill-opacity="0.7" font-family="Microsoft YaHei, Arial, sans-serif" font-size="11">论证密度 ★★★★★</text>
+    </g>
+    <g id="platform-reddit">
+        <rect x="440" y="95" width="380" height="200" fill="#FFFFFF" fill-opacity="0.04" rx="8" />
+        <rect x="440" y="95" width="4" height="200" fill="#C0C0C0" rx="2" />
+        <text x="464" y="125" fill="#C0C0C0" font-family="Microsoft YaHei, Arial, sans-serif" font-size="22" font-weight="bold">Reddit</text>
+        <text x="464" y="152" fill="#C0C0C0" font-family="Microsoft YaHei, Arial, sans-serif" font-size="11" fill-opacity="0.6">英文社区</text>
+        <text x="464" y="182" fill="#E8E8E8" fill-opacity="0.85" font-family="Microsoft YaHei, Arial, sans-serif" font-size="14">"terrible self-insert" 讨论</text>
+        <text x="464" y="208" fill="#E8E8E8" fill-opacity="0.6" font-family="Microsoft YaHei, Arial, sans-serif" font-size="13">博士代入感的系统性批判</text>
+        <text x="464" y="234" fill="#C0C0C0" fill-opacity="0.5" font-family="Microsoft YaHei, Arial, sans-serif" font-size="12">跨文化视角：太多背景故事无法做空白人设</text>
+        <text x="464" y="272" fill="#C0C0C0" fill-opacity="0.7" font-family="Microsoft YaHei, Arial, sans-serif" font-size="11">批判深度 ★★★★</text>
+    </g>
+    <g id="platform-bilibili">
+        <rect x="840" y="95" width="380" height="200" fill="#FFFFFF" fill-opacity="0.04" rx="8" />
+        <rect x="840" y="95" width="4" height="200" fill="#8B1A1A" rx="2" />
+        <text x="864" y="125" fill="#8B1A1A" font-family="Microsoft YaHei, Arial, sans-serif" font-size="22" font-weight="bold">Bilibili</text>
+        <text x="864" y="152" fill="#C0C0C0" font-family="Microsoft YaHei, Arial, sans-serif" font-size="11" fill-opacity="0.6">视频解析社区</text>
+        <text x="864" y="182" fill="#E8E8E8" fill-opacity="0.85" font-family="Microsoft YaHei, Arial, sans-serif" font-size="14">可视化时间线重构</text>
+        <text x="864" y="208" fill="#E8E8E8" fill-opacity="0.6" font-family="Microsoft YaHei, Arial, sans-serif" font-size="13">剧情解析视频将博士的时间线可视化</text>
+        <text x="864" y="234" fill="#C0C0C0" fill-opacity="0.5" font-family="Microsoft YaHei, Arial, sans-serif" font-size="12">帮助观众理解跨越万年的故事线</text>
+        <text x="864" y="272" fill="#8B1A1A" fill-opacity="0.7" font-family="Microsoft YaHei, Arial, sans-serif" font-size="11">可视化 ★★★★★</text>
+    </g>
+    <g id="hypergryph-strategy">
+        <rect x="60" y="320" width="1160" height="140" fill="#8B1A1A" fill-opacity="0.06" rx="8" />
+        <rect x="60" y="320" width="1160" height="2" fill="#8B1A1A" fill-opacity="0.3" />
+        <text x="84" y="355" fill="#E8E8E8" font-family="Microsoft YaHei, Arial, sans-serif" font-size="17" font-weight="bold">鹰角的叙事策略</text>
+        <text x="84" y="385" fill="#E8E8E8" fill-opacity="0.7" font-family="Microsoft YaHei, Arial, sans-serif" font-size="15">每一条新线索同时增加答案和问题——保持谜题的永恒活力</text>
+        <text x="84" y="415" fill="#C0C0C0" fill-opacity="0.6" font-family="Microsoft YaHei, Arial, sans-serif" font-size="14">博士的身份之谜永远不会完全解答——因为解答 = 面具被摘下</text>
+        <text x="84" y="445" fill="#C0C0C0" fill-opacity="0.5" font-family="Microsoft YaHei, Arial, sans-serif" font-size="13">面具的存在本身就是答案：它让每个人都能在其中看到自己想看的脸</text>
+    </g>
+    <g id="footer">
+        <rect x="0" y="660" width="1280" height="60" fill="#000000" fill-opacity="0.3" />
+        <text x="60" y="695" fill="#A0A0A0" font-family="Microsoft YaHei, Arial, sans-serif" font-size="11">素材来源：NGA / Reddit / Bilibili / PRTS Wiki</text>
+    </g>
+</svg>

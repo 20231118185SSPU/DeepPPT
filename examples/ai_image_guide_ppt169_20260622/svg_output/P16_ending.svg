@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1280 720">
+    <!-- ==================== 背景 ==================== -->
+    <rect width="1280" height="720" fill="#F8FAFC" />
+    <image href="../images/P16_ending_bg.png" x="0" y="0" width="1280" height="720" preserveAspectRatio="xMidYMid slice" />
+
+    <!-- 浅色遮罩 -->
+    <rect x="0" y="200" width="1280" height="380" fill="#F8FAFC" fill-opacity="0.8" />
+
+    <!-- 装饰线 -->
+    <rect x="440" y="280" width="400" height="3" rx="1.5" fill="#2563EB" />
+
+    <!-- ==================== 能力公式 ==================== -->
+    <text x="640" y="340" text-anchor="middle" fill="#1E293B" font-family="Microsoft YaHei, PingFang SC, Segoe UI, sans-serif"
+        font-size="36" font-weight="bold">
+        AI 生图能力
+    </text>
+    <text x="640" y="390" text-anchor="middle" fill="#2563EB" font-family="Microsoft YaHei, PingFang SC, Segoe UI, sans-serif"
+        font-size="28" font-weight="bold">
+        = 需求表达 × 提示词 × 审美 × 迭代
+    </text>
+
+    <!-- ==================== 推荐流程 ==================== -->
+    <rect x="200" y="430" width="880" height="50" fill="#E8EDF2" rx="25" />
+    <text x="340" y="462" text-anchor="middle" fill="#2563EB" font-family="Microsoft YaHei, PingFang SC, Segoe UI, sans-serif" font-size="16" font-weight="bold">DeepSeek</text>
+    <text x="430" y="462" fill="#94A3B8" font-size="18">→</text>
+    <text x="530" y="462" text-anchor="middle" fill="#10B981" font-family="Microsoft YaHei, PingFang SC, Segoe UI, sans-serif" font-size="16" font-weight="bold">排版设计</text>
+    <text x="620" y="462" fill="#94A3B8" font-size="18">→</text>
+    <text x="730" y="462" text-anchor="middle" fill="#F97316" font-family="Microsoft YaHei, PingFang SC, Segoe UI, sans-serif" font-size="16" font-weight="bold">GPT-Image2</text>
+    <text x="830" y="462" fill="#94A3B8" font-size="18">→</text>
+    <text x="920" y="462" text-anchor="middle" fill="#2563EB" font-family="Microsoft YaHei, PingFang SC, Segoe UI, sans-serif" font-size="16" font-weight="bold">修改优化</text>
+    <text x="1010" y="462" fill="#94A3B8" font-size="18">→</text>
+    <text x="1080" y="462" text-anchor="middle" fill="#1E293B" font-family="Microsoft YaHei, PingFang SC, Segoe UI, sans-serif" font-size="16" font-weight="bold">交付</text>
+
+    <!-- ==================== 底部信息栏 ==================== -->
+    <rect x="0" y="660" width="1280" height="60" fill="#E8EDF2" fill-opacity="0.8" />
+    <text x="60" y="695" fill="#64748B" font-family="Microsoft YaHei, PingFang SC, Segoe UI, sans-serif"
+        font-size="14">
+        AI 生图攻略 · 培训讲义
+    </text>
+    <text x="1220" y="695" text-anchor="end" fill="#64748B" font-family="Microsoft YaHei, PingFang SC, Segoe UI, sans-serif"
+        font-size="14">
+        2026
+    </text>
+</svg>

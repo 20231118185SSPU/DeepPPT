@@ -1,0 +1,105 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1280 720">
+  <rect width="1280" height="720" fill="#F5F0E6"/>
+  <!-- Title -->
+  <text x="640" y="50" text-anchor="middle" font-family="SimSun, Georgia, serif" font-size="36" font-weight="bold" fill="#425066">冥想 vs 站桩：8维度详细对比</text>
+
+  <!-- Center Divider -->
+  <line x1="640" y1="100" x2="640" y2="580" stroke="#425066" stroke-width="2"/>
+
+  <!-- Left Column: 冥想 -->
+  <!-- Header -->
+  <text x="320" y="110" text-anchor="middle" font-family="SimSun, Georgia, serif" font-size="28" font-weight="bold" fill="#789262">冥想</text>
+  <text x="320" y="140" text-anchor="middle" font-family="&quot;Microsoft YaHei&quot;, Arial, sans-serif" font-size="16" fill="#555555">自上而下 · 从心到身</text>
+
+  <!-- Row 1 -->
+  <rect x="50" y="160" width="540" height="46" rx="8" fill="#EDE7D9" stroke="none"/>
+  <text x="130" y="189" text-anchor="middle" font-family="&quot;Microsoft YaHei&quot;, Arial, sans-serif" font-size="16" font-weight="bold" fill="#789262">作用路径</text>
+  <text x="370" y="189" text-anchor="middle" font-family="&quot;Microsoft YaHei&quot;, Arial, sans-serif" font-size="16" fill="#2D2D2D">意识调节身体</text>
+
+  <!-- Row 2 -->
+  <rect x="50" y="210" width="540" height="46" rx="8" fill="#FFFFFF" stroke="none"/>
+  <text x="130" y="239" text-anchor="middle" font-family="&quot;Microsoft YaHei&quot;, Arial, sans-serif" font-size="16" font-weight="bold" fill="#789262">身体参与度</text>
+  <text x="370" y="239" text-anchor="middle" font-family="&quot;Microsoft YaHei&quot;, Arial, sans-serif" font-size="16" fill="#2D2D2D">低</text>
+
+  <!-- Row 3 -->
+  <rect x="50" y="260" width="540" height="46" rx="8" fill="#EDE7D9" stroke="none"/>
+  <text x="130" y="289" text-anchor="middle" font-family="&quot;Microsoft YaHei&quot;, Arial, sans-serif" font-size="16" font-weight="bold" fill="#789262">入门门槛</text>
+  <text x="370" y="289" text-anchor="middle" font-family="&quot;Microsoft YaHei&quot;, Arial, sans-serif" font-size="16" fill="#2D2D2D">零门槛</text>
+
+  <!-- Row 4 -->
+  <rect x="50" y="310" width="540" height="46" rx="8" fill="#FFFFFF" stroke="none"/>
+  <text x="130" y="339" text-anchor="middle" font-family="&quot;Microsoft YaHei&quot;, Arial, sans-serif" font-size="16" font-weight="bold" fill="#789262">单次时长</text>
+  <text x="370" y="339" text-anchor="middle" font-family="&quot;Microsoft YaHei&quot;, Arial, sans-serif" font-size="16" fill="#2D2D2D">10-45分钟</text>
+
+  <!-- Row 5 -->
+  <rect x="50" y="360" width="540" height="46" rx="8" fill="#EDE7D9" stroke="none"/>
+  <text x="130" y="389" text-anchor="middle" font-family="&quot;Microsoft YaHei&quot;, Arial, sans-serif" font-size="16" font-weight="bold" fill="#789262">科学证据</text>
+  <text x="370" y="389" text-anchor="middle" font-family="&quot;Microsoft YaHei&quot;, Arial, sans-serif" font-size="16" fill="#2D2D2D">数百项RCT</text>
+
+  <!-- Row 6 -->
+  <rect x="50" y="410" width="540" height="46" rx="8" fill="#FFFFFF" stroke="none"/>
+  <text x="130" y="439" text-anchor="middle" font-family="&quot;Microsoft YaHei&quot;, Arial, sans-serif" font-size="16" font-weight="bold" fill="#789262">核心收获</text>
+  <text x="370" y="439" text-anchor="middle" font-family="&quot;Microsoft YaHei&quot;, Arial, sans-serif" font-size="16" fill="#2D2D2D">觉察力·情绪调节</text>
+
+  <!-- Row 7 -->
+  <rect x="50" y="460" width="540" height="46" rx="8" fill="#EDE7D9" stroke="none"/>
+  <text x="130" y="489" text-anchor="middle" font-family="&quot;Microsoft YaHei&quot;, Arial, sans-serif" font-size="16" font-weight="bold" fill="#789262">独有优势</text>
+  <text x="370" y="489" text-anchor="middle" font-family="&quot;Microsoft YaHei&quot;, Arial, sans-serif" font-size="16" fill="#2D2D2D">焦虑抑郁疗效</text>
+
+  <!-- Row 8 -->
+  <rect x="50" y="510" width="540" height="46" rx="8" fill="#FFFFFF" stroke="none"/>
+  <text x="130" y="539" text-anchor="middle" font-family="&quot;Microsoft YaHei&quot;, Arial, sans-serif" font-size="16" font-weight="bold" fill="#789262">代表人物</text>
+  <text x="370" y="539" text-anchor="middle" font-family="&quot;Microsoft YaHei&quot;, Arial, sans-serif" font-size="16" fill="#2D2D2D">Jon Kabat-Zinn</text>
+
+  <!-- Right Column: 站桩 -->
+  <!-- Header -->
+  <text x="960" y="110" text-anchor="middle" font-family="SimSun, Georgia, serif" font-size="28" font-weight="bold" fill="#7A5230">站桩</text>
+  <text x="960" y="140" text-anchor="middle" font-family="&quot;Microsoft YaHei&quot;, Arial, sans-serif" font-size="16" fill="#555555">自下而上 · 从身到心</text>
+
+  <!-- Row 1 -->
+  <rect x="690" y="160" width="540" height="46" rx="8" fill="#EDE7D9" stroke="none"/>
+  <text x="770" y="189" text-anchor="middle" font-family="&quot;Microsoft YaHei&quot;, Arial, sans-serif" font-size="16" font-weight="bold" fill="#7A5230">作用路径</text>
+  <text x="1010" y="189" text-anchor="middle" font-family="&quot;Microsoft YaHei&quot;, Arial, sans-serif" font-size="16" fill="#2D2D2D">身体激活意识</text>
+
+  <!-- Row 2 -->
+  <rect x="690" y="210" width="540" height="46" rx="8" fill="#FFFFFF" stroke="none"/>
+  <text x="770" y="239" text-anchor="middle" font-family="&quot;Microsoft YaHei&quot;, Arial, sans-serif" font-size="16" font-weight="bold" fill="#7A5230">身体参与度</text>
+  <text x="1010" y="239" text-anchor="middle" font-family="&quot;Microsoft YaHei&quot;, Arial, sans-serif" font-size="16" fill="#2D2D2D">中高</text>
+
+  <!-- Row 3 -->
+  <rect x="690" y="260" width="540" height="46" rx="8" fill="#EDE7D9" stroke="none"/>
+  <text x="770" y="289" text-anchor="middle" font-family="&quot;Microsoft YaHei&quot;, Arial, sans-serif" font-size="16" font-weight="bold" fill="#7A5230">入门门槛</text>
+  <text x="1010" y="289" text-anchor="middle" font-family="&quot;Microsoft YaHei&quot;, Arial, sans-serif" font-size="16" fill="#2D2D2D">需学习桩架</text>
+
+  <!-- Row 4 -->
+  <rect x="690" y="310" width="540" height="46" rx="8" fill="#FFFFFF" stroke="none"/>
+  <text x="770" y="339" text-anchor="middle" font-family="&quot;Microsoft YaHei&quot;, Arial, sans-serif" font-size="16" font-weight="bold" fill="#7A5230">单次时长</text>
+  <text x="1010" y="339" text-anchor="middle" font-family="&quot;Microsoft YaHei&quot;, Arial, sans-serif" font-size="16" fill="#2D2D2D">5-60分钟</text>
+
+  <!-- Row 5 -->
+  <rect x="690" y="360" width="540" height="46" rx="8" fill="#EDE7D9" stroke="none"/>
+  <text x="770" y="389" text-anchor="middle" font-family="&quot;Microsoft YaHei&quot;, Arial, sans-serif" font-size="16" font-weight="bold" fill="#7A5230">科学证据</text>
+  <text x="1010" y="389" text-anchor="middle" font-family="&quot;Microsoft YaHei&quot;, Arial, sans-serif" font-size="16" fill="#2D2D2D">数十项研究</text>
+
+  <!-- Row 6 -->
+  <rect x="690" y="410" width="540" height="46" rx="8" fill="#FFFFFF" stroke="none"/>
+  <text x="770" y="439" text-anchor="middle" font-family="&quot;Microsoft YaHei&quot;, Arial, sans-serif" font-size="16" font-weight="bold" fill="#7A5230">核心收获</text>
+  <text x="1010" y="439" text-anchor="middle" font-family="&quot;Microsoft YaHei&quot;, Arial, sans-serif" font-size="16" fill="#2D2D2D">结构力·平衡感</text>
+
+  <!-- Row 7 -->
+  <rect x="690" y="460" width="540" height="46" rx="8" fill="#EDE7D9" stroke="none"/>
+  <text x="770" y="489" text-anchor="middle" font-family="&quot;Microsoft YaHei&quot;, Arial, sans-serif" font-size="16" font-weight="bold" fill="#7A5230">独有优势</text>
+  <text x="1010" y="489" text-anchor="middle" font-family="&quot;Microsoft YaHei&quot;, Arial, sans-serif" font-size="16" fill="#2D2D2D">下肢力量·防跌倒</text>
+
+  <!-- Row 8 -->
+  <rect x="690" y="510" width="540" height="46" rx="8" fill="#FFFFFF" stroke="none"/>
+  <text x="770" y="539" text-anchor="middle" font-family="&quot;Microsoft YaHei&quot;, Arial, sans-serif" font-size="16" font-weight="bold" fill="#7A5230">代表人物</text>
+  <text x="1010" y="539" text-anchor="middle" font-family="&quot;Microsoft YaHei&quot;, Arial, sans-serif" font-size="16" fill="#2D2D2D">王芗斋</text>
+
+  <!-- Bottom Takeaway Bar -->
+  <rect x="0" y="600" width="1280" height="50" fill="#425066" stroke="none"/>
+  <text x="640" y="632" text-anchor="middle" font-family="&quot;Microsoft YaHei&quot;, Arial, sans-serif" font-size="18" fill="#FFFFFF">不是二选一，而是互补的两条路径——传统修炼从来不区分</text>
+
+  <!-- Source -->
+  <text x="640" y="695" text-anchor="middle" font-family="&quot;Microsoft YaHei&quot;, Arial, sans-serif" font-size="11" fill="#999999">来源：综合调研</text>
+</svg>

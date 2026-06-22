@@ -1,0 +1,75 @@
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 1280 720" width="1280" height="720">
+  <!-- Background -->
+  <rect x="0" y="0" width="1280" height="720" fill="#0D1117"/>
+
+  <!-- Left portrait area with darker bg -->
+  <rect x="0" y="0" width="400" height="720" fill="#161B22"/>
+
+  <!-- Portrait image -->
+  <image href="../images/kalsit_portrait_e2.png" x="110" y="80" width="180" height="360" preserveAspectRatio="xMidYMid meet"/>
+
+  <!-- Divider line -->
+  <rect x="400" y="60" width="1" height="600" fill="#30363D"/>
+
+  <!-- Right content area -->
+  <!-- Section title -->
+  <rect x="440" y="60" width="60" height="2" fill="#58A6FF"/>
+  <text x="440" y="95" font-family="Microsoft YaHei, Arial, sans-serif" font-size="14" fill="#58A6FF" letter-spacing="2">
+    基础档案
+  </text>
+  <text x="440" y="130" font-family="Microsoft YaHei, Arial, sans-serif" font-size="36" font-weight="bold" fill="#FFFFFF">
+    OPERATOR PROFILE
+  </text>
+
+  <!-- Info grid - 2 columns -->
+  <!-- Column 1 -->
+  <text x="440" y="185" font-family="Microsoft YaHei, Arial, sans-serif" font-size="13" fill="#8B949E">代号</text>
+  <text x="440" y="208" font-family="Microsoft YaHei, Arial, sans-serif" font-size="18" fill="#C9D1D9">凯尔希</text>
+
+  <text x="440" y="248" font-family="Microsoft YaHei, Arial, sans-serif" font-size="13" fill="#8B949E">真实姓名</text>
+  <text x="440" y="271" font-family="Microsoft YaHei, Arial, sans-serif" font-size="18" fill="#C9D1D9">AMa-10</text>
+
+  <text x="440" y="311" font-family="Microsoft YaHei, Arial, sans-serif" font-size="13" fill="#8B949E">干员编号</text>
+  <text x="440" y="334" font-family="Microsoft YaHei, Arial, sans-serif" font-size="18" fill="#C9D1D9">B003</text>
+
+  <text x="440" y="374" font-family="Microsoft YaHei, Arial, sans-serif" font-size="13" fill="#8B949E">种族</text>
+  <text x="440" y="397" font-family="Microsoft YaHei, Arial, sans-serif" font-size="18" fill="#C9D1D9">菲林</text>
+
+  <text x="440" y="437" font-family="Microsoft YaHei, Arial, sans-serif" font-size="13" fill="#8B949E">身高</text>
+  <text x="440" y="460" font-family="Microsoft YaHei, Arial, sans-serif" font-size="18" fill="#C9D1D9">169cm</text>
+
+  <!-- Column 2 -->
+  <text x="740" y="185" font-family="Microsoft YaHei, Arial, sans-serif" font-size="13" fill="#8B949E">职业</text>
+  <text x="740" y="208" font-family="Microsoft YaHei, Arial, sans-serif" font-size="18" fill="#C9D1D9">医疗 · 医师</text>
+
+  <text x="740" y="248" font-family="Microsoft YaHei, Arial, sans-serif" font-size="13" fill="#8B949E">稀有度</text>
+  <text x="740" y="271" font-family="Microsoft YaHei, Arial, sans-serif" font-size="18" fill="#FFD700">★★★★★★</text>
+
+  <text x="740" y="311" font-family="Microsoft YaHei, Arial, sans-serif" font-size="13" fill="#8B949E">阵营</text>
+  <text x="740" y="334" font-family="Microsoft YaHei, Arial, sans-serif" font-size="18" fill="#C9D1D9">罗德岛</text>
+
+  <text x="740" y="374" font-family="Microsoft YaHei, Arial, sans-serif" font-size="13" fill="#8B949E">感染情况</text>
+  <text x="740" y="397" font-family="Microsoft YaHei, Arial, sans-serif" font-size="18" fill="#F85149">确认为感染者</text>
+
+  <text x="740" y="437" font-family="Microsoft YaHei, Arial, sans-serif" font-size="13" fill="#8B949E">战斗经验</text>
+  <text x="740" y="460" font-family="Microsoft YaHei, Arial, sans-serif" font-size="18" fill="#C9D1D9">三年</text>
+
+  <!-- Bottom quote -->
+  <rect x="440" y="520" width="760" height="1" fill="#30363D"/>
+  <text x="440" y="555" font-family="Georgia, SimSun, serif" font-size="16" fill="#8B949E" font-style="italic">
+    "罗德岛医疗部门负责人，凯尔希。她来自过去。她属于现在。"
+  </text>
+  <text x="440" y="580" font-family="Microsoft YaHei, Arial, sans-serif" font-size="12" fill="#6E7681">
+    — 招聘合同
+  </text>
+
+  <!-- CV info -->
+  <text x="440" y="640" font-family="Microsoft YaHei, Arial, sans-serif" font-size="12" fill="#6E7681">
+    画师：唯@W　|　CV：刘雪 / 日笠阳子 / Sura Siu
+  </text>
+
+  <!-- Page number -->
+  <text x="1220" y="690" font-family="Microsoft YaHei, Arial, sans-serif" font-size="12" fill="#6E7681" text-anchor="end">
+    02 / 10
+  </text>
+</svg>

@@ -1,0 +1,20 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1280 720">
+
+  <!-- Full-bleed background image -->
+  <image href="images/P11_trans3_bg.png" x="0" y="0" width="1280" height="720" preserveAspectRatio="xMidYMid slice"/>
+
+  <!-- Overlay -->
+  <rect x="0" y="0" width="1280" height="720" fill="#2D2D3D" fill-opacity="0.35"/>
+
+  <!-- Top subtitle -->
+  <text x="640" y="100" text-anchor="middle" font-family="&quot;Microsoft YaHei&quot;, Arial, sans-serif" font-size="15" font-style="italic" fill="#FFFFFF">三月七的视觉DNA和设计师故事</text>
+
+  <!-- Decorative vertical line -->
+  <line x1="80" y1="220" x2="80" y2="420" stroke="#9B72CF" stroke-width="3"/>
+
+  <!-- Center title -->
+  <text x="640" y="340" text-anchor="middle" font-family="SimSun, Georgia, serif" font-size="44" font-weight="bold" fill="#FFFFFF">第三章 · 从盾到剑</text>
+
+  <!-- Bottom tagline -->
+  <text x="640" y="500" text-anchor="middle" font-family="&quot;Microsoft YaHei&quot;, Arial, sans-serif" font-size="20" fill="#FFFFFF">从弓箭到剑——她在战斗中如何成长？</text>
+</svg>

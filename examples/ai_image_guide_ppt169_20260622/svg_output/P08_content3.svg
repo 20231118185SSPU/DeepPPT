@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1280 720">
+    <rect width="1280" height="720" fill="#F8FAFC" />
+
+    <!-- 标题区 -->
+    <text x="60" y="55" fill="#94A3B8" font-family="Microsoft YaHei, PingFang SC, Segoe UI, sans-serif" font-size="13">§2 工具准备</text>
+    <text x="60" y="85" fill="#1E293B" font-family="Microsoft YaHei, PingFang SC, Segoe UI, sans-serif" font-size="32" font-weight="bold">三大核心工具</text>
+    <rect x="60" y="98" width="300" height="2" fill="#2563EB" fill-opacity="0.3" />
+
+    <!-- 三张工具卡片 -->
+    <!-- DeepSeek -->
+    <rect x="60" y="130" width="370" height="400" fill="#FFFFFF" rx="12" stroke="#CBD5E1" stroke-width="1" />
+    <rect x="60" y="130" width="370" height="8" fill="#2563EB" rx="4" />
+    <text x="245" y="190" text-anchor="middle" fill="#2563EB" font-family="Segoe UI, Arial, sans-serif" font-size="48" font-weight="bold">01</text>
+    <text x="245" y="230" text-anchor="middle" fill="#1E293B" font-family="Microsoft YaHei, PingFang SC, Segoe UI, sans-serif" font-size="24" font-weight="bold">DeepSeek</text>
+    <text x="245" y="265" text-anchor="middle" fill="#64748B" font-family="Microsoft YaHei, PingFang SC, Segoe UI, sans-serif" font-size="15">文案整理 · 结构设计</text>
+    <line x1="100" y1="285" x2="390" y2="285" stroke="#E8EDF2" stroke-width="1" />
+    <text x="90" y="315" fill="#64748B" font-family="Microsoft YaHei, PingFang SC, Segoe UI, sans-serif" font-size="15">✦ 分析你的文案需求</text>
+    <text x="90" y="345" fill="#64748B" font-family="Microsoft YaHei, PingFang SC, Segoe UI, sans-serif" font-size="15">✦ 生成结构化排版方案</text>
+    <text x="90" y="375" fill="#64748B" font-family="Microsoft YaHei, PingFang SC, Segoe UI, sans-serif" font-size="15">✦ 输出 AI 绘图提示词</text>
+    <text x="90" y="405" fill="#64748B" font-family="Microsoft YaHei, PingFang SC, Segoe UI, sans-serif" font-size="15">✦ 帮你优化负面提示词</text>
+
+    <!-- GPT-Image -->
+    <rect x="455" y="130" width="370" height="400" fill="#FFFFFF" rx="12" stroke="#CBD5E1" stroke-width="1" />
+    <rect x="455" y="130" width="370" height="8" fill="#F97316" rx="4" />
+    <text x="640" y="190" text-anchor="middle" fill="#F97316" font-family="Segoe UI, Arial, sans-serif" font-size="48" font-weight="bold">02</text>
+    <text x="640" y="230" text-anchor="middle" fill="#1E293B" font-family="Microsoft YaHei, PingFang SC, Segoe UI, sans-serif" font-size="24" font-weight="bold">GPT-Image</text>
+    <text x="640" y="265" text-anchor="middle" fill="#64748B" font-family="Microsoft YaHei, PingFang SC, Segoe UI, sans-serif" font-size="15">AI 图片生成</text>
+    <line x1="495" y1="285" x2="785" y2="285" stroke="#E8EDF2" stroke-width="1" />
+    <text x="485" y="315" fill="#64748B" font-family="Microsoft YaHei, PingFang SC, Segoe UI, sans-serif" font-size="15">✦ 接收结构化提示词</text>
+    <text x="485" y="345" fill="#64748B" font-family="Microsoft YaHei, PingFang SC, Segoe UI, sans-serif" font-size="15">✦ 生成高质量图片</text>
+    <text x="485" y="375" fill="#64748B" font-family="Microsoft YaHei, PingFang SC, Segoe UI, sans-serif" font-size="15">✦ 支持多种风格</text>
+    <text x="485" y="405" fill="#64748B" font-family="Microsoft YaHei, PingFang SC, Segoe UI, sans-serif" font-size="15">✦ 也可用 Gemini 替代</text>
+
+    <!-- 辅助工具 -->
+    <rect x="850" y="130" width="370" height="400" fill="#FFFFFF" rx="12" stroke="#CBD5E1" stroke-width="1" />
+    <rect x="850" y="130" width="370" height="8" fill="#10B981" rx="4" />
+    <text x="1035" y="190" text-anchor="middle" fill="#10B981" font-family="Segoe UI, Arial, sans-serif" font-size="48" font-weight="bold">03</text>
+    <text x="1035" y="230" text-anchor="middle" fill="#1E293B" font-family="Microsoft YaHei, PingFang SC, Segoe UI, sans-serif" font-size="24" font-weight="bold">辅助工具</text>
+    <text x="1035" y="265" text-anchor="middle" fill="#64748B" font-family="Microsoft YaHei, PingFang SC, Segoe UI, sans-serif" font-size="15">后期微调 · 可选</text>
+    <line x1="890" y1="285" x2="1180" y2="285" stroke="#E8EDF2" stroke-width="1" />
+    <text x="880" y="315" fill="#64748B" font-family="Microsoft YaHei, PingFang SC, Segoe UI, sans-serif" font-size="15">✦ 豆包 — 抠图、去背景</text>
+    <text x="880" y="345" fill="#64748B" font-family="Microsoft YaHei, PingFang SC, Segoe UI, sans-serif" font-size="15">✦ 千图 — 局部修改</text>
+    <text x="880" y="375" fill="#64748B" font-family="Microsoft YaHei, PingFang SC, Segoe UI, sans-serif" font-size="15">✦ 智谱清言 — 视觉分析</text>
+    <text x="880" y="405" fill="#64748B" font-family="Microsoft YaHei, PingFang SC, Segoe UI, sans-serif" font-size="15">✦ 按需使用，非必须</text>
+
+    <!-- Takeaway -->
+    <rect x="60" y="600" width="1160" height="1" fill="#CBD5E1" />
+    <rect x="60" y="615" width="6" height="30" fill="#2563EB" rx="3" />
+    <text x="80" y="640" fill="#1E293B" font-family="Microsoft YaHei, PingFang SC, Segoe UI, sans-serif" font-size="22" font-weight="bold">选对工具，事半功倍</text>
+</svg>

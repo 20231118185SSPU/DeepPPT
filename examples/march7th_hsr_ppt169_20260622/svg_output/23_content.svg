@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1280 720">
+    <!-- 冰白背景 -->
+    <rect width="1280" height="720" fill="#F8F4F0" />
+
+    <!-- 章节指示 -->
+    <text x="60" y="55" fill="#6B6B80" font-family="&quot;Microsoft YaHei&quot;, Arial, sans-serif"
+        font-size="13">
+        结语
+    </text>
+
+    <!-- 页面标题 -->
+    <text x="60" y="85" fill="#D4789C" font-family="SimSun, Georgia, serif"
+        font-size="32" font-weight="bold">
+        冰封记忆中的春天
+    </text>
+
+    <!-- 圆点装饰 (Variant B) -->
+    <circle cx="60" cy="102" r="3" fill="#D4789C" fill-opacity="0.5" />
+    <circle cx="74" cy="102" r="3" fill="#D4789C" fill-opacity="0.35" />
+    <circle cx="88" cy="102" r="3" fill="#D4789C" fill-opacity="0.2" />
+
+    <!-- 核心视觉区：带边框变体 -->
+    <rect x="56" y="116" width="1168" height="418" fill="none" stroke="#D0C8D8" stroke-width="1" stroke-opacity="0.3" rx="6" />
+    <image href="images/P23_content_bg.png" x="60" y="120" width="1160" height="410" preserveAspectRatio="xMidYMid slice" />
+
+    <!-- 图片下方补充说明文字 -->
+    <text x="60" y="565" fill="#6B6B80" font-family="&quot;Microsoft YaHei&quot;, Arial, sans-serif"
+        font-size="16">
+        记忆与遗忘 · 自我和解 · 用照片留住现在 —— 贯穿全部剧情的核心母题
+    </text>
+
+    <!-- 分隔线 -->
+    <line x1="60" y1="598" x2="1220" y2="598" stroke="#D0C8D8" stroke-width="1" />
+
+    <!-- 核心结论 -->
+    <text x="60" y="640" fill="#D4789C" font-family="SimSun, Georgia, serif"
+        font-size="22" font-weight="bold">
+        即使忘记过去也能找到新的意义
+    </text>
+
+    <!-- 左侧装饰条 -->
+    <rect x="1200" y="625" width="3" height="24" fill="#D4789C" fill-opacity="0.3" />
+</svg>

@@ -1,0 +1,32 @@
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 1280 720" width="1280" height="720">
+  <image href="../images/kalsit_alt_avatar.png" x="0" y="0" width="1280" height="720" preserveAspectRatio="xMidYMid slice"/>
+  <rect x="0" y="0" width="1280" height="720" fill="#0D1117" fill-opacity="0.75"/>
+  <rect x="80" y="50" width="60" height="2" fill="#58A6FF"/>
+  <text x="80" y="85" font-family="Microsoft YaHei, Arial, sans-serif" font-size="14" fill="#58A6FF" letter-spacing="2">第一章 · 创作者</text>
+  <text x="80" y="125" font-family="Microsoft YaHei, Arial, sans-serif" font-size="36" font-weight="bold" fill="#FFFFFF">画师与配音</text>
+  <rect x="80" y="145" width="1120" height="1" fill="#30363D"/>
+  
+  <rect x="80" y="180" width="540" height="200" rx="8" fill="#161B22" stroke="#30363D" stroke-width="1"/>
+  <text x="100" y="220" font-family="Microsoft YaHei, Arial, sans-serif" font-size="18" font-weight="bold" fill="#58A6FF">画师</text>
+  <text x="100" y="250" font-family="Microsoft YaHei, Arial, sans-serif" font-size="24" fill="#FFFFFF">唯@W</text>
+  <text x="100" y="280" font-family="Microsoft YaHei, Arial, sans-serif" font-size="14" fill="#8B949E">明日方舟主力画师，负责多位核心角色设计</text>
+  <text x="100" y="310" font-family="Microsoft YaHei, Arial, sans-serif" font-size="14" fill="#8B949E">画风细腻，擅长表现角色的气质与深度</text>
+  <text x="100" y="355" font-family="Microsoft YaHei, Arial, sans-serif" font-size="12" fill="#6E7681">代表作品：凯尔希、阿米娅、W等</text>
+
+  <rect x="660" y="180" width="540" height="200" rx="8" fill="#161B22" stroke="#30363D" stroke-width="1"/>
+  <text x="680" y="220" font-family="Microsoft YaHei, Arial, sans-serif" font-size="18" font-weight="bold" fill="#3FB950">中文配音</text>
+  <text x="680" y="250" font-family="Microsoft YaHei, Arial, sans-serif" font-size="24" fill="#FFFFFF">刘雪</text>
+  <text x="680" y="280" font-family="Microsoft YaHei, Arial, sans-serif" font-size="14" fill="#8B949E">资深配音演员，声线沉稳大气</text>
+  <text x="680" y="310" font-family="Microsoft YaHei, Arial, sans-serif" font-size="14" fill="#8B949E">完美诠释了凯尔希冷静理性的性格</text>
+
+  <rect x="80" y="410" width="540" height="150" rx="8" fill="#161B22" stroke="#30363D" stroke-width="1"/>
+  <text x="100" y="450" font-family="Microsoft YaHei, Arial, sans-serif" font-size="18" font-weight="bold" fill="#D4AF37">日文配音</text>
+  <text x="100" y="480" font-family="Microsoft YaHei, Arial, sans-serif" font-size="24" fill="#FFFFFF">日笠阳子</text>
+  <text x="100" y="510" font-family="Microsoft YaHei, Arial, sans-serif" font-size="14" fill="#8B949E">日本知名声优，代表角色众多</text>
+
+  <rect x="660" y="410" width="540" height="150" rx="8" fill="#161B22" stroke="#30363D" stroke-width="1"/>
+  <text x="680" y="450" font-family="Microsoft YaHei, Arial, sans-serif" font-size="18" font-weight="bold" fill="#D4AF37">英文配音</text>
+  <text x="680" y="480" font-family="Microsoft YaHei, Arial, sans-serif" font-size="24" fill="#FFFFFF">Sura Siu</text>
+  <text x="680" y="510" font-family="Microsoft YaHei, Arial, sans-serif" font-size="14" fill="#8B949E">英文版凯尔希配音演员</text>
+  <text x="1220" y="690" font-family="Microsoft YaHei, Arial, sans-serif" font-size="12" fill="#6E7681" text-anchor="end">08 / 32</text>
+</svg>

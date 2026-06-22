@@ -1,0 +1,31 @@
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 1280 720" width="1280" height="720">
+  <image href="../images/scene_departure.png" x="0" y="0" width="1280" height="720" preserveAspectRatio="xMidYMid slice"/>
+  <rect x="0" y="0" width="1280" height="720" fill="#0D1117" fill-opacity="0.75"/>
+  <rect x="80" y="50" width="60" height="2" fill="#58A6FF"/>
+  <text x="80" y="85" font-family="Microsoft YaHei, Arial, sans-serif" font-size="14" fill="#58A6FF" letter-spacing="2">第二章 · 泰拉历史</text>
+  <text x="80" y="125" font-family="Microsoft YaHei, Arial, sans-serif" font-size="36" font-weight="bold" fill="#FFFFFF">源石与文明</text>
+  <rect x="80" y="145" width="1120" height="1" fill="#30363D"/>
+  
+  <rect x="80" y="180" width="540" height="250" rx="8" fill="#161B22" stroke="#30363D" stroke-width="1"/>
+  <text x="100" y="220" font-family="Microsoft YaHei, Arial, sans-serif" font-size="18" font-weight="bold" fill="#58A6FF">源石</text>
+  <text x="100" y="250" font-family="Microsoft YaHei, Arial, sans-serif" font-size="14" fill="#C9D1D9">泰拉大陆最神秘的物质</text>
+  <text x="100" y="280" font-family="Microsoft YaHei, Arial, sans-serif" font-size="14" fill="#C9D1D9">与矿石病密切相关</text>
+  <text x="100" y="310" font-family="Microsoft YaHei, Arial, sans-serif" font-size="14" fill="#C9D1D9">凯尔希从源石扩散前就已存在</text>
+  <text x="100" y="340" font-family="Microsoft YaHei, Arial, sans-serif" font-size="14" fill="#C9D1D9">见证了源石如何改变泰拉文明</text>
+  <text x="100" y="380" font-family="Microsoft YaHei, Arial, sans-serif" font-size="12" fill="#8B949E">源石不仅是能源，更是文明的催化剂与毁灭者</text>
+
+  <rect x="660" y="180" width="540" height="250" rx="8" fill="#161B22" stroke="#30363D" stroke-width="1"/>
+  <text x="680" y="220" font-family="Microsoft YaHei, Arial, sans-serif" font-size="18" font-weight="bold" fill="#3FB950">凯尔希的见证</text>
+  <text x="680" y="250" font-family="Microsoft YaHei, Arial, sans-serif" font-size="14" fill="#C9D1D9">目睹无数文明的兴衰</text>
+  <text x="680" y="280" font-family="Microsoft YaHei, Arial, sans-serif" font-size="14" fill="#C9D1D9">见证了萨卡兹的崛起与衰落</text>
+  <text x="680" y="310" font-family="Microsoft YaHei, Arial, sans-serif" font-size="14" fill="#C9D1D9">经历了巴别塔的建立与倒塌</text>
+  <text x="680" y="340" font-family="Microsoft YaHei, Arial, sans-serif" font-size="14" fill="#C9D1D9">承载着泰拉万年的记忆</text>
+  <text x="680" y="380" font-family="Microsoft YaHei, Arial, sans-serif" font-size="12" fill="#8B949E">她的知识不仅来自书本，更来自亲历</text>
+
+  <rect x="80" y="460" width="1120" height="100" rx="8" fill="#161B22" fill-opacity="0.5" stroke="#30363D" stroke-width="1"/>
+  <rect x="80" y="460" width="4" height="100" fill="#58A6FF"/>
+  <text x="110" y="495" font-family="Microsoft YaHei, Arial, sans-serif" font-size="15" fill="#FFFFFF">档案资料五</text>
+  <text x="110" y="525" font-family="Microsoft YaHei, Arial, sans-serif" font-size="14" fill="#C9D1D9">"没有过去，也没有将来。" —— 凯尔希的自述</text>
+  <text x="110" y="545" font-family="Microsoft YaHei, Arial, sans-serif" font-size="13" fill="#8B949E">描述了她从一万年前开始的漫长旅途</text>
+  <text x="1220" y="690" font-family="Microsoft YaHei, Arial, sans-serif" font-size="12" fill="#6E7681" text-anchor="end">10 / 32</text>
+</svg>

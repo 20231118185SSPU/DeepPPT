@@ -1,0 +1,21 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1280 720" width="1280" height="720">
+  <image href="../images/kalsit_e2_full.png" x="0" y="0" width="1280" height="720" preserveAspectRatio="xMidYMid slice"/>
+  <rect x="0" y="0" width="1280" height="720" fill="#0D1117" fill-opacity="0.75"/>
+  <rect x="80" y="50" width="60" height="2" fill="#58A6FF"/>
+  <text x="80" y="85" font-family="Microsoft YaHei, Arial, sans-serif" font-size="14" fill="#58A6FF" letter-spacing="2">目录</text>
+  <text x="80" y="125" font-family="Microsoft YaHei, Arial, sans-serif" font-size="36" font-weight="bold" fill="#FFFFFF">CONTENTS</text>
+  <rect x="80" y="145" width="1120" height="1" fill="#30363D"/>
+  <text x="80" y="185" font-family="Microsoft YaHei, Arial, sans-serif" font-size="18" fill="#58A6FF">第一章 · 角色档案</text>
+  <text x="80" y="210" font-family="Microsoft YaHei, Arial, sans-serif" font-size="14" fill="#8B949E">基础信息 · 角色定位 · 体检数据 · 画师与CV</text>
+  <text x="80" y="255" font-family="Microsoft YaHei, Arial, sans-serif" font-size="18" fill="#58A6FF">第二章 · 超越常人</text>
+  <text x="80" y="280" font-family="Microsoft YaHei, Arial, sans-serif" font-size="14" fill="#8B949E">万年旅者 · 古老存在 · 时间的秘密 · 战术规划</text>
+  <text x="80" y="325" font-family="Microsoft YaHei, Arial, sans-serif" font-size="18" fill="#58A6FF">第三章 · 战斗体系</text>
+  <text x="80" y="350" font-family="Microsoft YaHei, Arial, sans-serif" font-size="14" fill="#8B949E">Mon3tr · 天赋 · 技能详解 · 模组系统</text>
+  <text x="80" y="395" font-family="Microsoft YaHei, Arial, sans-serif" font-size="18" fill="#58A6FF">第四章 · 人物关系</text>
+  <text x="80" y="420" font-family="Microsoft YaHei, Arial, sans-serif" font-size="14" fill="#8B949E">特蕾西娅 · 博士 · 阿米娅 · 可露希尔</text>
+  <text x="80" y="465" font-family="Microsoft YaHei, Arial, sans-serif" font-size="18" fill="#58A6FF">第五章 · 内在世界</text>
+  <text x="80" y="490" font-family="Microsoft YaHei, Arial, sans-serif" font-size="14" fill="#8B949E">信物 · 性格 · 档案 · 皮肤 · 实战</text>
+  <text x="80" y="535" font-family="Microsoft YaHei, Arial, sans-serif" font-size="18" fill="#58A6FF">第六章 · 结语</text>
+  <text x="80" y="560" font-family="Microsoft YaHei, Arial, sans-serif" font-size="14" fill="#8B949E">总结 · 致谢</text>
+  <text x="1220" y="690" font-family="Microsoft YaHei, Arial, sans-serif" font-size="12" fill="#6E7681" text-anchor="end">02 / 32</text>
+</svg>

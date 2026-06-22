@@ -1,0 +1,29 @@
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 1280 720" width="1280" height="720">
+  <image href="../images/closure_scene_足迹.png" x="0" y="0" width="1280" height="720" preserveAspectRatio="xMidYMid slice"/>
+  <rect x="0" y="0" width="1280" height="720" fill="#0D1117" fill-opacity="0.75"/>
+  <rect x="80" y="50" width="60" height="2" fill="#58A6FF"/>
+  <text x="80" y="85" font-family="Microsoft YaHei, Arial, sans-serif" font-size="14" fill="#58A6FF" letter-spacing="2">第四章 · 人物关系</text>
+  <text x="80" y="125" font-family="Microsoft YaHei, Arial, sans-serif" font-size="36" font-weight="bold" fill="#FFFFFF">可露希尔</text>
+  <rect x="80" y="145" width="1120" height="1" fill="#30363D"/>
+  
+  <rect x="80" y="170" width="540" height="250" rx="8" fill="#161B22" stroke="#3FB950" stroke-width="1"/>
+  <text x="100" y="210" font-family="Microsoft YaHei, Arial, sans-serif" font-size="18" font-weight="bold" fill="#3FB950">可露希尔</text>
+  <text x="100" y="235" font-family="Microsoft YaHei, Arial, sans-serif" font-size="13" fill="#8B949E">Closure · 罗德岛技术人员</text>
+  <rect x="100" y="255" width="500" height="1" fill="#30363D"/>
+  <text x="100" y="285" font-family="Microsoft YaHei, Arial, sans-serif" font-size="14" fill="#C9D1D9">罗德岛的核心技术人员</text>
+  <text x="100" y="310" font-family="Microsoft YaHei, Arial, sans-serif" font-size="14" fill="#C9D1D9">负责罗德岛的系统维护与技术开发</text>
+  <text x="100" y="335" font-family="Microsoft YaHei, Arial, sans-serif" font-size="14" fill="#C9D1D9">与凯尔希有着特殊的工作关系</text>
+  <text x="100" y="360" font-family="Microsoft YaHei, Arial, sans-serif" font-size="14" fill="#C9D1D9">凯尔希将机密数据库权限交给了她</text>
+  <text x="100" y="385" font-family="Microsoft YaHei, Arial, sans-serif" font-size="12" fill="#8B949E">包括PRTS系统之外的独立数据库</text>
+
+  <rect x="660" y="170" width="540" height="250" rx="8" fill="#161B22" stroke="#30363D" stroke-width="1"/>
+  <text x="680" y="210" font-family="Microsoft YaHei, Arial, sans-serif" font-size="18" font-weight="bold" fill="#FFFFFF">机密资料库</text>
+  <rect x="680" y="230" width="500" height="1" fill="#30363D"/>
+  <text x="680" y="260" font-family="Microsoft YaHei, Arial, sans-serif" font-size="14" fill="#C9D1D9">凯尔希留下的权限资料库</text>
+  <text x="680" y="285" font-family="Microsoft YaHei, Arial, sans-serif" font-size="14" fill="#C9D1D9">不属于PRTS的独立系统</text>
+  <text x="680" y="310" font-family="Microsoft YaHei, Arial, sans-serif" font-size="14" fill="#C9D1D9">罗德岛结构图上存在空洞</text>
+  <text x="680" y="335" font-family="Microsoft YaHei, Arial, sans-serif" font-size="14" fill="#C9D1D9">《第三代阻断药物理论设计》</text>
+  <text x="680" y="360" font-family="Microsoft YaHei, Arial, sans-serif" font-size="14" fill="#C9D1D9">《源石对物种与生命形态的总体性影响》</text>
+  <text x="680" y="385" font-family="Microsoft YaHei, Arial, sans-serif" font-size="12" fill="#8B949E">这些机密文件揭示了凯尔希更深层的秘密</text>
+  <text x="1220" y="690" font-family="Microsoft YaHei, Arial, sans-serif" font-size="12" fill="#6E7681" text-anchor="end">19 / 32</text>
+</svg>

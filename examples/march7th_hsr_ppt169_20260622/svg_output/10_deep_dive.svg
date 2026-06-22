@@ -1,0 +1,55 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1280 720">
+
+  <!-- Background -->
+  <rect x="0" y="0" width="1280" height="720" fill="#F8F4F0"/>
+
+  <!-- Right 35% image -->
+  <image href="images/web_assets/dd_p10_symbols.png" x="832" y="0" width="448" height="720" preserveAspectRatio="xMidYMid slice"/>
+  <rect x="832" y="0" width="448" height="720" fill="#F8F4F0" fill-opacity="0.3"/>
+
+  <!-- Left text area centered at x=400 -->
+
+  <!-- Title -->
+  <text x="400" y="80" text-anchor="middle" font-family="SimSun, Georgia, serif" font-size="36" font-weight="bold" fill="#D4789C">三月七的视觉符号体系</text>
+
+  <!-- Row 1: 3 cards (y=140) -->
+
+  <!-- Card 1: 冰晶/雪花 -->
+  <rect x="25" y="140" width="240" height="130" rx="12" fill="#F0ECF4" stroke="#D0C8D8" stroke-width="2"/>
+  <text x="145" y="175" text-anchor="middle" font-family="SimSun, Georgia, serif" font-size="20" font-weight="bold" fill="#7EB8D8">冰晶/雪花</text>
+  <text x="145" y="200" text-anchor="middle" font-family="&quot;Microsoft YaHei&quot;, Arial, sans-serif" font-size="14" fill="#2D2D3D">六相冰的具象化</text>
+  <text x="145" y="222" text-anchor="middle" font-family="&quot;Microsoft YaHei&quot;, Arial, sans-serif" font-size="13" fill="#6B6B80">代表被封印的过去</text>
+
+  <!-- Card 2: 相机 -->
+  <rect x="280" y="140" width="240" height="130" rx="12" fill="#F0ECF4" stroke="#D0C8D8" stroke-width="2"/>
+  <text x="400" y="175" text-anchor="middle" font-family="SimSun, Georgia, serif" font-size="20" font-weight="bold" fill="#D4789C">相机</text>
+  <text x="400" y="200" text-anchor="middle" font-family="&quot;Microsoft YaHei&quot;, Arial, sans-serif" font-size="14" fill="#2D2D3D">记录当下的工具</text>
+  <text x="400" y="222" text-anchor="middle" font-family="&quot;Microsoft YaHei&quot;, Arial, sans-serif" font-size="13" fill="#6B6B80">弥补记忆缺失的补偿</text>
+
+  <!-- Card 3: 蝴蝶结发带 -->
+  <rect x="535" y="140" width="240" height="130" rx="12" fill="#F0ECF4" stroke="#D0C8D8" stroke-width="2"/>
+  <text x="655" y="175" text-anchor="middle" font-family="SimSun, Georgia, serif" font-size="20" font-weight="bold" fill="#9B72CF">蝴蝶结发带</text>
+  <text x="655" y="200" text-anchor="middle" font-family="&quot;Microsoft YaHei&quot;, Arial, sans-serif" font-size="14" fill="#2D2D3D">标志性外观符号</text>
+  <text x="655" y="222" text-anchor="middle" font-family="&quot;Microsoft YaHei&quot;, Arial, sans-serif" font-size="13" fill="#6B6B80">少女感的视觉锚点</text>
+
+  <!-- Row 2: 2 wider cards (y=310) -->
+
+  <!-- Card 4: 盾牌（存护） -->
+  <rect x="25" y="310" width="367" height="130" rx="12" fill="#F0ECF4" stroke="#D0C8D8" stroke-width="2"/>
+  <text x="208" y="345" text-anchor="middle" font-family="SimSun, Georgia, serif" font-size="20" font-weight="bold" fill="#7EB8D8">盾牌（存护）</text>
+  <text x="208" y="370" text-anchor="middle" font-family="&quot;Microsoft YaHei&quot;, Arial, sans-serif" font-size="14" fill="#2D2D3D">守护同伴的意志</text>
+  <text x="208" y="392" text-anchor="middle" font-family="&quot;Microsoft YaHei&quot;, Arial, sans-serif" font-size="13" fill="#6B6B80">初始命途的象征</text>
+
+  <!-- Card 5: 剑（巡猎） -->
+  <rect x="407" y="310" width="367" height="130" rx="12" fill="#F0ECF4" stroke="#D0C8D8" stroke-width="2"/>
+  <text x="590" y="345" text-anchor="middle" font-family="SimSun, Georgia, serif" font-size="20" font-weight="bold" fill="#D4789C">剑（巡猎）</text>
+  <text x="590" y="370" text-anchor="middle" font-family="&quot;Microsoft YaHei&quot;, Arial, sans-serif" font-size="14" fill="#2D2D3D">独立战斗的决心</text>
+  <text x="590" y="392" text-anchor="middle" font-family="&quot;Microsoft YaHei&quot;, Arial, sans-serif" font-size="13" fill="#6B6B80">从守护到主动出击</text>
+
+  <!-- Bottom takeaway -->
+  <rect x="75" y="500" width="650" height="50" rx="25" fill="#FFD6E8" fill-opacity="0.3" stroke="#D4789C" stroke-width="1"/>
+  <text x="400" y="532" text-anchor="middle" font-family="KaiTi, Georgia, serif" font-size="18" fill="#D4789C">从弓到剑 = 从守护到独立的成长叙事</text>
+
+  <!-- Bottom source -->
+  <text x="400" y="680" text-anchor="middle" font-family="&quot;Microsoft YaHei&quot;, Arial, sans-serif" font-size="11" fill="#6B6B80">来源：游戏剧情 / 官方设定集</text>
+</svg>

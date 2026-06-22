@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1280 720">
+    <g id="background">
+        <rect width="1280" height="720" fill="#1C1C1C" />
+        <image href="images/web_assets/dim3_tactical_command.png" x="0" y="0" width="1280" height="720" preserveAspectRatio="xMidYMid slice" />
+        <rect x="0" y="0" width="1280" height="720" fill="#1C1C1C" fill-opacity="0.82" />
+    </g>
+    <g id="header">
+        <rect x="60" y="35" width="90" height="24" fill="#8B1A1A" rx="4" />
+        <text x="105" y="52" text-anchor="middle" fill="#FFFFFF" font-family="Microsoft YaHei, Arial, sans-serif" font-size="11" font-weight="bold">DEEP DIVE</text>
+        <text x="170" y="56" fill="#E8E8E8" font-family="Source Han Sans SC, Microsoft YaHei, sans-serif" font-size="28" font-weight="bold">战术指挥的游戏机制</text>
+        <line x1="60" y1="72" x2="1220" y2="72" stroke="#8B1A1A" stroke-width="1" stroke-opacity="0.25" />
+    </g>
+    <g id="mapping-1">
+        <rect x="60" y="100" width="360" height="160" fill="#FFFFFF" fill-opacity="0.04" rx="8" />
+        <rect x="60" y="100" width="360" height="3" fill="#8B1A1A" fill-opacity="0.4" />
+        <text x="240" y="140" text-anchor="middle" fill="#8B1A1A" font-family="Microsoft YaHei, Arial, sans-serif" font-size="36" font-weight="bold">部署</text>
+        <text x="240" y="170" text-anchor="middle" fill="#E8E8E8" fill-opacity="0.9" font-family="Microsoft YaHei, Arial, sans-serif" font-size="15">每一次作战部署</text>
+        <text x="240" y="195" text-anchor="middle" fill="#C0C0C0" font-family="Microsoft YaHei, Arial, sans-serif" font-size="22" font-weight="bold">=</text>
+        <text x="240" y="225" text-anchor="middle" fill="#C0C0C0" font-family="Microsoft YaHei, Arial, sans-serif" font-size="15">博士的战术指挥</text>
+        <text x="240" y="248" text-anchor="middle" fill="#A0A0A0" font-family="Microsoft YaHei, Arial, sans-serif" font-size="11">你在屏幕上的每一次操作</text>
+    </g>
+    <g id="mapping-2">
+        <rect x="460" y="100" width="360" height="160" fill="#FFFFFF" fill-opacity="0.04" rx="8" />
+        <rect x="460" y="100" width="360" height="3" fill="#C0C0C0" fill-opacity="0.4" />
+        <text x="640" y="140" text-anchor="middle" fill="#8B1A1A" font-family="Microsoft YaHei, Arial, sans-serif" font-size="36" font-weight="bold">通关</text>
+        <text x="640" y="170" text-anchor="middle" fill="#E8E8E8" fill-opacity="0.9" font-family="Microsoft YaHei, Arial, sans-serif" font-size="15">高难度关卡通关</text>
+        <text x="640" y="195" text-anchor="middle" fill="#C0C0C0" font-family="Microsoft YaHei, Arial, sans-serif" font-size="22" font-weight="bold">=</text>
+        <text x="640" y="225" text-anchor="middle" fill="#C0C0C0" font-family="Microsoft YaHei, Arial, sans-serif" font-size="15">博士天才的亲身证明</text>
+        <text x="640" y="248" text-anchor="middle" fill="#A0A0A0" font-family="Microsoft YaHei, Arial, sans-serif" font-size="11">三星通关危机合约18</text>
+    </g>
+    <g id="mapping-3">
+        <rect x="860" y="100" width="360" height="160" fill="#FFFFFF" fill-opacity="0.04" rx="8" />
+        <rect x="860" y="100" width="360" height="3" fill="#8B1A1A" fill-opacity="0.4" />
+        <text x="1040" y="140" text-anchor="middle" fill="#8B1A1A" font-family="Microsoft YaHei, Arial, sans-serif" font-size="36" font-weight="bold">后方</text>
+        <text x="1040" y="170" text-anchor="middle" fill="#E8E8E8" fill-opacity="0.9" font-family="Microsoft YaHei, Arial, sans-serif" font-size="15">博士不出现在战场</text>
+        <text x="1040" y="195" text-anchor="middle" fill="#C0C0C0" font-family="Microsoft YaHei, Arial, sans-serif" font-size="22" font-weight="bold">=</text>
+        <text x="1040" y="225" text-anchor="middle" fill="#C0C0C0" font-family="Microsoft YaHei, Arial, sans-serif" font-size="15">指挥者永远在后方</text>
+        <text x="1040" y="248" text-anchor="middle" fill="#A0A0A0" font-family="Microsoft YaHei, Arial, sans-serif" font-size="11">全知视角——你看到整个棋盘</text>
+    </g>
+    <g id="insight-bar">
+        <rect x="60" y="290" width="1160" height="80" fill="#8B1A1A" fill-opacity="0.06" rx="8" />
+        <rect x="60" y="290" width="4" height="80" fill="#8B1A1A" rx="2" />
+        <text x="84" y="325" fill="#E8E8E8" font-family="Microsoft YaHei, Arial, sans-serif" font-size="16" font-weight="bold">机制即叙事</text>
+        <text x="84" y="352" fill="#E8E8E8" fill-opacity="0.6" font-family="Microsoft YaHei, Arial, sans-serif" font-size="14">明日方舟的塔防玩法不是"选择"——它是博士战术天才的亲身体验。你不是在"玩一个游戏"，你是在"成为"博士。</text>
+    </g>
+    <g id="ppt-system">
+        <rect x="60" y="400" width="1160" height="120" fill="#FFFFFF" fill-opacity="0.03" rx="8" />
+        <text x="84" y="432" fill="#C0C0C0" font-family="Microsoft YaHei, Arial, sans-serif" font-size="11" fill-opacity="0.6">PRTS 战术辅助系统</text>
+        <text x="84" y="460" fill="#E8E8E8" fill-opacity="0.85" font-family="Microsoft YaHei, Arial, sans-serif" font-size="15">PRTS（博士的战术辅助AI）本身就是前文明遗留的技术</text>
+        <text x="84" y="488" fill="#E8E8E8" fill-opacity="0.6" font-family="Microsoft YaHei, Arial, sans-serif" font-size="14">它"认识"失忆前的博士——是博士前文明身份的直接证据</text>
+        <text x="84" y="510" fill="#C0C0C0" fill-opacity="0.5" font-family="Microsoft YaHei, Arial, sans-serif" font-size="13">杜宾教官的教学 = 博士能力的NPC侧写——教程中的惊叹是剧情对博士的直接背书</text>
+    </g>
+    <g id="footer">
+        <rect x="0" y="660" width="1280" height="60" fill="#000000" fill-opacity="0.3" />
+        <text x="60" y="695" fill="#A0A0A0" font-family="Microsoft YaHei, Arial, sans-serif" font-size="11">素材来源：游戏截图 / PRTS Wiki</text>
+    </g>
+</svg>

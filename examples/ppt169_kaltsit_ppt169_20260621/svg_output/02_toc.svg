@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1280 720">
+    <rect width="1280" height="720" fill="#0A1628" />
+    <image href="images/P02_toc_bg.png" x="0" y="0" width="1280" height="720" preserveAspectRatio="xMidYMid slice" />
+    <rect x="0" y="0" width="1280" height="720" fill="#0A1628" fill-opacity="0.65" />
+    <text x="60" y="80" fill="#E8E8E8" font-family="Source Han Sans SC, Microsoft YaHei, sans-serif" font-size="36" font-weight="bold">目录</text>
+    <text x="155" y="80" fill="#E8E8E8" fill-opacity="0.5" font-family="Microsoft YaHei, Arial, sans-serif" font-size="18">CONTENTS</text>
+    <rect x="60" y="120" width="560" height="100" fill="#FFFFFF" fill-opacity="0.06" rx="8" />
+    <text x="95" y="175" fill="#1A5C5C" fill-opacity="0.9" font-family="Source Han Sans SC, Microsoft YaHei, sans-serif" font-size="40" font-weight="bold">01</text>
+    <text x="160" y="160" fill="#E8E8E8" font-family="Microsoft YaHei, Arial, sans-serif" font-size="22" font-weight="bold">前文明的遗存</text>
+    <text x="160" y="192" fill="#E8E8E8" fill-opacity="0.6" font-family="Microsoft YaHei, Arial, sans-serif" font-size="14">她到底是什么？</text>
+    <rect x="660" y="120" width="560" height="100" fill="#FFFFFF" fill-opacity="0.06" rx="8" />
+    <text x="695" y="175" fill="#1A5C5C" fill-opacity="0.9" font-family="Source Han Sans SC, Microsoft YaHei, sans-serif" font-size="40" font-weight="bold">02</text>
+    <text x="760" y="160" fill="#E8E8E8" font-family="Microsoft YaHei, Arial, sans-serif" font-size="22" font-weight="bold">巴别塔的伤痕</text>
+    <text x="760" y="192" fill="#E8E8E8" fill-opacity="0.6" font-family="Microsoft YaHei, Arial, sans-serif" font-size="14">特蕾西娅与永恒的痛</text>
+    <rect x="60" y="245" width="560" height="100" fill="#FFFFFF" fill-opacity="0.06" rx="8" />
+    <text x="95" y="300" fill="#1A5C5C" fill-opacity="0.9" font-family="Source Han Sans SC, Microsoft YaHei, sans-serif" font-size="40" font-weight="bold">03</text>
+    <text x="160" y="285" fill="#E8E8E8" font-family="Microsoft YaHei, Arial, sans-serif" font-size="22" font-weight="bold">冷面下的温度</text>
+    <text x="160" y="317" fill="#E8E8E8" fill-opacity="0.6" font-family="Microsoft YaHei, Arial, sans-serif" font-size="14">Don't touch Amiya</text>
+    <rect x="660" y="245" width="560" height="100" fill="#FFFFFF" fill-opacity="0.06" rx="8" />
+    <text x="695" y="300" fill="#1A5C5C" fill-opacity="0.9" font-family="Source Han Sans SC, Microsoft YaHei, sans-serif" font-size="40" font-weight="bold">04</text>
+    <text x="760" y="285" fill="#E8E8E8" font-family="Microsoft YaHei, Arial, sans-serif" font-size="22" font-weight="bold">棋局</text>
+    <text x="760" y="317" fill="#E8E8E8" fill-opacity="0.6" font-family="Microsoft YaHei, Arial, sans-serif" font-size="14">万年政治棋手</text>
+    <rect x="60" y="370" width="560" height="100" fill="#FFFFFF" fill-opacity="0.06" rx="8" />
+    <text x="95" y="425" fill="#D4A848" fill-opacity="0.9" font-family="Source Han Sans SC, Microsoft YaHei, sans-serif" font-size="40" font-weight="bold">05</text>
+    <text x="160" y="410" fill="#E8E8E8" font-family="Microsoft YaHei, Arial, sans-serif" font-size="22" font-weight="bold">设计语言</text>
+    <text x="160" y="442" fill="#E8E8E8" fill-opacity="0.6" font-family="Microsoft YaHei, Arial, sans-serif" font-size="14">白大褂与琥珀瞳</text>
+    <rect x="660" y="370" width="560" height="100" fill="#FFFFFF" fill-opacity="0.06" rx="8" />
+    <text x="695" y="425" fill="#D4A848" fill-opacity="0.9" font-family="Source Han Sans SC, Microsoft YaHei, sans-serif" font-size="40" font-weight="bold">06</text>
+    <text x="760" y="410" fill="#E8E8E8" font-family="Microsoft YaHei, Arial, sans-serif" font-size="22" font-weight="bold">回响</text>
+    <text x="760" y="442" fill="#E8E8E8" fill-opacity="0.6" font-family="Microsoft YaHei, Arial, sans-serif" font-size="14">凯太后与念经梗</text>
+</svg>

@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1280 720">
+    <rect width="1280" height="720" fill="#0A1628" />
+    <image href="images/P06_transition_babel.png" x="0" y="0" width="1280" height="720" preserveAspectRatio="xMidYMid slice" />
+    <rect x="0" y="0" width="1280" height="720" fill="#0A1628" fill-opacity="0.55" />
+    <text x="60" y="200" fill="#E8E8E8" fill-opacity="0.45" font-family="Microsoft YaHei, Arial, sans-serif" font-size="14">前文明</text>
+    <text x="60" y="240" fill="#E8E8E8" fill-opacity="0.7" font-family="Microsoft YaHei, Arial, sans-serif" font-size="20">凯尔希不是普通的Feline——她是跨越万年的前文明遗存</text>
+    <text x="60" y="360" fill="#D4A848" fill-opacity="0.15" font-family="Source Han Sans SC, Microsoft YaHei, sans-serif" font-size="120" font-weight="bold">02</text>
+    <text x="60" y="430" fill="#E8E8E8" font-family="Source Han Sans SC, Microsoft YaHei, sans-serif" font-size="48" font-weight="bold">巴别塔的伤痕</text>
+    <text x="60" y="480" fill="#E8E8E8" fill-opacity="0.75" font-family="Microsoft YaHei, Arial, sans-serif" font-size="20">在凯尔希万年的生命中，有一个人的名字让她无法平静——特蕾西娅</text>
+    <line x1="60" y1="530" x2="400" y2="530" stroke="#D4A848" stroke-width="1" stroke-opacity="0.3" />
+    <text x="60" y="570" fill="#E8E8E8" fill-opacity="0.6" font-family="Microsoft YaHei, Arial, sans-serif" font-size="18">跨越世纪的合作、信任与最终的背叛——巴别塔崩塌了</text>
+</svg>

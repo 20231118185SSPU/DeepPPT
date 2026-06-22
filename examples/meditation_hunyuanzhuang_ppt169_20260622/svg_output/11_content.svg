@@ -1,0 +1,36 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1280 720">
+  <!-- Background -->
+  <rect x="0" y="0" width="1280" height="720" fill="#F5F0E6"/>
+
+  <!-- Left 40%: background image with gradient overlay -->
+  <image href="images/P11_content_bg.png" x="0" y="0" width="520" height="720" preserveAspectRatio="xMidYMid slice"/>
+  <rect x="0" y="0" width="520" height="720" fill="#425066" fill-opacity="0.35"/>
+  <rect x="400" y="0" width="120" height="720" fill="#F5F0E6" fill-opacity="0.6"/>
+
+  <!-- Right 60% text area background -->
+  <rect x="520" y="0" width="760" height="720" fill="#F5F0E6"/>
+
+  <!-- Title -->
+  <text x="540" y="80" font-family="SimSun, Georgia, serif" font-size="32" font-weight="bold" fill="#425066">水与山的对话</text>
+
+  <!-- Divider line -->
+  <line x1="540" y1="100" x2="700" y2="100" stroke="#7A5230" stroke-width="2"/>
+
+  <!-- Block 1: 冥想 = 水 -->
+  <rect x="540" y="140" width="5" height="120" rx="2" fill="#789262"/>
+  <text x="565" y="175" font-family="SimSun, Georgia, serif" font-size="24" font-weight="bold" fill="#789262">冥想 = 水</text>
+  <text x="565" y="210" font-family="&quot;Microsoft YaHei&quot;, Arial, sans-serif" font-size="18" fill="#2D2D2D">柔软、无形、渗透一切 → 训练观心</text>
+
+  <!-- Block 2: 站桩 = 山 -->
+  <rect x="540" y="290" width="5" height="120" rx="2" fill="#7A5230"/>
+  <text x="565" y="325" font-family="SimSun, Georgia, serif" font-size="24" font-weight="bold" fill="#7A5230">站桩 = 山</text>
+  <text x="565" y="360" font-family="&quot;Microsoft YaHei&quot;, Arial, sans-serif" font-size="18" fill="#2D2D2D">稳固、不动、承载万物 → 训练观身</text>
+
+  <!-- Shared benefits -->
+  <circle cx="556" cy="460" r="4" fill="#425066"/>
+  <text x="572" y="466" font-family="&quot;Microsoft YaHei&quot;, Arial, sans-serif" font-size="18" fill="#2D2D2D">共享：Alpha波增强、副交感激活、皮质醇降低</text>
+
+  <!-- Takeaway bar -->
+  <rect x="520" y="580" width="760" height="60" fill="#425066"/>
+  <text x="900" y="616" font-family="KaiTi, Georgia, serif" font-size="20" fill="#FFFFFF" text-anchor="middle">王芗斋的智慧——站桩本身就是冥想</text>
+</svg>

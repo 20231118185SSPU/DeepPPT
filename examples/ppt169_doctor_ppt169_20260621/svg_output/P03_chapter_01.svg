@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1280 720">
+    <g id="background">
+        <rect width="1280" height="720" fill="#1C1C1C" />
+        <image href="images/p03_trans_hook.png" x="0" y="0" width="1280" height="720" preserveAspectRatio="xMidYMid slice" />
+        <rect x="0" y="0" width="1280" height="720" fill="#1C1C1C" fill-opacity="0.55" />
+    </g>
+    <g id="prev-section">
+        <text x="60" y="200" fill="#E8E8E8" fill-opacity="0.45" font-family="Microsoft YaHei, Arial, sans-serif" font-size="14">开场</text>
+        <text x="60" y="235" fill="#E8E8E8" fill-opacity="0.7" font-family="Microsoft YaHei, Arial, sans-serif" font-size="19">博士是谁？一个没有记忆却被所有人记住的人</text>
+    </g>
+    <g id="chapter-hero">
+        <text x="60" y="350" fill="#8B1A1A" fill-opacity="0.15" font-family="Source Han Sans SC, Microsoft YaHei, sans-serif" font-size="120" font-weight="bold">01</text>
+        <text x="60" y="425" fill="#E8E8E8" font-family="Source Han Sans SC, Microsoft YaHei, sans-serif" font-size="48" font-weight="bold">前文明的幽灵</text>
+        <text x="60" y="470" fill="#E8E8E8" fill-opacity="0.75" font-family="Microsoft YaHei, Arial, sans-serif" font-size="20">在理解他为什么失去记忆之前，我们需要知道他究竟是什么</text>
+    </g>
+    <g id="next-hook">
+        <line x1="60" y1="520" x2="400" y2="520" stroke="#8B1A1A" stroke-width="1" stroke-opacity="0.3" />
+        <text x="60" y="558" fill="#E8E8E8" fill-opacity="0.6" font-family="Microsoft YaHei, Arial, sans-serif" font-size="17">他不是来自这个时代——他是上一个文明的遗物</text>
+    </g>
+</svg>

@@ -1,0 +1,174 @@
+{
+  "project": "ppt169_kaltsit",
+  "deck_style_anchor": "Semi-realistic dark fantasy digital painting, thick-paint brushwork with cinematic depth of field, strong chiaroscuro, atmospheric fog. Shapes organic and layered. Dark textured backgrounds with industrial-medical surfaces.",
+  "color_scheme": {
+    "bg": "#0A1628",
+    "primary": "#1A5C5C",
+    "accent": "#D4A848",
+    "secondary": "#8A94A6"
+  },
+  "items": [
+    {
+      "filename": "P01_cover_bg.png",
+      "prompt": "Semi-realistic dark fantasy digital painting, thick-paint brushwork with visible texture, cinematic depth of field, strong chiaroscuro from single dominant light source, atmospheric fog. Shapes organic and layered. Rich material texture on surfaces. Deep navy base #0A1628 covers ~40% of canvas. Teal-green #1A5C5C appears in medical/scientific elements and rim lighting at ~15%. Amber-gold #D4A848 surfaces in warm highlights, eye glow, and focal accents at ~10%. Steel blue #8A94A6 fills atmospheric haze and shadowed surfaces at ~20%. Remaining uses desaturated cool grays. Kal'tsit stands with her back to the viewer on the Rhodes Island bridge, slightly turning her head to the side, Mon3tr's dark shadow looming faintly behind her on the right third of the frame. In the distance, the wastelands of Terra stretch to the horizon with mobile city silhouettes. The horizon line is set low to emphasize the vast sky and the character's isolation. A solitary ancient figure standing at civilization's frontline, establishing mystery and epic scale.",
+      "aspect_ratio": "16:9",
+      "image_size": "2K",
+      "status": "Generated",
+      "purpose": "Cover page background — mystery and epic scale",
+      "type": "background"
+    },
+    {
+      "filename": "P02_toc_bg.png",
+      "prompt": "Semi-realistic dark fantasy digital painting, thick-paint brushwork with visible texture, cinematic depth of field, strong chiaroscuro from single dominant light source, atmospheric fog. Shapes organic and layered. Rich material texture on surfaces. Deep navy base #0A1628 covers ~40% of canvas. Teal-green #1A5C5C appears in medical/scientific elements and rim lighting at ~15%. Amber-gold #D4A848 surfaces in warm highlights, eye glow, and focal accents at ~10%. Steel blue #8A94A6 fills atmospheric haze and shadowed surfaces at ~20%. Remaining uses desaturated cool grays. A top-down aerial view of fragmented Terra continent maps with timeline markers — key historical nodes from the ancient pre-civilization era to the Rhodes Island period glow as luminous points scattered across the map. Eight chapter-corresponding light points are connected by arcs. Kal'tsit's codename 'Montagne' is subtly annotated at the origin point. An overview structure hinting at the immense time span.",
+      "aspect_ratio": "16:9",
+      "image_size": "2K",
+      "status": "Generated",
+      "purpose": "Table of contents background — timeline overview",
+      "type": "background"
+    },
+    {
+      "filename": "P03_transition_bg.png",
+      "prompt": "Semi-realistic dark fantasy digital painting, thick-paint brushwork with visible texture, cinematic depth of field, strong chiaroscuro from single dominant light source, atmospheric fog. Shapes organic and layered. Rich material texture on surfaces. Deep navy base #0A1628 covers ~40% of canvas. Teal-green #1A5C5C appears in medical/scientific elements and rim lighting at ~15%. Amber-gold #D4A848 surfaces in warm highlights, eye glow, and focal accents at ~10%. Steel blue #8A94A6 fills atmospheric haze and shadowed surfaces at ~20%. Remaining uses desaturated cool grays. Extreme close-up of a single amber eye slowly opening amidst pre-civilization ruins, the iris occupying 60% of the canvas center. Broken holographic screens and petrified time crystals surround the eye. The pupil reflects faint glimmers of a pre-civilization cityscape. Ruin textures radiate outward from the eye's edges. The awakening after millennia of slumber — the story begins at the end of time.",
+      "aspect_ratio": "16:9",
+      "image_size": "2K",
+      "status": "Generated",
+      "purpose": "Transition page background — ancient awakening",
+      "type": "background"
+    },
+    {
+      "filename": "P04_content.png",
+      "prompt": "Semi-realistic dark fantasy digital painting, thick-paint brushwork with visible texture, cinematic depth of field, strong chiaroscuro from single dominant light source, atmospheric fog. Shapes organic and layered. Rich material texture on surfaces. Deep navy base #0A1628 covers ~40% of canvas. Teal-green #1A5C5C appears in medical/scientific elements and rim lighting at ~15%. Amber-gold #D4A848 surfaces in warm highlights, eye glow, and focal accents at ~10%. Steel blue #8A94A6 fills atmospheric haze and shadowed surfaces at ~20%. Remaining uses desaturated cool grays. Kal'tsit from the pre-civilization era wears ancient uniforms different from her current white coat, standing inside a pre-civilization technological facility. A younger prototype form of Mon3tr stands beside her. Medium shot composition: Kal'tsit positioned at the left third facing right toward Mon3tr, the curved architectural structures of the facility forming a frame around them, vertical light streaming down from the ceiling above. Revealing Kal'tsit's pre-civilization origins — she once belonged to a brilliant civilization.",
+      "aspect_ratio": "21:9",
+      "image_size": "1K",
+      "status": "Generated",
+      "purpose": "Content illustration — pre-civilization origin",
+      "type": "content"
+    },
+    {
+      "filename": "P05_content.png",
+      "prompt": "Semi-realistic dark fantasy digital painting, thick-paint brushwork with visible texture, cinematic depth of field, strong chiaroscuro from single dominant light source, atmospheric fog. Shapes organic and layered. Rich material texture on surfaces. Deep navy base #0A1628 covers ~40% of canvas. Teal-green #1A5C5C appears in medical/scientific elements and rim lighting at ~15%. Amber-gold #D4A848 surfaces in warm highlights, eye glow, and focal accents at ~10%. Steel blue #8A94A6 fills atmospheric haze and shadowed surfaces at ~20%. Remaining uses desaturated cool grays. Wide-angle distant view of the Great Collapse — a pre-civilization city skyline disintegrating in a white flash of light. Kal'tsit's silhouette stands alone at the edge of the collapse in the bottom third, her scale tiny against the cataclysm. Mon3tr coils at her feet. The city dissolution occupies the upper half of the frame. The destruction of a civilization and the solitude of its sole survivor — emphasizing the vastness of annihilation against individual insignificance.",
+      "aspect_ratio": "21:9",
+      "image_size": "1K",
+      "status": "Generated",
+      "purpose": "Content illustration — civilization collapse",
+      "type": "content"
+    },
+    {
+      "filename": "P06_transition_bg.png",
+      "prompt": "Semi-realistic dark fantasy digital painting, thick-paint brushwork with visible texture, cinematic depth of field, strong chiaroscuro from single dominant light source, atmospheric fog. Shapes organic and layered. Rich material texture on surfaces. Deep navy base #0A1628 covers ~40% of canvas. Teal-green #1A5C5C appears in medical/scientific elements and rim lighting at ~15%. Amber-gold #D4A848 surfaces in warm highlights, eye glow, and focal accents at ~10%. Steel blue #8A94A6 fills atmospheric haze and shadowed surfaces at ~20%. Remaining uses desaturated cool grays. Babel's banner flutters in the wind, deep blue and white. Below the banner in the center-lower portion, two figures — Kal'tsit and Theresa — stand with their backs to the viewer, facing a distant battlefield at the bottom horizon. Mid-to-wide shot composition: the flag occupies the upper third, the two silhouettes center-lower, the battlefield horizon at the bottom. Transitioning from origin to the Babel era — from solitude to fighting side by side.",
+      "aspect_ratio": "16:9",
+      "image_size": "2K",
+      "status": "Generated",
+      "purpose": "Transition page background — Babel era begins",
+      "type": "background"
+    },
+    {
+      "filename": "P07_content.png",
+      "prompt": "Semi-realistic dark fantasy digital painting, thick-paint brushwork with visible texture, cinematic depth of field, strong chiaroscuro from single dominant light source, atmospheric fog. Shapes organic and layered. Rich material texture on surfaces. Deep navy base #0A1628 covers ~40% of canvas. Teal-green #1A5C5C appears in medical/scientific elements and rim lighting at ~15%. Amber-gold #D4A848 surfaces in warm highlights, eye glow, and focal accents at ~10%. Steel blue #8A94A6 fills atmospheric haze and shadowed surfaces at ~20%. Remaining uses desaturated cool grays. Interior mid-shot of the Babel command room: Kal'tsit and Theresa stand side by side at center, a holographic map unfurling between them. Theresa on the right wears warm-toned clothing and smiles gently; Kal'tsit on the left maintains a calm expression in cool tones. The blue-green glow of the holographic map serves as the primary light source, creating a visual contrast between the idealist and the pragmatist standing together.",
+      "aspect_ratio": "21:9",
+      "image_size": "1K",
+      "status": "Generated",
+      "purpose": "Content illustration — Kal'tsit and Theresa partnership",
+      "type": "content"
+    },
+    {
+      "filename": "P08_content.png",
+      "prompt": "Semi-realistic dark fantasy digital painting, thick-paint brushwork with visible texture, cinematic depth of field, strong chiaroscuro from single dominant light source, atmospheric fog. Shapes organic and layered. Rich material texture on surfaces. Deep navy base #0A1628 covers ~40% of canvas. Teal-green #1A5C5C appears in medical/scientific elements and rim lighting at ~15%. Amber-gold #D4A848 surfaces in warm highlights, eye glow, and focal accents at ~10%. Steel blue #8A94A6 fills atmospheric haze and shadowed surfaces at ~20%. Remaining uses desaturated cool grays. Split-composition close-up: the masked Doctor stands in deep shadow on the left half, while Kal'tsit appears at the right edge in half-light half-shadow, her gaze cast toward the Doctor with hatred mingled with an unnameable emotion. The empty distance between them in the center symbolizes shattered trust. The core contradiction of the Doctor-Kal'tsit relationship — hating someone while protecting them.",
+      "aspect_ratio": "21:9",
+      "image_size": "1K",
+      "status": "Generated",
+      "purpose": "Content illustration — Doctor and Kal'tsit tension",
+      "type": "content"
+    },
+    {
+      "filename": "P09_transition_bg.png",
+      "prompt": "Semi-realistic dark fantasy digital painting, thick-paint brushwork with visible texture, cinematic depth of field, strong chiaroscuro from single dominant light source, atmospheric fog. Shapes organic and layered. Rich material texture on surfaces. Deep navy base #0A1628 covers ~40% of canvas. Teal-green #1A5C5C appears in medical/scientific elements and rim lighting at ~15%. Amber-gold #D4A848 surfaces in warm highlights, eye glow, and focal accents at ~10%. Steel blue #8A94A6 fills atmospheric haze and shadowed surfaces at ~20%. Remaining uses desaturated cool grays. Extreme close-up of Kal'tsit's hand gripping a yellowed letter, the character for 'home' faintly visible on the paper. Mon3tr's claw rests gently on her wrist from the edge of the frame. The background is fully blurred. Warm amber light bleeds through the letter paper from within. Theresa's farewell letter — transitioning from relationships into emotional depths.",
+      "aspect_ratio": "16:9",
+      "image_size": "2K",
+      "status": "Generated",
+      "purpose": "Transition page background — Theresa's farewell letter",
+      "type": "background"
+    },
+    {
+      "filename": "P10_content.png",
+      "prompt": "Semi-realistic dark fantasy digital painting, thick-paint brushwork with visible texture, cinematic depth of field, strong chiaroscuro from single dominant light source, atmospheric fog. Shapes organic and layered. Rich material texture on surfaces. Deep navy base #0A1628 covers ~40% of canvas. Teal-green #1A5C5C appears in medical/scientific elements and rim lighting at ~15%. Amber-gold #D4A848 surfaces in warm highlights, eye glow, and focal accents at ~10%. Steel blue #8A94A6 fills atmospheric haze and shadowed surfaces at ~20%. Remaining uses desaturated cool grays. Low-angle medium close-up: Kal'tsit crouches on the left facing a young Amiya on the right who looks up at her. Kal'tsit's hand hovers above Amiya's head without touching. Amiya's ring glows faintly — the sole warm-color highlight in the image. Their gazes meet in the center of the frame. Kal'tsit's protective instinct and her deliberate distance — wanting to touch but not daring to.",
+      "aspect_ratio": "21:9",
+      "image_size": "1K",
+      "status": "Generated",
+      "purpose": "Content illustration — Kal'tsit and Amiya",
+      "type": "content"
+    },
+    {
+      "filename": "P11_content.png",
+      "prompt": "Semi-realistic dark fantasy digital painting, thick-paint brushwork with visible texture, cinematic depth of field, strong chiaroscuro from single dominant light source, atmospheric fog. Shapes organic and layered. Rich material texture on surfaces. Deep navy base #0A1628 covers ~40% of canvas. Teal-green #1A5C5C appears in medical/scientific elements and rim lighting at ~15%. Amber-gold #D4A848 surfaces in warm highlights, eye glow, and focal accents at ~10%. Steel blue #8A94A6 fills atmospheric haze and shadowed surfaces at ~20%. Remaining uses desaturated cool grays. Frontal eye-level shot of Kal'tsit and Wei Yenwu seated across from each other at a negotiation table. Symmetrical composition: each figure occupies half the frame, the table spanning the full width at center. Tea cups on the table reflect both figures. Lungmen's night skyline glows through the window behind them. Political chess players — two deeply calculating minds facing off.",
+      "aspect_ratio": "21:9",
+      "image_size": "1K",
+      "status": "Generated",
+      "purpose": "Content illustration — political negotiation with Wei Yenwu",
+      "type": "content"
+    },
+    {
+      "filename": "P12_bg.png",
+      "prompt": "Semi-realistic dark fantasy digital painting, thick-paint brushwork with visible texture, cinematic depth of field, strong chiaroscuro from single dominant light source, atmospheric fog. Shapes organic and layered. Rich material texture on surfaces. Deep navy base #0A1628 covers ~40% of canvas. Teal-green #1A5C5C appears in medical/scientific elements and rim lighting at ~15%. Amber-gold #D4A848 surfaces in warm highlights, eye glow, and focal accents at ~10%. Steel blue #8A94A6 fills atmospheric haze and shadowed surfaces at ~20%. Remaining uses desaturated cool grays. Wide distant shot with diagonal composition: Patriot's enormous figure collapses in the lower left of the frame while Kal'tsit stands on high ground in the upper right, gazing down at the battlefield. Her white coat flutters in the wind, adding dynamic movement. The diagonal line between the fallen giant and the standing observer creates dramatic tension. The cost of war and Kal'tsit's cold observation — she is unmoved by death, but she records everything.",
+      "aspect_ratio": "16:9",
+      "image_size": "2K",
+      "status": "Generated",
+      "purpose": "Content background — Patriot's fall and Kal'tsit watching",
+      "type": "background"
+    },
+    {
+      "filename": "P13_content.png",
+      "prompt": "Semi-realistic dark fantasy digital painting, thick-paint brushwork with visible texture, cinematic depth of field, strong chiaroscuro from single dominant light source, atmospheric fog. Shapes organic and layered. Rich material texture on surfaces. Deep navy base #0A1628 covers ~40% of canvas. Teal-green #1A5C5C appears in medical/scientific elements and rim lighting at ~15%. Amber-gold #D4A848 surfaces in warm highlights, eye glow, and focal accents at ~10%. Steel blue #8A94A6 fills atmospheric haze and shadowed surfaces at ~20%. Remaining uses desaturated cool grays. Kal'tsit's white coat floats and spreads open against a pure black background like a banner or flag. Dark tactical gear is faintly visible on the inner side. Centered composition with the coat in full spread, fabric texture rendered in fine detail. The white of the coat stands out starkly against the darkness. Transitioning from narrative to visual design analysis — deconstructing the symbolism of the white coat.",
+      "aspect_ratio": "21:9",
+      "image_size": "1K",
+      "status": "Generated",
+      "purpose": "Content illustration — white coat symbolism",
+      "type": "content"
+    },
+    {
+      "filename": "P14_content.png",
+      "prompt": "Semi-realistic dark fantasy digital painting, thick-paint brushwork with visible texture, cinematic depth of field, strong chiaroscuro from single dominant light source, atmospheric fog. Shapes organic and layered. Rich material texture on surfaces. Deep navy base #0A1628 covers ~40% of canvas. Teal-green #1A5C5C appears in medical/scientific elements and rim lighting at ~15%. Amber-gold #D4A848 surfaces in warm highlights, eye glow, and focal accents at ~10%. Steel blue #8A94A6 fills atmospheric haze and shadowed surfaces at ~20%. Remaining uses desaturated cool grays. An anatomical-diagram-style layout: Kal'tsit stands in a frontal full-body pose at center, surrounded by annotated design elements connected by lines — the white coat labeled 'authority and concealment', amber eyes labeled '10,000 years of warmth', pointed ears labeled 'otherness', tactical gear labeled 'always ready', Mon3tr labeled 'shadow self'. Each annotation is a visual callout with clean graphic lines. A systematic analysis of visual design language — every element carries narrative meaning.",
+      "aspect_ratio": "21:9",
+      "image_size": "1K",
+      "status": "Generated",
+      "purpose": "Content illustration — design element breakdown",
+      "type": "content"
+    },
+    {
+      "filename": "P15_bg.png",
+      "prompt": "Semi-realistic dark fantasy digital painting, thick-paint brushwork with visible texture, cinematic depth of field, strong chiaroscuro from single dominant light source, atmospheric fog. Shapes organic and layered. Rich material texture on surfaces. Deep navy base #0A1628 covers ~40% of canvas. Teal-green #1A5C5C appears in medical/scientific elements and rim lighting at ~15%. Amber-gold #D4A848 surfaces in warm highlights, eye glow, and focal accents at ~10%. Steel blue #8A94A6 fills atmospheric haze and shadowed surfaces at ~20%. Remaining uses desaturated cool grays. Four Kal'tsit silhouettes standing side by side, each filled with a different color: white silhouette for medical authority, teal-green for healing, deep blue for tactical composure, amber-gold for ancient warmth. Each silhouette has a corresponding tone gradient in its background quadrant. A fully colored composite figure overlapping all four silhouettes stands at the center. The color palette visualized — four colors representing four facets of her personality.",
+      "aspect_ratio": "16:9",
+      "image_size": "2K",
+      "status": "Generated",
+      "purpose": "Content background — color palette personality analysis",
+      "type": "background"
+    },
+    {
+      "filename": "P16_content.png",
+      "prompt": "Semi-realistic dark fantasy digital painting, thick-paint brushwork with visible texture, cinematic depth of field, strong chiaroscuro from single dominant light source, atmospheric fog. Shapes organic and layered. Rich material texture on surfaces. Deep navy base #0A1628 covers ~40% of canvas. Teal-green #1A5C5C appears in medical/scientific elements and rim lighting at ~15%. Amber-gold #D4A848 surfaces in warm highlights, eye glow, and focal accents at ~10%. Steel blue #8A94A6 fills atmospheric haze and shadowed surfaces at ~20%. Remaining uses desaturated cool grays. Side-lit mid-shot: Kal'tsit sits alone in an empty Rhodes Island conference room, positioned in the right third. Window light streams in from the left, casting cold blue dawn tones across the scene. The left side emphasizes the room's emptiness. Mission reports and a cup of cold coffee are scattered on the table. The dawn outside is a muted cold blue. A weary moment of solitude — transitioning from visual analysis to community culture.",
+      "aspect_ratio": "21:9",
+      "image_size": "1K",
+      "status": "Generated",
+      "purpose": "Content illustration — solitary exhaustion",
+      "type": "content"
+    },
+    {
+      "filename": "P17_content.png",
+      "prompt": "Semi-realistic dark fantasy digital painting, thick-paint brushwork with visible texture, cinematic depth of field, strong chiaroscuro from single dominant light source, atmospheric fog. Shapes organic and layered. Rich material texture on surfaces. Deep navy base #0A1628 covers ~40% of canvas. Teal-green #1A5C5C appears in medical/scientific elements and rim lighting at ~15%. Amber-gold #D4A848 surfaces in warm highlights, eye glow, and focal accents at ~10%. Steel blue #8A94A6 fills atmospheric haze and shadowed surfaces at ~20%. Remaining uses desaturated cool grays. Ultra-wide panoramic composition: Kal'tsit stands on a timeline stretching across the canvas from left (past) to right (present). Behind her, pre-civilization ruins dissolve and fade; ahead, current-era mobile cities gradually materialize into clarity. Mon3tr remains faithfully at her side throughout. She is positioned at the center of the timeline, unmoved across the ages. The Immutable — a 10,000-year monologue, witnessing all change while remaining unchanged herself.",
+      "aspect_ratio": "21:9",
+      "image_size": "1K",
+      "status": "Generated",
+      "purpose": "Content illustration — Kal'tsit across millennia",
+      "type": "content"
+    },
+    {
+      "filename": "P18_ending_bg.png",
+      "prompt": "Semi-realistic dark fantasy digital painting, thick-paint brushwork with visible texture, cinematic depth of field, strong chiaroscuro from single dominant light source, atmospheric fog. Shapes organic and layered. Rich material texture on surfaces. Deep navy base #0A1628 covers ~40% of canvas. Teal-green #1A5C5C appears in medical/scientific elements and rim lighting at ~15%. Amber-gold #D4A848 surfaces in warm highlights, eye glow, and focal accents at ~10%. Steel blue #8A94A6 fills atmospheric haze and shadowed surfaces at ~20%. Remaining uses desaturated cool grays. Pure black background. Theresa's farewell letter text materializes as golden light in handwritten script, centered in the frame: 'I hope Rhodes Island can become the home you named.' Mon3tr's eyes glow faintly amber at the bottom of the canvas — the sole visual anchor, the only response. Golden text and amber eyes echo each other across the darkness. The final chapter — closing with Theresa's dying wish, Mon3tr's glowing eyes as the only reply.",
+      "aspect_ratio": "21:9",
+      "image_size": "1K",
+      "status": "Generated",
+      "purpose": "Ending page — Theresa's farewell and Mon3tr's silent answer",
+      "type": "content"
+    }
+  ]
+}

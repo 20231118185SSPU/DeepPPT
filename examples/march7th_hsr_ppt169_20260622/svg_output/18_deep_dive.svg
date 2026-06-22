@@ -1,0 +1,51 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1280 720">
+
+  <!-- Background -->
+  <rect x="0" y="0" width="1280" height="720" fill="#F8F4F0"/>
+
+  <!-- Top 35% image -->
+  <image href="images/web_assets/dd_p18_timeline.png" x="0" y="0" width="1280" height="252" preserveAspectRatio="xMidYMid slice"/>
+  <rect x="0" y="0" width="1280" height="252" fill="#F8F4F0" fill-opacity="0.4"/>
+
+  <!-- Bottom text area (y=300-680) -->
+
+  <!-- Title -->
+  <text x="640" y="310" text-anchor="middle" font-family="SimSun, Georgia, serif" font-size="36" font-weight="bold" fill="#D4789C">版本演进时间线</text>
+
+  <!-- Growth arc narrative -->
+  <text x="640" y="360" text-anchor="middle" font-family="&quot;Microsoft YaHei&quot;, Arial, sans-serif" font-size="18" fill="#2D2D3D">失忆少女 → 忠诚伙伴 → 梦境共鸣 → 武道觉醒 → 回归升华 → 身世悬念</text>
+
+  <!-- Horizontal connector line -->
+  <line x1="100" y1="430" x2="1180" y2="430" stroke="#D0C8D8" stroke-width="3"/>
+
+  <!-- Milestone 1: 起点 -->
+  <circle cx="180" cy="430" r="16" fill="#7EB8D8"/>
+  <text x="180" y="430" text-anchor="middle" font-family="SimSun, Georgia, serif" font-size="14" font-weight="bold" fill="#FFFFFF">1</text>
+  <rect x="80" y="460" width="200" height="80" rx="12" fill="#F0ECF4" stroke="#7EB8D8" stroke-width="2"/>
+  <text x="180" y="490" text-anchor="middle" font-family="SimSun, Georgia, serif" font-size="20" font-weight="bold" fill="#7EB8D8">起点</text>
+  <text x="180" y="516" text-anchor="middle" font-family="&quot;Microsoft YaHei&quot;, Arial, sans-serif" font-size="14" fill="#6B6B80">1.0 失忆少女登场</text>
+
+  <!-- Milestone 2: 蜕变 -->
+  <circle cx="450" cy="430" r="16" fill="#9B72CF"/>
+  <text x="450" y="430" text-anchor="middle" font-family="SimSun, Georgia, serif" font-size="14" font-weight="bold" fill="#FFFFFF">2</text>
+  <rect x="350" y="460" width="200" height="80" rx="12" fill="#F0ECF4" stroke="#9B72CF" stroke-width="2"/>
+  <text x="450" y="490" text-anchor="middle" font-family="SimSun, Georgia, serif" font-size="20" font-weight="bold" fill="#9B72CF">蜕变</text>
+  <text x="450" y="516" text-anchor="middle" font-family="&quot;Microsoft YaHei&quot;, Arial, sans-serif" font-size="14" fill="#6B6B80">2.5 巡猎形态觉醒</text>
+
+  <!-- Milestone 3: 升华 -->
+  <circle cx="720" cy="430" r="16" fill="#D4789C"/>
+  <text x="720" y="430" text-anchor="middle" font-family="SimSun, Georgia, serif" font-size="14" font-weight="bold" fill="#FFFFFF">3</text>
+  <rect x="620" y="460" width="200" height="80" rx="12" fill="#F0ECF4" stroke="#D4789C" stroke-width="2"/>
+  <text x="720" y="490" text-anchor="middle" font-family="SimSun, Georgia, serif" font-size="20" font-weight="bold" fill="#D4789C">升华</text>
+  <text x="720" y="516" text-anchor="middle" font-family="&quot;Microsoft YaHei&quot;, Arial, sans-serif" font-size="14" fill="#6B6B80">3.0 极·三月七降临</text>
+
+  <!-- Milestone 4: 未来 -->
+  <circle cx="990" cy="430" r="16" fill="#2D2D3D"/>
+  <text x="990" y="430" text-anchor="middle" font-family="SimSun, Georgia, serif" font-size="14" font-weight="bold" fill="#FFFFFF">4</text>
+  <rect x="890" y="460" width="200" height="80" rx="12" fill="#F0ECF4" stroke="#2D2D3D" stroke-width="2"/>
+  <text x="990" y="490" text-anchor="middle" font-family="SimSun, Georgia, serif" font-size="20" font-weight="bold" fill="#2D2D3D">未来</text>
+  <text x="990" y="516" text-anchor="middle" font-family="&quot;Microsoft YaHei&quot;, Arial, sans-serif" font-size="14" fill="#6B6B80">身世悬念待揭晓</text>
+
+  <!-- Bottom source -->
+  <text x="640" y="680" text-anchor="middle" font-family="&quot;Microsoft YaHei&quot;, Arial, sans-serif" font-size="11" fill="#6B6B80">来源：官方版本公告 / B站 Wiki</text>
+</svg>

@@ -1,0 +1,103 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1280 720">
+  <rect width="1280" height="720" fill="#F5F0E6"/>
+  <!-- Title -->
+  <text x="640" y="50" text-anchor="middle" font-family="SimSun, Georgia, serif" font-size="36" font-weight="bold" fill="#425066">母功的传承谱系：从形意拳到现代养生</text>
+
+  <!-- Horizontal Timeline Line (y=200) -->
+  <line x1="100" y1="200" x2="1180" y2="200" stroke="#425066" stroke-width="2"/>
+
+  <!-- Timeline Node 1: 1885 (above) -->
+  <circle cx="157" cy="200" r="6" fill="#7A5230"/>
+  <text x="157" y="175" text-anchor="middle" font-family="SimSun, Georgia, serif" font-size="14" font-weight="bold" fill="#7A5230">1885</text>
+  <text x="157" y="155" text-anchor="middle" font-family="&quot;Microsoft YaHei&quot;, Arial, sans-serif" font-size="12" fill="#555555">王芗斋出生</text>
+
+  <!-- Timeline Node 2: 1920s (below) -->
+  <circle cx="308" cy="200" r="6" fill="#7A5230"/>
+  <text x="308" y="225" text-anchor="middle" font-family="SimSun, Georgia, serif" font-size="14" font-weight="bold" fill="#7A5230">1920s</text>
+  <text x="308" y="245" text-anchor="middle" font-family="&quot;Microsoft YaHei&quot;, Arial, sans-serif" font-size="12" fill="#555555">创立意拳</text>
+
+  <!-- Timeline Node 3: 1940s (above) -->
+  <circle cx="459" cy="200" r="6" fill="#7A5230"/>
+  <text x="459" y="175" text-anchor="middle" font-family="SimSun, Georgia, serif" font-size="14" font-weight="bold" fill="#7A5230">1940s</text>
+  <text x="459" y="155" text-anchor="middle" font-family="&quot;Microsoft YaHei&quot;, Arial, sans-serif" font-size="12" fill="#555555">《大成拳论》</text>
+
+  <!-- Timeline Node 4: 1949 (below) -->
+  <circle cx="610" cy="200" r="6" fill="#7A5230"/>
+  <text x="610" y="225" text-anchor="middle" font-family="SimSun, Georgia, serif" font-size="14" font-weight="bold" fill="#7A5230">1949</text>
+  <text x="610" y="245" text-anchor="middle" font-family="&quot;Microsoft YaHei&quot;, Arial, sans-serif" font-size="12" fill="#555555">养生转向</text>
+
+  <!-- Timeline Node 5: 1963 (above) -->
+  <circle cx="761" cy="200" r="6" fill="#7A5230"/>
+  <text x="761" y="175" text-anchor="middle" font-family="SimSun, Georgia, serif" font-size="14" font-weight="bold" fill="#7A5230">1963</text>
+  <text x="761" y="155" text-anchor="middle" font-family="&quot;Microsoft YaHei&quot;, Arial, sans-serif" font-size="12" fill="#555555">王芗斋去世</text>
+
+  <!-- Timeline Node 6: 1980s (below) -->
+  <circle cx="912" cy="200" r="6" fill="#7A5230"/>
+  <text x="912" y="225" text-anchor="middle" font-family="SimSun, Georgia, serif" font-size="14" font-weight="bold" fill="#7A5230">1980s</text>
+  <text x="912" y="245" text-anchor="middle" font-family="&quot;Microsoft YaHei&quot;, Arial, sans-serif" font-size="12" fill="#555555">社会普及</text>
+
+  <!-- Timeline Node 7: 2000s (above) -->
+  <circle cx="1063" cy="200" r="6" fill="#7A5230"/>
+  <text x="1063" y="175" text-anchor="middle" font-family="SimSun, Georgia, serif" font-size="14" font-weight="bold" fill="#7A5230">2000s</text>
+  <text x="1063" y="155" text-anchor="middle" font-family="&quot;Microsoft YaHei&quot;, Arial, sans-serif" font-size="12" fill="#555555">现代科学</text>
+
+  <!-- 4 Phase Blocks (y=280-380) -->
+  <!-- Phase 1: 武术核心功法 -->
+  <rect x="70" y="280" width="260" height="75" rx="10" fill="#425066" stroke="none"/>
+  <text x="200" y="310" text-anchor="middle" font-family="SimSun, Georgia, serif" font-size="18" font-weight="bold" fill="#FFFFFF">武术核心功法</text>
+  <text x="200" y="340" text-anchor="middle" font-family="&quot;Microsoft YaHei&quot;, Arial, sans-serif" font-size="14" fill="#D4C5A9">形意·意拳传承</text>
+
+  <!-- Phase 2: 养生转向 -->
+  <rect x="360" y="280" width="260" height="75" rx="10" fill="#789262" stroke="none"/>
+  <text x="490" y="310" text-anchor="middle" font-family="SimSun, Georgia, serif" font-size="18" font-weight="bold" fill="#FFFFFF">养生转向</text>
+  <text x="490" y="340" text-anchor="middle" font-family="&quot;Microsoft YaHei&quot;, Arial, sans-serif" font-size="14" fill="#FFFFFF">从技击到健康</text>
+
+  <!-- Phase 3: 中医整合 -->
+  <rect x="650" y="280" width="260" height="75" rx="10" fill="#7A5230" stroke="none"/>
+  <text x="780" y="310" text-anchor="middle" font-family="SimSun, Georgia, serif" font-size="18" font-weight="bold" fill="#FFFFFF">中医整合</text>
+  <text x="780" y="340" text-anchor="middle" font-family="&quot;Microsoft YaHei&quot;, Arial, sans-serif" font-size="14" fill="#FFFFFF">经络·气血理论</text>
+
+  <!-- Phase 4: 科学研究 -->
+  <rect x="940" y="280" width="260" height="75" rx="10" fill="#425066" stroke="none"/>
+  <text x="1070" y="310" text-anchor="middle" font-family="SimSun, Georgia, serif" font-size="18" font-weight="bold" fill="#FFFFFF">科学研究</text>
+  <text x="1070" y="340" text-anchor="middle" font-family="&quot;Microsoft YaHei&quot;, Arial, sans-serif" font-size="14" fill="#D4C5A9">神经影像·RCT</text>
+
+  <!-- Connecting arrows between phases -->
+  <text x="340" y="325" text-anchor="middle" font-family="&quot;Microsoft YaHei&quot;, Arial, sans-serif" font-size="20" fill="#C8C0B0">→</text>
+  <text x="625" y="325" text-anchor="middle" font-family="&quot;Microsoft YaHei&quot;, Arial, sans-serif" font-size="20" fill="#C8C0B0">→</text>
+  <text x="915" y="325" text-anchor="middle" font-family="&quot;Microsoft YaHei&quot;, Arial, sans-serif" font-size="20" fill="#C8C0B0">→</text>
+
+  <!-- Section label -->
+  <text x="640" y="395" text-anchor="middle" font-family="&quot;Microsoft YaHei&quot;, Arial, sans-serif" font-size="16" fill="#999999">核心哲学理念</text>
+
+  <!-- 3 Philosophy Cards (y=410) -->
+  <!-- Card 1: 混元 -->
+  <rect x="55" y="410" width="370" height="230" rx="12" fill="#EDE7D9" stroke="#C8C0B0" stroke-width="1"/>
+  <text x="240" y="450" text-anchor="middle" font-family="SimSun, Georgia, serif" font-size="22" font-weight="bold" fill="#425066">"混元"</text>
+  <text x="240" y="485" text-anchor="middle" font-family="&quot;Microsoft YaHei&quot;, Arial, sans-serif" font-size="16" fill="#2D2D2D">天地未分的原始混沌</text>
+  <line x1="110" y1="505" x2="370" y2="505" stroke="#C8C0B0" stroke-width="1"/>
+  <text x="240" y="535" text-anchor="middle" font-family="KaiTi, Georgia, serif" font-size="18" fill="#7A5230">有物混成，先天地生</text>
+  <text x="240" y="565" text-anchor="middle" font-family="&quot;Microsoft YaHei&quot;, Arial, sans-serif" font-size="14" fill="#999999">——《道德经》</text>
+  <text x="240" y="600" text-anchor="middle" font-family="&quot;Microsoft YaHei&quot;, Arial, sans-serif" font-size="14" fill="#555555">万物归一的宇宙观</text>
+
+  <!-- Card 2: 内丹 -->
+  <rect x="450" y="410" width="370" height="230" rx="12" fill="#EDE7D9" stroke="#C8C0B0" stroke-width="1"/>
+  <text x="635" y="450" text-anchor="middle" font-family="SimSun, Georgia, serif" font-size="22" font-weight="bold" fill="#425066">"内丹"</text>
+  <text x="635" y="485" text-anchor="middle" font-family="&quot;Microsoft YaHei&quot;, Arial, sans-serif" font-size="16" fill="#2D2D2D">炼精化气·炼气化神</text>
+  <line x1="505" y1="505" x2="765" y2="505" stroke="#C8C0B0" stroke-width="1"/>
+  <text x="635" y="535" text-anchor="middle" font-family="KaiTi, Georgia, serif" font-size="18" fill="#7A5230">致虚极，守静笃</text>
+  <text x="635" y="565" text-anchor="middle" font-family="&quot;Microsoft YaHei&quot;, Arial, sans-serif" font-size="14" fill="#999999">——《道德经》</text>
+  <text x="635" y="600" text-anchor="middle" font-family="&quot;Microsoft YaHei&quot;, Arial, sans-serif" font-size="14" fill="#555555">道家修炼实践体系</text>
+
+  <!-- Card 3: 站桩 -->
+  <rect x="845" y="410" width="370" height="230" rx="12" fill="#EDE7D9" stroke="#C8C0B0" stroke-width="1"/>
+  <text x="1030" y="450" text-anchor="middle" font-family="SimSun, Georgia, serif" font-size="22" font-weight="bold" fill="#425066">"站桩"</text>
+  <text x="1030" y="485" text-anchor="middle" font-family="&quot;Microsoft YaHei&quot;, Arial, sans-serif" font-size="16" fill="#2D2D2D">全身浑然一体</text>
+  <line x1="900" y1="505" x2="1160" y2="505" stroke="#C8C0B0" stroke-width="1"/>
+  <text x="1030" y="535" text-anchor="middle" font-family="KaiTi, Georgia, serif" font-size="18" fill="#7A5230">意气力不分的身心实践</text>
+  <text x="1030" y="565" text-anchor="middle" font-family="&quot;Microsoft YaHei&quot;, Arial, sans-serif" font-size="14" fill="#999999">——王芗斋</text>
+  <text x="1030" y="600" text-anchor="middle" font-family="&quot;Microsoft YaHei&quot;, Arial, sans-serif" font-size="14" fill="#555555">静态中的整体修炼</text>
+
+  <!-- Source -->
+  <text x="640" y="680" text-anchor="middle" font-family="&quot;Microsoft YaHei&quot;, Arial, sans-serif" font-size="11" fill="#999999">来源：王芗斋《大成拳论》; 百度百科; 庄子</text>
+</svg>

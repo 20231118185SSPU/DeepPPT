@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1280 720">
+    <rect width="1280" height="720" fill="#F8FAFC" />
+    <image href="../images/P10_trans3_bg.png" x="0" y="0" width="1280" height="720" preserveAspectRatio="xMidYMid slice" />
+    <rect x="0" y="0" width="1280" height="720" fill="#F8FAFC" fill-opacity="0.7" />
+
+    <text x="60" y="200" fill="#94A3B8" font-family="Microsoft YaHei, PingFang SC, Segoe UI, sans-serif" font-size="14">工具准备就绪</text>
+    <text x="60" y="240" fill="#64748B" font-family="Microsoft YaHei, PingFang SC, Segoe UI, sans-serif" font-size="20">接下来进入实战操作</text>
+
+    <text x="60" y="370" fill="#2563EB" fill-opacity="0.12" font-family="Segoe UI, Arial, sans-serif" font-size="120" font-weight="bold">03</text>
+    <text x="60" y="440" fill="#1E293B" font-family="Microsoft YaHei, PingFang SC, Segoe UI, sans-serif" font-size="48" font-weight="bold">标准工作流</text>
+    <text x="60" y="490" fill="#64748B" font-family="Microsoft YaHei, PingFang SC, Segoe UI, sans-serif" font-size="20">三步出图法</text>
+
+    <line x1="60" y1="540" x2="400" y2="540" stroke="#2563EB" stroke-width="1.5" stroke-opacity="0.3" />
+    <text x="60" y="580" fill="#64748B" font-family="Microsoft YaHei, PingFang SC, Segoe UI, sans-serif" font-size="18">跟着步骤走，人人都能出好图</text>
+</svg>

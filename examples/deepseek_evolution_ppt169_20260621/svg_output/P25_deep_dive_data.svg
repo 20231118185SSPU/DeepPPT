@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1280 720">
+    <!-- P25 Deep Dive Data - story_driven -->
+    <rect width="1280" height="720" fill="#16162A" />
+
+    <!-- Section label -->
+    <text x="60" y="60" fill="#FFFFFF" fill-opacity="0.45" font-family="Microsoft YaHei, Arial, sans-serif" font-size="13">§6 · 数据展开</text>
+
+    <!-- Page title -->
+    <text x="60" y="100" fill="#FFFFFF" font-family="Microsoft YaHei, Arial, sans-serif" font-size="32" font-weight="bold">全球 AI 股走势</text>
+
+    <!-- Three dots -->
+    <circle cx="60" cy="128" r="3" fill="#FFFFFF" fill-opacity="0.35" />
+    <circle cx="74" cy="128" r="3" fill="#FFFFFF" fill-opacity="0.25" />
+    <circle cx="88" cy="128" r="3" fill="#FFFFFF" fill-opacity="0.15" />
+
+    <!-- Divider line -->
+    <line x1="60" y1="145" x2="1220" y2="145" stroke="#FFFFFF" stroke-width="1" stroke-opacity="0.15" />
+
+    <!-- Stock timeline image (left) -->
+    <rect x="56" y="160" width="528" height="370" fill="none" stroke="#FFFFFF" stroke-width="1" stroke-opacity="0.12" rx="6" />
+    <image href="images/web_assets/web_ai_stock_timeline.png" x="60" y="164" width="520" height="350" preserveAspectRatio="xMidYMid slice" />
+
+    <!-- Data points (right) -->
+    <text x="620" y="200" fill="#FFFFFF" font-family="Microsoft YaHei, Arial, sans-serif" font-size="52" font-weight="bold">NVDA -17%</text>
+    <text x="620" y="230" fill="#FFFFFF" fill-opacity="0.6" font-family="Microsoft YaHei, Arial, sans-serif" font-size="16">NVIDIA 单日暴跌 17%，创纪录蒸发 $593B</text>
+
+    <line x1="620" y1="250" x2="1220" y2="250" stroke="#FFFFFF" stroke-width="1" stroke-opacity="0.15" />
+
+    <text x="620" y="300" fill="#FFFFFF" font-family="Microsoft YaHei, Arial, sans-serif" font-size="44" font-weight="bold">AVGO -17%</text>
+    <text x="620" y="330" fill="#FFFFFF" fill-opacity="0.6" font-family="Microsoft YaHei, Arial, sans-serif" font-size="16">Broadcom 跟跌 17%，AI 芯片板块全面承压</text>
+
+    <line x1="620" y1="350" x2="1220" y2="350" stroke="#FFFFFF" stroke-width="1" stroke-opacity="0.15" />
+
+    <text x="620" y="400" fill="#FFFFFF" font-family="Microsoft YaHei, Arial, sans-serif" font-size="44" font-weight="bold">GOOG -3%</text>
+    <text x="620" y="430" fill="#FFFFFF" fill-opacity="0.6" font-family="Microsoft YaHei, Arial, sans-serif" font-size="16">Google 也未能幸免，市值承压</text>
+
+    <line x1="620" y1="450" x2="1220" y2="450" stroke="#FFFFFF" stroke-width="1" stroke-opacity="0.15" />
+
+    <text x="620" y="490" fill="#FFFFFF" font-family="Microsoft YaHei, Arial, sans-serif" font-size="44" font-weight="bold">MSFT -2%</text>
+    <text x="620" y="520" fill="#FFFFFF" fill-opacity="0.6" font-family="Microsoft YaHei, Arial, sans-serif" font-size="16">微软相对抗跌，但市场情绪转向</text>
+
+    <!-- Key insight -->
+    <rect x="620" y="550" width="600" height="80" fill="#FFFFFF" fill-opacity="0.08" rx="8" />
+    <text x="920" y="580" text-anchor="middle" fill="#FFFFFF" fill-opacity="0.85" font-family="Microsoft YaHei, Arial, sans-serif" font-size="16" font-weight="bold">市场信号</text>
+    <text x="920" y="610" text-anchor="middle" fill="#FFFFFF" fill-opacity="0.6" font-family="Microsoft YaHei, Arial, sans-serif" font-size="14">投资者重新评估 AI 基础设施的必要性，算力叙事发生根本转变</text>
+
+    <!-- Source -->
+    <text x="60" y="680" fill="#FFFFFF" fill-opacity="0.4" font-family="Microsoft YaHei, Arial, sans-serif" font-size="12">Source: Google Finance, 2025-01-27</text>
+
+    <!-- Page number -->
+    <text x="1220" y="708" text-anchor="end" fill="#FFFFFF" fill-opacity="0.4" font-family="Microsoft YaHei, Arial, sans-serif" font-size="11">25 / 30</text>
+</svg>

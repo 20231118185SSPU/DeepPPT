@@ -1,0 +1,27 @@
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 1280 720" width="1280" height="720">
+  <rect x="0" y="0" width="1280" height="720" fill="#0D1117"/>
+  <rect x="80" y="50" width="60" height="2" fill="#58A6FF"/>
+  <text x="80" y="85" font-family="Microsoft YaHei, Arial, sans-serif" font-size="14" fill="#58A6FF" letter-spacing="2">第二章 · 超越常人</text>
+  <text x="80" y="125" font-family="Microsoft YaHei, Arial, sans-serif" font-size="36" font-weight="bold" fill="#FFFFFF">万年旅者</text>
+  <rect x="80" y="145" width="1120" height="1" fill="#30363D"/>
+  
+  <image href="../images/scene_departure.png" x="0" y="0" width="1280" height="720" preserveAspectRatio="xMidYMid slice"/>
+  <rect x="0" y="0" width="1280" height="720" fill="#0D1117" fill-opacity="0.7"/>
+  <rect x="100" y="160" width="60" height="2" fill="#58A6FF"/>
+  <text x="100" y="195" font-family="Microsoft YaHei, Arial, sans-serif" font-size="14" fill="#58A6FF" letter-spacing="2">第二章 · 超越常人</text>
+  <text x="100" y="240" font-family="Microsoft YaHei, Arial, sans-serif" font-size="48" font-weight="bold" fill="#FFFFFF" letter-spacing="4">万年旅者</text>
+  <text x="100" y="280" font-family="Microsoft YaHei, Arial, sans-serif" font-size="18" fill="#8B949E">THE ETERNAL WANDERER</text>
+  <rect x="100" y="320" width="3" height="80" fill="#58A6FF"/>
+  <text x="120" y="350" font-family="Georgia, SimSun, serif" font-size="22" fill="#C9D1D9" font-style="italic">"比你所见的片段还要漫长，</text>
+  <text x="120" y="380" font-family="Georgia, SimSun, serif" font-size="22" fill="#C9D1D9" font-style="italic">漫长千倍万倍，特蕾西娅。"</text>
+  <rect x="100" y="440" width="500" height="1" fill="#30363D" fill-opacity="0.5"/>
+  <text x="100" y="480" font-family="Microsoft YaHei, Arial, sans-serif" font-size="15" fill="#8B949E">旅途起点可追溯至</text>
+  <text x="100" y="515" font-family="Microsoft YaHei, Arial, sans-serif" font-size="36" font-weight="bold" fill="#58A6FF">10,000+</text>
+  <text x="250" y="515" font-family="Microsoft YaHei, Arial, sans-serif" font-size="18" fill="#8B949E">年前</text>
+  <text x="100" y="555" font-family="Microsoft YaHei, Arial, sans-serif" font-size="14" fill="#6E7681">从源石尚未扩散的时代，她就开始在泰拉大地上漫长旅途</text>
+  <rect x="700" y="440" width="200" height="80" rx="8" fill="#161B22" fill-opacity="0.8" stroke="#30363D" stroke-width="1"/>
+  <text x="720" y="470" font-family="Microsoft YaHei, Arial, sans-serif" font-size="13" fill="#8B949E">战术规划</text>
+  <text x="720" y="505" font-family="Microsoft YaHei, Arial, sans-serif" font-size="28" font-weight="bold" fill="#F85149">■■</text>
+  <text x="790" y="505" font-family="Microsoft YaHei, Arial, sans-serif" font-size="14" fill="#F85149">机密</text>
+  <text x="1220" y="690" font-family="Microsoft YaHei, Arial, sans-serif" font-size="12" fill="#6E7681" text-anchor="end">09 / 32</text>
+</svg>

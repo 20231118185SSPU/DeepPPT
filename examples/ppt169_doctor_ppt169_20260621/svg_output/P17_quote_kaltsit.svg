@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1280 720">
+    <g id="background"><rect width="1280" height="720" fill="#1C1C1C" /><rect x="0" y="0" width="1280" height="720" fill="#8B1A1A" fill-opacity="0.04" /></g>
+    <g id="quote-label"><text x="60" y="180" fill="#E8E8E8" fill-opacity="0.45" font-family="Microsoft YaHei, Arial, sans-serif" font-size="14">凯尔希的话</text></g>
+    <g id="quote-body">
+        <text x="640" y="320" text-anchor="middle" fill="#E8E8E8" font-family="Source Han Sans SC, Microsoft YaHei, sans-serif" font-size="42" font-weight="bold">"你什么都回忆不起来。"</text>
+        <text x="640" y="380" text-anchor="middle" fill="#C0C0C0" font-family="Microsoft YaHei, Arial, sans-serif" font-size="26">——阿米娅</text>
+        <line x1="500" y1="420" x2="780" y2="420" stroke="#8B1A1A" stroke-width="1" stroke-opacity="0.3" />
+        <text x="640" y="470" text-anchor="middle" fill="#E8E8E8" font-family="Source Han Sans SC, Microsoft YaHei, sans-serif" font-size="42" font-weight="bold">"博士可能永远无法恢复记忆。"</text>
+        <text x="640" y="530" text-anchor="middle" fill="#C0C0C0" font-family="Microsoft YaHei, Arial, sans-serif" font-size="26">——凯尔希</text>
+    </g>
+    <g id="interpretation"><text x="640" y="620" text-anchor="middle" fill="#A0A0A0" font-family="Microsoft YaHei, Arial, sans-serif" font-size="20">在凯尔希看来，失忆不是解脱，是另一种形式的背叛</text></g>
+</svg>

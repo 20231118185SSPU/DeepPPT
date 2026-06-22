@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1280 720">
+    <g id="background">
+        <rect width="1280" height="720" fill="#1C1C1C" />
+        <image href="images/p02_toc_bg.png" x="0" y="0" width="1280" height="720" preserveAspectRatio="xMidYMid slice" />
+        <rect x="0" y="0" width="1280" height="720" fill="#1C1C1C" fill-opacity="0.65" />
+    </g>
+    <g id="toc-header">
+        <text x="60" y="80" fill="#E8E8E8" font-family="Source Han Sans SC, Microsoft YaHei, sans-serif" font-size="36" font-weight="bold">目录</text>
+        <text x="155" y="80" fill="#E8E8E8" fill-opacity="0.5" font-family="Microsoft YaHei, Arial, sans-serif" font-size="18">CONTENTS</text>
+    </g>
+    <g id="toc-items">
+        <rect x="60" y="110" width="560" height="85" fill="#FFFFFF" fill-opacity="0.05" rx="6" />
+        <text x="90" y="158" fill="#8B1A1A" fill-opacity="0.9" font-family="Source Han Sans SC, Microsoft YaHei, sans-serif" font-size="36" font-weight="bold">01</text>
+        <text x="150" y="148" fill="#E8E8E8" font-family="Microsoft YaHei, Arial, sans-serif" font-size="20" font-weight="bold">前文明的幽灵</text>
+        <text x="150" y="175" fill="#E8E8E8" fill-opacity="0.5" font-family="Microsoft YaHei, Arial, sans-serif" font-size="13">万年前的遗物</text>
+        <rect x="660" y="110" width="560" height="85" fill="#FFFFFF" fill-opacity="0.05" rx="6" />
+        <text x="690" y="158" fill="#8B1A1A" fill-opacity="0.9" font-family="Source Han Sans SC, Microsoft YaHei, sans-serif" font-size="36" font-weight="bold">02</text>
+        <text x="750" y="148" fill="#E8E8E8" font-family="Microsoft YaHei, Arial, sans-serif" font-size="20" font-weight="bold">苏醒与失忆</text>
+        <text x="750" y="175" fill="#E8E8E8" fill-opacity="0.5" font-family="Microsoft YaHei, Arial, sans-serif" font-size="13">石棺开启之后</text>
+        <rect x="60" y="210" width="560" height="85" fill="#FFFFFF" fill-opacity="0.05" rx="6" />
+        <text x="90" y="258" fill="#8B1A1A" fill-opacity="0.9" font-family="Source Han Sans SC, Microsoft YaHei, sans-serif" font-size="36" font-weight="bold">03</text>
+        <text x="150" y="248" fill="#E8E8E8" font-family="Microsoft YaHei, Arial, sans-serif" font-size="20" font-weight="bold">战术天才的悖论</text>
+        <text x="150" y="275" fill="#E8E8E8" fill-opacity="0.5" font-family="Microsoft YaHei, Arial, sans-serif" font-size="13">记忆空白，能力完整</text>
+        <rect x="660" y="210" width="560" height="85" fill="#FFFFFF" fill-opacity="0.05" rx="6" />
+        <text x="690" y="258" fill="#8B1A1A" fill-opacity="0.9" font-family="Source Han Sans SC, Microsoft YaHei, sans-serif" font-size="36" font-weight="bold">04</text>
+        <text x="750" y="248" fill="#E8E8E8" font-family="Microsoft YaHei, Arial, sans-serif" font-size="20" font-weight="bold">关系网</text>
+        <text x="750" y="275" fill="#E8E8E8" fill-opacity="0.5" font-family="Microsoft YaHei, Arial, sans-serif" font-size="13">恨与保护的编织</text>
+        <rect x="60" y="310" width="560" height="85" fill="#FFFFFF" fill-opacity="0.05" rx="6" />
+        <text x="90" y="358" fill="#C0C0C0" fill-opacity="0.9" font-family="Source Han Sans SC, Microsoft YaHei, sans-serif" font-size="36" font-weight="bold">05</text>
+        <text x="150" y="348" fill="#E8E8E8" font-family="Microsoft YaHei, Arial, sans-serif" font-size="20" font-weight="bold">面具之下</text>
+        <text x="150" y="375" fill="#E8E8E8" fill-opacity="0.5" font-family="Microsoft YaHei, Arial, sans-serif" font-size="13">设计哲学</text>
+        <rect x="660" y="310" width="560" height="85" fill="#FFFFFF" fill-opacity="0.05" rx="6" />
+        <text x="690" y="358" fill="#C0C0C0" fill-opacity="0.9" font-family="Source Han Sans SC, Microsoft YaHei, sans-serif" font-size="36" font-weight="bold">06</text>
+        <text x="750" y="348" fill="#E8E8E8" font-family="Microsoft YaHei, Arial, sans-serif" font-size="20" font-weight="bold">社区与文化</text>
+        <text x="750" y="375" fill="#E8E8E8" fill-opacity="0.5" font-family="Microsoft YaHei, Arial, sans-serif" font-size="13">面具上的万千面孔</text>
+    </g>
+</svg>

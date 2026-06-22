@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1280 720">
+    <!-- P17 Content - story_driven 03a variant -->
+    <rect width="1280" height="720" fill="#16162A" />
+
+    <!-- Section label -->
+    <text x="60" y="60" fill="#FFFFFF" fill-opacity="0.45" font-family="Microsoft YaHei, Arial, sans-serif" font-size="13">§4 技术演进</text>
+
+    <!-- Page title -->
+    <text x="60" y="108" fill="#FFFFFF" font-family="Microsoft YaHei, Arial, sans-serif" font-size="32" font-weight="bold">V3 成本颠覆</text>
+
+    <!-- Three dots -->
+    <circle cx="60" cy="135" r="3" fill="#FFFFFF" fill-opacity="0.35" />
+    <circle cx="74" cy="135" r="3" fill="#FFFFFF" fill-opacity="0.25" />
+    <circle cx="88" cy="135" r="3" fill="#FFFFFF" fill-opacity="0.15" />
+
+    <!-- Content image frame -->
+    <rect x="56" y="116" width="1168" height="418" fill="none" stroke="#FFFFFF" stroke-width="1" stroke-opacity="0.12" rx="6" />
+    <image href="images/P17_content_v3.png" x="60" y="120" width="1160" height="410" preserveAspectRatio="xMidYMid slice" />
+
+    <!-- Big number caption -->
+    <text x="60" y="568" fill="#FFFFFF" fill-opacity="0.6" font-family="Microsoft YaHei, Arial, sans-serif" font-size="16">2048 张 H800 · 训练 2 个月 · FP8 混合精度 · 无辅助损失负载均衡</text>
+
+    <!-- Divider line -->
+    <line x1="60" y1="590" x2="1220" y2="590" stroke="#FFFFFF" stroke-width="1" stroke-opacity="0.15" />
+
+    <!-- Takeaway with accent bar -->
+    <rect x="1200" y="610" width="3" height="24" fill="#FFFFFF" fill-opacity="0.3" />
+    <text x="60" y="628" fill="#FFFFFF" font-family="Microsoft YaHei, Arial, sans-serif" font-size="20" font-weight="bold">训练成本差距 18 倍</text>
+
+    <!-- Big number overlay -->
+    <text x="640" y="380" text-anchor="middle" fill="#FFFFFF" fill-opacity="0.15" font-family="Microsoft YaHei, Arial, sans-serif" font-size="96" font-weight="bold">557万 vs 1亿</text>
+
+    <!-- Page number -->
+    <text x="1220" y="708" text-anchor="end" fill="#FFFFFF" fill-opacity="0.4" font-family="Microsoft YaHei, Arial, sans-serif" font-size="11">17 / 30</text>
+</svg>

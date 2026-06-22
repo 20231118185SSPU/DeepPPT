@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1280 720">
+    <g id="background"><rect width="1280" height="720" fill="#1C1C1C" /><image href="images/p26_ending_stars.png" x="0" y="0" width="1280" height="720" preserveAspectRatio="xMidYMid slice" /><rect x="0" y="160" width="1280" height="420" fill="#1C1C1C" fill-opacity="0.65" /></g>
+    <g id="title-block">
+        <line x1="440" y1="230" x2="840" y2="230" stroke="#8B1A1A" stroke-width="2" stroke-opacity="0.5" />
+        <text x="640" y="290" text-anchor="middle" fill="#E8E8E8" font-family="Source Han Sans SC, Microsoft YaHei, sans-serif" font-size="38" font-weight="bold">面具之下的空</text>
+    </g>
+    <g id="closing-quote">
+        <text x="640" y="350" text-anchor="middle" fill="#E8E8E8" fill-opacity="0.85" font-family="Microsoft YaHei, Arial, sans-serif" font-size="22" font-style="italic">"他没有面孔，所以每个人都能在面具上看到自己。"</text>
+        <text x="640" y="390" text-anchor="middle" fill="#E8E8E8" fill-opacity="0.85" font-family="Microsoft YaHei, Arial, sans-serif" font-size="22" font-style="italic">"他没有记忆，所以每一次选择都是全新的开始。"</text>
+        <text x="640" y="445" text-anchor="middle" fill="#C0C0C0" font-family="Microsoft YaHei, Arial, sans-serif" font-size="18">"博士，无论发生什么，我都会在您身边。" ——阿米娅</text>
+    </g>
+    <g id="footer"><rect x="0" y="660" width="1280" height="60" fill="#000000" fill-opacity="0.35" /><text x="640" y="695" text-anchor="middle" fill="#E8E8E8" fill-opacity="0.7" font-family="Microsoft YaHei, Arial, sans-serif" font-size="14">明日方舟深度研究 | 2026</text></g>
+</svg>

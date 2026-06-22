@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1280 720">
+    <rect width="1280" height="720" fill="#0A1628" />
+    <image href="images/P01_cover_bg.png" x="0" y="0" width="1280" height="720" preserveAspectRatio="xMidYMid slice" />
+    <rect x="0" y="260" width="1280" height="460" fill="#0A1628" fill-opacity="0.6" />
+    <line x1="440" y1="330" x2="840" y2="330" stroke="#1A5C5C" stroke-width="2" stroke-opacity="0.6" />
+    <text x="640" y="395" text-anchor="middle" fill="#E8E8E8" font-family="Source Han Sans SC, Microsoft YaHei, sans-serif" font-size="70" font-weight="bold">万年之眸</text>
+    <text x="640" y="445" text-anchor="middle" fill="#D4A848" font-family="Microsoft YaHei, Arial, sans-serif" font-size="26">凯尔希 — 明日方舟最深邃的灵魂深度解读</text>
+    <rect x="0" y="660" width="1280" height="60" fill="#000000" fill-opacity="0.35" />
+    <text x="60" y="695" fill="#E8E8E8" fill-opacity="0.7" font-family="Microsoft YaHei, Arial, sans-serif" font-size="14">明日方舟深度研究</text>
+    <text x="1220" y="695" text-anchor="end" fill="#E8E8E8" fill-opacity="0.7" font-family="Microsoft YaHei, Arial, sans-serif" font-size="14">2026</text>
+</svg>

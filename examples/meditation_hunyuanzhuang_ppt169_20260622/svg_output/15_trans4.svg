@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1280 720" width="1280" height="720">
+  <rect width="1280" height="720" fill="#F5F0E6"/>
+  <image href="images/P15_trans4_bg.png" x="0" y="0" width="1280" height="720" preserveAspectRatio="xMidYMid slice"/>
+  <rect x="0" y="0" width="1280" height="720" fill="#425066" fill-opacity="0.35"/>
+  <text x="640" y="100" text-anchor="middle" font-family="&quot;Microsoft YaHei&quot;, Arial, sans-serif" font-size="15" fill="#FFFFFF" font-style="italic">冥想与站桩互补，传统中本为一体</text>
+  <line x1="80" y1="220" x2="80" y2="420" stroke="#789262" stroke-width="3"/>
+  <text x="640" y="340" text-anchor="middle" font-family="SimSun, Georgia, serif" font-size="44" font-weight="bold" fill="#FFFFFF">第四章 · 你的第一个10分钟</text>
+  <text x="640" y="500" text-anchor="middle" font-family="&quot;Microsoft YaHei&quot;, Arial, sans-serif" font-size="20" fill="#FFFFFF">理论够了——现在站起来</text>
+</svg>

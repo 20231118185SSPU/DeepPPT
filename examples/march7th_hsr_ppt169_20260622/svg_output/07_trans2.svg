@@ -1,0 +1,25 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1280 720">
+  <defs>
+    <clipPath id="trans2Clip">
+      <rect x="0" y="0" width="1280" height="720"/>
+    </clipPath>
+  </defs>
+
+  <!-- Full-bleed background image -->
+  <image href="images/P07_trans2_bg.png" x="0" y="0" width="1280" height="720" clip-path="url(#trans2Clip)" preserveAspectRatio="xMidYMid slice"/>
+
+  <!-- Dark overlay -->
+  <rect x="0" y="0" width="1280" height="720" fill="#2D2D3D" fill-opacity="0.35"/>
+
+  <!-- Top italic text -->
+  <text x="640" y="100" text-anchor="middle" font-family="KaiTi, Georgia, serif" font-size="15" font-style="italic" fill="#FFFFFF">三月七的身世与记忆主题</text>
+
+  <!-- Left decorative line -->
+  <line x1="80" y1="220" x2="80" y2="420" stroke="#D4789C" stroke-width="3"/>
+
+  <!-- Center chapter title -->
+  <text x="640" y="340" text-anchor="middle" font-family="SimSun, Georgia, serif" font-size="44" font-weight="bold" fill="#FFFFFF">第二章 · 视觉DNA</text>
+
+  <!-- Bottom description -->
+  <text x="640" y="500" text-anchor="middle" font-family="&quot;Microsoft YaHei&quot;, Arial, sans-serif" font-size="20" fill="#FFFFFF">她为什么是粉色头发？设计师是怎么创造出她的？</text>
+</svg>

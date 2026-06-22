@@ -1,0 +1,32 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1280 720" width="1280" height="720">
+  <rect width="1280" height="720" fill="#F5F0E6"/>
+  <image href="images/P02_toc_bg.png" x="0" y="0" width="1280" height="720" preserveAspectRatio="xMidYMid slice"/>
+  <rect x="0" y="0" width="1280" height="720" fill="#F5F0E6" fill-opacity="0.75"/>
+
+  <text x="100" y="100" font-family="SimSun, Georgia, serif" font-size="44" font-weight="bold" fill="#425066">目录</text>
+
+  <!-- Item 1 -->
+  <circle cx="115" cy="210" r="5" fill="#789262"/>
+  <text x="140" y="218" font-family="SimSun, Georgia, serif" font-size="36" font-weight="bold" fill="#7A5230">01</text>
+  <text x="210" y="216" font-family="&quot;Microsoft YaHei&quot;, Arial, sans-serif" font-size="22" fill="#2D2D2D">冥想改变大脑 — MRI证据与临床研究</text>
+
+  <!-- Item 2 -->
+  <circle cx="115" cy="290" r="5" fill="#789262"/>
+  <text x="140" y="298" font-family="SimSun, Georgia, serif" font-size="36" font-weight="bold" fill="#7A5230">02</text>
+  <text x="210" y="296" font-family="&quot;Microsoft YaHei&quot;, Arial, sans-serif" font-size="22" fill="#2D2D2D">混元桩源流 — 百年武术传承的"母功"</text>
+
+  <!-- Item 3 -->
+  <circle cx="115" cy="370" r="5" fill="#789262"/>
+  <text x="140" y="378" font-family="SimSun, Georgia, serif" font-size="36" font-weight="bold" fill="#7A5230">03</text>
+  <text x="210" y="376" font-family="&quot;Microsoft YaHei&quot;, Arial, sans-serif" font-size="22" fill="#2D2D2D">身心合一 — 自上而下 vs 自下而上</text>
+
+  <!-- Item 4 -->
+  <circle cx="115" cy="450" r="5" fill="#789262"/>
+  <text x="140" y="458" font-family="SimSun, Georgia, serif" font-size="36" font-weight="bold" fill="#7A5230">04</text>
+  <text x="210" y="456" font-family="&quot;Microsoft YaHei&quot;, Arial, sans-serif" font-size="22" fill="#2D2D2D">实修入门 — 你的第一个10分钟</text>
+
+  <!-- Item 5 -->
+  <circle cx="115" cy="530" r="5" fill="#789262"/>
+  <text x="140" y="538" font-family="SimSun, Georgia, serif" font-size="36" font-weight="bold" fill="#7A5230">05</text>
+  <text x="210" y="536" font-family="&quot;Microsoft YaHei&quot;, Arial, sans-serif" font-size="22" fill="#2D2D2D">整合之路 — 静坐·站桩·太极三位一体</text>
+</svg>

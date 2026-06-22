@@ -1,0 +1,38 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1280 720">
+
+  <!-- Background -->
+  <rect x="0" y="0" width="1280" height="720" fill="#F8F4F0"/>
+
+  <!-- Left 40% image -->
+  <image href="images/web_assets/dd_p09_designer.png" x="0" y="0" width="512" height="720" preserveAspectRatio="xMidYMid slice"/>
+  <rect x="0" y="0" width="512" height="720" fill="#F8F4F0" fill-opacity="0.3"/>
+
+  <!-- Right text area centered at x=900 -->
+
+  <!-- Title -->
+  <text x="900" y="80" text-anchor="middle" font-family="SimSun, Georgia, serif" font-size="36" font-weight="bold" fill="#D4789C">夏一可的设计原画与灵感</text>
+
+  <!-- Card 1: 灵感来源 -->
+  <rect x="625" y="140" width="550" height="100" rx="12" fill="#F0ECF4" stroke="#D0C8D8" stroke-width="2"/>
+  <text x="900" y="170" text-anchor="middle" font-family="SimSun, Georgia, serif" font-size="22" font-weight="bold" fill="#9B72CF">灵感来源</text>
+  <text x="900" y="195" text-anchor="middle" font-family="&quot;Microsoft YaHei&quot;, Arial, sans-serif" font-size="18" fill="#2D2D3D">紫色挑染来自设计师个人审美</text>
+  <text x="900" y="218" text-anchor="middle" font-family="&quot;Microsoft YaHei&quot;, Arial, sans-serif" font-size="16" fill="#6B6B80">直接催生了三月七</text>
+
+  <!-- Card 2: 服装设计 -->
+  <rect x="625" y="260" width="550" height="100" rx="12" fill="#F0ECF4" stroke="#D0C8D8" stroke-width="2"/>
+  <text x="900" y="290" text-anchor="middle" font-family="SimSun, Georgia, serif" font-size="22" font-weight="bold" fill="#D4789C">服装设计</text>
+  <text x="900" y="315" text-anchor="middle" font-family="&quot;Microsoft YaHei&quot;, Arial, sans-serif" font-size="18" fill="#2D2D3D">"可爱但不幼齿"</text>
+  <text x="900" y="338" text-anchor="middle" font-family="&quot;Microsoft YaHei&quot;, Arial, sans-serif" font-size="16" fill="#6B6B80">外向活泼决定风格</text>
+
+  <!-- Card 3: 建模趣事 -->
+  <rect x="625" y="380" width="550" height="100" rx="12" fill="#F0ECF4" stroke="#D0C8D8" stroke-width="2"/>
+  <text x="900" y="410" text-anchor="middle" font-family="SimSun, Georgia, serif" font-size="22" font-weight="bold" fill="#7EB8D8">建模趣事</text>
+  <text x="900" y="435" text-anchor="middle" font-family="&quot;Microsoft YaHei&quot;, Arial, sans-serif" font-size="18" fill="#2D2D3D">图片直接贴身上</text>
+  <text x="900" y="458" text-anchor="middle" font-family="&quot;Microsoft YaHei&quot;, Arial, sans-serif" font-size="16" fill="#6B6B80">没有时间正式建模</text>
+
+  <!-- Quote -->
+  <text x="900" y="540" text-anchor="middle" font-family="KaiTi, Georgia, serif" font-size="18" font-style="italic" fill="#D4789C">"剪影清晰，让人一眼能看出来"</text>
+
+  <!-- Bottom source -->
+  <text x="900" y="680" text-anchor="middle" font-family="&quot;Microsoft YaHei&quot;, Arial, sans-serif" font-size="11" fill="#6B6B80">来源：夏一可微博 2025.4.8</text>
+</svg>

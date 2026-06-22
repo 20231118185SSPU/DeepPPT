@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1280 720">
+    <!-- P08 Content - story_driven 03a variant -->
+    <rect width="1280" height="720" fill="#16162A" />
+
+    <!-- Section label -->
+    <text x="60" y="60" fill="#FFFFFF" fill-opacity="0.45" font-family="Microsoft YaHei, Arial, sans-serif" font-size="13">§2 时代背景</text>
+
+    <!-- Page title -->
+    <text x="60" y="108" fill="#FFFFFF" font-family="Microsoft YaHei, Arial, sans-serif" font-size="32" font-weight="bold">Scaling Law 之辩</text>
+
+    <!-- Three dots -->
+    <circle cx="60" cy="135" r="3" fill="#FFFFFF" fill-opacity="0.35" />
+    <circle cx="74" cy="135" r="3" fill="#FFFFFF" fill-opacity="0.25" />
+    <circle cx="88" cy="135" r="3" fill="#FFFFFF" fill-opacity="0.15" />
+
+    <!-- Content image frame -->
+    <rect x="56" y="116" width="1168" height="418" fill="none" stroke="#FFFFFF" stroke-width="1" stroke-opacity="0.12" rx="6" />
+    <image href="images/P08_content_scaling.png" x="60" y="120" width="1160" height="410" preserveAspectRatio="xMidYMid slice" />
+
+    <!-- Caption -->
+    <text x="60" y="568" fill="#FFFFFF" fill-opacity="0.6" font-family="Microsoft YaHei, Arial, sans-serif" font-size="16">更大的模型 = 更好的AI？</text>
+
+    <!-- Divider line -->
+    <line x1="60" y1="590" x2="1220" y2="590" stroke="#FFFFFF" stroke-width="1" stroke-opacity="0.15" />
+
+    <!-- Takeaway with accent bar -->
+    <rect x="1200" y="610" width="3" height="24" fill="#FFFFFF" fill-opacity="0.3" />
+    <text x="60" y="628" fill="#FFFFFF" font-family="Microsoft YaHei, Arial, sans-serif" font-size="20" font-weight="bold">行业共识正在被挑战</text>
+
+    <!-- Page number -->
+    <text x="1220" y="708" text-anchor="end" fill="#FFFFFF" fill-opacity="0.4" font-family="Microsoft YaHei, Arial, sans-serif" font-size="11">8 / 30</text>
+</svg>

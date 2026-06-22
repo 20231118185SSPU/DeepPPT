@@ -1,0 +1,46 @@
+<svg viewBox="0 0 1280 720" xmlns="http://www.w3.org/2000/svg">
+  <!-- Background -->
+  <rect x="0" y="0" width="1280" height="720" fill="#F5F0E6"/>
+
+  <!-- Title -->
+  <text x="640" y="50" text-anchor="middle" font-family="SimSun, Georgia, serif" font-size="36" font-weight="bold" fill="#425066">站桩练体·静坐练心·太极练合一</text>
+
+  <!-- Card 1: 站桩练体 -->
+  <rect x="60" y="120" width="355" height="440" rx="12" fill="#EDE7D9" stroke="#C8C0B0" stroke-width="1"/>
+  <rect x="60" y="120" width="355" height="4" fill="#789262"/>
+  <text x="237" y="180" text-anchor="middle" font-family="&quot;Microsoft YaHei&quot;, Arial, sans-serif" font-size="28" font-weight="bold" fill="#789262">站桩练体</text>
+  <text x="237" y="230" text-anchor="middle" font-family="&quot;Microsoft YaHei&quot;, Arial, sans-serif" font-size="20" fill="#2D2D2D">下盘稳固</text>
+  <text x="237" y="270" text-anchor="middle" font-family="&quot;Microsoft YaHei&quot;, Arial, sans-serif" font-size="20" fill="#2D2D2D">气血流通</text>
+  <text x="237" y="310" text-anchor="middle" font-family="&quot;Microsoft YaHei&quot;, Arial, sans-serif" font-size="20" fill="#2D2D2D">筋膜重塑</text>
+  <line x1="130" y1="340" x2="345" y2="340" stroke="#C8C0B0" stroke-width="1"/>
+  <text x="237" y="380" text-anchor="middle" font-family="&quot;Microsoft YaHei&quot;, Arial, sans-serif" font-size="20" font-weight="bold" fill="#7A5230">平衡能力 ↑ 47%</text>
+  <text x="237" y="420" text-anchor="middle" font-family="&quot;Microsoft YaHei&quot;, Arial, sans-serif" font-size="14" fill="#999999">科学支撑：HRV改善·副交感激活</text>
+
+  <!-- Card 2: 静坐练心 -->
+  <rect x="462" y="120" width="355" height="440" rx="12" fill="#EDE7D9" stroke="#C8C0B0" stroke-width="1"/>
+  <rect x="462" y="120" width="355" height="4" fill="#425066"/>
+  <text x="640" y="180" text-anchor="middle" font-family="&quot;Microsoft YaHei&quot;, Arial, sans-serif" font-size="28" font-weight="bold" fill="#425066">静坐练心</text>
+  <text x="640" y="230" text-anchor="middle" font-family="&quot;Microsoft YaHei&quot;, Arial, sans-serif" font-size="20" fill="#2D2D2D">觉察力增强</text>
+  <text x="640" y="270" text-anchor="middle" font-family="&quot;Microsoft YaHei&quot;, Arial, sans-serif" font-size="20" fill="#2D2D2D">情绪调节能力</text>
+  <text x="640" y="310" text-anchor="middle" font-family="&quot;Microsoft YaHei&quot;, Arial, sans-serif" font-size="20" fill="#2D2D2D">大脑结构重塑</text>
+  <line x1="532" y1="340" x2="748" y2="340" stroke="#C8C0B0" stroke-width="1"/>
+  <text x="640" y="380" text-anchor="middle" font-family="&quot;Microsoft YaHei&quot;, Arial, sans-serif" font-size="20" font-weight="bold" fill="#7A5230">焦虑 d=0.38 ↓</text>
+  <text x="640" y="420" text-anchor="middle" font-family="&quot;Microsoft YaHei&quot;, Arial, sans-serif" font-size="14" fill="#999999">科学支撑：前额叶增厚·杏仁核缩小</text>
+
+  <!-- Card 3: 太极练合一 -->
+  <rect x="865" y="120" width="355" height="440" rx="12" fill="#EDE7D9" stroke="#C8C0B0" stroke-width="1"/>
+  <rect x="865" y="120" width="355" height="4" fill="#7A5230"/>
+  <text x="1042" y="180" text-anchor="middle" font-family="&quot;Microsoft YaHei&quot;, Arial, sans-serif" font-size="28" font-weight="bold" fill="#7A5230">太极练合一</text>
+  <text x="1042" y="230" text-anchor="middle" font-family="&quot;Microsoft YaHei&quot;, Arial, sans-serif" font-size="20" fill="#2D2D2D">动态中的正念</text>
+  <text x="1042" y="270" text-anchor="middle" font-family="&quot;Microsoft YaHei&quot;, Arial, sans-serif" font-size="20" fill="#2D2D2D">身心统一实践</text>
+  <text x="1042" y="310" text-anchor="middle" font-family="&quot;Microsoft YaHei&quot;, Arial, sans-serif" font-size="20" fill="#2D2D2D">结构要求+流动意识</text>
+  <line x1="935" y1="340" x2="1150" y2="340" stroke="#C8C0B0" stroke-width="1"/>
+  <text x="1042" y="380" text-anchor="middle" font-family="&quot;Microsoft YaHei&quot;, Arial, sans-serif" font-size="20" font-weight="bold" fill="#7A5230">动静之间的桥梁</text>
+  <text x="1042" y="420" text-anchor="middle" font-family="&quot;Microsoft YaHei&quot;, Arial, sans-serif" font-size="14" fill="#999999">科学支撑：fMRI本体感觉增强</text>
+
+  <!-- Bottom summary -->
+  <text x="640" y="600" text-anchor="middle" font-family="KaiTi, Georgia, serif" font-size="20" fill="#7A5230">三者合一 = 完整的身心修炼体系</text>
+
+  <!-- Source -->
+  <text x="640" y="680" text-anchor="middle" font-family="&quot;Microsoft YaHei&quot;, Arial, sans-serif" font-size="11" fill="#999999">来源：综合调研</text>
+</svg>

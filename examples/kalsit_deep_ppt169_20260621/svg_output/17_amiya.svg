@@ -1,0 +1,33 @@
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 1280 720" width="1280" height="720">
+  <image href="../images/theresa_avatar.png" x="0" y="0" width="1280" height="720" preserveAspectRatio="xMidYMid slice"/>
+  <rect x="0" y="0" width="1280" height="720" fill="#0D1117" fill-opacity="0.75"/>
+  <rect x="80" y="50" width="60" height="2" fill="#58A6FF"/>
+  <text x="80" y="85" font-family="Microsoft YaHei, Arial, sans-serif" font-size="14" fill="#58A6FF" letter-spacing="2">第四章 · 人物关系</text>
+  <text x="80" y="125" font-family="Microsoft YaHei, Arial, sans-serif" font-size="36" font-weight="bold" fill="#FFFFFF">阿米娅</text>
+  <rect x="80" y="145" width="1120" height="1" fill="#30363D"/>
+  
+  <rect x="80" y="170" width="540" height="300" rx="8" fill="#161B22" stroke="#D4AF37" stroke-width="1"/>
+  <rect x="80" y="170" width="540" height="4" rx="2" fill="#D4AF37"/>
+  <use data-icon="tabler-outline/star" x="100" y="195" width="28" height="28" fill="none" stroke="#D4AF37" stroke-width="2"/>
+  <text x="140" y="215" font-family="Microsoft YaHei, Arial, sans-serif" font-size="20" font-weight="bold" fill="#FFFFFF">阿米娅</text>
+  <text x="140" y="240" font-family="Microsoft YaHei, Arial, sans-serif" font-size="13" fill="#8B949E">Amiya · 罗德岛领袖</text>
+  <rect x="100" y="260" width="500" height="1" fill="#30363D"/>
+  <text x="100" y="290" font-family="Microsoft YaHei, Arial, sans-serif" font-size="14" fill="#C9D1D9">凯尔希是阿米娅的直接辅导者</text>
+  <text x="100" y="315" font-family="Microsoft YaHei, Arial, sans-serif" font-size="14" fill="#C9D1D9">对阿米娅的监护被评价为</text>
+  <text x="100" y="340" font-family="Microsoft YaHei, Arial, sans-serif" font-size="14" fill="#D4AF37" font-weight="bold">"严谨到了病态的地步"</text>
+  <text x="100" y="370" font-family="Microsoft YaHei, Arial, sans-serif" font-size="14" fill="#C9D1D9">巴别塔倒塌后，凯尔希宣布</text>
+  <text x="100" y="395" font-family="Microsoft YaHei, Arial, sans-serif" font-size="14" fill="#D4AF37">"我会抚养她。"</text>
+  <text x="100" y="425" font-family="Microsoft YaHei, Arial, sans-serif" font-size="12" fill="#8B949E">凯尔希对阿米娅既有严厉也有深深的关爱</text>
+
+  <rect x="660" y="170" width="540" height="300" rx="8" fill="#161B22" stroke="#30363D" stroke-width="1"/>
+  <text x="680" y="210" font-family="Microsoft YaHei, Arial, sans-serif" font-size="18" font-weight="bold" fill="#FFFFFF">阿米娅的成长</text>
+  <rect x="680" y="230" width="500" height="1" fill="#30363D"/>
+  <text x="680" y="260" font-family="Microsoft YaHei, Arial, sans-serif" font-size="14" fill="#C9D1D9">从巴别塔时期的幼童</text>
+  <text x="680" y="285" font-family="Microsoft YaHei, Arial, sans-serif" font-size="14" fill="#C9D1D9">到罗德岛的年轻领袖</text>
+  <text x="680" y="310" font-family="Microsoft YaHei, Arial, sans-serif" font-size="14" fill="#C9D1D9">凯尔希见证了阿米娅的每一步成长</text>
+  <rect x="680" y="340" width="500" height="1" fill="#30363D"/>
+  <text x="680" y="370" font-family="Microsoft YaHei, Arial, sans-serif" font-size="14" fill="#8B949E">凯尔希希望阿米娅能够</text>
+  <text x="680" y="395" font-family="Microsoft YaHei, Arial, sans-serif" font-size="14" fill="#8B949E">超越自己，成为更好的领导者</text>
+  <text x="680" y="425" font-family="Microsoft YaHei, Arial, sans-serif" font-size="14" fill="#8B949E">这也是她守护的意义之一</text>
+  <text x="1220" y="690" font-family="Microsoft YaHei, Arial, sans-serif" font-size="12" fill="#6E7681" text-anchor="end">16 / 32</text>
+</svg>

@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1280 720">
+    <rect width="1280" height="720" fill="#0A0E1A" />
+    <image href="images/P15_transition_visual_design.png" x="0" y="0" width="1280" height="720" preserveAspectRatio="xMidYMid slice" />
+    <rect x="0" y="0" width="1280" height="720" fill="#0A0E1A" fill-opacity="0.55" />
+    <text x="60" y="200" fill="#E8E8E8" fill-opacity="0.45" font-family="Microsoft YaHei, Arial, sans-serif" font-size="14">羁绊</text>
+    <text x="60" y="240" fill="#E8E8E8" fill-opacity="0.7" font-family="Microsoft YaHei, Arial, sans-serif" font-size="20">阿米娅的力量来自传承，但她的人格来自身边每一个人</text>
+    <text x="60" y="360" fill="#D4A848" fill-opacity="0.15" font-family="Source Han Sans SC, Microsoft YaHei, sans-serif" font-size="120" font-weight="bold">05</text>
+    <text x="60" y="430" fill="#E8E8E8" font-family="Source Han Sans SC, Microsoft YaHei, sans-serif" font-size="48" font-weight="bold">用画面讲故事的典范</text>
+    <text x="60" y="480" fill="#E8E8E8" fill-opacity="0.75" font-family="Microsoft YaHei, Arial, sans-serif" font-size="20">兔耳穿过兜帽——明日方舟最强大的品牌资产背后，是一整套精密的视觉叙事系统</text>
+    <line x1="60" y1="530" x2="400" y2="530" stroke="#D4A848" stroke-width="1" stroke-opacity="0.3" />
+    <text x="60" y="570" fill="#E8E8E8" fill-opacity="0.6" font-family="Microsoft YaHei, Arial, sans-serif" font-size="18">而这些内在的变化，都被鹰角用极其精妙的视觉设计语言表达了出来</text>
+</svg>

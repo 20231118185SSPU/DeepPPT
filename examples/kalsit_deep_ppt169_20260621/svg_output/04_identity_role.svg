@@ -1,0 +1,117 @@
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 1280 720" width="1280" height="720">
+  <!-- Background -->
+  <image href="../images/kalsit_portrait_e2.png" x="0" y="0" width="1280" height="720" preserveAspectRatio="xMidYMid slice"/>
+  <rect x="0" y="0" width="1280" height="720" fill="#0D1117" fill-opacity="0.75"/>
+
+  <!-- Subtle decorative element top-right -->
+  <rect x="1080" y="0" width="200" height="720" fill="#161B22" fill-opacity="0.5"/>
+
+  <!-- Section label -->
+  <rect x="80" y="60" width="60" height="2" fill="#58A6FF"/>
+  <text x="80" y="95" font-family="Microsoft YaHei, Arial, sans-serif" font-size="14" fill="#58A6FF" letter-spacing="2">
+    角色定位
+  </text>
+
+  <!-- Main title -->
+  <text x="80" y="145" font-family="Microsoft YaHei, Arial, sans-serif" font-size="42" font-weight="bold" fill="#FFFFFF">
+    罗德岛的核心
+  </text>
+
+  <!-- Subtitle -->
+  <text x="80" y="185" font-family="Microsoft YaHei, Arial, sans-serif" font-size="18" fill="#8B949E">
+    THE HEART OF RHODES ISLAND
+  </text>
+
+  <!-- Divider -->
+  <rect x="80" y="210" width="1120" height="1" fill="#30363D"/>
+
+  <!-- Content blocks - left column -->
+  <!-- Block 1 -->
+  <rect x="80" y="240" width="4" height="40" fill="#58A6FF"/>
+  <text x="100" y="258" font-family="Microsoft YaHei, Arial, sans-serif" font-size="16" font-weight="bold" fill="#FFFFFF">
+    高层管理人员
+  </text>
+  <text x="100" y="278" font-family="Microsoft YaHei, Arial, sans-serif" font-size="14" fill="#C9D1D9">
+    罗德岛高层管理人员之一，战略指挥系统重要组成人员
+  </text>
+
+  <!-- Block 2 -->
+  <rect x="80" y="310" width="4" height="40" fill="#3FB950"/>
+  <text x="100" y="328" font-family="Microsoft YaHei, Arial, sans-serif" font-size="16" font-weight="bold" fill="#FFFFFF">
+    医疗项目领头人
+  </text>
+  <text x="100" y="348" font-family="Microsoft YaHei, Arial, sans-serif" font-size="14" fill="#C9D1D9">
+    医疗部门负责人，提供医学理论协助与应急医疗器械
+  </text>
+
+  <!-- Block 3 -->
+  <rect x="80" y="380" width="4" height="40" fill="#58A6FF"/>
+  <text x="100" y="398" font-family="Microsoft YaHei, Arial, sans-serif" font-size="16" font-weight="bold" fill="#FFFFFF">
+    战略指挥核心
+  </text>
+  <text x="100" y="418" font-family="Microsoft YaHei, Arial, sans-serif" font-size="14" fill="#C9D1D9">
+    罗德岛战略指挥系统的重要组成人员，参与各项目决策
+  </text>
+
+  <!-- Right side - knowledge domains -->
+  <text x="700" y="240" font-family="Microsoft YaHei, Arial, sans-serif" font-size="13" fill="#8B949E" letter-spacing="2">
+    渊博学识领域
+  </text>
+
+  <!-- Knowledge tags -->
+  <rect x="700" y="260" width="100" height="32" rx="4" fill="#161B22" stroke="#30363D" stroke-width="1"/>
+  <text x="750" y="281" font-family="Microsoft YaHei, Arial, sans-serif" font-size="13" fill="#C9D1D9" text-anchor="middle">
+    冶金工业
+  </text>
+
+  <rect x="810" y="260" width="70" height="32" rx="4" fill="#161B22" stroke="#30363D" stroke-width="1"/>
+  <text x="845" y="281" font-family="Microsoft YaHei, Arial, sans-serif" font-size="13" fill="#C9D1D9" text-anchor="middle">
+    社会学
+  </text>
+
+  <rect x="890" y="260" width="90" height="32" rx="4" fill="#161B22" stroke="#30363D" stroke-width="1"/>
+  <text x="935" y="281" font-family="Microsoft YaHei, Arial, sans-serif" font-size="13" fill="#C9D1D9" text-anchor="middle">
+    源石技艺
+  </text>
+
+  <rect x="990" y="260" width="70" height="32" rx="4" fill="#161B22" stroke="#30363D" stroke-width="1"/>
+  <text x="1025" y="281" font-family="Microsoft YaHei, Arial, sans-serif" font-size="13" fill="#C9D1D9" text-anchor="middle">
+    考古学
+  </text>
+
+  <rect x="700" y="302" width="110" height="32" rx="4" fill="#161B22" stroke="#30363D" stroke-width="1"/>
+  <text x="755" y="323" font-family="Microsoft YaHei, Arial, sans-serif" font-size="13" fill="#C9D1D9" text-anchor="middle">
+    历史系谱学
+  </text>
+
+  <rect x="820" y="302" width="70" height="32" rx="4" fill="#161B22" stroke="#30363D" stroke-width="1"/>
+  <text x="855" y="323" font-family="Microsoft YaHei, Arial, sans-serif" font-size="13" fill="#C9D1D9" text-anchor="middle">
+    经济学
+  </text>
+
+  <rect x="900" y="302" width="70" height="32" rx="4" fill="#161B22" stroke="#30363D" stroke-width="1"/>
+  <text x="935" y="323" font-family="Microsoft YaHei, Arial, sans-serif" font-size="13" fill="#C9D1D9" text-anchor="middle">
+    植物学
+  </text>
+
+  <rect x="980" y="302" width="70" height="32" rx="4" fill="#161B22" stroke="#30363D" stroke-width="1"/>
+  <text x="1015" y="323" font-family="Microsoft YaHei, Arial, sans-serif" font-size="13" fill="#C9D1D9" text-anchor="middle">
+    地质学
+  </text>
+
+  <!-- Bottom insight -->
+  <rect x="700" y="380" width="500" height="1" fill="#30363D"/>
+  <text x="700" y="420" font-family="Georgia, SimSun, serif" font-size="18" fill="#58A6FF" font-style="italic">
+    "她不仅是医生，更是罗德岛的灵魂。"
+  </text>
+
+  <!-- Right side large decorative text -->
+  <text x="1100" y="500" font-family="Microsoft YaHei, Arial, sans-serif" font-size="120" fill="#161B22" fill-opacity="0.5" text-anchor="middle" letter-spacing="-5">
+    K
+  </text>
+
+  <!-- Page number -->
+  <text x="1220" y="690" font-family="Microsoft YaHei, Arial, sans-serif" font-size="12" fill="#6E7681" text-anchor="end">
+    03 / 10
+  </text>
+</svg>

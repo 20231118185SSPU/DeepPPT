@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1280 720">
+    <g id="background"><rect width="1280" height="720" fill="#1C1C1C" /><rect x="0" y="0" width="1280" height="720" fill="#8B1A1A" fill-opacity="0.04" /></g>
+    <g id="quote-label"><text x="60" y="180" fill="#E8E8E8" fill-opacity="0.45" font-family="Microsoft YaHei, Arial, sans-serif" font-size="14">社区的一句话</text></g>
+    <g id="quote-body">
+        <text x="640" y="340" text-anchor="middle" fill="#E8E8E8" font-family="Source Han Sans SC, Microsoft YaHei, sans-serif" font-size="48" font-weight="bold">"terrible self-insert"</text>
+        <text x="640" y="400" text-anchor="middle" fill="#C0C0C0" font-family="Microsoft YaHei, Arial, sans-serif" font-size="24">——社区对博士最著名的评价</text>
+        <line x1="500" y1="440" x2="780" y2="440" stroke="#8B1A1A" stroke-width="1" stroke-opacity="0.3" />
+    </g>
+    <g id="interpretation">
+        <text x="640" y="490" text-anchor="middle" fill="#A0A0A0" font-family="Microsoft YaHei, Arial, sans-serif" font-size="20">过去信息量最大，但代入空间仍然存在</text>
+        <text x="640" y="530" text-anchor="middle" fill="#A0A0A0" font-family="Microsoft YaHei, Arial, sans-serif" font-size="20">矛盾不矛盾——它们是同一枚硬币的两面</text>
+    </g>
+</svg>

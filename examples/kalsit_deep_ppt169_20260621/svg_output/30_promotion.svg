@@ -1,0 +1,31 @@
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 1280 720" width="1280" height="720">
+  <image href="../images/mon3tr_scene_足迹.png" x="0" y="0" width="1280" height="720" preserveAspectRatio="xMidYMid slice"/>
+  <rect x="0" y="0" width="1280" height="720" fill="#0D1117" fill-opacity="0.75"/>
+  <rect x="80" y="50" width="60" height="2" fill="#58A6FF"/>
+  <text x="80" y="85" font-family="Microsoft YaHei, Arial, sans-serif" font-size="14" fill="#58A6FF" letter-spacing="2">第五章 · 养成</text>
+  <text x="80" y="125" font-family="Microsoft YaHei, Arial, sans-serif" font-size="36" font-weight="bold" fill="#FFFFFF">精英化材料</text>
+  <rect x="80" y="145" width="1120" height="1" fill="#30363D"/>
+  
+  <rect x="80" y="170" width="540" height="200" rx="8" fill="#161B22" stroke="#58A6FF" stroke-width="1"/>
+  <text x="100" y="210" font-family="Microsoft YaHei, Arial, sans-serif" font-size="18" font-weight="bold" fill="#58A6FF">精英0→1</text>
+  <rect x="100" y="230" width="500" height="1" fill="#30363D"/>
+  <text x="100" y="260" font-family="Microsoft YaHei, Arial, sans-serif" font-size="14" fill="#C9D1D9">龙门币 ×30,000</text>
+  <text x="100" y="285" font-family="Microsoft YaHei, Arial, sans-serif" font-size="14" fill="#C9D1D9">医疗芯片 ×5</text>
+  <text x="100" y="310" font-family="Microsoft YaHei, Arial, sans-serif" font-size="14" fill="#C9D1D9">糖 ×8</text>
+  <text x="100" y="335" font-family="Microsoft YaHei, Arial, sans-serif" font-size="14" fill="#C9D1D9">酮凝集 ×5</text>
+
+  <rect x="660" y="170" width="540" height="200" rx="8" fill="#161B22" stroke="#3FB950" stroke-width="1"/>
+  <text x="680" y="210" font-family="Microsoft YaHei, Arial, sans-serif" font-size="18" font-weight="bold" fill="#3FB950">精英1→2</text>
+  <rect x="680" y="230" width="500" height="1" fill="#30363D"/>
+  <text x="680" y="260" font-family="Microsoft YaHei, Arial, sans-serif" font-size="14" fill="#C9D1D9">龙门币 ×180,000</text>
+  <text x="680" y="285" font-family="Microsoft YaHei, Arial, sans-serif" font-size="14" fill="#C9D1D9">医疗双芯片 ×4</text>
+  <text x="680" y="310" font-family="Microsoft YaHei, Arial, sans-serif" font-size="14" fill="#C9D1D9">晶体电子单元 ×4</text>
+  <text x="680" y="335" font-family="Microsoft YaHei, Arial, sans-serif" font-size="14" fill="#C9D1D9">改量装置 ×4</text>
+
+  <rect x="80" y="400" width="1120" height="100" rx="8" fill="#161B22" fill-opacity="0.5" stroke="#30363D" stroke-width="1"/>
+  <rect x="80" y="400" width="4" height="100" fill="#D4AF37"/>
+  <text x="110" y="435" font-family="Microsoft YaHei, Arial, sans-serif" font-size="15" fill="#FFFFFF">后勤技能</text>
+  <text x="110" y="465" font-family="Microsoft YaHei, Arial, sans-serif" font-size="14" fill="#C9D1D9">精英0：未知技术（加工站）— 加工任意材料时副产品产出概率+70%</text>
+  <text x="110" y="485" font-family="Microsoft YaHei, Arial, sans-serif" font-size="14" fill="#C9D1D9">精英2：最高权限（控制中枢）— 所有制造站生产力+2%</text>
+  <text x="1220" y="690" font-family="Microsoft YaHei, Arial, sans-serif" font-size="12" fill="#6E7681" text-anchor="end">27 / 32</text>
+</svg>

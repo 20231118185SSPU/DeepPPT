@@ -1,0 +1,17 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1280 720">
+  <!-- Full-bleed background image -->
+  <image href="images/P21_content_bg.png" x="0" y="0" width="1280" height="720" preserveAspectRatio="xMidYMid slice"/>
+  <rect x="0" y="0" width="1280" height="720" fill="#2D2D2D" fill-opacity="0.3"/>
+
+  <!-- Title -->
+  <text x="640" y="300" font-family="SimSun, Georgia, serif" font-size="48" font-weight="bold" fill="#FFFFFF" text-anchor="middle">动静合一</text>
+
+  <!-- Decorative line -->
+  <rect x="560" y="340" width="160" height="3" fill="#D4C5A9"/>
+
+  <!-- Subtitle -->
+  <text x="640" y="400" font-family="&quot;Microsoft YaHei&quot;, Arial, sans-serif" font-size="24" fill="#FFFFFF" text-anchor="middle">站桩练体 · 静坐练心 · 太极练合一</text>
+
+  <!-- Bottom text -->
+  <text x="640" y="550" font-family="KaiTi, Georgia, serif" font-size="20" fill="#D4C5A9" text-anchor="middle">你的身体就是最好的实验室</text>
+</svg>

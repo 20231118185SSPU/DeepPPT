@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1280 720">
+    <!-- P10 Deep Dive Compare - story_driven -->
+    <rect width="1280" height="720" fill="#16162A" />
+
+    <!-- Section label -->
+    <text x="60" y="60" fill="#FFFFFF" fill-opacity="0.45" font-family="Microsoft YaHei, Arial, sans-serif" font-size="13">§2 · 对比分析</text>
+
+    <!-- Page title -->
+    <text x="60" y="100" fill="#FFFFFF" font-family="Microsoft YaHei, Arial, sans-serif" font-size="32" font-weight="bold">算力路线 vs 算法路线</text>
+
+    <!-- Three dots -->
+    <circle cx="60" cy="128" r="3" fill="#FFFFFF" fill-opacity="0.35" />
+    <circle cx="74" cy="128" r="3" fill="#FFFFFF" fill-opacity="0.25" />
+    <circle cx="88" cy="128" r="3" fill="#FFFFFF" fill-opacity="0.15" />
+
+    <!-- Divider line -->
+    <line x1="60" y1="145" x2="1220" y2="145" stroke="#FFFFFF" stroke-width="1" stroke-opacity="0.15" />
+
+    <!-- Image reference (background) -->
+    <image href="images/P10_ai_scaling_vs_algo.png" x="60" y="164" width="1160" height="200" preserveAspectRatio="xMidYMid slice" />
+    <rect x="60" y="164" width="1160" height="200" fill="#16162A" fill-opacity="0.85" />
+
+    <!-- Left card: 算力路线 -->
+    <rect x="60" y="170" width="560" height="430" fill="#FFFFFF" fill-opacity="0.08" rx="8" />
+    <text x="340" y="220" text-anchor="middle" fill="#FFFFFF" font-family="Microsoft YaHei, Arial, sans-serif" font-size="28" font-weight="bold">算力路线</text>
+    <text x="340" y="250" text-anchor="middle" fill="#FFFFFF" fill-opacity="0.6" font-family="Microsoft YaHei, Arial, sans-serif" font-size="16">OpenAI / Meta</text>
+    <line x1="180" y1="270" x2="500" y2="270" stroke="#FFFFFF" stroke-width="1" stroke-opacity="0.15" />
+    <text x="340" y="310" text-anchor="middle" fill="#FFFFFF" font-family="Microsoft YaHei, Arial, sans-serif" font-size="44" font-weight="bold">25,000+</text>
+    <text x="340" y="340" text-anchor="middle" fill="#FFFFFF" fill-opacity="0.6" font-family="Microsoft YaHei, Arial, sans-serif" font-size="16">A100 集群</text>
+    <text x="340" y="400" text-anchor="middle" fill="#FFFFFF" font-family="Microsoft YaHei, Arial, sans-serif" font-size="44" font-weight="bold">$100M+</text>
+    <text x="340" y="430" text-anchor="middle" fill="#FFFFFF" fill-opacity="0.6" font-family="Microsoft YaHei, Arial, sans-serif" font-size="16">单次训练成本</text>
+    <text x="340" y="490" text-anchor="middle" fill="#FFFFFF" fill-opacity="0.7" font-family="Microsoft YaHei, Arial, sans-serif" font-size="15">信条：更多算力 = 更强 AI</text>
+
+    <!-- Center divider line -->
+    <line x1="640" y1="180" x2="640" y2="590" stroke="#FFFFFF" stroke-width="1" stroke-opacity="0.2" />
+
+    <!-- Right card: 算法路线 -->
+    <rect x="660" y="170" width="560" height="430" fill="#FFFFFF" fill-opacity="0.08" rx="8" />
+    <text x="940" y="220" text-anchor="middle" fill="#FFFFFF" font-family="Microsoft YaHei, Arial, sans-serif" font-size="28" font-weight="bold">算法路线</text>
+    <text x="940" y="250" text-anchor="middle" fill="#FFFFFF" fill-opacity="0.6" font-family="Microsoft YaHei, Arial, sans-serif" font-size="16">DeepSeek</text>
+    <line x1="780" y1="270" x2="1100" y2="270" stroke="#FFFFFF" stroke-width="1" stroke-opacity="0.15" />
+    <text x="940" y="310" text-anchor="middle" fill="#FFFFFF" font-family="Microsoft YaHei, Arial, sans-serif" font-size="44" font-weight="bold">2,048</text>
+    <text x="940" y="340" text-anchor="middle" fill="#FFFFFF" fill-opacity="0.6" font-family="Microsoft YaHei, Arial, sans-serif" font-size="16">H800 集群</text>
+    <text x="940" y="400" text-anchor="middle" fill="#FFFFFF" font-family="Microsoft YaHei, Arial, sans-serif" font-size="44" font-weight="bold">$5.57M</text>
+    <text x="940" y="430" text-anchor="middle" fill="#FFFFFF" fill-opacity="0.6" font-family="Microsoft YaHei, Arial, sans-serif" font-size="16">单次训练成本</text>
+    <text x="940" y="490" text-anchor="middle" fill="#FFFFFF" fill-opacity="0.7" font-family="Microsoft YaHei, Arial, sans-serif" font-size="15">信条：更聪明的算法 = 更强 AI</text>
+
+    <!-- Page number -->
+    <text x="1220" y="708" text-anchor="end" fill="#FFFFFF" fill-opacity="0.4" font-family="Microsoft YaHei, Arial, sans-serif" font-size="11">10 / 30</text>
+</svg>

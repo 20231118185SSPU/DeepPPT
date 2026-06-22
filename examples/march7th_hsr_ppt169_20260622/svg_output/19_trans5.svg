@@ -1,0 +1,18 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1280 720">
+  <!-- Full-bleed background -->
+  <image href="images/P19_trans5_bg.png" x="0" y="0" width="1280" height="720"/>
+  <!-- Overlay -->
+  <rect x="0" y="0" width="1280" height="720" fill="#2D2D3D" fill-opacity="0.35"/>
+
+  <!-- Top subtitle -->
+  <text x="640" y="100" text-anchor="middle" font-family="&quot;Microsoft YaHei&quot;, Arial, sans-serif" font-size="15" font-style="italic" fill="#FFFFFF">从1.0到3.4的版本成长弧</text>
+
+  <!-- Vertical decorative line -->
+  <line x1="80" y1="220" x2="80" y2="420" stroke="#7EB8D8" stroke-width="3"/>
+
+  <!-- Center title -->
+  <text x="640" y="340" text-anchor="middle" font-family="SimSun, Georgia, serif" font-size="44" font-weight="bold" fill="#FFFFFF">第五章 · 冰封记忆中的春天</text>
+
+  <!-- Bottom subtitle -->
+  <text x="640" y="500" text-anchor="middle" font-family="&quot;Microsoft YaHei&quot;, Arial, sans-serif" font-size="20" fill="#FFFFFF">在玩家心中，她是什么？</text>
+</svg>

@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1280 720">
+    <!-- P02 TOC - story_driven -->
+    <rect width="1280" height="720" fill="#1A1A2E" />
+    <image href="images/P02_toc_bg.png" x="0" y="0" width="1280" height="720" preserveAspectRatio="xMidYMid slice" />
+    <rect width="1280" height="720" fill="#0D0D1A" fill-opacity="0.65" />
+
+    <!-- Title -->
+    <text x="60" y="80" fill="#FFFFFF" font-family="Microsoft YaHei, Arial, sans-serif"
+        font-size="32" font-weight="bold">
+        目录
+    </text>
+    <text x="60" y="108" fill="#FFFFFF" fill-opacity="0.45" font-family="Microsoft YaHei, Arial, sans-serif"
+        font-size="13">
+        CONTENTS
+    </text>
+
+    <!-- Three dots -->
+    <circle cx="60" cy="102" r="3" fill="#FFFFFF" fill-opacity="0.35" />
+    <circle cx="74" cy="102" r="3" fill="#FFFFFF" fill-opacity="0.25" />
+    <circle cx="88" cy="102" r="3" fill="#FFFFFF" fill-opacity="0.15" />
+
+    <!-- Column 1 (items 01-04) -->
+    <rect x="56" y="140" width="560" height="110" fill="#FFFFFF" fill-opacity="0.08" rx="8" />
+    <text x="80" y="182" fill="#FFFFFF" font-family="Microsoft YaHei, Arial, sans-serif" font-size="40" font-weight="bold">01</text>
+    <text x="148" y="175" fill="#FFFFFF" font-family="Microsoft YaHei, Arial, sans-serif" font-size="22" font-weight="bold">华尔街最贵的一天</text>
+    <text x="148" y="200" fill="#FFFFFF" fill-opacity="0.6" font-family="Microsoft YaHei, Arial, sans-serif" font-size="14">NVIDIA 单日蒸发 5930 亿美元</text>
+
+    <rect x="56" y="266" width="560" height="110" fill="#FFFFFF" fill-opacity="0.08" rx="8" />
+    <text x="80" y="308" fill="#FFFFFF" font-family="Microsoft YaHei, Arial, sans-serif" font-size="40" font-weight="bold">02</text>
+    <text x="148" y="301" fill="#FFFFFF" font-family="Microsoft YaHei, Arial, sans-serif" font-size="22" font-weight="bold">时代背景：算力焦虑</text>
+    <text x="148" y="326" fill="#FFFFFF" fill-opacity="0.6" font-family="Microsoft YaHei, Arial, sans-serif" font-size="14">Scaling Law 之辩与训练成本飙升</text>
+
+    <rect x="56" y="392" width="560" height="110" fill="#FFFFFF" fill-opacity="0.08" rx="8" />
+    <text x="80" y="434" fill="#FFFFFF" font-family="Microsoft YaHei, Arial, sans-serif" font-size="40" font-weight="bold">03</text>
+    <text x="148" y="427" fill="#FFFFFF" font-family="Microsoft YaHei, Arial, sans-serif" font-size="22" font-weight="bold">幻方量化的底牌</text>
+    <text x="148" y="452" fill="#FFFFFF" fill-opacity="0.6" font-family="Microsoft YaHei, Arial, sans-serif" font-size="14">梁文锋：从量化交易到 AGI</text>
+
+    <rect x="56" y="518" width="560" height="110" fill="#FFFFFF" fill-opacity="0.08" rx="8" />
+    <text x="80" y="560" fill="#FFFFFF" font-family="Microsoft YaHei, Arial, sans-serif" font-size="40" font-weight="bold">04</text>
+    <text x="148" y="553" fill="#FFFFFF" font-family="Microsoft YaHei, Arial, sans-serif" font-size="22" font-weight="bold">技术演进</text>
+    <text x="148" y="578" fill="#FFFFFF" fill-opacity="0.6" font-family="Microsoft YaHei, Arial, sans-serif" font-size="14">四代模型的进化之路</text>
+
+    <!-- Column 2 (items 05-08) -->
+    <rect x="664" y="140" width="560" height="110" fill="#FFFFFF" fill-opacity="0.08" rx="8" />
+    <text x="688" y="182" fill="#FFFFFF" font-family="Microsoft YaHei, Arial, sans-serif" font-size="40" font-weight="bold">05</text>
+    <text x="756" y="175" fill="#FFFFFF" font-family="Microsoft YaHei, Arial, sans-serif" font-size="22" font-weight="bold">R1 推理觉醒</text>
+    <text x="756" y="200" fill="#FFFFFF" fill-opacity="0.6" font-family="Microsoft YaHei, Arial, sans-serif" font-size="14">纯 RL 涌现推理能力</text>
+
+    <rect x="664" y="266" width="560" height="110" fill="#FFFFFF" fill-opacity="0.08" rx="8" />
+    <text x="688" y="308" fill="#FFFFFF" font-family="Microsoft YaHei, Arial, sans-serif" font-size="40" font-weight="bold">06</text>
+    <text x="756" y="301" fill="#FFFFFF" font-family="Microsoft YaHei, Arial, sans-serif" font-size="22" font-weight="bold">行业冲击：Sputnik 时刻</text>
+    <text x="756" y="326" fill="#FFFFFF" fill-opacity="0.6" font-family="Microsoft YaHei, Arial, sans-serif" font-size="14">全球 AI 板块蒸发超万亿美元</text>
+
+    <rect x="664" y="392" width="560" height="110" fill="#FFFFFF" fill-opacity="0.08" rx="8" />
+    <text x="688" y="434" fill="#FFFFFF" font-family="Microsoft YaHei, Arial, sans-serif" font-size="40" font-weight="bold">07</text>
+    <text x="756" y="427" fill="#FFFFFF" font-family="Microsoft YaHei, Arial, sans-serif" font-size="22" font-weight="bold">开源改变格局</text>
+    <text x="756" y="452" fill="#FFFFFF" fill-opacity="0.6" font-family="Microsoft YaHei, Arial, sans-serif" font-size="14">DeepSeek 最深远的武器</text>
+
+    <rect x="664" y="518" width="560" height="110" fill="#FFFFFF" fill-opacity="0.08" rx="8" />
+    <text x="688" y="560" fill="#FFFFFF" font-family="Microsoft YaHei, Arial, sans-serif" font-size="40" font-weight="bold">08</text>
+    <text x="756" y="553" fill="#FFFFFF" font-family="Microsoft YaHei, Arial, sans-serif" font-size="22" font-weight="bold">结语</text>
+    <text x="756" y="578" fill="#FFFFFF" fill-opacity="0.6" font-family="Microsoft YaHei, Arial, sans-serif" font-size="14">当创新门槛被拉低</text>
+
+    <!-- Bottom info bar -->
+    <rect x="0" y="660" width="1280" height="60" fill="#000000" fill-opacity="0.35" />
+    <text x="60" y="695" fill="#FFFFFF" fill-opacity="0.7" font-family="Microsoft YaHei, Arial, sans-serif" font-size="13">2026.06</text>
+    <text x="1220" y="695" text-anchor="end" fill="#FFFFFF" fill-opacity="0.7" font-family="Microsoft YaHei, Arial, sans-serif" font-size="13">DeepSeek Evolution</text>
+
+    <!-- Page number -->
+    <text x="1220" y="708" text-anchor="end" fill="#FFFFFF" fill-opacity="0.4" font-family="Microsoft YaHei, Arial, sans-serif" font-size="11">2 / 30</text>
+</svg>

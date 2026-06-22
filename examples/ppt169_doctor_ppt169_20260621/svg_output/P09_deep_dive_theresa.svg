@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1280 720">
+    <g id="background">
+        <rect width="1280" height="720" fill="#1C1C1C" />
+        <image href="images/web_assets/dim4_doctor_kaltsit.png" x="0" y="0" width="1280" height="720" preserveAspectRatio="xMidYMid slice" />
+        <rect x="0" y="0" width="1280" height="720" fill="#1C1C1C" fill-opacity="0.82" />
+    </g>
+    <g id="header">
+        <rect x="60" y="35" width="90" height="24" fill="#8B1A1A" rx="4" />
+        <text x="105" y="52" text-anchor="middle" fill="#FFFFFF" font-family="Microsoft YaHei, Arial, sans-serif" font-size="11" font-weight="bold">DEEP DIVE</text>
+        <text x="170" y="56" fill="#E8E8E8" font-family="Source Han Sans SC, Microsoft YaHei, sans-serif" font-size="28" font-weight="bold">特蕾西娅之死</text>
+        <line x1="60" y1="72" x2="1220" y2="72" stroke="#8B1A1A" stroke-width="1" stroke-opacity="0.25" />
+    </g>
+    <g id="timeline">
+        <line x1="140" y1="120" x2="140" y2="560" stroke="#8B1A1A" stroke-width="2" stroke-opacity="0.3" />
+        <circle cx="140" cy="140" r="6" fill="#8B1A1A" />
+        <circle cx="140" cy="260" r="6" fill="#8B1A1A" />
+        <circle cx="140" cy="380" r="6" fill="#C0C0C0" />
+        <circle cx="140" cy="500" r="6" fill="#C0C0C0" fill-opacity="0.5" />
+    </g>
+    <g id="event-1">
+        <text x="170" y="130" fill="#C0C0C0" font-family="Microsoft YaHei, Arial, sans-serif" font-size="11" fill-opacity="0.6">萨卡兹内战</text>
+        <text x="170" y="155" fill="#E8E8E8" font-family="Microsoft YaHei, Arial, sans-serif" font-size="18" font-weight="bold">博士做出决定</text>
+        <text x="170" y="180" fill="#E8E8E8" fill-opacity="0.7" font-family="Microsoft YaHei, Arial, sans-serif" font-size="14">导致特蕾西娅死亡的选择——被迫还是主动？</text>
+        <text x="170" y="203" fill="#C0C0C0" fill-opacity="0.5" font-family="Microsoft YaHei, Arial, sans-serif" font-size="13">凯尔希的道德审判不接受"被迫"为"无罪"</text>
+    </g>
+    <g id="event-2">
+        <text x="170" y="250" fill="#C0C0C0" font-family="Microsoft YaHei, Arial, sans-serif" font-size="11" fill-opacity="0.6">遗书</text>
+        <text x="170" y="275" fill="#E8E8E8" font-family="Microsoft YaHei, Arial, sans-serif" font-size="18" font-weight="bold">"我希望罗德岛能成为你命名的家"</text>
+        <text x="170" y="300" fill="#E8E8E8" fill-opacity="0.7" font-family="Microsoft YaHei, Arial, sans-serif" font-size="14">被特蕾西娅信任的人，正是杀了她的人</text>
+        <text x="170" y="323" fill="#C0C0C0" fill-opacity="0.5" font-family="Microsoft YaHei, Arial, sans-serif" font-size="13">这份信任是诅咒还是祝福？</text>
+    </g>
+    <g id="event-3">
+        <text x="170" y="370" fill="#C0C0C0" font-family="Microsoft YaHei, Arial, sans-serif" font-size="11" fill-opacity="0.6">凯尔希的审判</text>
+        <text x="170" y="395" fill="#E8E8E8" font-family="Microsoft YaHei, Arial, sans-serif" font-size="18" font-weight="bold">"我将永远恨他们"</text>
+        <text x="170" y="420" fill="#E8E8E8" fill-opacity="0.7" font-family="Microsoft YaHei, Arial, sans-serif" font-size="14">恨的是杀了特蕾西娅的博士，还是选择失忆的博士？</text>
+    </g>
+    <g id="event-4">
+        <text x="170" y="490" fill="#C0C0C0" font-family="Microsoft YaHei, Arial, sans-serif" font-size="11" fill-opacity="0.6">代价</text>
+        <text x="170" y="515" fill="#E8E8E8" font-family="Microsoft YaHei, Arial, sans-serif" font-size="18" font-weight="bold">失忆的代价</text>
+        <text x="170" y="540" fill="#E8E8E8" fill-opacity="0.7" font-family="Microsoft YaHei, Arial, sans-serif" font-size="14">博士不再记得特蕾西娅的微笑、她的声音、她选择信任他的那一刻</text>
+    </g>
+    <g id="footer">
+        <rect x="0" y="660" width="1280" height="60" fill="#000000" fill-opacity="0.3" />
+        <text x="60" y="695" fill="#A0A0A0" font-family="Microsoft YaHei, Arial, sans-serif" font-size="11">素材来源：PRTS Wiki</text>
+    </g>
+</svg>

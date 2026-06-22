@@ -1,0 +1,49 @@
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 1280 720" width="1280" height="720">
+  <image href="../images/kalsit_alt_scene_显扬.png" x="0" y="0" width="1280" height="720" preserveAspectRatio="xMidYMid slice"/>
+  <rect x="0" y="0" width="1280" height="720" fill="#0D1117" fill-opacity="0.75"/>
+  <rect x="80" y="50" width="60" height="2" fill="#58A6FF"/>
+  <text x="80" y="85" font-family="Microsoft YaHei, Arial, sans-serif" font-size="14" fill="#58A6FF" letter-spacing="2">第三章 · 战斗数据</text>
+  <text x="80" y="125" font-family="Microsoft YaHei, Arial, sans-serif" font-size="36" font-weight="bold" fill="#FFFFFF">属性详解</text>
+  <rect x="80" y="145" width="1120" height="1" fill="#30363D"/>
+  
+  <rect x="80" y="170" width="260" height="80" rx="8" fill="#161B22" stroke="#30363D" stroke-width="1"/>
+  <text x="100" y="200" font-family="Microsoft YaHei, Arial, sans-serif" font-size="12" fill="#8B949E">生命上限 (E2 MAX)</text>
+  <text x="100" y="230" font-family="Microsoft YaHei, Arial, sans-serif" font-size="24" font-weight="bold" fill="#58A6FF">1633</text>
+  <text x="200" y="230" font-family="Microsoft YaHei, Arial, sans-serif" font-size="12" fill="#8B949E">+400信赖</text>
+
+  <rect x="360" y="170" width="260" height="80" rx="8" fill="#161B22" stroke="#30363D" stroke-width="1"/>
+  <text x="380" y="200" font-family="Microsoft YaHei, Arial, sans-serif" font-size="12" fill="#8B949E">攻击力 (E2 MAX)</text>
+  <text x="380" y="230" font-family="Microsoft YaHei, Arial, sans-serif" font-size="24" font-weight="bold" fill="#3FB950">490</text>
+
+  <rect x="640" y="170" width="260" height="80" rx="8" fill="#161B22" stroke="#30363D" stroke-width="1"/>
+  <text x="660" y="200" font-family="Microsoft YaHei, Arial, sans-serif" font-size="12" fill="#8B949E">防御力 (E2 MAX)</text>
+  <text x="660" y="230" font-family="Microsoft YaHei, Arial, sans-serif" font-size="24" font-weight="bold" fill="#C9D1D9">215</text>
+  <text x="760" y="230" font-family="Microsoft YaHei, Arial, sans-serif" font-size="12" fill="#8B949E">+40信赖</text>
+
+  <rect x="920" y="170" width="260" height="80" rx="8" fill="#161B22" stroke="#30363D" stroke-width="1"/>
+  <text x="940" y="200" font-family="Microsoft YaHei, Arial, sans-serif" font-size="12" fill="#8B949E">法术抗性</text>
+  <text x="940" y="230" font-family="Microsoft YaHei, Arial, sans-serif" font-size="24" font-weight="bold" fill="#C9D1D9">0</text>
+
+  <rect x="80" y="270" width="260" height="80" rx="8" fill="#161B22" stroke="#30363D" stroke-width="1"/>
+  <text x="100" y="300" font-family="Microsoft YaHei, Arial, sans-serif" font-size="12" fill="#8B949E">阻挡数</text>
+  <text x="100" y="330" font-family="Microsoft YaHei, Arial, sans-serif" font-size="24" font-weight="bold" fill="#C9D1D9">1</text>
+
+  <rect x="360" y="270" width="260" height="80" rx="8" fill="#161B22" stroke="#30363D" stroke-width="1"/>
+  <text x="380" y="300" font-family="Microsoft YaHei, Arial, sans-serif" font-size="12" fill="#8B949E">攻击间隔</text>
+  <text x="380" y="330" font-family="Microsoft YaHei, Arial, sans-serif" font-size="24" font-weight="bold" fill="#C9D1D9">2.85s</text>
+
+  <rect x="640" y="270" width="260" height="80" rx="8" fill="#161B22" stroke="#30363D" stroke-width="1"/>
+  <text x="660" y="300" font-family="Microsoft YaHei, Arial, sans-serif" font-size="12" fill="#8B949E">再部署时间</text>
+  <text x="660" y="330" font-family="Microsoft YaHei, Arial, sans-serif" font-size="24" font-weight="bold" fill="#C9D1D9">70s</text>
+
+  <rect x="920" y="270" width="260" height="80" rx="8" fill="#161B22" stroke="#30363D" stroke-width="1"/>
+  <text x="940" y="300" font-family="Microsoft YaHei, Arial, sans-serif" font-size="12" fill="#8B949E">部署费用</text>
+  <text x="940" y="330" font-family="Microsoft YaHei, Arial, sans-serif" font-size="24" font-weight="bold" fill="#C9D1D9">18→20</text>
+
+  <rect x="80" y="380" width="1120" height="120" rx="8" fill="#161B22" fill-opacity="0.5" stroke="#30363D" stroke-width="1"/>
+  <text x="100" y="415" font-family="Microsoft YaHei, Arial, sans-serif" font-size="15" fill="#FFFFFF">属性分析</text>
+  <text x="100" y="445" font-family="Microsoft YaHei, Arial, sans-serif" font-size="14" fill="#C9D1D9">作为医疗干员，凯尔希的面板相当均衡</text>
+  <text x="100" y="470" font-family="Microsoft YaHei, Arial, sans-serif" font-size="14" fill="#C9D1D9">攻击力490在医疗中属于较高水平，配合Mon3tr的输出能力强大</text>
+  <text x="100" y="490" font-family="Microsoft YaHei, Arial, sans-serif" font-size="12" fill="#8B949E">生命值和防御力保证了基本的生存能力</text>
+  <text x="1220" y="690" font-family="Microsoft YaHei, Arial, sans-serif" font-size="12" fill="#6E7681" text-anchor="end">22 / 32</text>
+</svg>

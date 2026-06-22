@@ -1,0 +1,94 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1280 720">
+    <!-- ==================== 浅色背景 ==================== -->
+    <rect width="1280" height="720" fill="#F8FAFC" />
+
+    <!-- ==================== 标题区 ==================== -->
+    <text x="60" y="55" fill="#94A3B8" font-family="Microsoft YaHei, PingFang SC, Segoe UI, sans-serif"
+        font-size="13">
+        §1 底层逻辑
+    </text>
+
+    <text x="60" y="85" fill="#1E293B" font-family="Microsoft YaHei, PingFang SC, Segoe UI, sans-serif"
+        font-size="32" font-weight="bold">
+        图片的本质困境
+    </text>
+
+    <!-- 标题下方装饰线 -->
+    <rect x="60" y="98" width="300" height="2" fill="#2563EB" fill-opacity="0.3" />
+
+    <!-- ==================== 核心视觉区 ==================== -->
+    <!-- 左侧核心主张 -->
+    <rect x="60" y="130" width="540" height="400" fill="#E8EDF2" rx="12" />
+    <text x="90" y="180" fill="#2563EB" font-family="Microsoft YaHei, PingFang SC, Segoe UI, sans-serif"
+        font-size="28" font-weight="bold">
+        图片无法被 AI 直接理解
+    </text>
+    <text x="90" y="220" fill="#64748B" font-family="Microsoft YaHei, PingFang SC, Segoe UI, sans-serif"
+        font-size="18">
+        AI 模型处理的是文字和数字，
+    </text>
+    <text x="90" y="248" fill="#64748B" font-family="Microsoft YaHei, PingFang SC, Segoe UI, sans-serif"
+        font-size="18">
+        不是像素。
+    </text>
+
+    <!-- 关键词高亮 -->
+    <rect x="90" y="280" width="480" height="60" fill="#2563EB" fill-opacity="0.08" rx="8" />
+    <text x="110" y="316" fill="#2563EB" font-family="Microsoft YaHei, PingFang SC, Segoe UI, sans-serif"
+        font-size="20" font-weight="bold">
+        优秀作品 = 结构化文字需求
+    </text>
+
+    <!-- 右侧示意 -->
+    <rect x="640" y="130" width="580" height="400" fill="#E8EDF2" rx="12" />
+    <!-- 需求 → 文案 → 提示词 → 出图 流程示意 -->
+    <rect x="680" y="170" width="120" height="50" fill="#2563EB" fill-opacity="0.15" rx="8" />
+    <text x="740" y="200" text-anchor="middle" fill="#2563EB" font-family="Microsoft YaHei, PingFang SC, Segoe UI, sans-serif"
+        font-size="16" font-weight="bold">需求想法</text>
+
+    <text x="820" y="200" fill="#94A3B8" font-size="20">→</text>
+
+    <rect x="850" y="170" width="120" height="50" fill="#10B981" fill-opacity="0.15" rx="8" />
+    <text x="910" y="200" text-anchor="middle" fill="#10B981" font-family="Microsoft YaHei, PingFang SC, Segoe UI, sans-serif"
+        font-size="16" font-weight="bold">文案拆解</text>
+
+    <text x="990" y="200" fill="#94A3B8" font-size="20">→</text>
+
+    <rect x="1020" y="170" width="120" height="50" fill="#F97316" fill-opacity="0.15" rx="8" />
+    <text x="1080" y="200" text-anchor="middle" fill="#F97316" font-family="Microsoft YaHei, PingFang SC, Segoe UI, sans-serif"
+        font-size="16" font-weight="bold">排版设计</text>
+
+    <!-- 第二行流程 -->
+    <text x="740" y="270" fill="#94A3B8" font-size="16">↓</text>
+    <rect x="680" y="280" width="120" height="50" fill="#F97316" fill-opacity="0.15" rx="8" />
+    <text x="740" y="310" text-anchor="middle" fill="#F97316" font-family="Microsoft YaHei, PingFang SC, Segoe UI, sans-serif"
+        font-size="16" font-weight="bold">AI 出图</text>
+
+    <text x="820" y="310" fill="#94A3B8" font-size="20">←</text>
+
+    <rect x="850" y="280" width="120" height="50" fill="#2563EB" fill-opacity="0.15" rx="8" />
+    <text x="910" y="310" text-anchor="middle" fill="#2563EB" font-family="Microsoft YaHei, PingFang SC, Segoe UI, sans-serif"
+        font-size="16" font-weight="bold">提示词生成</text>
+
+    <text x="990" y="310" fill="#94A3B8" font-size="20">↓</text>
+
+    <rect x="1020" y="280" width="120" height="50" fill="#10B981" fill-opacity="0.15" rx="8" />
+    <text x="1080" y="310" text-anchor="middle" fill="#10B981" font-family="Microsoft YaHei, PingFang SC, Segoe UI, sans-serif"
+        font-size="16" font-weight="bold">迭代优化</text>
+
+    <!-- 闭环箭头提示 -->
+    <text x="810" y="410" fill="#94A3B8" font-family="Microsoft YaHei, PingFang SC, Segoe UI, sans-serif"
+        font-size="14">
+        ↺ 迭代直到满意
+    </text>
+
+    <!-- ==================== Takeaway 区 ==================== -->
+    <rect x="60" y="600" width="1160" height="1" fill="#CBD5E1" />
+
+    <rect x="60" y="615" width="6" height="30" fill="#2563EB" rx="3" />
+    <text x="80" y="640" fill="#1E293B" font-family="Microsoft YaHei, PingFang SC, Segoe UI, sans-serif"
+        font-size="22" font-weight="bold">
+        好的 AI 生图 = 好的需求表达
+    </text>
+</svg>

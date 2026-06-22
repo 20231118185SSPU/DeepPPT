@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1280 720">
+    <!-- ==================== 背景 ==================== -->
+    <rect width="1280" height="720" fill="#F8FAFC" />
+    <image href="../images/P03_trans1_bg.png" x="0" y="0" width="1280" height="720" preserveAspectRatio="xMidYMid slice" />
+    <!-- 浅色遮罩 -->
+    <rect x="0" y="0" width="1280" height="720" fill="#F8FAFC" fill-opacity="0.7" />
+
+    <!-- ==================== 承上 ==================== -->
+    <text x="60" y="200" fill="#94A3B8" font-family="Microsoft YaHei, PingFang SC, Segoe UI, sans-serif"
+        font-size="14">
+        认识 AI 生图全景
+    </text>
+    <text x="60" y="240" fill="#64748B" font-family="Microsoft YaHei, PingFang SC, Segoe UI, sans-serif"
+        font-size="20">
+        了解 AI 生图是什么，能做什么
+    </text>
+
+    <!-- ==================== 章节编号 + 标题 ==================== -->
+    <text x="60" y="370" fill="#2563EB" fill-opacity="0.12" font-family="Segoe UI, Arial, sans-serif"
+        font-size="120" font-weight="bold">
+        01
+    </text>
+
+    <text x="60" y="440" fill="#1E293B" font-family="Microsoft YaHei, PingFang SC, Segoe UI, sans-serif"
+        font-size="48" font-weight="bold">
+        底层逻辑
+    </text>
+
+    <text x="60" y="490" fill="#64748B" font-family="Microsoft YaHei, PingFang SC, Segoe UI, sans-serif"
+        font-size="20">
+        AI 为什么不能直接理解图片？
+    </text>
+
+    <!-- ==================== 启下 ==================== -->
+    <line x1="60" y1="540" x2="400" y2="540" stroke="#2563EB" stroke-width="1.5" stroke-opacity="0.3" />
+
+    <text x="60" y="580" fill="#64748B" font-family="Microsoft YaHei, PingFang SC, Segoe UI, sans-serif"
+        font-size="18">
+        理解了底层逻辑，我们才能写出有效的提示词
+    </text>
+</svg>

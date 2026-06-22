@@ -1,0 +1,33 @@
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 1280 720" width="1280" height="720">
+  <image href="../images/amiya_avatar_阿米娅(医疗).png" x="0" y="0" width="1280" height="720" preserveAspectRatio="xMidYMid slice"/>
+  <rect x="0" y="0" width="1280" height="720" fill="#0D1117" fill-opacity="0.75"/>
+  <rect x="80" y="50" width="60" height="2" fill="#58A6FF"/>
+  <text x="80" y="85" font-family="Microsoft YaHei, Arial, sans-serif" font-size="14" fill="#58A6FF" letter-spacing="2">第四章 · 人物关系</text>
+  <text x="80" y="125" font-family="Microsoft YaHei, Arial, sans-serif" font-size="36" font-weight="bold" fill="#FFFFFF">博士</text>
+  <rect x="80" y="145" width="1120" height="1" fill="#30363D"/>
+  
+  <rect x="80" y="170" width="540" height="300" rx="8" fill="#161B22" stroke="#3FB950" stroke-width="1"/>
+  <rect x="80" y="170" width="540" height="4" rx="2" fill="#3FB950"/>
+  <use data-icon="tabler-outline/users" x="100" y="195" width="28" height="28" fill="none" stroke="#3FB950" stroke-width="2"/>
+  <text x="140" y="215" font-family="Microsoft YaHei, Arial, sans-serif" font-size="20" font-weight="bold" fill="#FFFFFF">博士</text>
+  <text x="140" y="240" font-family="Microsoft YaHei, Arial, sans-serif" font-size="13" fill="#8B949E">Doctor · 罗德岛指挥官</text>
+  <rect x="100" y="260" width="500" height="1" fill="#30363D"/>
+  <text x="100" y="290" font-family="Microsoft YaHei, Arial, sans-serif" font-size="14" fill="#C9D1D9">凯尔希与博士之间有着复杂的过去</text>
+  <text x="100" y="315" font-family="Microsoft YaHei, Arial, sans-serif" font-size="14" fill="#C9D1D9">两人在很久以前就已相识</text>
+  <text x="100" y="340" font-family="Microsoft YaHei, Arial, sans-serif" font-size="14" fill="#C9D1D9">博士失忆后，凯尔希一直在旁守护</text>
+  <text x="100" y="365" font-family="Microsoft YaHei, Arial, sans-serif" font-size="14" fill="#C9D1D9">定期为博士进行理学检查</text>
+  <text x="100" y="395" font-family="Microsoft YaHei, Arial, sans-serif" font-size="12" fill="#8B949E">记录生命征象与意识状态</text>
+  <text x="100" y="420" font-family="Microsoft YaHei, Arial, sans-serif" font-size="12" fill="#8B949E">这对她"有着相当重要的意义"</text>
+
+  <rect x="660" y="170" width="540" height="300" rx="8" fill="#161B22" fill-opacity="0.8" stroke="#30363D" stroke-width="1"/>
+  <rect x="660" y="170" width="3" height="300" fill="#3FB950"/>
+  <text x="690" y="210" font-family="Georgia, SimSun, serif" font-size="18" fill="#FFFFFF" font-style="italic">"我的愿望就是守护好</text>
+  <text x="690" y="240" font-family="Georgia, SimSun, serif" font-size="18" fill="#3FB950" font-style="italic">你和阿米娅的愿望。</text>
+  <text x="690" y="280" font-family="Georgia, SimSun, serif" font-size="18" fill="#FFFFFF" font-style="italic">博士，我立下的誓言</text>
+  <text x="690" y="310" font-family="Georgia, SimSun, serif" font-size="18" fill="#3FB950" font-style="italic">我永远不会背弃。"</text>
+  <text x="690" y="350" font-family="Microsoft YaHei, Arial, sans-serif" font-size="14" fill="#8B949E">—— 凯尔希对博士的承诺</text>
+  <rect x="690" y="380" width="480" height="1" fill="#30363D"/>
+  <text x="690" y="410" font-family="Microsoft YaHei, Arial, sans-serif" font-size="14" fill="#C9D1D9">信赖200%语音：</text>
+  <text x="690" y="435" font-family="Microsoft YaHei, Arial, sans-serif" font-size="13" fill="#8B949E">"Mon3tr和我会保护所有人的，特别是博士你。"</text>
+  <text x="1220" y="690" font-family="Microsoft YaHei, Arial, sans-serif" font-size="12" fill="#6E7681" text-anchor="end">15 / 32</text>
+</svg>

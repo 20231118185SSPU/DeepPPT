@@ -1,0 +1,19 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1280 720">
+  <!-- Full-bleed background image -->
+  <image href="images/P10_trans3_bg.png" x="0" y="0" width="1280" height="720" preserveAspectRatio="xMidYMid slice"/>
+
+  <!-- Dark overlay -->
+  <rect x="0" y="0" width="1280" height="720" fill="#425066" fill-opacity="0.4"/>
+
+  <!-- Left decorative vertical line -->
+  <line x1="80" y1="180" x2="80" y2="540" stroke="#FFFFFF" stroke-width="3" stroke-opacity="0.6"/>
+
+  <!-- Top subtitle -->
+  <text x="100" y="260" font-family="KaiTi, Georgia, serif" font-size="15" fill="#FFFFFF" font-style="italic">混元桩是百年传承的母功</text>
+
+  <!-- Center title -->
+  <text x="640" y="380" font-family="SimSun, Georgia, serif" font-size="44" font-weight="bold" fill="#FFFFFF" text-anchor="middle">第三章 · 两条路，一个终点</text>
+
+  <!-- Bottom description -->
+  <text x="640" y="460" font-family="&quot;Microsoft YaHei&quot;, Arial, sans-serif" font-size="20" fill="#FFFFFF" text-anchor="middle">冥想走心，站桩走身——它们是两条路，还是一条路的两面？</text>
+</svg>
