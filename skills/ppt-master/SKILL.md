@@ -56,6 +56,8 @@ description: >
 | `${SKILL_DIR}/scripts/analyze_images.py` | Image analysis |
 | `${SKILL_DIR}/scripts/latex_render.py` | LaTeX formula rendering (manifest-driven PNG assets) |
 | `${SKILL_DIR}/scripts/image_gen.py` | AI image generation (multi-provider) |
+| `${SKILL_DIR}/scripts/image_search.py` | Web image search (batch mode for deep-dive page assets) |
+| `${SKILL_DIR}/scripts/confirm_ui/server.py` | Step 4 Eight Confirmations — interactive visual confirmation page |
 | `${SKILL_DIR}/scripts/svg_quality_checker.py` | SVG quality check |
 | `${SKILL_DIR}/scripts/total_md_split.py` | Speaker notes splitting |
 | `${SKILL_DIR}/scripts/finalize_svg.py` | SVG post-processing (unified entry) |
@@ -625,6 +627,20 @@ Before switching roles, **MUST first read** the corresponding reference file. Ou
 📖 Reading role definition: references/<filename>.md
 📋 Current task: <brief description>
 ```
+
+---
+
+## Project Folder Integrity
+
+All artifacts for a single PPT project must reside inside one project folder. Do NOT scatter outputs across `projects/`.
+
+**Hard rules**:
+- Research reports (`research_report.md`) live inside the project folder, not in `projects/` root
+- Analysis files (`research_analysis.json`, `visual_strategy.json`) live in `<project>/analysis/`
+- Do NOT create parallel folders for the same task (e.g., `projects/my_topic_analysis/` alongside `projects/my_topic_ppt169_/`)
+- The folder created by `project_manager.py init` is the single canonical location for all project outputs
+
+> For the complete project folder structure diagram, see [`workflows/deep-research.md`](workflows/deep-research.md) §Project folder structure.
 
 ---
 

@@ -175,6 +175,13 @@ yarn.lock
 # Live preview direct-edit history (per-project, regenerated on edit)
 .live_edits.jsonl
 
+# Stray root files
+get-pip.py
+*.png
+!docs/**/*.png
+!skills/ppt-master/templates/**/*.png
+!examples/**/*.png
+
 # Personal notes
 TODO.md
 PERSONAL_NOTES.md

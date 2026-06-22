@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1280 720">
+    <!-- ==================== 统一深色背景 ==================== -->
+    <rect width="1280" height="720" fill="#1A1A2E" />
+
+    <!-- ==================== 标题区 ==================== -->
+    <!-- 章节指示 -->
+    <text x="60" y="55" fill="#FFFFFF" fill-opacity="0.45" font-family="Microsoft YaHei, Arial, sans-serif"
+        font-size="13">
+        {{SECTION_NAME}}
+    </text>
+
+    <!-- 页面标题 -->
+    <text x="60" y="85" fill="#FFFFFF" font-family="Microsoft YaHei, Arial, sans-serif"
+        font-size="32" font-weight="bold">
+        {{PAGE_TITLE}}
+    </text>
+
+    <!-- 标题下方细线装饰 -->
+    <line x1="60" y1="98" x2="360" y2="98" stroke="#FFFFFF" stroke-width="2" stroke-opacity="0.25" />
+
+    <!-- ==================== 核心视觉区：内容页专属 AI 图 ==================== -->
+    <!--
+        中间核心图片区域（内容页专属，与封面/过渡页图片不同）
+        可用空间: x=60, y=115, width=1160, height=425
+    -->
+    <image href="{{CONTENT_IMAGE}}" x="60" y="115" width="1160" height="425" preserveAspectRatio="xMidYMid slice" />
+
+    <!-- 图片下方补充说明文字 -->
+    <text x="60" y="570" fill="#FFFFFF" fill-opacity="0.65" font-family="Microsoft YaHei, Arial, sans-serif"
+        font-size="16">
+        {{IMAGE_CAPTION}}
+    </text>
+
+    <!-- ==================== Takeaway 区 ==================== -->
+    <line x1="60" y1="600" x2="1220" y2="600" stroke="#FFFFFF" stroke-width="1" stroke-opacity="0.15" />
+
+    <!-- 核心结论 -->
+    <text x="60" y="640" fill="#FFFFFF" font-family="Microsoft YaHei, Arial, sans-serif"
+        font-size="22" font-weight="bold">
+        {{TAKEAWAY}}
+    </text>
+
+    <!-- 右侧装饰 -->
+    <rect x="1200" y="620" width="20" height="3" fill="#FFFFFF" fill-opacity="0.3" />
+    <rect x="1200" y="628" width="14" height="3" fill="#FFFFFF" fill-opacity="0.2" />
+</svg>

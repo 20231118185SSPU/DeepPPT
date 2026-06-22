@@ -154,8 +154,15 @@ def _generate_image(api_key: str, prompt: str,
 def generate(prompt: str,
              aspect_ratio: str = "1:1", image_size: str = "1K",
              output_dir: str = None, filename: str = None,
-             model: str = None, max_retries: int = MAX_RETRIES) -> str:
+             model: str = None, max_retries: int = MAX_RETRIES,
+             reference_image: str | None = None) -> str:
     """Generate an image with retries using the Zhipu backend."""
+    if reference_image is not None:
+        raise ValueError(
+            "Backend 'zhipu' does not support img2img (reference_image). "
+            "Use IMAGE_BACKEND=openai with a Yunwu-compatible proxy, "
+            "or remove --reference-image."
+        )
     api_key = require_api_key(
         "ZHIPU_API_KEY",
         "BIGMODEL_API_KEY",

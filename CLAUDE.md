@@ -10,7 +10,11 @@ PPT Master is an AI-driven presentation generation system. Multi-role collaborat
 
 **Core Pipeline**: `Source Document → Create Project → [Template] → Strategist Eight Confirmations → [Image_Generator] → Executor Live Preview → Quality Check → Post-processing → Export PPTX`
 
-> Topic-only requests with no source material: run the standalone [`topic-research`](skills/ppt-master/workflows/topic-research.md) workflow before SKILL.md Step 1 to gather web materials.
+> Topic-only requests with no source material: run one of the two research workflows before SKILL.md Step 1:
+> - [`topic-research`](skills/ppt-master/workflows/topic-research.md) — quick research (3-round web search → fact-list Markdown)
+> - [`deep-research`](skills/ppt-master/workflows/deep-research.md) — deep research (multi-source discovery → structured analysis → narrative construction → visual strategy)
+>
+> Choose deep-research when the user says "深度调研" / "deep research" or when content quality is the priority.
 >
 > Template fill: when the user provides an existing `.pptx` template plus text materials or a topic and asks to reuse the original PPT design or fill content back into it (for example, "fill this deck with the new content", "fill this back into the template", or "reuse this deck's design"), run the standalone [`template-fill-pptx`](skills/ppt-master/workflows/template-fill-pptx.md) workflow. This route edits PPTX directly and must not enter the SVG generation pipeline.
 >
@@ -84,6 +88,8 @@ python3 skills/ppt-master/scripts/image_gen.py --manifest <project_path>/images/
 python3 skills/ppt-master/scripts/image_gen.py --render-md <project_path>/images/image_prompts.json
 # Out-of-pipeline one-off / debug / single-image fixup only (no manifest, no sidecar):
 python3 skills/ppt-master/scripts/image_gen.py "prompt" --aspect_ratio 16:9 --image_size 1K -o <project_path>/images
+# 网络图片搜索（批量模式）
+python3 skills/ppt-master/scripts/image_search.py --batch <project_path>/images/image_queries.json -o <project_path>/images/web_assets
 python3 skills/ppt-master/scripts/svg_editor/server.py <project_path> --live
 python3 skills/ppt-master/scripts/svg_quality_checker.py <project_path>
 python3 skills/ppt-master/scripts/animation_config.py scaffold <project_path>  # optional, only for custom object-level animation

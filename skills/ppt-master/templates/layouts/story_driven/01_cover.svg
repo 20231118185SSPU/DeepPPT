@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1280 720">
+    <!-- ==================== 背景 ==================== -->
+    <rect width="1280" height="720" fill="#1A1A2E" />
+    <!-- 封面专属 AI 背景图 -->
+    <image href="{{COVER_BG}}" x="0" y="0" width="1280" height="720" preserveAspectRatio="xMidYMid slice" />
+
+    <!-- 中心偏下渐变遮罩，确保标题可读 -->
+    <rect x="0" y="260" width="1280" height="460" fill="#1A1A2E" fill-opacity="0.6" />
+
+    <!-- ==================== 主标题区域 ==================== -->
+    <text x="640" y="370" text-anchor="middle" fill="#FFFFFF" font-family="Microsoft YaHei, Arial, sans-serif"
+        font-size="56" font-weight="bold">
+        {{TITLE}}
+    </text>
+
+    <!-- 副标题 / 标语 -->
+    <text x="640" y="430" text-anchor="middle" fill="#FFFFFF" fill-opacity="0.8" font-family="Microsoft YaHei, Arial, sans-serif"
+        font-size="24">
+        {{SUBTITLE}}
+    </text>
+
+    <!-- ==================== 底部信息栏 ==================== -->
+    <rect x="0" y="660" width="1280" height="60" fill="#000000" fill-opacity="0.35" />
+    <text x="60" y="695" fill="#FFFFFF" fill-opacity="0.7" font-family="Microsoft YaHei, Arial, sans-serif"
+        font-size="14">
+        {{AUTHOR}}　　{{ORGANIZATION}}
+    </text>
+    <text x="1220" y="695" text-anchor="end" fill="#FFFFFF" fill-opacity="0.7" font-family="Microsoft YaHei, Arial, sans-serif"
+        font-size="14">
+        {{DATE}}
+    </text>
+</svg>

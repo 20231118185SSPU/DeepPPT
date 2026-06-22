@@ -303,6 +303,46 @@ def _image_generations_url(base_url: str | None) -> str:
     return f"{base}/images/generations"
 
 
+def _image_edits_url(base_url: str | None) -> str:
+    """Resolve the /v1/images/edits endpoint."""
+    base = (base_url or DEFAULT_BASE_URL).rstrip("/")
+    if base.endswith("/images/edits"):
+        return base
+    return f"{base}/images/edits"
+
+
+def _is_url(value: str) -> bool:
+    """Return whether a string looks like an HTTP(S) URL."""
+    return value.startswith("http://") or value.startswith("https://")
+
+
+def _download_ref_image(url: str) -> str:
+    """Download a reference image URL to a temp file. Returns the temp path.
+
+    Raises ValueError on download failure (non-retryable).
+    """
+    import tempfile as _tempfile
+    try:
+        resp_dl = requests.get(url, timeout=60,
+                               headers={"User-Agent": "ppt-master/1.0"})
+        resp_dl.raise_for_status()
+    except requests.RequestException as exc:
+        raise ValueError(
+            f"Failed to download reference image from URL: {exc}"
+        ) from exc
+
+    ext_from_ct = {
+        "image/png": ".png", "image/jpeg": ".jpg",
+        "image/webp": ".webp", "image/gif": ".gif",
+    }
+    ct = resp_dl.headers.get("Content-Type", "").split(";")[0].strip()
+    tmp_ext = ext_from_ct.get(ct, ".png")
+    fd, tmp_path = _tempfile.mkstemp(suffix=tmp_ext, prefix="img2img_ref_")
+    with os.fdopen(fd, "wb") as f:
+        f.write(resp_dl.content)
+    return tmp_path
+
+
 def _read_size_preset() -> str | None:
     """Read the optional size mapping preset for OpenAI-compatible providers."""
     return _read_env_choice("OPENAI_SIZE_PRESET", OPENAI_SIZE_PRESETS)
@@ -355,17 +395,77 @@ def _post_image_generation(api_key: str, base_url: str | None, request: dict) ->
 
 
 # ╔══════════════════════════════════════════════════════════════════╗
+# ║  img2img Helpers                                                 ║
+# ╚══════════════════════════════════════════════════════════════════╝
+
+def _post_image_edits(api_key: str, base_url: str | None,
+                      image_path_or_url: str, prompt: str,
+                      model: str, aspect_ratio: str) -> dict:
+    """POST to /v1/images/edits with multipart form data for img2img."""
+    headers = {
+        "Authorization": f"Bearer {api_key}",
+        "Accept": "application/json",
+    }
+    form_fields = {
+        "prompt": prompt,
+        "model": model,
+        "n": "1",
+        "aspect_ratio": aspect_ratio,
+    }
+
+    open_handles = []
+    try:
+        if _is_url(image_path_or_url):
+            # URL input: pass as a form field (Yunwu accepts URL string)
+            form_fields["image"] = image_path_or_url
+            response = requests.post(
+                _image_edits_url(base_url),
+                headers=headers,
+                data=form_fields,
+                timeout=300,
+            )
+        else:
+            # Local file: upload as multipart file part
+            fh = open(image_path_or_url, "rb")
+            open_handles.append(fh)
+            files = {
+                "image": (os.path.basename(image_path_or_url), fh,
+                          "application/octet-stream"),
+            }
+            response = requests.post(
+                _image_edits_url(base_url),
+                headers=headers,
+                data=form_fields,
+                files=files,
+                timeout=300,
+            )
+    finally:
+        for fh in open_handles:
+            fh.close()
+
+    if not response.ok:
+        raise http_error(response, "OpenAI image edits (img2img)")
+    try:
+        return response.json()
+    except ValueError as exc:
+        raise RuntimeError("OpenAI image edits returned invalid JSON.") from exc
+
+
+# ╔══════════════════════════════════════════════════════════════════╗
 # ║  Image Generation                                               ║
 # ╚══════════════════════════════════════════════════════════════════╝
 
 def _generate_image(api_key: str, prompt: str,
                     aspect_ratio: str = "1:1", image_size: str = "1K",
                     output_dir: str = None, filename: str = None,
-                    model: str = DEFAULT_MODEL, base_url: str = None) -> str:
+                    model: str = DEFAULT_MODEL, base_url: str = None,
+                    reference_image: str | None = None) -> str:
     """
     Image generation via OpenAI-compatible API.
 
     Maps aspect_ratio to OpenAI's size parameter, and image_size to quality.
+    When reference_image is provided, uses img2img mode via /v1/images/edits
+    (local file upload or URL downloaded to temp file first).
 
     Returns:
         Path of the saved image file
@@ -373,11 +473,70 @@ def _generate_image(api_key: str, prompt: str,
     Raises:
         RuntimeError: When generation fails
     """
-    # Map parameters
     size_preset = _read_size_preset()
     size = _select_size(model, aspect_ratio, image_size, size_preset)
     quality = _read_quality(image_size)
     output_ext = ".png"
+
+    # ── img2img mode ────────────────────────────────────────────────
+    if reference_image is not None:
+        mode_label = f"Proxy: {base_url}" if base_url else "OpenAI API"
+        ref_label = reference_image if len(reference_image) <= 80 else reference_image[:77] + "..."
+        print(f"[OpenAI - {mode_label}] (img2img)")
+        print(f"  Model:          {model}")
+        print(f"  Prompt:         {prompt[:120]}{'...' if len(prompt) > 120 else ''}")
+        print(f"  Reference:      {ref_label}")
+        print(f"  Aspect Ratio:   {aspect_ratio}")
+
+        # Always use /v1/images/edits (multipart upload).
+        # If reference is a URL, download to a temp file first.
+        local_ref = reference_image
+        tmp_file = None
+        if _is_url(reference_image):
+            print(f"  Endpoint:       /v1/images/edits (URL → temp file upload)")
+            print()
+            print("  [..] Downloading reference image...", end="", flush=True)
+            tmp_file = _download_ref_image(reference_image)
+            local_ref = tmp_file
+            print(" done")
+        else:
+            print(f"  Endpoint:       /v1/images/edits (file upload)")
+            print()
+
+        start_time = time.time()
+        print("  [..] Generating (img2img, upload)...", end="", flush=True)
+        try:
+            resp = _post_image_edits(
+                api_key, base_url, local_ref, prompt, model, aspect_ratio,
+            )
+        finally:
+            if tmp_file and os.path.exists(tmp_file):
+                os.unlink(tmp_file)
+
+        elapsed = time.time() - start_time
+        print(f"\n  [DONE] Image generated ({elapsed:.1f}s)")
+
+        if _is_gpt_image_model(model):
+            _, output_ext = _gpt_image_options(model)
+
+        data = _field(resp, "data") if resp is not None else None
+        if data:
+            path = resolve_output_path(prompt, output_dir, filename, output_ext)
+            first_image = data[0]
+            b64_json = _field(first_image, "b64_json")
+            image_url = _field(first_image, "url")
+            if b64_json:
+                image_data = base64.b64decode(b64_json)
+                return save_image_bytes(image_data, path)
+            if image_url:
+                return download_image(image_url, path)
+
+        raise RuntimeError(
+            "No image was generated in img2img mode. The server may have "
+            "refused the request or the reference image format is unsupported."
+        )
+
+    # ── text-to-image mode (original path) ──────────────────────────
     request = {
         "prompt": prompt,
         "model": model,
@@ -463,7 +622,8 @@ def _generate_image(api_key: str, prompt: str,
 def generate(prompt: str,
              aspect_ratio: str = "1:1", image_size: str = "1K",
              output_dir: str = None, filename: str = None,
-             model: str = None, max_retries: int = MAX_RETRIES) -> str:
+             model: str = None, max_retries: int = MAX_RETRIES,
+             reference_image: str | None = None) -> str:
     """
     OpenAI-compatible image generation with automatic retry.
 
@@ -480,6 +640,9 @@ def generate(prompt: str,
         filename: Output filename (without extension)
         model: Model name (default: gpt-image-2)
         max_retries: Maximum number of retries
+        reference_image: Path or URL of a reference image for img2img mode.
+            When provided, uses /v1/images/edits (local file) or
+            /v1/images/generations with image field (URL).
 
     Returns:
         Path of the saved image file
@@ -509,7 +672,10 @@ def generate(prompt: str,
         try:
             return _generate_image(api_key, prompt,
                                    aspect_ratio, image_size, output_dir,
-                                   filename, model, base_url)
+                                   filename, model, base_url,
+                                   reference_image=reference_image)
+        except ValueError:
+            raise  # Non-retryable (bad argument, download failure, etc.)
         except Exception as e:
             last_error = e
             if attempt < max_retries and is_rate_limit_error(e):

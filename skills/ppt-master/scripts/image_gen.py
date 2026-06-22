@@ -481,6 +481,7 @@ def _run_manifest(manifest: dict, manifest_path: str, backend_module, *,
                 output_dir=output_dir,
                 filename=Path(item["filename"]).stem,
                 model=item.get("model", model),
+                reference_image=item.get("reference_image"),
             )
             return idx, saved_path, None
         except Exception as exc:  # noqa: BLE001 — backend raises arbitrary types
@@ -685,6 +686,13 @@ def main() -> None:
             "next to the manifest, then exit. No backend / network needed."
         ),
     )
+    parser.add_argument(
+        "--reference-image", "-ri", default=None, metavar="PATH_OR_URL",
+        help=(
+            "Reference image for img2img mode. Accepts a local file path or "
+            "an HTTP(S) URL. When provided, the backend uses its img2img endpoint."
+        ),
+    )
 
     args = parser.parse_args()
 
@@ -753,6 +761,7 @@ def main() -> None:
             output_dir=args.output,
             filename=args.filename,
             model=args.model,
+            reference_image=args.reference_image,
         )
     except (ValueError, FileNotFoundError) as e:
         print(f"Error: {e}")

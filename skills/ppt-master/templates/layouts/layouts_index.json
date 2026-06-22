@@ -83,5 +83,18 @@
       "content",
       "ending"
     ]
+  },
+  "story_driven": {
+    "summary": "Deep research presentations, narrative-driven content decks, knowledge exploration, educational storytelling, topic deep-dives.",
+    "canvas_format": "ppt169",
+    "page_count": 6,
+    "page_types": [
+      "cover",
+      "toc",
+      "chapter",
+      "content",
+      "content_alt",
+      "ending"
+    ]
   }
 }

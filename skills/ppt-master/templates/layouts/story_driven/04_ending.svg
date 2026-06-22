@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1280 720">
+    <!-- ==================== 背景 ==================== -->
+    <rect width="1280" height="720" fill="#1A1A2E" />
+    <!-- 封底专属 AI 背景图（风格与封面统一但画面不同） -->
+    <image href="{{ENDING_BG}}" x="0" y="0" width="1280" height="720" preserveAspectRatio="xMidYMid slice" />
+
+    <!-- 中心渐变遮罩 -->
+    <rect x="0" y="220" width="1280" height="340" fill="#1A1A2E" fill-opacity="0.6" />
+
+    <!-- ==================== 结束语区域 ==================== -->
+    <text x="640" y="350" text-anchor="middle" fill="#FFFFFF" font-family="Microsoft YaHei, Arial, sans-serif"
+        font-size="48" font-weight="bold">
+        {{CLOSING}}
+    </text>
+
+    <!-- 标语 -->
+    <text x="640" y="410" text-anchor="middle" fill="#FFFFFF" fill-opacity="0.75" font-family="Microsoft YaHei, Arial, sans-serif"
+        font-size="22">
+        {{TAGLINE}}
+    </text>
+
+    <!-- ==================== 底部信息栏 ==================== -->
+    <rect x="0" y="660" width="1280" height="60" fill="#000000" fill-opacity="0.35" />
+    <text x="60" y="695" fill="#FFFFFF" fill-opacity="0.7" font-family="Microsoft YaHei, Arial, sans-serif"
+        font-size="14">
+        {{AUTHOR}}　　{{ORGANIZATION}}
+    </text>
+</svg>

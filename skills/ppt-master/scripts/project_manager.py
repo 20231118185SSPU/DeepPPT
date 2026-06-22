@@ -144,6 +144,8 @@ class ProjectManager:
             "svg_output",
             "svg_final",
             "images",
+            "images/web_assets",
+            "images/ref",
             "icons",
             "notes",
             "templates",

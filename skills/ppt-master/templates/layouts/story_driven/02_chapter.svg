@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1280 720">
+    <!-- ==================== 背景 ==================== -->
+    <rect width="1280" height="720" fill="#12122A" />
+    <!-- 过渡页专属 AI 背景图（每页独立，呼应上下文主题） -->
+    <image href="{{TRANSITION_BG}}" x="0" y="0" width="1280" height="720" preserveAspectRatio="xMidYMid slice" />
+    <!-- 统一暗色遮罩，确保文字可读 -->
+    <rect x="0" y="0" width="1280" height="720" fill="#0D0D1A" fill-opacity="0.55" />
+
+    <!-- ==================== 承上：回顾上一板块 ==================== -->
+    <!-- 上一板块小标签 -->
+    <text x="60" y="200" fill="#FFFFFF" fill-opacity="0.45" font-family="Microsoft YaHei, Arial, sans-serif"
+        font-size="14">
+        {{PREV_SECTION_LABEL}}
+    </text>
+    <!-- 上一板块核心回顾（一句话） -->
+    <text x="60" y="240" fill="#FFFFFF" fill-opacity="0.7" font-family="Microsoft YaHei, Arial, sans-serif"
+        font-size="20">
+        {{PREV_SECTION_SUMMARY}}
+    </text>
+
+    <!-- ==================== 章节编号 + 标题 ==================== -->
+    <!-- 章节编号 -->
+    <text x="60" y="360" fill="#FFFFFF" fill-opacity="0.15" font-family="Microsoft YaHei, Arial, sans-serif"
+        font-size="120" font-weight="bold">
+        {{CHAPTER_NUM}}
+    </text>
+
+    <!-- 章节标题 -->
+    <text x="60" y="430" fill="#FFFFFF" font-family="Microsoft YaHei, Arial, sans-serif"
+        font-size="48" font-weight="bold">
+        {{CHAPTER_TITLE}}
+    </text>
+
+    <!-- 章节描述 / 核心问题 -->
+    <text x="60" y="480" fill="#FFFFFF" fill-opacity="0.75" font-family="Microsoft YaHei, Arial, sans-serif"
+        font-size="20">
+        {{CHAPTER_DESC}}
+    </text>
+
+    <!-- ==================== 启下：引导下一板块 ==================== -->
+    <!-- 分隔线 -->
+    <line x1="60" y1="530" x2="400" y2="530" stroke="#FFFFFF" stroke-width="1" stroke-opacity="0.2" />
+
+    <!-- 核心引导问题 / 叙事钩子 -->
+    <text x="60" y="570" fill="#FFFFFF" fill-opacity="0.6" font-family="Microsoft YaHei, Arial, sans-serif"
+        font-size="18">
+        {{NEXT_HOOK}}
+    </text>
+</svg>
