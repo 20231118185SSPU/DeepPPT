@@ -64,6 +64,8 @@ description: >
 | `${SKILL_DIR}/scripts/svg_to_pptx.py` | Export to PPTX |
 | `${SKILL_DIR}/scripts/update_spec.py` | Propagate a `spec_lock.md` color / font_family change across all generated SVGs |
 | `${SKILL_DIR}/scripts/memory_manager.py` | User profile memory management (load/consolidate/show/reset) — cross-session preference persistence |
+| `${SKILL_DIR}/scripts/svg_snapshot.py` | SVG content hashing, structural diff, and editable element enumeration — revision pipeline support |
+| `${SKILL_DIR}/scripts/svg_patch.py` | SVG patch engine — apply localized edits to SVG pages without full regeneration |
 
 For complete tool documentation, see `${SKILL_DIR}/scripts/README.md`.
 
@@ -92,6 +94,7 @@ For complete tool documentation, see `${SKILL_DIR}/scripts/README.md`.
 | `customize-animations` | `workflows/customize-animations.md` | Object-level PPTX animation customization — run only when the user explicitly asks to tune animation order/effects/timing |
 | `live-preview` | `workflows/live-preview.md` | Browser-based live preview — auto-started during generation and re-enterable any time the user mentions "live preview", "preview", "看效果", or wants to click/select a slide element |
 | `visual-review` | `workflows/visual-review.md` | Per-page rubric-based visual self-check — run only when the user explicitly asks for a visual re-pass on the generated SVGs (between Executor and post-processing). Opt-in only; never invoked by the main pipeline. |
+| `revision-loop` | `workflows/revision-loop.md` | Multi-turn local revision — apply targeted patches to generated SVG pages without full regeneration. Enter when user says "修改"/"调整"/"revise" after Step 6. Uses Plan-Act-Guard pipeline. |
 
 ### PPTX Route Boundary
 
