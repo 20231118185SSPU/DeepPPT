@@ -63,6 +63,7 @@ description: >
 | `${SKILL_DIR}/scripts/finalize_svg.py` | SVG post-processing (unified entry) |
 | `${SKILL_DIR}/scripts/svg_to_pptx.py` | Export to PPTX |
 | `${SKILL_DIR}/scripts/update_spec.py` | Propagate a `spec_lock.md` color / font_family change across all generated SVGs |
+| `${SKILL_DIR}/scripts/memory_manager.py` | User profile memory management (load/consolidate/show/reset) — cross-session preference persistence |
 
 For complete tool documentation, see `${SKILL_DIR}/scripts/README.md`.
 
@@ -303,10 +304,18 @@ Single-path Step 3 does **not** add provenance (the source is self-evident from 
 
 🚧 **GATE**: Step 3 complete; default free-design path taken, or (if triggered) template files copied into the project.
 
-First, read the role definition:
+First, load any existing user profile memory (cross-session preferences):
+```bash
+python3 ${SKILL_DIR}/scripts/memory_manager.py load <project_path>
+```
+If a memory file exists, read the output and note the user's historical preferences for the detected intent. These preferences will be injected as a soft recommendation layer during the Eight Confirmations — explicit user instructions always take priority over profile memory.
+
+Then, read the role definition:
 ```
 Read references/strategist.md
 ```
+
+> **Layout pattern selection**: when planning the page structure, check for scenarios that match reusable layout patterns — screenshot comparison grids (`screenshot_grid`), project galleries (`gallery`), deep-dive card pages (`deepdive_card`), and centered transition pages (`transition_centered`). See strategist.md §b.1 for the full selection table and hard rules. All transition pages default to centered layout; content pages with expandable claims must be followed by deep-dive pages.
 
 > ⚠️ **Mandatory gate**: before writing `design_spec.md`, Strategist MUST `read_file templates/design_spec_reference.md` and follow its full I–XI section structure. See `strategist.md` Section 1.
 
@@ -447,6 +456,7 @@ A deck with only `ai` rows never loads `image-searcher.md`; a deck with only `we
 
 Workflow:
 
+0. **Confirm layout-driven image dimensions** — before generating any image, verify that each row in `design_spec.md §VIII` has a `Dimensions` column filled with target pixel values derived from the SVG layout slot (see strategist.md §h.5a). Write `target_width` and `target_height` into `image_prompts.json` for each `ai` row. This ensures generated images fit the SVG layout without awkward cropping or scaling.
 1. Extract all rows with `Status: Pending` and `Acquire Via ∈ {ai, web}` from the design spec
 2. Generate prompts (ai rows) and/or run search (web rows) per [image-base.md](references/image-base.md) §2 dispatch table
 3. Verify every row reaches a terminal status: `Generated` (ai success), `Sourced` (web success), or `Needs-Manual`
@@ -615,6 +625,12 @@ Full effect list, anchor logic, and limits: [`references/animations.md`](referen
 > **Direct edits in the browser**: the user may also stage text / SVG attribute edits in the preview. These land in `svg_output/` only after the user clicks **Apply changes**. If they ask to "re-export" / "重新导出" after applying such edits, just re-run Step 7.2–7.3 (finalize + export); no annotation-application step is needed unless they also saved AI-needed annotations.
 
 > **Preview not running?** Any time the user mentions "live preview", "preview", "看效果", or wants to select/click a slide element and the service is not running, run [`live-preview`](workflows/live-preview.md) Step 1 to start it. If the service is already running, just point them at the URL — do not restart.
+
+**Step 7.4** — Memory consolidation (automatic, no user action needed):
+```bash
+python3 ${SKILL_DIR}/scripts/memory_manager.py consolidate <project_path>
+```
+This reads the Eight Confirmations choices from `confirm_ui/result.json` and updates the user profile memory with stability-weighted preferences. Stable signals (confirmed across multiple jobs) are written back to `memory/user_profiles.json`; transient one-off choices are filtered out. The next PPT generation for the same intent will automatically pick up these preferences.
 
 ---
 

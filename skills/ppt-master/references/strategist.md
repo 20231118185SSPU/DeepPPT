@@ -18,6 +18,19 @@ As a top-tier AI presentation strategist, receive source documents, perform cont
 
 ---
 
+## 0. User Profile Memory (if available)
+
+Before starting the Eight Confirmations, check whether user profile memory was loaded (SKILL.md Step 4 memory load). If memory exists:
+
+1. **Read the memory prompt** — it contains historical preferences for the detected intent (theme, content, layout, visual categories)
+2. **Use as soft recommendation bias** — when generating the Eight Confirmations recommendations, favor options that align with the user's historical preferences, but do NOT force them. If the source material suggests a different direction, follow the source
+3. **Conflict resolution**: explicit user instructions > source material signals > profile memory preferences. Never let memory override a user's stated preference
+4. **Inject the memory prompt** as context before the Eight Confirmations analysis — it is supplementary information, not a design constraint
+
+If no memory exists, proceed normally — this is the expected path for first-time users.
+
+---
+
 ## 1. Eight Confirmations Process
 
 🚧 **GATE — Mandatory read first**: `read_file templates/design_spec_reference.md` before any analysis or writing. The design_spec.md output MUST follow that template's 11-section structure exactly. After writing, self-check each section is present: I Project Info → II Canvas → III Visual Theme → IV Typography → V Layout → VI Icon → VII Visualization → VIII Image → IX Outline → X Speaker Notes → XI Tech Constraints.
@@ -37,6 +50,23 @@ Recommend format based on scenario (see [`canvas-formats.md`](canvas-formats.md)
 ### b. Page Count Confirmation
 
 Provide specific page count recommendation based on source document content volume.
+
+### b.1 Layout Pattern Selection (版式选择思考)
+
+After confirming page count, check the following scenarios and select matching layout patterns from `templates/layouts/`:
+
+| Scenario | Layout template | Trigger condition |
+|----------|----------------|-------------------|
+| Comparing two or more objects | `screenshot_grid` | Need to visually show differences between projects/approaches/versions |
+| Showcasing multiple projects/cases/works | `gallery` | Have 4+ items to present with visual previews |
+| Content page claim needs detailed expansion | `deepdive_card` | Claim contains data/steps/scenarios that need explanation; pair with preceding content page |
+| Chapter transition | `transition_centered` | **Default for ALL transition pages** — replaces left-aligned layout |
+
+**Hard rules**:
+1. Every content page that makes a substantive, expandable claim MUST be followed by ≥1 deep-dive page (`deepdive_card` or equivalent). A content page without a following deep-dive is a quality gap.
+2. Transition pages MUST use centered layout (`transition_centered`). Left-aligned transition pages with asymmetric whitespace are forbidden.
+3. When comparing objects, prefer `screenshot_grid` over pure text comparison tables. Screenshots from actual project outputs (svg_output/, exports/) are preferred over AI-generated placeholder images.
+4. Gallery layouts use actual project screenshots, not placeholder images.
 
 ### c. Key Information Confirmation
 
@@ -335,6 +365,42 @@ The script renders PNGs into `images/`, trying `codecogs`, `quicklatex`, `mathpa
 Selection is automatic in Step 5 (A → B → Manual). Detailed contract: [`image-generator.md`](./image-generator.md) §3.2.
 
 Selections may be mixed at the row level — e.g. a deck can use C for hero illustrations while sourcing D for supporting team photos.
+
+#### h.5a Layout-Driven Image Dimensions (布局驱动的图片尺寸)
+
+**Hard rule**: before writing `image_prompts.json`, Strategist MUST derive each image's target pixel dimensions from its SVG layout slot.
+
+**Derivation process**:
+1. For each `ai`/`web` row in §VIII, identify which page and which layout region the image occupies
+2. Look up the region's dimensions from the page's template SVG (or the planned free-design layout)
+3. Write the exact pixel dimensions to §VIII's Dimensions column AND to `image_prompts.json`'s `target_width`/`target_height` fields
+
+**Standard layout slot dimensions** (for PPT 16:9, viewBox 0 0 1280 720):
+
+| Layout slot | Template source | Dimensions | Aspect ratio |
+|-------------|----------------|------------|--------------|
+| Full-bleed background | `01_cover.svg`, `04_ending.svg`, `02_chapter.svg` | 1280×720 | 16:9 |
+| Content center image | `03_content.svg` image area | 1160×425 | ~11:4 |
+| Deep-dive side image | `deepdive_card.svg` DEEPDIVE_IMAGE | 370×500 | 3:4 |
+| Gallery thumbnail | `gallery.svg` GALLERY_IMG | 370×170 | ~2:1 |
+| Screenshot grid cell | `screenshot_grid.svg` screenshot area | 550×162 | ~10:3 |
+
+**For free-design pages** (no template): measure the planned image area from the SVG layout before writing the spec. Do NOT guess or use generic sizes.
+
+**Manifest format** — `image_prompts.json` items include:
+```json
+{
+  "filename": "P05_deepdive.png",
+  "prompt": "...",
+  "target_width": 370,
+  "target_height": 500,
+  "aspect_ratio": "3:4",
+  "image_size": "1K",
+  "status": "Pending"
+}
+```
+
+`image_gen.py` reads `target_width`/`target_height` and maps to the backend's nearest supported size. If the backend produces a larger image, it is center-cropped to the target dimensions.
 
 #### h.5 AI Image Strategy — lock rendering + palette (only when C is selected)
 
