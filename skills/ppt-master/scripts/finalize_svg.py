@@ -159,7 +159,16 @@ def finalize_project(
 
     # Step 1: Copy directory
     if svg_final.exists():
-        shutil.rmtree(svg_final)
+        def _remove_readonly(func, path, _exc_info):
+            """Clear read-only flag and retry (common on Windows)."""
+            os.chmod(path, 0o666)
+            func(path)
+
+        try:
+            shutil.rmtree(svg_final, onerror=_remove_readonly)
+        except OSError as exc:
+            safe_print(f"[WARN] Could not remove {svg_final}: {exc}")
+            return False
     shutil.copytree(svg_output, svg_final)
 
     if not quiet:
