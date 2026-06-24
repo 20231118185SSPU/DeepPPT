@@ -483,9 +483,6 @@ def find_main_content(soup: BeautifulSoup) -> Tag | None:
             p_count = len(div.find_all("p", recursive=False))
             # recursive=False ensures we don't just pick the top-level body by accident
             # but sometimes content is nested deep
-            if p_count == 0:
-                # Check if it has lots of text even without p tags (br tags?)
-                pass
 
             text = div.get_text(strip=True)
             if len(text) > 200 and p_count >= 1:
@@ -498,107 +495,6 @@ def find_main_content(soup: BeautifulSoup) -> Tag | None:
 
     # Fallback to body
     return best_element if best_element else soup.body
-
-
-def element_to_markdown(element: Tag | NavigableString | None) -> str:
-    """Recursively convert a BeautifulSoup node to Markdown."""
-    if element is None:
-        return ""
-
-    if isinstance(element, NavigableString):
-        text = str(element).strip()
-        return text if text else ""
-
-    tag_name = element.name.lower()
-
-    # Skip hidden/unwanted tags
-    if tag_name in ['script', 'style', 'meta', 'link', 'input', 'button', 'select']:
-        return ""
-
-    content = ""
-    for child in element.children:
-        content += element_to_markdown(child)
-        # Add spacing logic here if needed, but usually block elements handle it
-
-    # Block handlers
-    if tag_name in ['h1', 'h2', 'h3', 'h4', 'h5', 'h6']:
-        level = int(tag_name[1])
-        return f"\n{'#' * level} {content}\n\n"
-
-    elif tag_name == 'p':
-        # Clean up internal whitespace
-        content = re.sub(r'\s+', ' ', content).strip()
-        return f"\n{content}\n\n" if content else ""
-
-    elif tag_name == 'br':
-        return "  \n"
-
-    elif tag_name == 'hr':
-        return "\n---\n"
-
-    elif tag_name == 'div':
-        return f"\n{content}\n"
-
-    elif tag_name == 'blockquote':
-        lines = content.strip().split('\n')
-        quoted = '\n'.join([f"> {line}" for line in lines if line.strip()])
-        return f"\n{quoted}\n\n"
-
-    elif tag_name in ['ul', 'ol']:
-        # This is tricky without "state" (knowing we are in a list)
-        # For simplicity in this recursive version, we rely on LI handling
-        return f"\n{content}\n"
-
-    elif tag_name == 'li':
-        # Simple list handling
-        clean_content = content.strip()
-        return f"- {clean_content}\n"
-
-    elif tag_name == 'pre':
-        return f"\n```\n{content}\n```\n\n"
-
-    elif tag_name == 'code':
-        # If parent is pre, handle in pre. If inline:
-        parent = element.parent
-        if parent and parent.name == 'pre':
-            return content
-        return f"`{content}`"
-
-    elif tag_name == 'a':
-        href = element.get('href', '')
-        if href and not href.startswith('javascript:'):
-            return f"[{content}]({href})"
-        return content
-
-    elif tag_name == 'img':
-        src = element.get('src', '')
-        alt = element.get('alt', '')
-        if src:
-            return f"![{alt}]({src})"
-        return ""
-
-    elif tag_name == 'table':
-        # Basic table text extraction, full markdown table support is complex
-        # Leaving as raw text or simplistic conversion for now
-        # Ideally, we'd parse TRs and TDs
-        return f"\n{content}\n"
-
-    elif tag_name == 'tr':
-        return f"{content}|\n"
-
-    elif tag_name in ['td', 'th']:
-        return f"| {content.strip()} "
-
-    # Style formatting
-    elif tag_name in ['strong', 'b']:
-        return f"**{content}**"
-    elif tag_name in ['em', 'i']:
-        return f"*{content}*"
-    elif tag_name in ['del', 's', 'strike']:
-        return f"~~{content}~~"
-
-    # Default for span, section, etc.
-    return f"{content} "
 
 
 def simple_html_to_markdown_traversal(soup: Tag | BeautifulSoup | None) -> str:
@@ -682,14 +578,6 @@ def simple_html_to_markdown_traversal(soup: Tag | BeautifulSoup | None) -> str:
         if node.name == 'table':
             # Try to add a separator line after first row if it looks like a header
             rows = inner_text.strip().split('\n')
-            if rows:
-                cols_count = rows[0].count('|') - 1
-                if cols_count > 0:
-                    # rough approx
-                    sep = "| " + " | ".join(["---"] * int(cols_count/2)) + " |"
-                    # Actually, the traverse of TR returns newline terminated strings.
-                    # Let's just return what we gathered.
-                    pass
             return f"\n\n{inner_text}\n\n"
 
         return f"{prefix}{inner_text}{suffix}"

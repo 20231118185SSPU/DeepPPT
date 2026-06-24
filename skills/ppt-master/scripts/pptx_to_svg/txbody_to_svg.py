@@ -30,6 +30,7 @@ from .emu_units import (
     NS, Xfrm, fmt_num, emu_to_px, hundredths_pt_to_px,
 )
 from .fill_to_svg import resolve_fill
+from ._xml_utils import xml_escape as _xml_escape
 
 
 # ---------------------------------------------------------------------------
@@ -1005,20 +1006,6 @@ def _clip_lines_to_bottom(
     return visible
 
 
-def _paragraph_height(p: TextParagraph) -> float:
-    """Legacy helper kept for callers that don't pre-wrap (currently unused)."""
-    lines = 1
-    max_font = 0.0
-    for r in p.runs:
-        if r.is_break:
-            lines += 1
-            continue
-        max_font = max(max_font, r.font_size_px)
-    if max_font == 0.0:
-        max_font = DEFAULT_FONT_SIZE_PX
-    return lines * max_font * p.line_height_ratio
-
-
 def _emit_paragraph(
     para: TextParagraph,
     lines: list[list[TextRun]],
@@ -1136,10 +1123,3 @@ def _run_tspan_attrs(run: TextRun) -> str:
     if run.letter_spacing_px:
         parts.append(f'letter-spacing="{fmt_num(run.letter_spacing_px)}"')
     return " " + " ".join(parts)
-
-
-def _xml_escape(text: str) -> str:
-    return (text.replace("&", "&amp;")
-                .replace("<", "&lt;")
-                .replace(">", "&gt;")
-                .replace('"', "&quot;"))
