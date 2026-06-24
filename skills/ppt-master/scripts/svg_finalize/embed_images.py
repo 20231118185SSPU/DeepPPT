@@ -14,6 +14,7 @@ Examples:
 
 import os
 import base64
+import html
 import re
 import sys
 import argparse
@@ -139,9 +140,8 @@ def embed_images_in_svg(svg_path: str, dry_run: bool = False,
     def replace_with_base64(match):
         nonlocal images_embedded
         img_path = match.group(1)
-        
+
         # Decode XML/HTML entities (e.g., &amp; -> &)
-        import html
         img_path_decoded = html.unescape(img_path)
         
         # Handle relative paths
