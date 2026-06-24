@@ -796,7 +796,8 @@ def _save_data_uri(data_uri: str, media_dir: Path, index: int) -> str | None:
     filename = f"image_{index:03d}{ext}"
     try:
         (media_dir / filename).write_bytes(base64.b64decode(match.group("data")))
-    except Exception:
+    except (OSError, ValueError):
+        # bad base64 data or filesystem write failure
         return None
     return filename
 
@@ -827,7 +828,8 @@ def _download_remote_image(url: str, media_dir: Path, index: int) -> str | None:
     try:
         resp = requests.get(url, timeout=10, stream=True)
         resp.raise_for_status()
-    except Exception:
+    except (OSError, ValueError):
+        # network/timeout failure or malformed URL
         return None
     content_type = resp.headers.get("Content-Type", "").split(";")[0].strip()
     ext = mimetypes.guess_extension(content_type) if content_type else None
@@ -1144,7 +1146,8 @@ def _convert_ipynb(input_file: Path, out_file: Path) -> str:
                 out_path = f"{rel_media_dir}/{filename}"
                 try:
                     extra_outputs[out_path] = base64.b64decode(b64)
-                except Exception:
+                except ValueError:
+                    # invalid base64 payload in notebook attachment
                     continue
                 # Rewrite source references: attachment:<name> → <rel_path>
                 src = cell.source if isinstance(cell.source, str) else "".join(cell.source)

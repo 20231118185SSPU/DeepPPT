@@ -73,7 +73,8 @@ def _optimize_image_bytes(img_bytes: bytes, mime_type: str,
 
     try:
         img = PILImage.open(io.BytesIO(img_bytes))
-    except Exception:
+    except (OSError, ValueError):
+        # PIL raises OSError for unreadable files and ValueError for corrupt data
         return img_bytes
 
     changed = False

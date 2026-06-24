@@ -192,7 +192,7 @@ def process_svg_file(input_path: Path, output_path: Path, verbose: bool = False)
         
         return True, count
         
-    except Exception as e:
+    except (ET.ParseError, OSError) as e:
         if verbose:
             print(f"  Error: {e}")
         return False, 0

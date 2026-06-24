@@ -164,7 +164,7 @@ def process_svg_images(
         ET.register_namespace('xlink', 'http://www.w3.org/1999/xlink')
         tree = ET.parse(str(svg_path))
         root = tree.getroot()
-    except Exception as e:
+    except ET.ParseError as e:
         if verbose:
             print(f"  [ERROR] Failed to parse SVG: {e}")
         return (0, 1)
@@ -282,7 +282,7 @@ def process_svg_images(
             modified = True
             processed_count += 1
             
-        except Exception as e:
+        except (OSError, ValueError) as e:
             if verbose:
                 print(f"    [ERROR] {img_path.name}: {e}")
             error_count += 1
