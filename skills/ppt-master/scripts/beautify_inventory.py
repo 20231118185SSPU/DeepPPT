@@ -137,7 +137,11 @@ def main(argv: Optional[list[str]] = None) -> int:
     if not lib_path.is_file():
         print(f"[ERROR] slide_library not found: {lib_path}", file=sys.stderr)
         return 1
-    slide_library = json.loads(lib_path.read_text(encoding="utf-8"))
+    try:
+        slide_library = json.loads(lib_path.read_text(encoding="utf-8"))
+    except json.JSONDecodeError as exc:
+        print(f"[ERROR] Invalid JSON in slide_library: {exc}", file=sys.stderr)
+        return 1
 
     manifest: list = []
     if args.images:
@@ -145,7 +149,11 @@ def main(argv: Optional[list[str]] = None) -> int:
         if not img_path.is_file():
             print(f"[ERROR] image manifest not found: {img_path}", file=sys.stderr)
             return 1
-        manifest = json.loads(img_path.read_text(encoding="utf-8"))
+        try:
+            manifest = json.loads(img_path.read_text(encoding="utf-8"))
+        except json.JSONDecodeError as exc:
+            print(f"[ERROR] Invalid JSON in image manifest: {exc}", file=sys.stderr)
+            return 1
 
     inventory = build_inventory(slide_library, _images_by_slide(manifest))
 

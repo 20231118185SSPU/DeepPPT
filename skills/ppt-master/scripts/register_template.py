@@ -250,7 +250,10 @@ def _load_index(path: Path) -> "OrderedDict[str, dict]":
     if not path.exists():
         return OrderedDict()
     raw_text = path.read_text(encoding="utf-8").strip() or "{}"
-    raw = json.loads(raw_text)
+    try:
+        raw = json.loads(raw_text)
+    except json.JSONDecodeError:
+        return OrderedDict()
     return OrderedDict(sorted(raw.items()))
 
 

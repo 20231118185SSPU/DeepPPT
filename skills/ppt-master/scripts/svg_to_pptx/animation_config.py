@@ -97,8 +97,11 @@ def load_animation_config(project_path: Path, config_path: str | None = None) ->
     if not path.exists():
         return None
 
-    with open(path, 'r', encoding='utf-8') as f:
-        data = json.load(f)
+    try:
+        with open(path, 'r', encoding='utf-8') as f:
+            data = json.load(f)
+    except json.JSONDecodeError as exc:
+        raise ValueError(f'Invalid JSON in animation config {path}: {exc}') from exc
     if not isinstance(data, dict):
         raise ValueError(f'Animation config must be a JSON object: {path}')
     if data.get('version', 1) != 1:
