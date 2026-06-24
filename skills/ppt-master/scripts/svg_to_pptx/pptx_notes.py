@@ -67,7 +67,9 @@ def create_notes_slide_xml(slide_num: int, notes_text: str) -> str:
     notes_text = (notes_text
                   .replace('&', '&amp;')
                   .replace('<', '&lt;')
-                  .replace('>', '&gt;'))
+                  .replace('>', '&gt;')
+                  .replace('"', '&quot;')
+                  .replace("'", '&apos;'))
 
     paragraphs: list[str] = []
     for para in notes_text.split('\n'):

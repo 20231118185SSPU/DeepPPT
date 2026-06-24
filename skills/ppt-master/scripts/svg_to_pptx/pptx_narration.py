@@ -88,7 +88,13 @@ def probe_audio_duration(audio_path: Path) -> float | None:
         data = json.loads(result.stdout or "{}")
         duration = float(data.get("format", {}).get("duration", 0))
         return duration if duration > 0 else None
-    except Exception:
+    except FileNotFoundError:
+        return None  # ffprobe not installed
+    except subprocess.CalledProcessError as exc:
+        print(f"  [warn] ffprobe failed for {audio_path.name}: {exc.stderr.strip() or exc}")
+        return None
+    except (json.JSONDecodeError, ValueError) as exc:
+        print(f"  [warn] ffprobe output unparseable for {audio_path.name}: {exc}")
         return None
 
 
