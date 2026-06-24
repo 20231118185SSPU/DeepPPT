@@ -1,0 +1,26 @@
+# DeepPPT — Windsurf Configuration
+# Format: plain text rules, one per line or paragraph
+
+DeepPPT is an AI-driven presentation generation system (Strategist → Image_Generator → Executor → PPTX).
+
+Read skills/ppt-master/SKILL.md before any PPT generation task. It is the authoritative workflow.
+
+Core pipeline: Source → Project → Template → Strategist → Image_Generator → Executor SVG → Quality → Export.
+
+Steps are strictly serial. ⛔ BLOCKING steps require explicit user confirmation. Never skip them.
+
+SVG pages are hand-written by the agent one at a time — no script-generated batch SVGs.
+
+Before each SVG page, re-read spec_lock.md for colors/fonts/icons/images. Never use values from memory.
+
+Never directly read/open image files (.jpg/.png). Use analyze_images.py output instead.
+
+Match user's input language for responses. Design spec follows English template structure regardless.
+
+Do not create .worktrees/, tests/, or generic engineering scaffolding.
+
+For topic-only requests (no source file), run deep-research workflow first (workflows/deep-research.md).
+
+Key scripts: project_manager.py init, confirm_ui/server.py, image_gen.py, image_search.py, svg_quality_checker.py, svg_to_pptx.py.
+
+Configuration: copy .env.example to .env, set IMAGE_BACKEND + API key. Optional: PEXELS/PIXABAY/UNSPLASH/FLICKR keys.

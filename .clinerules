@@ -1,0 +1,33 @@
+# DeepPPT — Cline Rules
+
+## Project
+
+DeepPPT: AI-driven PPT generation system. Source → Strategist → Image_Generator → Executor → PPTX.
+
+## Authority
+
+Read `skills/ppt-master/SKILL.md` for the full workflow before any PPT task.
+
+## Rules
+
+1. Steps are serial. ⛔ BLOCKING steps require user confirmation.
+2. SVG pages are hand-written, one at a time. No batch script generation.
+3. Re-read `spec_lock.md` before each SVG page for colors/fonts/icons/images.
+4. Never read/open image files. Use `analyze_images.py` output.
+5. Match user's language. Design spec in English template structure.
+
+## Key Scripts
+
+- `project_manager.py init <name> --format ppt169` — Create project
+- `confirm_ui/server.py <path> --daemon --wait` — Eight Confirmations
+- `image_gen.py --manifest <path>/images/image_prompts.json` — AI images
+- `svg_quality_checker.py <path>` — Quality check
+- `svg_to_pptx.py <path>` — Export PPTX
+
+## Deep Research
+
+Topic only (no source)? → `skills/ppt-master/workflows/deep-research.md` first.
+
+## Config
+
+`.env.example` → `.env`. Set IMAGE_BACKEND + API key.
