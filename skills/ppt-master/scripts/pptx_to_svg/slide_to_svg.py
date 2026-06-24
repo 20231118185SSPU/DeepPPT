@@ -39,6 +39,7 @@ from .shape_walker import (
     ShapeNode, get_background, walk_sp_tree,
 )
 from .tbl_to_svg import convert_tbl
+from ._xml_utils import xml_escape as _xml_escape
 from .txbody_to_svg import (
     TextResult,
     convert_txbody,
@@ -916,10 +917,3 @@ def _attrs_to_xml(attrs: dict[str, str]) -> str:
     if not attrs:
         return ""
     return "".join(f' {k}="{v}"' for k, v in attrs.items())
-
-
-def _xml_escape(text: str) -> str:
-    return (text.replace("&", "&amp;")
-                .replace("<", "&lt;")
-                .replace(">", "&gt;")
-                .replace('"', "&quot;"))
