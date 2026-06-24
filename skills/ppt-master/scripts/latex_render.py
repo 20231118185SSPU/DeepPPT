@@ -359,45 +359,51 @@ def _make_png_background_transparent(
     with Image.open(path) as img:
         rgba = img.convert("RGBA")
 
-    alpha = rgba.getchannel("A")
-    if alpha.getextrema()[0] < 255:
+    import numpy as np
+    arr = np.array(rgba)
+
+    alpha_ch = arr[:, :, 3]
+    if alpha_ch.min() < 255:
         if color:
-            pixels = rgba.load()
-            width, height = rgba.size
-            for y in range(height):
-                for x in range(width):
-                    _, _, _, a = pixels[x, y]
-                    if a:
-                        pixels[x, y] = (fg_rgb[0], fg_rgb[1], fg_rgb[2], a)
-            rgba.save(path)
+            mask = alpha_ch > 0
+            arr[mask, 0] = fg_rgb[0]
+            arr[mask, 1] = fg_rgb[1]
+            arr[mask, 2] = fg_rgb[2]
+            Image.fromarray(arr, "RGBA").save(path)
         return
 
     fg_bg_distance = max(abs(fg_rgb[i] - bg_rgb[i]) for i in range(3))
-    pixels = rgba.load()
-    width, height = rgba.size
-    for y in range(height):
-        for x in range(width):
-            r, g, b, a = pixels[x, y]
-            if a == 0:
-                continue
 
-            bg_distance = max(
-                abs(r - bg_rgb[0]),
-                abs(g - bg_rgb[1]),
-                abs(b - bg_rgb[2]),
-            )
-            if bg_distance <= tolerance:
-                pixels[x, y] = (fg_rgb[0], fg_rgb[1], fg_rgb[2], 0)
-                continue
+    # Vectorized transparency processing
+    mask_visible = alpha_ch > 0
+    bg_distance = np.maximum(
+        np.maximum(
+            np.abs(arr[:, :, 0].astype(np.int16) - bg_rgb[0]),
+            np.abs(arr[:, :, 1].astype(np.int16) - bg_rgb[1]),
+        ),
+        np.abs(arr[:, :, 2].astype(np.int16) - bg_rgb[2]),
+    )
 
-            if fg_bg_distance > tolerance:
-                coverage = min(1.0, bg_distance / fg_bg_distance)
-                new_alpha = max(1, min(255, round(a * coverage)))
-            else:
-                new_alpha = a
-            pixels[x, y] = (fg_rgb[0], fg_rgb[1], fg_rgb[2], new_alpha)
+    # Pixels close to background → fully transparent
+    close_to_bg = mask_visible & (bg_distance <= tolerance)
+    arr[close_to_bg, 0] = fg_rgb[0]
+    arr[close_to_bg, 1] = fg_rgb[1]
+    arr[close_to_bg, 2] = fg_rgb[2]
+    arr[close_to_bg, 3] = 0
 
-    rgba.save(path)
+    # Remaining visible pixels → compute coverage-based alpha
+    remaining = mask_visible & ~close_to_bg
+    if fg_bg_distance > tolerance:
+        coverage = np.minimum(1.0, bg_distance[remaining].astype(np.float64) / fg_bg_distance)
+        new_alpha = np.maximum(1, np.minimum(255, np.round(alpha_ch[remaining] * coverage))).astype(np.uint8)
+    else:
+        new_alpha = alpha_ch[remaining]
+    arr[remaining, 0] = fg_rgb[0]
+    arr[remaining, 1] = fg_rgb[1]
+    arr[remaining, 2] = fg_rgb[2]
+    arr[remaining, 3] = new_alpha
+
+    Image.fromarray(arr, "RGBA").save(path)
 
 
 def _process_item(
