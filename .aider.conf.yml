@@ -1,0 +1,9 @@
+# DeepPPT Aider Configuration
+# https://aider.chat/docs/config/aider_conf.html
+
+read:
+  - skills/ppt-master/SKILL.md
+  - CLAUDE.md
+
+auto-commits: false
+dirty-commits: false

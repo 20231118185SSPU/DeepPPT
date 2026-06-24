@@ -1,0 +1,34 @@
+# DeepPPT — Roo Code Rules
+# Format: Markdown, injected into agent system prompt
+
+## Project
+
+DeepPPT: AI-driven PPT generation. Strategist → Image_Generator → Executor → PPTX.
+
+## Authority
+
+Read `skills/ppt-master/SKILL.md` before any PPT task.
+
+## Rules
+
+1. Serial execution. ⛔ BLOCKING = wait for user.
+2. SVG: hand-written, one page at a time. No batch scripts.
+3. Re-read `spec_lock.md` per page. No values from memory.
+4. No direct image file reading. Use `analyze_images.py`.
+5. Match user language. Design spec = English template.
+
+## Commands
+
+```bash
+python3 skills/ppt-master/scripts/project_manager.py init <name> --format ppt169
+python3 skills/ppt-master/scripts/svg_quality_checker.py <path>
+python3 skills/ppt-master/scripts/svg_to_pptx.py <path>
+```
+
+## Deep Research
+
+Topic only? → `skills/ppt-master/workflows/deep-research.md` first.
+
+## Config
+
+`.env.example` → `.env`. Set IMAGE_BACKEND + API key.
