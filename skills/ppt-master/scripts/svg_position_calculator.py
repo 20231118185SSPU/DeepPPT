@@ -540,9 +540,8 @@ class RadarChartCalculator:
 
         return results
 
-    def calculate_grid(self, levels: int = 5) -> List[List[Tuple[float, float]]]:
+    def calculate_grid(self, levels: int = 5, n: int = 6) -> List[List[Tuple[float, float]]]:
         """Calculate grid layer coordinates (for drawing background polygons)"""
-        n = 6  # Assume 6 dimensions
         grids = []
 
         for level in range(1, levels + 1):

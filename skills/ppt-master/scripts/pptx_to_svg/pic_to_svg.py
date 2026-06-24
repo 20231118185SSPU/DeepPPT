@@ -206,6 +206,7 @@ def _convert_office_vector_to_png(filename: str, img_bytes: bytes) -> bytes | No
                 check=True,
                 stdout=subprocess.DEVNULL,
                 stderr=subprocess.DEVNULL,
+                timeout=30,
             )
         except (OSError, subprocess.CalledProcessError):
             return None
