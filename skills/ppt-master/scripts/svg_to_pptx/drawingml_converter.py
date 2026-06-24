@@ -20,39 +20,14 @@ from .drawingml_elements import (
     convert_polygon, convert_polyline,
     convert_text, convert_image, convert_nested_svg,
 )
+from ._constants import CHROME_ID_TOKENS as _CHROME_ID_TOKENS, is_chrome_id as _is_chrome_id
 
 
 class SvgNativeConversionError(RuntimeError):
     """Raised when an SVG cannot be faithfully converted to native DrawingML."""
 
 
-# ---------------------------------------------------------------------------
-# Animation anchor selection
-# ---------------------------------------------------------------------------
-
-# Tokens that mark a top-level <g id="..."> as page chrome rather than animated
-# content. When any token (after splitting id on '-' and '_') matches, the group
-# is excluded from the per-element entrance animation cascade so background,
-# header/footer, decorations etc. appear together with the slide instead of
-# requiring presenter clicks.
-_CHROME_ID_TOKENS = frozenset({
-    'background', 'bg',
-    'decoration', 'decorations', 'decor',
-    'header', 'footer',
-    'chrome', 'watermark',
-    'pagenumber', 'pagenum',
-    'nav', 'logo', 'rule',
-})
-
-
-def _is_chrome_id(elem_id: str | None) -> bool:
-    if not elem_id:
-        return False
-    lower = elem_id.lower()
-    if lower.replace('-', '').replace('_', '') in _CHROME_ID_TOKENS:
-        return True
-    tokens = re.split(r'[-_]', lower)
-    return any(t in _CHROME_ID_TOKENS for t in tokens if t)
+# _CHROME_ID_TOKENS and _is_chrome_id are imported from _constants (see imports above)
 
 
 # ---------------------------------------------------------------------------

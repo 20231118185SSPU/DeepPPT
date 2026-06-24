@@ -19,14 +19,7 @@ except ImportError:
 
 
 _NON_VISUAL_TAGS = frozenset(('defs', 'title', 'desc', 'metadata', 'style'))
-_CHROME_ID_TOKENS = frozenset({
-    'background', 'bg',
-    'decoration', 'decorations', 'decor',
-    'header', 'footer',
-    'chrome', 'watermark',
-    'pagenumber', 'pagenum',
-    'page-number',
-})
+from ._constants import CHROME_ID_TOKENS as _CHROME_ID_TOKENS, is_chrome_id
 
 
 @dataclass(frozen=True)
@@ -41,18 +34,6 @@ class GroupTarget:
 
 def _tag_name(elem: ET.Element) -> str:
     return elem.tag.replace(f'{{{SVG_NS}}}', '')
-
-
-def is_chrome_id(elem_id: str | None) -> bool:
-    """Return whether a group id represents static slide chrome."""
-    if not elem_id:
-        return False
-    lower = elem_id.lower()
-    compact = lower.replace('-', '').replace('_', '')
-    if compact in _CHROME_ID_TOKENS:
-        return True
-    tokens = re.split(r'[-_]', lower)
-    return any(t in _CHROME_ID_TOKENS for t in tokens if t)
 
 
 def scan_svg_targets(svg_path: Path) -> tuple[list[GroupTarget], list[str]]:
