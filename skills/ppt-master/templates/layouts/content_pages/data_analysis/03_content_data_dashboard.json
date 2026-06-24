@@ -1,0 +1,172 @@
+{
+  "layout_type": "data_dashboard",
+  "scenario": "report",
+  "description": "Dashboard-style layout with 4 mixed data widgets: KPI card, bar chart, progress indicators, and donut chart. Ideal for data-driven work reports and performance summaries.",
+  "color_scheme": {
+    "primary": "#0050B3",
+    "accent": "#00B4D8",
+    "secondary": "#0077B6",
+    "bg": "#F8FCFF",
+    "card_bg": "#FFFFFF",
+    "header_gradient": [
+      "#00B4D8",
+      "#0050B3"
+    ]
+  },
+  "image_slots": [],
+  "text_slots": [
+    {
+      "role": "title",
+      "data_key": "PAGE_TITLE",
+      "description": "Page title in header"
+    },
+    {
+      "role": "org-name",
+      "data_key": "ORG_NAME",
+      "description": "Organization name right-aligned in header"
+    },
+    {
+      "role": "kpi-label",
+      "data_key": "KPI_LABEL",
+      "description": "KPI widget label/title"
+    },
+    {
+      "role": "kpi-value",
+      "data_key": "KPI_VALUE",
+      "description": "KPI large number value"
+    },
+    {
+      "role": "kpi-unit",
+      "data_key": "KPI_UNIT",
+      "description": "KPI unit or suffix text"
+    },
+    {
+      "role": "kpi-comparison",
+      "data_key": "KPI_COMPARISON",
+      "description": "KPI comparison text (e.g., vs last year)"
+    },
+    {
+      "role": "kpi-delta",
+      "data_key": "KPI_DELTA",
+      "description": "KPI delta badge (e.g., +12%)"
+    },
+    {
+      "role": "chart-title",
+      "data_key": "CHART_TITLE",
+      "description": "Bar chart widget title"
+    },
+    {
+      "role": "bar-label-1",
+      "data_key": "BAR_LABEL_1",
+      "description": "First bar category label"
+    },
+    {
+      "role": "bar-value-1",
+      "data_key": "BAR_VALUE_1",
+      "description": "First bar numeric value"
+    },
+    {
+      "role": "bar-label-2",
+      "data_key": "BAR_LABEL_2",
+      "description": "Second bar category label"
+    },
+    {
+      "role": "bar-value-2",
+      "data_key": "BAR_VALUE_2",
+      "description": "Second bar numeric value"
+    },
+    {
+      "role": "bar-label-3",
+      "data_key": "BAR_LABEL_3",
+      "description": "Third bar category label"
+    },
+    {
+      "role": "bar-value-3",
+      "data_key": "BAR_VALUE_3",
+      "description": "Third bar numeric value"
+    },
+    {
+      "role": "bar-label-4",
+      "data_key": "BAR_LABEL_4",
+      "description": "Fourth bar category label"
+    },
+    {
+      "role": "bar-value-4",
+      "data_key": "BAR_VALUE_4",
+      "description": "Fourth bar numeric value"
+    },
+    {
+      "role": "progress-title",
+      "data_key": "PROGRESS_TITLE",
+      "description": "Progress widget title"
+    },
+    {
+      "role": "prog-label-1",
+      "data_key": "PROG_LABEL_1",
+      "description": "First progress item label"
+    },
+    {
+      "role": "prog-pct-1",
+      "data_key": "PROG_PCT_1",
+      "description": "First progress item percentage"
+    },
+    {
+      "role": "prog-label-2",
+      "data_key": "PROG_LABEL_2",
+      "description": "Second progress item label"
+    },
+    {
+      "role": "prog-pct-2",
+      "data_key": "PROG_PCT_2",
+      "description": "Second progress item percentage"
+    },
+    {
+      "role": "prog-label-3",
+      "data_key": "PROG_LABEL_3",
+      "description": "Third progress item label"
+    },
+    {
+      "role": "prog-pct-3",
+      "data_key": "PROG_PCT_3",
+      "description": "Third progress item percentage"
+    },
+    {
+      "role": "donut-title",
+      "data_key": "DONUT_TITLE",
+      "description": "Donut chart widget title"
+    },
+    {
+      "role": "donut-value",
+      "data_key": "DONUT_VALUE",
+      "description": "Donut center value (percentage or number)"
+    },
+    {
+      "role": "donut-label",
+      "data_key": "DONUT_LABEL",
+      "description": "Donut center label below value"
+    },
+    {
+      "role": "legend-1",
+      "data_key": "LEGEND_1",
+      "description": "Donut legend item 1"
+    },
+    {
+      "role": "legend-2",
+      "data_key": "LEGEND_2",
+      "description": "Donut legend item 2"
+    },
+    {
+      "role": "legend-3",
+      "data_key": "LEGEND_3",
+      "description": "Donut legend item 3"
+    },
+    {
+      "role": "legend-4",
+      "data_key": "LEGEND_4",
+      "description": "Donut legend item 4"
+    }
+  ],
+  "content_mode": [
+    "text-primary"
+  ]
+}

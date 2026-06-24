@@ -1,0 +1,120 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="1280" height="720" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1280 720">
+  <!-- Background -->
+  <rect width="1280" height="720" fill="#FFFFFF"/>
+
+  <!-- ==================== Header ==================== -->
+  <rect x="0" y="0" width="1280" height="70" fill="#003366"/>
+  <rect x="0" y="0" width="6" height="70" fill="#CC0000"/>
+  <text text-anchor="start" x="40" y="46" fill="#FFFFFF" font-family="Microsoft YaHei, Arial, sans-serif" font-size="28" font-weight="bold" data-role="title">
+    {{PAGE_TITLE}}
+  </text>
+  <text x="1220" y="46" text-anchor="end" fill="#FFFFFF" font-family="Microsoft YaHei, Arial, sans-serif" font-size="18" font-weight="bold" data-role="logo">
+    {{LOGO}}
+  </text>
+
+  <!-- ==================== Key Message Bar ==================== -->
+  <rect x="0" y="70" width="1280" height="50" fill="#E8F4FC"/>
+  <rect x="0" y="70" width="6" height="50" fill="#0066CC"/>
+  <text text-anchor="start" x="40" y="102" fill="#333333" font-family="Microsoft YaHei, Arial, sans-serif" font-size="18" data-role="key-message">
+    {{KEY_MESSAGE}}
+  </text>
+
+  <!-- ==================== Chart Area ==================== -->
+  <rect x="60" y="140" width="1160" height="500" rx="8" fill="#FAFCFE" stroke="#E0E6ED" stroke-width="1"/>
+
+  <!-- Plot area: x=150..1140, y=180..550 -->
+  <!-- 12 data points, spacing ~83px each, from x=170 to x=1080 -->
+
+  <!-- Y-axis gridlines -->
+  <line x1="150" y1="180" x2="1140" y2="180" stroke="#E8F0F6" stroke-width="1"/>
+  <line x1="150" y1="272" x2="1140" y2="272" stroke="#E8F0F6" stroke-width="1"/>
+  <line x1="150" y1="365" x2="1140" y2="365" stroke="#E8F0F6" stroke-width="1"/>
+  <line x1="150" y1="457" x2="1140" y2="457" stroke="#E8F0F6" stroke-width="1"/>
+
+  <!-- Y-axis labels -->
+  <text x="140" y="185" text-anchor="end" fill="#999999" font-family="Microsoft YaHei, Arial, sans-serif" font-size="12" data-role="y-label-max">{{Y_MAX}}</text>
+  <text x="140" y="277" text-anchor="end" fill="#999999" font-family="Microsoft YaHei, Arial, sans-serif" font-size="12" data-role="y-label-mid">{{Y_MID}}</text>
+  <text x="140" y="370" text-anchor="end" fill="#999999" font-family="Microsoft YaHei, Arial, sans-serif" font-size="12" data-role="y-label-low">{{Y_LOW}}</text>
+  <text x="140" y="462" text-anchor="end" fill="#999999" font-family="Microsoft YaHei, Arial, sans-serif" font-size="12" data-role="y-label-zero">{{Y_ZERO}}</text>
+
+  <!-- Axes -->
+  <line x1="150" y1="555" x2="1140" y2="555" stroke="#D0D7E0" stroke-width="1"/>
+  <line x1="150" y1="175" x2="150" y2="555" stroke="#D0D7E0" stroke-width="1"/>
+
+  <!-- Series 1 fill area (DAU) -->
+  <path d="M170,520 L253,505 L336,490 L419,455 L502,410 L585,370 L668,325 L751,280 L834,235 L917,195 L1000,165 L1083,145 L1083,555 L170,555 Z"
+        fill="#003366" fill-opacity="0.12"/>
+
+  <!-- Series 1 line (DAU) -->
+  <polyline points="170,520 253,505 336,490 419,455 502,410 585,370 668,325 751,280 834,235 917,195 1000,165 1083,145"
+            fill="none" stroke="#003366" stroke-width="3" stroke-linejoin="round" stroke-linecap="round"/>
+
+  <!-- Series 1 data points -->
+  <circle cx="170" cy="520" r="4" fill="#003366"/>
+  <circle cx="253" cy="505" r="4" fill="#003366"/>
+  <circle cx="336" cy="490" r="4" fill="#003366"/>
+  <circle cx="419" cy="455" r="4" fill="#003366"/>
+  <circle cx="502" cy="410" r="4" fill="#003366"/>
+  <circle cx="585" cy="370" r="4" fill="#003366"/>
+  <circle cx="668" cy="325" r="4" fill="#003366"/>
+  <circle cx="751" cy="280" r="4" fill="#003366"/>
+  <circle cx="834" cy="235" r="4" fill="#003366"/>
+  <circle cx="917" cy="195" r="4" fill="#003366"/>
+  <circle cx="1000" cy="165" r="4" fill="#003366"/>
+  <circle cx="1083" cy="145" r="4" fill="#003366"/>
+
+  <!-- Series 2 fill area (Retention) -->
+  <path d="M170,380 L253,370 L336,355 L419,345 L502,335 L585,315 L668,300 L751,290 L834,280 L917,270 L1000,260 L1083,255 L1083,555 L170,555 Z"
+        fill="#0066CC" fill-opacity="0.10"/>
+
+  <!-- Series 2 line (Retention) -->
+  <polyline points="170,380 253,370 336,355 419,345 502,335 585,315 668,300 751,290 834,280 917,270 1000,260 1083,255"
+            fill="none" stroke="#0066CC" stroke-width="3" stroke-linejoin="round" stroke-linecap="round"/>
+
+  <!-- Series 2 data points -->
+  <circle cx="170" cy="380" r="4" fill="#0066CC"/>
+  <circle cx="253" cy="370" r="4" fill="#0066CC"/>
+  <circle cx="336" cy="355" r="4" fill="#0066CC"/>
+  <circle cx="419" cy="345" r="4" fill="#0066CC"/>
+  <circle cx="502" cy="335" r="4" fill="#0066CC"/>
+  <circle cx="585" cy="315" r="4" fill="#0066CC"/>
+  <circle cx="668" cy="300" r="4" fill="#0066CC"/>
+  <circle cx="751" cy="290" r="4" fill="#0066CC"/>
+  <circle cx="834" cy="280" r="4" fill="#0066CC"/>
+  <circle cx="917" cy="270" r="4" fill="#0066CC"/>
+  <circle cx="1000" cy="260" r="4" fill="#0066CC"/>
+  <circle cx="1083" cy="255" r="4" fill="#0066CC"/>
+
+  <!-- X-axis labels -->
+  <text x="170" y="575" text-anchor="middle" fill="#666666" font-family="Microsoft YaHei, Arial, sans-serif" font-size="11" data-role="x-label-1">{{XLABEL_1}}</text>
+  <text x="253" y="575" text-anchor="middle" fill="#666666" font-family="Microsoft YaHei, Arial, sans-serif" font-size="11" data-role="x-label-2">{{XLABEL_2}}</text>
+  <text x="336" y="575" text-anchor="middle" fill="#666666" font-family="Microsoft YaHei, Arial, sans-serif" font-size="11" data-role="x-label-3">{{XLABEL_3}}</text>
+  <text x="419" y="575" text-anchor="middle" fill="#666666" font-family="Microsoft YaHei, Arial, sans-serif" font-size="11" data-role="x-label-4">{{XLABEL_4}}</text>
+  <text x="502" y="575" text-anchor="middle" fill="#666666" font-family="Microsoft YaHei, Arial, sans-serif" font-size="11" data-role="x-label-5">{{XLABEL_5}}</text>
+  <text x="585" y="575" text-anchor="middle" fill="#666666" font-family="Microsoft YaHei, Arial, sans-serif" font-size="11" data-role="x-label-6">{{XLABEL_6}}</text>
+  <text x="668" y="575" text-anchor="middle" fill="#666666" font-family="Microsoft YaHei, Arial, sans-serif" font-size="11" data-role="x-label-7">{{XLABEL_7}}</text>
+  <text x="751" y="575" text-anchor="middle" fill="#666666" font-family="Microsoft YaHei, Arial, sans-serif" font-size="11" data-role="x-label-8">{{XLABEL_8}}</text>
+  <text x="834" y="575" text-anchor="middle" fill="#666666" font-family="Microsoft YaHei, Arial, sans-serif" font-size="11" data-role="x-label-9">{{XLABEL_9}}</text>
+  <text x="917" y="575" text-anchor="middle" fill="#666666" font-family="Microsoft YaHei, Arial, sans-serif" font-size="11" data-role="x-label-10">{{XLABEL_10}}</text>
+  <text x="1000" y="575" text-anchor="middle" fill="#666666" font-family="Microsoft YaHei, Arial, sans-serif" font-size="11" data-role="x-label-11">{{XLABEL_11}}</text>
+  <text x="1083" y="575" text-anchor="middle" fill="#666666" font-family="Microsoft YaHei, Arial, sans-serif" font-size="11" data-role="x-label-12">{{XLABEL_12}}</text>
+
+  <!-- Legend -->
+  <circle cx="940" cy="152" r="5" fill="#003366"/>
+  <text text-anchor="start" x="952" y="157" fill="#666666" font-family="Microsoft YaHei, Arial, sans-serif" font-size="12" data-role="legend-1">{{LEGEND_1}}</text>
+  <circle cx="1040" cy="152" r="5" fill="#0066CC"/>
+  <text text-anchor="start" x="1052" y="157" fill="#666666" font-family="Microsoft YaHei, Arial, sans-serif" font-size="12" data-role="legend-2">{{LEGEND_2}}</text>
+
+  <!-- ==================== Footer ==================== -->
+  <line x1="40" y1="665" x2="1240" y2="665" stroke="#E8F4FC" stroke-width="1"/>
+  <text text-anchor="start" x="40" y="695" fill="#999999" font-family="Microsoft YaHei, Arial, sans-serif" font-size="12" data-role="source">
+    数据来源：{{SOURCE}}
+  </text>
+  <text x="640" y="695" text-anchor="middle" fill="#999999" font-family="Microsoft YaHei, Arial, sans-serif" font-size="12" data-role="section-name">
+    {{SECTION_NAME}}
+  </text>
+  <text x="1220" y="695" text-anchor="end" fill="#666666" font-family="Microsoft YaHei, Arial, sans-serif" font-size="14" data-role="page-num">
+    {{PAGE_NUM}}
+  </text>
+</svg>

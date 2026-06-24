@@ -1,0 +1,99 @@
+{
+  "layout_type": "chart_line",
+  "scenario": "academic",
+  "description": "Dual-series line chart layout with 12 data points, filled areas, dual y-axis, x-axis labels, and legend",
+  "color_scheme": {
+    "primary": "#003366",
+    "accent": "#CC0000",
+    "secondary": "#0066CC",
+    "bg": "#FFFFFF",
+    "card_bg": "#FAFCFE",
+    "header_bg": "#003366"
+  },
+  "image_slots": [],
+  "text_slots": [
+    {
+      "role": "title",
+      "description": "Page title in header bar"
+    },
+    {
+      "role": "key-message",
+      "description": "Key message bar text"
+    },
+    {
+      "role": "y-max",
+      "description": "Y-axis maximum label"
+    },
+    {
+      "role": "y-mid",
+      "description": "Y-axis middle label"
+    },
+    {
+      "role": "y-low",
+      "description": "Y-axis low label"
+    },
+    {
+      "role": "y-zero",
+      "description": "Y-axis zero label"
+    },
+    {
+      "role": "x-label-1",
+      "description": "First x-axis label"
+    },
+    {
+      "role": "x-label-2",
+      "description": "Second x-axis label"
+    },
+    {
+      "role": "x-label-3",
+      "description": "Third x-axis label"
+    },
+    {
+      "role": "x-label-4",
+      "description": "Fourth x-axis label"
+    },
+    {
+      "role": "x-label-5",
+      "description": "Fifth x-axis label"
+    },
+    {
+      "role": "x-label-6",
+      "description": "Sixth x-axis label"
+    },
+    {
+      "role": "x-label-7",
+      "description": "Seventh x-axis label"
+    },
+    {
+      "role": "x-label-8",
+      "description": "Eighth x-axis label"
+    },
+    {
+      "role": "x-label-9",
+      "description": "Ninth x-axis label"
+    },
+    {
+      "role": "x-label-10",
+      "description": "Tenth x-axis label"
+    },
+    {
+      "role": "x-label-11",
+      "description": "Eleventh x-axis label"
+    },
+    {
+      "role": "x-label-12",
+      "description": "Twelfth x-axis label"
+    },
+    {
+      "role": "legend-1",
+      "description": "First series legend label (e.g., DAU)"
+    },
+    {
+      "role": "legend-2",
+      "description": "Second series legend label (e.g., Retention)"
+    }
+  ],
+  "content_mode": [
+    "text-primary"
+  ]
+}

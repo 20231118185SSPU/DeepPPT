@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="1280" height="720" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1280 720">
+  <!-- Background -->
+  <rect width="1280" height="720" fill="#1A5276"/>
+
+  <!-- ==================== Full-bleed Image Slot ==================== -->
+  <rect x="0" y="0" width="1280" height="720" fill="#2C3E50" data-role="image-slot-hero" data-caption="Full-bleed hero image"/>
+
+  <!-- ==================== Bottom Gradient Overlay ==================== -->
+  <defs>
+    <linearGradient id="heroOverlay" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#000000" stop-opacity="0"/>
+      <stop offset="40%" stop-color="#000000" stop-opacity="0.25"/>
+      <stop offset="100%" stop-color="#000000" stop-opacity="0.85"/>
+    </linearGradient>
+  </defs>
+  <rect x="0" y="430" width="1280" height="290" fill="url(#heroOverlay)"/>
+
+  <!-- ==================== Text Overlay ==================== -->
+  <!-- Pill badge -->
+  <rect x="60" y="470" width="120" height="32" rx="16" fill="#E74C3C"/>
+  <text x="120" y="492" text-anchor="middle" fill="#FFFFFF" font-family="Microsoft YaHei, Arial, sans-serif" font-size="13" font-weight="bold" data-role="pill-badge">
+    {{PILL_BADGE}}
+  </text>
+
+  <!-- Title -->
+  <text text-anchor="start" x="60" y="550" fill="#FFFFFF" font-family="Microsoft YaHei, Arial, sans-serif" font-size="38" font-weight="bold" data-role="hero-title">
+    {{HERO_TITLE}}
+  </text>
+
+  <!-- Subtitle -->
+  <text text-anchor="start" x="60" y="600" fill="#D5DDE5" font-family="Microsoft YaHei, Arial, sans-serif" font-size="18" data-role="hero-subtitle">
+    {{HERO_SUBTITLE}}
+  </text>
+
+  <!-- ==================== Page Number ==================== -->
+  <text x="1220" y="695" text-anchor="end" fill="#FFFFFF" fill-opacity="0.6" font-family="Microsoft YaHei, Arial, sans-serif" font-size="14" data-role="page-num">
+    {{PAGE_NUM}}
+  </text>
+</svg>

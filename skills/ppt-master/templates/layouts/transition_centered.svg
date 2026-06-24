@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- transition_centered.svg — 居中过渡页版式
+     用途：章节过渡，所有文字居中，左右对称装饰
+     占位标记：CHAPTER_NUM, CHAPTER_TITLE, CHAPTER_DESC, NEXT_HOOK, TRANSITION_BG
+-->
+<svg width="1280" height="720" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1280 720">
+    <g id="transition-centered">
+        <!-- Background -->
+        <rect width="1280" height="720" fill="#0D1117"/>
+        <image href="{{TRANSITION_BG}}" x="0" y="0" width="1280" height="720" preserveAspectRatio="xMidYMid slice"/>
+        <rect width="1280" height="720" fill="#0D1117" fill-opacity="0.7"/>
+
+        <!-- Decorative top lines (symmetric) -->
+        <line x1="540" y1="140" x2="640" y2="140" stroke="#00D4FF" stroke-width="2" stroke-opacity="0.5"/>
+        <line x1="640" y1="140" x2="740" y2="140" stroke="#7C3AED" stroke-width="2" stroke-opacity="0.5"/>
+
+        <!-- Chapter number (centered, large, semi-transparent) -->
+        <text x="640" y="280" text-anchor="middle" fill="#00D4FF" fill-opacity="0.12"
+            font-family="Consolas, Courier New, monospace"
+            font-size="140" font-weight="bold">{{CHAPTER_NUM}}</text>
+
+        <!-- Chapter title (centered) -->
+        <text x="640" y="350" text-anchor="middle" fill="#E6EDF3"
+            font-family="Microsoft YaHei, Inter, sans-serif"
+            font-size="48" font-weight="bold">{{CHAPTER_TITLE}}</text>
+
+        <!-- Chapter description (centered) -->
+        <text x="640" y="400" text-anchor="middle" fill="#8B949E"
+            font-family="Microsoft YaHei, Inter, sans-serif"
+            font-size="20">{{CHAPTER_DESC}}</text>
+
+        <!-- Bottom divider (centered) -->
+        <line x1="520" y1="450" x2="760" y2="450" stroke="#30363D" stroke-width="1"/>
+
+        <!-- Next hook (centered) -->
+        <text x="640" y="490" text-anchor="middle" fill="#00D4FF" fill-opacity="0.7"
+            font-family="Microsoft YaHei, Inter, sans-serif"
+            font-size="18">{{NEXT_HOOK}}</text>
+
+        <!-- Decorative bottom elements (symmetric) -->
+        <rect x="60" y="660" width="40" height="2" fill="#30363D"/>
+        <rect x="60" y="668" width="24" height="2" fill="#30363D" fill-opacity="0.5"/>
+        <rect x="1180" y="660" width="40" height="2" fill="#30363D"/>
+        <rect x="1196" y="668" width="24" height="2" fill="#30363D" fill-opacity="0.5"/>
+
+        <!-- Corner glow dots -->
+        <circle cx="60" cy="60" r="3" fill="#00D4FF" fill-opacity="0.3"/>
+        <circle cx="1220" cy="60" r="3" fill="#7C3AED" fill-opacity="0.3"/>
+        <circle cx="60" cy="660" r="2" fill="#00D4FF" fill-opacity="0.2"/>
+        <circle cx="1220" cy="660" r="2" fill="#7C3AED" fill-opacity="0.2"/>
+    </g>
+</svg>

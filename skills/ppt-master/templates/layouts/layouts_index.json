@@ -96,5 +96,141 @@
       "content_alt",
       "ending"
     ]
+  },
+  "screenshot_grid": {
+    "summary": "Side-by-side screenshot comparison grid. Left/right columns with 2-3 screenshots each + bottom comparison table. Use for: project comparison, before/after, A/B showcase.",
+    "canvas_format": "ppt169",
+    "page_count": 1,
+    "page_types": ["comparison"],
+    "placeholders": ["TITLE", "LEFT_LABEL", "RIGHT_LABEL", "SCREENSHOT_L1", "SCREENSHOT_L2", "SCREENSHOT_L3", "SCREENSHOT_R1", "SCREENSHOT_R2", "SCREENSHOT_R3", "TABLE_AREA"]
+  },
+  "gallery": {
+    "summary": "Project gallery with 3x2 grid layout. Each cell contains a screenshot + title + description. Use for: multi-project showcase, portfolio, case studies.",
+    "canvas_format": "ppt169",
+    "page_count": 1,
+    "page_types": ["showcase"],
+    "placeholders": ["TITLE", "GALLERY_IMG_1", "GALLERY_TITLE_1", "GALLERY_DESC_1", "GALLERY_IMG_2", "GALLERY_TITLE_2", "GALLERY_DESC_2", "GALLERY_IMG_3", "GALLERY_TITLE_3", "GALLERY_DESC_3", "GALLERY_IMG_4", "GALLERY_TITLE_4", "GALLERY_DESC_4", "GALLERY_IMG_5", "GALLERY_TITLE_5", "GALLERY_DESC_5", "GALLERY_IMG_6", "GALLERY_TITLE_6", "GALLERY_DESC_6"]
+  },
+  "deepdive_card": {
+    "summary": "Deep-dive explanation page with card layout. Title + optional side image + 2 card columns. Use for: expanding content page claims with data, steps, scenarios.",
+    "canvas_format": "ppt169",
+    "page_count": 1,
+    "page_types": ["deep_dive"],
+    "placeholders": ["TITLE", "CARD_ICON_1", "CARD_TITLE_1", "CARD_BODY_1", "CARD_ICON_2", "CARD_TITLE_2", "CARD_BODY_2", "DEEPDIVE_IMAGE"]
+  },
+  "transition_centered": {
+    "summary": "Centered transition page with symmetric decorations. Number + title + description + hook all centered. Use for: all chapter transitions (replaces left-aligned default).",
+    "canvas_format": "ppt169",
+    "page_count": 1,
+    "page_types": ["transition"],
+    "placeholders": ["CHAPTER_NUM", "CHAPTER_TITLE", "CHAPTER_DESC", "NEXT_HOOK", "TRANSITION_BG"]
+  },
+  "content_pages/_shared": {
+    "summary": "跨场景通用内容页模板。呼吸页、行动号召、致谢页，适用于所有演示主题。",
+    "canvas_format": "ppt169",
+    "page_types": ["content"],
+    "color_scheme": {"primary": "#333333", "accent": "#3B82F6", "bg": "#FFFFFF"},
+    "variants": [
+      "03_content_big_quote — 大字引用呼吸页",
+      "03_content_cta — 行动号召按钮页",
+      "03_content_thanks — 致谢/结束页"
+    ]
+  },
+  "content_pages/academic": {
+    "summary": "学术研究场景：论文答辩、研究报告、基金申请。数据密集型布局，强调图表、引用和数据对比。",
+    "canvas_format": "ppt169",
+    "page_types": ["content"],
+    "color_scheme": {"primary": "#003366", "accent": "#CC0000", "secondary": "#0066CC", "bg": "#FFFFFF"},
+    "variants": [
+      "03_content_data_cards — 左侧数据卡片 + 右侧文字",
+      "03_content_table_compare — 前后对比表",
+      "03_content_timeline — 水平里程碑时间线",
+      "03_content_process_steps — 四步编号流程",
+      "03_content_bullet_cards — 2×3 要点卡片网格",
+      "03_content_image_text — 左图右文混排",
+      "03_content_chart_bar — 柱状图页面",
+      "03_content_chart_line — 折线图页面",
+      "03_content_chart_pie — 饼图/环形图页面",
+      "03_content_chart_radar — 雷达图页面"
+    ]
+  },
+  "content_pages/business": {
+    "summary": "商业提案场景：商业计划书、产品发布、投资人路演、客户提案。冲击力布局，强调 KPI、英雄图和对比面板。",
+    "canvas_format": "ppt169",
+    "page_types": ["content"],
+    "color_scheme": {"primary": "#1A5276", "accent": "#E74C3C", "secondary": "#2E86C1", "bg": "#F7F9FC"},
+    "variants": [
+      "03_content_kpi_grid — 四列 KPI 数据卡片",
+      "03_content_stat_highlight — 单一数字英雄页",
+      "03_content_image_hero — 全图铺底英雄页",
+      "03_content_process_cards — 水平流程卡片",
+      "03_content_comparison — 前后/优劣对比面板",
+      "03_content_three_columns — 三栏功能支柱"
+    ]
+  },
+  "content_pages/data_analysis": {
+    "summary": "数据分析场景：数据报告、分析仪表盘、业务数据展示、年度数据回顾。图表优先布局，强调数据可视化和指标追踪。",
+    "canvas_format": "ppt169",
+    "page_types": ["content"],
+    "color_scheme": {"primary": "#1B4332", "accent": "#2D6A4F", "secondary": "#40916C", "bg": "#F0FFF4"},
+    "variants": [
+      "03_content_chart_bar — 柱状图数据展示",
+      "03_content_chart_line — 折线图趋势展示",
+      "03_content_chart_pie — 饼图/环形图占比展示",
+      "03_content_chart_radar — 雷达图多维对比",
+      "03_content_data_dashboard — 2×2 混合数据仪表盘"
+    ]
+  },
+  "content_pages/report": {
+    "summary": "工作汇报场景：工作总结、季度汇报、项目进展、政府简报。执行层布局，强调进度追踪、里程碑和数据卡片。",
+    "canvas_format": "ppt169",
+    "page_types": ["content"],
+    "color_scheme": {"primary": "#0050B3", "accent": "#00B4D8", "secondary": "#0077B6", "bg": "#F8FCFF"},
+    "variants": [
+      "03_content_milestone_timeline — 水平里程碑节点时间线",
+      "03_content_data_dashboard — 2×2 数据仪表盘",
+      "03_content_text_with_sidebar — 主文 + 侧边栏图文",
+      "03_content_progress_cards — 堆叠进度追踪卡片",
+      "03_content_icon_grid — 2×3 图标描述网格",
+      "03_content_quote_stats — 大字引用 + 支撑数据"
+    ]
+  },
+  "content_pages/tech_sharing": {
+    "summary": "技术分享场景：技术演讲、代码审查、系统设计、架构方案、开发者大会。代码/终端/架构图布局，强调技术可视化。",
+    "canvas_format": "ppt169",
+    "page_types": ["content"],
+    "color_scheme": {"primary": "#1E1E2E", "accent": "#89B4FA", "secondary": "#A6E3A1", "bg": "#F7F9FC"},
+    "variants": [
+      "03_content_code — 暗色 IDE 代码展示窗口",
+      "03_content_diff — 左右分栏差异对比",
+      "03_content_terminal — 终端控制台模拟",
+      "03_content_flow_diagram — 五节点水平流程管线图",
+      "03_content_arch_diagram — 三层架构分层图",
+      "03_content_mindmap — 放射状思维导图"
+    ]
+  },
+  "content_pages/project_management": {
+    "summary": "项目管理场景：项目规划、Sprint 回顾、产品路线图、任务追踪。规划型布局，强调甘特图、路线图和待办清单。",
+    "canvas_format": "ppt169",
+    "page_types": ["content"],
+    "color_scheme": {"primary": "#4A154B", "accent": "#7B2D8E", "secondary": "#E91E63", "bg": "#FAF5FF"},
+    "variants": [
+      "03_content_roadmap — 四列路线图（NOW/NEXT/LATER/VISION）",
+      "03_content_gantt — 甘特图任务时间表",
+      "03_content_todo_checklist — 待办清单检查列表",
+      "03_content_timeline — 水平里程碑时间线"
+    ]
+  },
+  "content_pages/creative": {
+    "summary": "创意展示场景：作品集、案例研究、品牌展示、教学培训、产品展示。视觉冲击布局，强调图片网格、全图英雄和大字引用。",
+    "canvas_format": "ppt169",
+    "page_types": ["content"],
+    "color_scheme": {"primary": "#7C3AED", "accent": "#EC4899", "secondary": "#F59E0B", "bg": "#FFFBEB"},
+    "variants": [
+      "03_content_image_hero — 全图铺底英雄页",
+      "03_content_big_quote — 大字引用呼吸页",
+      "03_content_icon_grid — 2×3 图标描述网格",
+      "03_content_three_columns — 三栏功能支柱"
+    ]
   }
 }

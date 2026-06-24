@@ -1,0 +1,93 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="1280" height="720" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1280 720">
+  <!-- Background -->
+  <rect width="1280" height="720" fill="#F7F9FC"/>
+
+  <!-- ==================== Header ==================== -->
+  <text x="640" y="48" text-anchor="middle" fill="#1A5276" font-family="Microsoft YaHei, Arial, sans-serif" font-size="14" font-weight="bold" letter-spacing="1">
+    CHECKLIST
+  </text>
+  <text x="640" y="85" text-anchor="middle" fill="#1A5276" font-family="Microsoft YaHei, Arial, sans-serif" font-size="28" font-weight="bold" data-role="title">
+    {{PAGE_TITLE}}
+  </text>
+
+  <!-- ==================== Checklist Container ==================== -->
+  <rect x="140" y="110" width="1000" height="540" rx="10" fill="#FFFFFF" stroke="#E0E6ED" stroke-width="1"/>
+
+  <!-- ==================== Item 1 (Checked) ==================== -->
+  <line x1="160" y1="170" x2="1120" y2="170" stroke="#F0F0F0" stroke-width="1"/>
+  <!-- Priority dot (red) -->
+  <circle cx="175" cy="195" r="5" fill="#E74C3C"/>
+  <!-- Checked box -->
+  <rect x="195" y="183" width="22" height="22" rx="5" fill="#27AE60" stroke="#27AE60" stroke-width="1.5"/>
+  <polyline points="201,194 206,199 213,190" fill="none" stroke="#FFFFFF" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+  <!-- Text -->
+  <text text-anchor="start" x="230" y="200" fill="#999999" font-family="Microsoft YaHei, Arial, sans-serif" font-size="16" data-role="item-1-text" text-decoration="line-through">
+    {{ITEM_1_TEXT}}
+  </text>
+
+  <!-- ==================== Item 2 (Checked) ==================== -->
+  <line x1="160" y1="230" x2="1120" y2="230" stroke="#F0F0F0" stroke-width="1"/>
+  <circle cx="175" cy="255" r="5" fill="#E74C3C"/>
+  <rect x="195" y="243" width="22" height="22" rx="5" fill="#27AE60" stroke="#27AE60" stroke-width="1.5"/>
+  <polyline points="201,254 206,259 213,250" fill="none" stroke="#FFFFFF" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+  <text text-anchor="start" x="230" y="260" fill="#999999" font-family="Microsoft YaHei, Arial, sans-serif" font-size="16" data-role="item-2-text" text-decoration="line-through">
+    {{ITEM_2_TEXT}}
+  </text>
+
+  <!-- ==================== Item 3 (Checked) ==================== -->
+  <line x1="160" y1="290" x2="1120" y2="290" stroke="#F0F0F0" stroke-width="1"/>
+  <circle cx="175" cy="315" r="5" fill="#F39C12"/>
+  <rect x="195" y="303" width="22" height="22" rx="5" fill="#27AE60" stroke="#27AE60" stroke-width="1.5"/>
+  <polyline points="201,314 206,319 213,310" fill="none" stroke="#FFFFFF" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+  <text text-anchor="start" x="230" y="320" fill="#999999" font-family="Microsoft YaHei, Arial, sans-serif" font-size="16" data-role="item-3-text" text-decoration="line-through">
+    {{ITEM_3_TEXT}}
+  </text>
+
+  <!-- ==================== Item 4 (Unchecked) ==================== -->
+  <line x1="160" y1="350" x2="1120" y2="350" stroke="#F0F0F0" stroke-width="1"/>
+  <circle cx="175" cy="375" r="5" fill="#F39C12"/>
+  <rect x="195" y="363" width="22" height="22" rx="5" fill="none" stroke="#CCCCCC" stroke-width="1.5"/>
+  <text text-anchor="start" x="230" y="380" fill="#333333" font-family="Microsoft YaHei, Arial, sans-serif" font-size="16" data-role="item-4-text">
+    {{ITEM_4_TEXT}}
+  </text>
+
+  <!-- ==================== Item 5 (Unchecked) ==================== -->
+  <line x1="160" y1="410" x2="1120" y2="410" stroke="#F0F0F0" stroke-width="1"/>
+  <circle cx="175" cy="435" r="5" fill="#2ECC71"/>
+  <rect x="195" y="423" width="22" height="22" rx="5" fill="none" stroke="#CCCCCC" stroke-width="1.5"/>
+  <text text-anchor="start" x="230" y="440" fill="#333333" font-family="Microsoft YaHei, Arial, sans-serif" font-size="16" data-role="item-5-text">
+    {{ITEM_5_TEXT}}
+  </text>
+
+  <!-- ==================== Item 6 (Unchecked) ==================== -->
+  <line x1="160" y1="470" x2="1120" y2="470" stroke="#F0F0F0" stroke-width="1"/>
+  <circle cx="175" cy="495" r="5" fill="#2ECC71"/>
+  <rect x="195" y="483" width="22" height="22" rx="5" fill="none" stroke="#CCCCCC" stroke-width="1.5"/>
+  <text text-anchor="start" x="230" y="500" fill="#333333" font-family="Microsoft YaHei, Arial, sans-serif" font-size="16" data-role="item-6-text">
+    {{ITEM_6_TEXT}}
+  </text>
+
+  <!-- ==================== Item 7 (Unchecked) ==================== -->
+  <line x1="160" y1="530" x2="1120" y2="530" stroke="#F0F0F0" stroke-width="1"/>
+  <circle cx="175" cy="555" r="5" fill="#2ECC71"/>
+  <rect x="195" y="543" width="22" height="22" rx="5" fill="none" stroke="#CCCCCC" stroke-width="1.5"/>
+  <text text-anchor="start" x="230" y="560" fill="#333333" font-family="Microsoft YaHei, Arial, sans-serif" font-size="16" data-role="item-7-text">
+    {{ITEM_7_TEXT}}
+  </text>
+
+  <!-- ==================== Item 8 (Unchecked) ==================== -->
+  <line x1="160" y1="590" x2="1120" y2="590" stroke="#F0F0F0" stroke-width="1"/>
+  <circle cx="175" cy="615" r="5" fill="#2ECC71"/>
+  <rect x="195" y="603" width="22" height="22" rx="5" fill="none" stroke="#CCCCCC" stroke-width="1.5"/>
+  <text text-anchor="start" x="230" y="620" fill="#333333" font-family="Microsoft YaHei, Arial, sans-serif" font-size="16" data-role="item-8-text">
+    {{ITEM_8_TEXT}}
+  </text>
+  <line x1="160" y1="650" x2="1120" y2="650" stroke="#F0F0F0" stroke-width="1"/>
+
+  <!-- ==================== Footer ==================== -->
+  <line x1="40" y1="680" x2="1240" y2="680" stroke="#E0E6ED" stroke-width="1"/>
+  <text x="640" y="708" text-anchor="middle" fill="#999999" font-family="Microsoft YaHei, Arial, sans-serif" font-size="14" data-role="page-num">
+    {{PAGE_NUM}}
+  </text>
+</svg>

@@ -1,0 +1,126 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="1280" height="720" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1280 720">
+  <!-- Background -->
+  <rect width="1280" height="720" fill="#FFFFFF"/>
+
+  <!-- ==================== Header ==================== -->
+  <rect x="0" y="0" width="1280" height="70" fill="#003366"/>
+  <rect x="0" y="0" width="6" height="70" fill="#CC0000"/>
+  <text text-anchor="start" x="40" y="46" fill="#FFFFFF" font-family="Microsoft YaHei, Arial, sans-serif" font-size="28" font-weight="bold" data-role="title">
+    {{PAGE_TITLE}}
+  </text>
+  <text x="1220" y="46" text-anchor="end" fill="#FFFFFF" font-family="Microsoft YaHei, Arial, sans-serif" font-size="18" font-weight="bold" data-role="logo">
+    {{LOGO}}
+  </text>
+
+  <!-- ==================== Key Message Bar ==================== -->
+  <rect x="0" y="70" width="1280" height="50" fill="#E8F4FC"/>
+  <rect x="0" y="70" width="6" height="50" fill="#0066CC"/>
+  <text text-anchor="start" x="40" y="102" fill="#333333" font-family="Microsoft YaHei, Arial, sans-serif" font-size="18" data-role="key-message">
+    {{KEY_MESSAGE}}
+  </text>
+
+  <!-- ==================== Chart Area ==================== -->
+  <rect x="60" y="140" width="1160" height="500" rx="8" fill="#FAFCFE" stroke="#E0E6ED" stroke-width="1"/>
+
+  <!-- Radar chart centered at (640, 395), max radius=200 -->
+  <!-- 6 axes at 60-degree intervals, starting from top (270 degrees) -->
+  <!-- Axis angles: 270, 330, 30, 90, 150, 210 degrees -->
+
+  <!-- Concentric grid polygons (5 levels: 20%, 40%, 60%, 80%, 100%) -->
+  <!-- Level 1 (20%, r=40) -->
+  <polygon points="640,355 675,375 675,415 640,435 605,415 605,375"
+           fill="none" stroke="#E8F0F6" stroke-width="1"/>
+  <!-- Level 2 (40%, r=80) -->
+  <polygon points="640,315 710,355 710,435 640,475 570,435 570,355"
+           fill="none" stroke="#E8F0F6" stroke-width="1"/>
+  <!-- Level 3 (60%, r=120) -->
+  <polygon points="640,275 744,335 744,455 640,515 536,455 536,335"
+           fill="none" stroke="#E8F0F6" stroke-width="1"/>
+  <!-- Level 4 (80%, r=160) -->
+  <polygon points="640,235 779,315 779,475 640,555 501,475 501,315"
+           fill="none" stroke="#E8F0F6" stroke-width="1"/>
+  <!-- Level 5 (100%, r=200) -->
+  <polygon points="640,195 813,295 813,495 640,595 467,495 467,295"
+           fill="#F0F4F8" fill-opacity="0.5" stroke="#D0D7E0" stroke-width="1"/>
+
+  <!-- Axis lines from center to each vertex -->
+  <line x1="640" y1="395" x2="640" y2="195" stroke="#D0D7E0" stroke-width="1"/>
+  <line x1="640" y1="395" x2="813" y2="295" stroke="#D0D7E0" stroke-width="1"/>
+  <line x1="640" y1="395" x2="813" y2="495" stroke="#D0D7E0" stroke-width="1"/>
+  <line x1="640" y1="395" x2="640" y2="595" stroke="#D0D7E0" stroke-width="1"/>
+  <line x1="640" y1="395" x2="467" y2="495" stroke="#D0D7E0" stroke-width="1"/>
+  <line x1="640" y1="395" x2="467" y2="295" stroke="#D0D7E0" stroke-width="1"/>
+
+  <!-- Axis labels -->
+  <text x="640" y="178" text-anchor="middle" fill="#333333" font-family="Microsoft YaHei, Arial, sans-serif" font-size="14" font-weight="bold" data-role="axis-label-1">{{AXIS_1}}</text>
+  <text x="835" y="290" text-anchor="start" fill="#333333" font-family="Microsoft YaHei, Arial, sans-serif" font-size="14" font-weight="bold" data-role="axis-label-2">{{AXIS_2}}</text>
+  <text x="835" y="500" text-anchor="start" fill="#333333" font-family="Microsoft YaHei, Arial, sans-serif" font-size="14" font-weight="bold" data-role="axis-label-3">{{AXIS_3}}</text>
+  <text x="640" y="618" text-anchor="middle" fill="#333333" font-family="Microsoft YaHei, Arial, sans-serif" font-size="14" font-weight="bold" data-role="axis-label-4">{{AXIS_4}}</text>
+  <text x="445" y="500" text-anchor="end" fill="#333333" font-family="Microsoft YaHei, Arial, sans-serif" font-size="14" font-weight="bold" data-role="axis-label-5">{{AXIS_5}}</text>
+  <text x="445" y="290" text-anchor="end" fill="#333333" font-family="Microsoft YaHei, Arial, sans-serif" font-size="14" font-weight="bold" data-role="axis-label-6">{{AXIS_6}}</text>
+
+  <!-- Scale labels on the top axis -->
+  <text text-anchor="middle" x="650" y="198" fill="#999999" font-family="Microsoft YaHei, Arial, sans-serif" font-size="10">10</text>
+  <text text-anchor="middle" x="650" y="238" fill="#999999" font-family="Microsoft YaHei, Arial, sans-serif" font-size="10">8</text>
+  <text text-anchor="middle" x="650" y="278" fill="#999999" font-family="Microsoft YaHei, Arial, sans-serif" font-size="10">6</text>
+  <text text-anchor="middle" x="650" y="318" fill="#999999" font-family="Microsoft YaHei, Arial, sans-serif" font-size="10">4</text>
+  <text text-anchor="middle" x="650" y="358" fill="#999999" font-family="Microsoft YaHei, Arial, sans-serif" font-size="10">2</text>
+
+  <!-- Dataset 1: Product A (hexagonal shape) -->
+  <!-- Values: [9, 9, 10, 10, 9, 6] on 0-10 scale -->
+  <!-- r = value/10 * 200 -->
+  <!-- Axis 1 (top):     9/10*200=180  -> (640, 395-180) = (640, 215) -->
+  <!-- Axis 2 (top-right): 9/10*200=180 -> (640+180*sin60, 395-180*cos60) = (640+155.9, 395-90) = (796, 305) -->
+  <!-- Axis 3 (bot-right): 10/10*200=200 -> (640+173.2, 395+100) = (813, 495) -->
+  <!-- Axis 4 (bottom):   10/10*200=200 -> (640, 595) -->
+  <!-- Axis 5 (bot-left):  9/10*200=180 -> (640-155.9, 395+90) = (484, 485) -->
+  <!-- Axis 6 (top-left):  6/10*200=120 -> (640-103.9, 395-60) = (536, 335) -->
+  <polygon points="640,215 796,305 813,495 640,595 484,485 536,335"
+           fill="#003366" fill-opacity="0.18" stroke="#003366" stroke-width="3" stroke-linejoin="round"/>
+
+  <!-- Dataset 1 data points -->
+  <circle cx="640" cy="215" r="5" fill="#003366"/>
+  <circle cx="796" cy="305" r="5" fill="#003366"/>
+  <circle cx="813" cy="495" r="5" fill="#003366"/>
+  <circle cx="640" cy="595" r="5" fill="#003366"/>
+  <circle cx="484" cy="485" r="5" fill="#003366"/>
+  <circle cx="536" cy="335" r="5" fill="#003366"/>
+
+  <!-- Dataset 2: Product B -->
+  <!-- Values: [8, 7, 9, 8, 8, 10] on 0-10 scale -->
+  <!-- Axis 1: 8/10*200=160 -> (640, 235) -->
+  <!-- Axis 2: 7/10*200=140 -> (640+121.2, 395-70) = (761, 325) -->
+  <!-- Axis 3: 9/10*200=180 -> (640+155.9, 395+90) = (796, 485) -->
+  <!-- Axis 4: 8/10*200=160 -> (640, 555) -->
+  <!-- Axis 5: 8/10*200=160 -> (640-138.6, 395+80) = (501, 475) -->
+  <!-- Axis 6: 10/10*200=200 -> (640-173.2, 395-100) = (467, 295) -->
+  <polygon points="640,235 761,325 796,485 640,555 501,475 467,295"
+           fill="#0066CC" fill-opacity="0.12" stroke="#0066CC" stroke-width="3" stroke-linejoin="round"/>
+
+  <!-- Dataset 2 data points -->
+  <circle cx="640" cy="235" r="5" fill="#0066CC"/>
+  <circle cx="761" cy="325" r="5" fill="#0066CC"/>
+  <circle cx="796" cy="485" r="5" fill="#0066CC"/>
+  <circle cx="640" cy="555" r="5" fill="#0066CC"/>
+  <circle cx="501" cy="475" r="5" fill="#0066CC"/>
+  <circle cx="467" cy="295" r="5" fill="#0066CC"/>
+
+  <!-- Legend -->
+  <rect x="870" y="155" width="12" height="12" rx="2" fill="#003366"/>
+  <text text-anchor="start" x="888" y="166" fill="#333333" font-family="Microsoft YaHei, Arial, sans-serif" font-size="13" data-role="legend-1">{{LEGEND_1}}</text>
+  <rect x="870" y="180" width="12" height="12" rx="2" fill="#0066CC"/>
+  <text text-anchor="start" x="888" y="191" fill="#333333" font-family="Microsoft YaHei, Arial, sans-serif" font-size="13" data-role="legend-2">{{LEGEND_2}}</text>
+
+  <!-- ==================== Footer ==================== -->
+  <line x1="40" y1="665" x2="1240" y2="665" stroke="#E8F4FC" stroke-width="1"/>
+  <text text-anchor="start" x="40" y="695" fill="#999999" font-family="Microsoft YaHei, Arial, sans-serif" font-size="12" data-role="source">
+    数据来源：{{SOURCE}}
+  </text>
+  <text x="640" y="695" text-anchor="middle" fill="#999999" font-family="Microsoft YaHei, Arial, sans-serif" font-size="12" data-role="section-name">
+    {{SECTION_NAME}}
+  </text>
+  <text x="1220" y="695" text-anchor="end" fill="#666666" font-family="Microsoft YaHei, Arial, sans-serif" font-size="14" data-role="page-num">
+    {{PAGE_NUM}}
+  </text>
+</svg>

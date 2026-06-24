@@ -1,0 +1,122 @@
+{
+  "layout_type": "quote_stats",
+  "scenario": "report",
+  "description": "Large decorative quote on the left balanced by 3 stacked statistic cards on the right. Ideal for leader vision statements backed by quantitative evidence, or keynote summary slides.",
+  "color_scheme": {
+    "primary": "#0050B3",
+    "accent": "#00B4D8",
+    "secondary": "#0077B6",
+    "bg": "#F8FCFF",
+    "card_bg": "#FFFFFF",
+    "header_gradient": [
+      "#00B4D8",
+      "#0050B3"
+    ]
+  },
+  "image_slots": [],
+  "text_slots": [
+    {
+      "role": "title",
+      "data_key": "PAGE_TITLE",
+      "description": "Page title in header"
+    },
+    {
+      "role": "org-name",
+      "data_key": "ORG_NAME",
+      "description": "Organization name right-aligned in header"
+    },
+    {
+      "role": "quote-line-1",
+      "data_key": "QUOTE_LINE_1",
+      "description": "Quote text line 1"
+    },
+    {
+      "role": "quote-line-2",
+      "data_key": "QUOTE_LINE_2",
+      "description": "Quote text line 2"
+    },
+    {
+      "role": "quote-line-3",
+      "data_key": "QUOTE_LINE_3",
+      "description": "Quote text line 3"
+    },
+    {
+      "role": "quote-line-4",
+      "data_key": "QUOTE_LINE_4",
+      "description": "Quote text line 4"
+    },
+    {
+      "role": "quote-author",
+      "data_key": "QUOTE_AUTHOR",
+      "description": "Quote attribution (person name)"
+    },
+    {
+      "role": "quote-author-title",
+      "data_key": "QUOTE_AUTHOR_TITLE",
+      "description": "Quote attribution (title/position)"
+    },
+    {
+      "role": "context-title",
+      "data_key": "CONTEXT_TITLE",
+      "description": "Context box title"
+    },
+    {
+      "role": "context-line-1",
+      "data_key": "CONTEXT_LINE_1",
+      "description": "Context box first line"
+    },
+    {
+      "role": "context-line-2",
+      "data_key": "CONTEXT_LINE_2",
+      "description": "Context box second line"
+    },
+    {
+      "role": "stat-num-1",
+      "data_key": "STAT_NUM_1",
+      "description": "First statistic large number"
+    },
+    {
+      "role": "stat-label-1",
+      "data_key": "STAT_LABEL_1",
+      "description": "First statistic label"
+    },
+    {
+      "role": "stat-delta-1",
+      "data_key": "STAT_DELTA_1",
+      "description": "First statistic delta badge (e.g., +15%)"
+    },
+    {
+      "role": "stat-num-2",
+      "data_key": "STAT_NUM_2",
+      "description": "Second statistic large number"
+    },
+    {
+      "role": "stat-label-2",
+      "data_key": "STAT_LABEL_2",
+      "description": "Second statistic label"
+    },
+    {
+      "role": "stat-delta-2",
+      "data_key": "STAT_DELTA_2",
+      "description": "Second statistic delta badge"
+    },
+    {
+      "role": "stat-num-3",
+      "data_key": "STAT_NUM_3",
+      "description": "Third statistic large number"
+    },
+    {
+      "role": "stat-label-3",
+      "data_key": "STAT_LABEL_3",
+      "description": "Third statistic label"
+    },
+    {
+      "role": "stat-delta-3",
+      "data_key": "STAT_DELTA_3",
+      "description": "Third statistic delta badge"
+    }
+  ],
+  "content_mode": [
+    "text-primary"
+  ]
+}

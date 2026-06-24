@@ -1,0 +1,97 @@
+{
+  "layout_type": "code_snippet",
+  "scenario": "tech_sharing",
+  "description": "Dark IDE-style code window with traffic-light title bar, line numbers on the left gutter, and 15 lines of monospace code content. Suitable for displaying code snippets in tech presentations.",
+  "color_scheme": {
+    "primary": "#CDD6F4",
+    "accent": "#F7768E",
+    "secondary": "#89B4FA",
+    "bg": "#1E1E2E",
+    "card_bg": "#181825",
+    "title_bar": "#11111B",
+    "line_num": "#585B70",
+    "border": "#313244"
+  },
+  "image_slots": [],
+  "text_slots": [
+    {
+      "role": "kicker",
+      "description": "Small accent label above the title"
+    },
+    {
+      "role": "title",
+      "description": "Page title"
+    },
+    {
+      "role": "file-name",
+      "description": "File name shown in window title bar"
+    },
+    {
+      "role": "code-line-1",
+      "description": "Code line 1"
+    },
+    {
+      "role": "code-line-2",
+      "description": "Code line 2"
+    },
+    {
+      "role": "code-line-3",
+      "description": "Code line 3"
+    },
+    {
+      "role": "code-line-4",
+      "description": "Code line 4"
+    },
+    {
+      "role": "code-line-5",
+      "description": "Code line 5"
+    },
+    {
+      "role": "code-line-6",
+      "description": "Code line 6"
+    },
+    {
+      "role": "code-line-7",
+      "description": "Code line 7"
+    },
+    {
+      "role": "code-line-8",
+      "description": "Code line 8"
+    },
+    {
+      "role": "code-line-9",
+      "description": "Code line 9"
+    },
+    {
+      "role": "code-line-10",
+      "description": "Code line 10"
+    },
+    {
+      "role": "code-line-11",
+      "description": "Code line 11"
+    },
+    {
+      "role": "code-line-12",
+      "description": "Code line 12"
+    },
+    {
+      "role": "code-line-13",
+      "description": "Code line 13"
+    },
+    {
+      "role": "code-line-14",
+      "description": "Code line 14"
+    },
+    {
+      "role": "code-line-15",
+      "description": "Code line 15"
+    },
+    {
+      "role": "page-num",
+      "description": "Page number"
+    }
+  ],
+  "content_mode": [
+    "text-primary"
+  ]
+}

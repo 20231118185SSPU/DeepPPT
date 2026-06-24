@@ -1,0 +1,86 @@
+{
+  "layout_type": "kpi_grid_4col",
+  "scenario": "business",
+  "description": "Four KPI metric cards in a horizontal row with large numbers and delta indicators",
+  "color_scheme": {
+    "primary": "#1A5276",
+    "accent": "#E74C3C",
+    "secondary": "#2E86C1",
+    "bg": "#F7F9FC",
+    "card_bg": "#FFFFFF"
+  },
+  "image_slots": [],
+  "text_slots": [
+    {
+      "role": "title",
+      "description": "Page title"
+    },
+    {
+      "role": "kpi-label-1",
+      "description": "First KPI name"
+    },
+    {
+      "role": "kpi-value-1",
+      "description": "First KPI number"
+    },
+    {
+      "role": "kpi-delta-1",
+      "description": "First KPI change indicator"
+    },
+    {
+      "role": "kpi-desc-1",
+      "description": "First KPI description"
+    },
+    {
+      "role": "kpi-label-2",
+      "description": "Second KPI name"
+    },
+    {
+      "role": "kpi-value-2",
+      "description": "Second KPI number"
+    },
+    {
+      "role": "kpi-delta-2",
+      "description": "Second KPI change indicator"
+    },
+    {
+      "role": "kpi-desc-2",
+      "description": "Second KPI description"
+    },
+    {
+      "role": "kpi-label-3",
+      "description": "Third KPI name"
+    },
+    {
+      "role": "kpi-value-3",
+      "description": "Third KPI number"
+    },
+    {
+      "role": "kpi-delta-3",
+      "description": "Third KPI change indicator"
+    },
+    {
+      "role": "kpi-desc-3",
+      "description": "Third KPI description"
+    },
+    {
+      "role": "kpi-label-4",
+      "description": "Fourth KPI name"
+    },
+    {
+      "role": "kpi-value-4",
+      "description": "Fourth KPI number"
+    },
+    {
+      "role": "kpi-delta-4",
+      "description": "Fourth KPI change indicator"
+    },
+    {
+      "role": "kpi-desc-4",
+      "description": "Fourth KPI description"
+    }
+  ],
+  "content_mode": [
+    "text-primary"
+  ]
+}

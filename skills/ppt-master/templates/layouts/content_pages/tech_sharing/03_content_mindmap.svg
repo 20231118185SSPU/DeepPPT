@@ -1,0 +1,142 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="1280" height="720" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1280 720">
+  <!-- Background -->
+  <rect width="1280" height="720" fill="#F4F6FA"/>
+
+  <!-- ==================== Header ==================== -->
+  <text text-anchor="start" x="60" y="50" fill="#1B2A4A" font-family="Microsoft YaHei, Arial, sans-serif" font-size="28" font-weight="bold" data-role="title">
+    {{PAGE_TITLE}}
+  </text>
+  <text text-anchor="start" x="60" y="78" fill="#8899AA" font-family="Microsoft YaHei, Arial, sans-serif" font-size="14" data-role="subtitle">
+    {{PAGE_SUBTITLE}}
+  </text>
+
+  <!-- ==================== Branch Lines (behind nodes) ==================== -->
+  <!-- Branch 1: center -> top-left -->
+  <path d="M640,350 C520,260 340,200 180,170" stroke="#3B6CB5" stroke-width="2" fill="none" stroke-opacity="0.5"/>
+  <!-- Sub-branch 1a -->
+  <path d="M180,170 C130,140 90,160 60,200" stroke="#3B6CB5" stroke-width="1.5" fill="none" stroke-opacity="0.3"/>
+  <!-- Sub-branch 1b -->
+  <path d="M180,170 C140,200 110,230 70,260" stroke="#3B6CB5" stroke-width="1.5" fill="none" stroke-opacity="0.3"/>
+
+  <!-- Branch 2: center -> top -->
+  <path d="M640,310 C640,230 640,170 640,130" stroke="#3B6CB5" stroke-width="2" fill="none" stroke-opacity="0.5"/>
+  <!-- Sub-branch 2a -->
+  <path d="M640,130 C600,100 560,100 530,120" stroke="#3B6CB5" stroke-width="1.5" fill="none" stroke-opacity="0.3"/>
+  <!-- Sub-branch 2b -->
+  <path d="M640,130 C680,100 720,100 750,120" stroke="#3B6CB5" stroke-width="1.5" fill="none" stroke-opacity="0.3"/>
+
+  <!-- Branch 3: center -> top-right -->
+  <path d="M640,350 C760,260 940,200 1100,170" stroke="#3B6CB5" stroke-width="2" fill="none" stroke-opacity="0.5"/>
+  <!-- Sub-branch 3a -->
+  <path d="M1100,170 C1140,150 1180,155 1210,180" stroke="#3B6CB5" stroke-width="1.5" fill="none" stroke-opacity="0.3"/>
+
+  <!-- Branch 4: center -> bottom-left -->
+  <path d="M640,420 C520,500 340,540 180,560" stroke="#3B6CB5" stroke-width="2" fill="none" stroke-opacity="0.5"/>
+  <!-- Sub-branch 4a -->
+  <path d="M180,560 C140,580 100,600 70,590" stroke="#3B6CB5" stroke-width="1.5" fill="none" stroke-opacity="0.3"/>
+
+  <!-- Branch 5: center -> bottom -->
+  <path d="M640,460 C640,520 640,560 640,600" stroke="#3B6CB5" stroke-width="2" fill="none" stroke-opacity="0.5"/>
+  <!-- Sub-branch 5a -->
+  <path d="M640,600 C610,630 580,640 550,640" stroke="#3B6CB5" stroke-width="1.5" fill="none" stroke-opacity="0.3"/>
+
+  <!-- Branch 6: center -> bottom-right -->
+  <path d="M640,420 C760,500 940,540 1100,560" stroke="#3B6CB5" stroke-width="2" fill="none" stroke-opacity="0.5"/>
+  <!-- Sub-branch 6a -->
+  <path d="M1100,560 C1140,575 1180,580 1210,570" stroke="#3B6CB5" stroke-width="1.5" fill="none" stroke-opacity="0.3"/>
+
+  <!-- ==================== Central Node ==================== -->
+  <rect x="540" y="320" width="200" height="60" rx="30" fill="#3B6CB5"/>
+  <text x="640" y="356" text-anchor="middle" fill="#FFFFFF" font-family="Microsoft YaHei, Arial, sans-serif" font-size="20" font-weight="bold" data-role="center-topic">
+    {{CENTER_TOPIC}}
+  </text>
+
+  <!-- ==================== Branch Nodes ==================== -->
+
+  <!-- Branch 1: top-left -->
+  <rect x="100" y="140" width="150" height="50" rx="10" fill="#FFFFFF" stroke="#3B6CB5" stroke-width="1.5"/>
+  <text x="175" y="171" text-anchor="middle" fill="#1B2A4A" font-family="Microsoft YaHei, Arial, sans-serif" font-size="14" font-weight="bold" data-role="branch-title-1">
+    {{BRANCH_TITLE_1}}
+  </text>
+  <!-- Sub-node 1a -->
+  <rect x="20" y="180" width="110" height="36" rx="8" fill="#EBF3FE" stroke="#D8DFEA" stroke-width="1"/>
+  <text x="75" y="203" text-anchor="middle" fill="#778899" font-family="Microsoft YaHei, Arial, sans-serif" font-size="11" data-role="sub-title-1a">
+    {{SUB_TITLE_1A}}
+  </text>
+  <!-- Sub-node 1b -->
+  <rect x="30" y="235" width="110" height="36" rx="8" fill="#EBF3FE" stroke="#D8DFEA" stroke-width="1"/>
+  <text x="85" y="258" text-anchor="middle" fill="#778899" font-family="Microsoft YaHei, Arial, sans-serif" font-size="11" data-role="sub-title-1b">
+    {{SUB_TITLE_1B}}
+  </text>
+
+  <!-- Branch 2: top center -->
+  <rect x="565" y="95" width="150" height="50" rx="10" fill="#FFFFFF" stroke="#3B6CB5" stroke-width="1.5"/>
+  <text x="640" y="126" text-anchor="middle" fill="#1B2A4A" font-family="Microsoft YaHei, Arial, sans-serif" font-size="14" font-weight="bold" data-role="branch-title-2">
+    {{BRANCH_TITLE_2}}
+  </text>
+  <!-- Sub-node 2a -->
+  <rect x="480" y="80" width="90" height="32" rx="8" fill="#EBF3FE" stroke="#D8DFEA" stroke-width="1"/>
+  <text x="525" y="101" text-anchor="middle" fill="#778899" font-family="Microsoft YaHei, Arial, sans-serif" font-size="11" data-role="sub-title-2a">
+    {{SUB_TITLE_2A}}
+  </text>
+  <!-- Sub-node 2b -->
+  <rect x="710" y="80" width="90" height="32" rx="8" fill="#EBF3FE" stroke="#D8DFEA" stroke-width="1"/>
+  <text x="755" y="101" text-anchor="middle" fill="#778899" font-family="Microsoft YaHei, Arial, sans-serif" font-size="11" data-role="sub-title-2b">
+    {{SUB_TITLE_2B}}
+  </text>
+
+  <!-- Branch 3: top-right -->
+  <rect x="1020" y="140" width="150" height="50" rx="10" fill="#FFFFFF" stroke="#3B6CB5" stroke-width="1.5"/>
+  <text x="1095" y="171" text-anchor="middle" fill="#1B2A4A" font-family="Microsoft YaHei, Arial, sans-serif" font-size="14" font-weight="bold" data-role="branch-title-3">
+    {{BRANCH_TITLE_3}}
+  </text>
+  <!-- Sub-node 3a -->
+  <rect x="1160" y="155" width="100" height="36" rx="8" fill="#EBF3FE" stroke="#D8DFEA" stroke-width="1"/>
+  <text x="1210" y="178" text-anchor="middle" fill="#778899" font-family="Microsoft YaHei, Arial, sans-serif" font-size="11" data-role="sub-title-3a">
+    {{SUB_TITLE_3A}}
+  </text>
+
+  <!-- Branch 4: bottom-left -->
+  <rect x="100" y="530" width="150" height="50" rx="10" fill="#FFFFFF" stroke="#3B6CB5" stroke-width="1.5"/>
+  <text x="175" y="561" text-anchor="middle" fill="#1B2A4A" font-family="Microsoft YaHei, Arial, sans-serif" font-size="14" font-weight="bold" data-role="branch-title-4">
+    {{BRANCH_TITLE_4}}
+  </text>
+  <!-- Sub-node 4a -->
+  <rect x="30" y="560" width="110" height="36" rx="8" fill="#EBF3FE" stroke="#D8DFEA" stroke-width="1"/>
+  <text x="85" y="583" text-anchor="middle" fill="#778899" font-family="Microsoft YaHei, Arial, sans-serif" font-size="11" data-role="sub-title-4a">
+    {{SUB_TITLE_4A}}
+  </text>
+
+  <!-- Branch 5: bottom center -->
+  <rect x="565" y="580" width="150" height="50" rx="10" fill="#FFFFFF" stroke="#3B6CB5" stroke-width="1.5"/>
+  <text x="640" y="611" text-anchor="middle" fill="#1B2A4A" font-family="Microsoft YaHei, Arial, sans-serif" font-size="14" font-weight="bold" data-role="branch-title-5">
+    {{BRANCH_TITLE_5}}
+  </text>
+  <!-- Sub-node 5a -->
+  <rect x="505" y="618" width="100" height="32" rx="8" fill="#EBF3FE" stroke="#D8DFEA" stroke-width="1"/>
+  <text x="555" y="639" text-anchor="middle" fill="#778899" font-family="Microsoft YaHei, Arial, sans-serif" font-size="11" data-role="sub-title-5a">
+    {{SUB_TITLE_5A}}
+  </text>
+
+  <!-- Branch 6: bottom-right -->
+  <rect x="1020" y="530" width="150" height="50" rx="10" fill="#FFFFFF" stroke="#3B6CB5" stroke-width="1.5"/>
+  <text x="1095" y="561" text-anchor="middle" fill="#1B2A4A" font-family="Microsoft YaHei, Arial, sans-serif" font-size="14" font-weight="bold" data-role="branch-title-6">
+    {{BRANCH_TITLE_6}}
+  </text>
+  <!-- Sub-node 6a -->
+  <rect x="1160" y="545" width="100" height="36" rx="8" fill="#EBF3FE" stroke="#D8DFEA" stroke-width="1"/>
+  <text x="1210" y="568" text-anchor="middle" fill="#778899" font-family="Microsoft YaHei, Arial, sans-serif" font-size="11" data-role="sub-title-6a">
+    {{SUB_TITLE_6A}}
+  </text>
+
+  <!-- ==================== Footnote ==================== -->
+  <text text-anchor="start" x="60" y="695" fill="#999999" font-family="Microsoft YaHei, Arial, sans-serif" font-size="12" data-role="footnote">
+    {{FOOTNOTE}}
+  </text>
+
+  <!-- ==================== Page Number ==================== -->
+  <text x="1220" y="695" text-anchor="end" fill="#666666" font-family="Microsoft YaHei, Arial, sans-serif" font-size="14" data-role="page-num">
+    {{PAGE_NUM}}
+  </text>
+</svg>

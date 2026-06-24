@@ -340,6 +340,42 @@ def _resolve_backend() -> tuple[object, str]:
     sys.exit(1)
 
 
+def _validate_reference_image(value, item_label: str) -> str | None:
+    """Validate that a reference_image is a real file path or URL.
+
+    AI agents sometimes write plain-text descriptions into this field
+    (e.g. "a classic portrait of a scholar") instead of an actual path.
+    Detecting this early prevents a FileNotFoundError crash and lets the
+    pipeline fall back to text-to-image mode gracefully.
+
+    Returns the validated path/URL, or None (with a warning) when the
+    value is not usable as a reference image.
+    """
+    if not value or not isinstance(value, str):
+        return None
+
+    trimmed = value.strip()
+    if not trimmed:
+        return None
+
+    # Accept HTTP(S) URLs — the backend will download them.
+    if trimmed.startswith("http://") or trimmed.startswith("https://"):
+        return trimmed
+
+    # Accept local files that actually exist on disk.
+    if os.path.isfile(trimmed):
+        return trimmed
+
+    # Anything else is almost certainly a text description, not a path.
+    print(
+        f"  [WARN] {item_label}: reference_image is not a valid file path or URL — "
+        f"skipping img2img, falling back to text-to-image.\n"
+        f"         value: {trimmed[:120]}{'...' if len(trimmed) > 120 else ''}",
+        file=sys.stderr,
+    )
+    return None
+
+
 DEFAULT_MANIFEST_CONCURRENCY = 3
 
 STATUS_PENDING = "Pending"
@@ -474,6 +510,9 @@ def _run_manifest(manifest: dict, manifest_path: str, backend_module, *,
     def _one(idx: int):
         item = items[idx]
         try:
+            ref_image = _validate_reference_image(
+                item.get("reference_image"), item.get("filename", f"items[{idx}]")
+            )
             saved_path = backend_module.generate(
                 prompt=item["prompt"],
                 aspect_ratio=item["aspect_ratio"],
@@ -481,8 +520,31 @@ def _run_manifest(manifest: dict, manifest_path: str, backend_module, *,
                 output_dir=output_dir,
                 filename=Path(item["filename"]).stem,
                 model=item.get("model", model),
-                reference_image=item.get("reference_image"),
+                reference_image=ref_image,
             )
+            # Layout-driven resize: crop to target dimensions if specified
+            target_w = item.get("target_width")
+            target_h = item.get("target_height")
+            if target_w and target_h and saved_path:
+                try:
+                    from PIL import Image as PILImage
+                    img = PILImage.open(saved_path)
+                    cur_w, cur_h = img.size
+                    if abs(cur_w - target_w) > target_w * 0.05 or abs(cur_h - target_h) > target_h * 0.05:
+                        # Scale to cover target, then center-crop
+                        scale = max(target_w / cur_w, target_h / cur_h)
+                        new_w = int(cur_w * scale)
+                        new_h = int(cur_h * scale)
+                        img = img.resize((new_w, new_h), PILImage.LANCZOS)
+                        left = (new_w - target_w) // 2
+                        top = (new_h - target_h) // 2
+                        img = img.crop((left, top, left + target_w, top + target_h))
+                        img.save(saved_path)
+                        print(f"  [CROP] {item['filename']}: {cur_w}x{cur_h} -> {target_w}x{target_h}")
+                except ImportError:
+                    pass  # Pillow not available, skip resize
+                except Exception as crop_exc:
+                    print(f"  [WARN] {item['filename']}: crop failed: {crop_exc}")
             return idx, saved_path, None
         except Exception as exc:  # noqa: BLE001 — backend raises arbitrary types
             return idx, None, exc
@@ -754,6 +816,9 @@ def main() -> None:
         sys.exit(1 if failed else 0)
 
     try:
+        ref_image = _validate_reference_image(
+            args.reference_image, "--reference-image"
+        )
         backend.generate(
             prompt=args.prompt,
             aspect_ratio=args.aspect_ratio,
@@ -761,7 +826,7 @@ def main() -> None:
             output_dir=args.output,
             filename=args.filename,
             model=args.model,
-            reference_image=args.reference_image,
+            reference_image=ref_image,
         )
     except (ValueError, FileNotFoundError) as e:
         print(f"Error: {e}")

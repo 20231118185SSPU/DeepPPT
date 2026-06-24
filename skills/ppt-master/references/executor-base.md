@@ -79,6 +79,68 @@ Before generating each page, output which template is used:
 - **Content pages**: template defines only header/footer; content area is free
 - **No template**: generate entirely per the Design Spec
 
+### Transition Page Centering Rule
+
+**Hard rule**: all transition pages MUST use centered text alignment.
+
+| Element | Alignment | Position |
+|---------|-----------|----------|
+| Chapter number | Center, large, semi-transparent | Top-center of content area |
+| Chapter title | Center, bold | Below number |
+| Chapter description | Center | Below title |
+| Next hook / guiding question | Center | Bottom area |
+| Decorative elements | Symmetric left/right | Top and bottom corners |
+
+**Forbidden**: left-aligned transition pages where content clusters on the left side leaving large empty space on the right. If the project uses `transition_centered` template, inherit its centered structure. For free-design transition pages, apply the same centering discipline.
+
+### Deep-Dive Page Pairing Rule
+
+**Hard rule**: every content page that makes a substantive, expandable claim MUST be followed by ≥1 deep-dive page.
+
+| Content page claim type | Deep-dive layout | Content |
+|-------------------------|-----------------|---------|
+| Lists multiple problems/challenges | Card layout (`deepdive_card`) | One card per problem, with data/scenario |
+| Describes a process/pipeline | Timeline or step layout | Step-by-step expansion with visuals |
+| Compares two approaches | Side-by-side layout | Detailed comparison with evidence |
+| Presents a key metric/number | Data callout layout | Context, breakdown, source |
+
+Deep-dive page titles MUST echo or reference the preceding content page's core claim (narrative continuity).
+
+### Screenshot Grid Rule
+
+When comparing two or more objects (projects, approaches, before/after), prefer the `screenshot_grid` layout over pure text comparison tables.
+
+**Screenshot source priority**:
+1. Actual project SVG output (render svg_output/ page to thumbnail)
+2. Exported PPTX screenshots
+3. AI-generated placeholder (last resort)
+
+Screenshots MUST be the same dimensions within each column. Grid layout MUST be symmetric (equal column widths, aligned rows).
+
+### Image Dimension Matching Rule (图片尺寸匹配规则)
+
+**Hard rule**: every image in the SVG MUST match its layout slot dimensions.
+
+| Layout slot | Target dimensions | Tolerance |
+|-------------|------------------|-----------|
+| Full-bleed background (cover/ending/transition) | 1280×720 | ±5% |
+| Content center image | 1160×425 | ±10% |
+| Deep-dive side image | 370×500 | ±10% |
+| Gallery thumbnail | 370×170 | ±10% |
+| Screenshot grid cell | 550×162 | ±10% |
+
+**When image and slot dimensions differ by >20%**:
+1. Do NOT use `preserveAspectRatio="xMidYMid slice"` to force-fit — it crops too aggressively and produces awkward results
+2. Instead, regenerate the image at the correct dimensions (use `target_width`/`target_height` in `image_prompts.json`)
+3. For web-sourced images that cannot be regenerated, resize/crop manually before embedding
+
+**Standard image sizes for common layouts** (PPT 16:9):
+- Cover/ending background: 1280×720 (16:9)
+- Content page hero: 1160×425 (~11:4, landscape)
+- Deep-dive side: 370×500 (3:4, portrait)
+- Gallery cell: 370×170 (~2:1, wide landscape)
+- Grid cell: 550×162 (~10:3, ultra-wide landscape)
+
 ---
 
 ## 2. Design Parameter Confirmation (Mandatory Step)
@@ -428,4 +490,157 @@ python3 scripts/svg_to_pptx.py <project_path>
 #
 # Add --svg-snapshot to additionally emit:
 #   exports/<project_name>_<timestamp>_svg.pptx      ← SVG snapshot pptx (sibling of native pptx)
+
+---
+
+## 10. Text Centering & Fill Rule (文字居中与铺满规则)
+
+**Hard rule**: all text content MUST be centered within its content frame.
+
+| Element | Alignment | Fill behavior |
+|---------|-----------|---------------|
+| Page titles | `text-anchor="middle"`, x = canvas center (640 for 1280-wide) | Span the full content width (60px margins) |
+| Body text / cards | `text-anchor="middle"` or centered `<text>` blocks | Fill the card/area width with appropriate padding (20-30px inner padding) |
+| Takeaway line | `text-anchor="middle"` | Span full content width |
+| Hero numbers | `text-anchor="middle"` | Centered in their container |
+
+**Text spacing**: text blocks within a card/area MUST use the full available width. Do NOT cluster text in a narrow column when the card is wide. Use `x` positioning to center text within each container, and use `font-size` and `dy` spacing to fill the vertical space appropriately.
+
+**Forbidden**: text aligned to the left margin (`text-anchor="start"`) when the content area is wide and the text is short — this creates an ugly left-heavy layout. Center everything unless the layout specifically requires left alignment (e.g., timeline nodes).
+
+## 11. Color Contrast Rule (色彩对比规则)
+
+**Hard rule**: text color MUST provide sufficient contrast against its background.
+
+| Background type | Text color | Examples |
+|----------------|-----------|----------|
+| Dark background (#0A0E1A, #0D1117, #121828) | Light text (#E8EDF5, #E6EDF3, #FFFFFF) | Dark-tech decks |
+| Light background (#FFFFFF, #F5F0E6, #F8F4F0) | Dark text (#1D2430, #0D1117, #333333) | Academic/corporate decks |
+| Colored card (#161B22) | Light text (#E8EDF3) | Card interiors |
+| Accent background (#00D4FF, #FF6B6B) | Dark text (#0A0E1A, #FFFFFF) | Highlight badges |
+
+**Automatic derivation**: when the project uses a dark theme (bg color lightness < 30%), ALL body text MUST be light (lightness > 70%). When the project uses a light theme (bg lightness > 70%), ALL body text MUST be dark (lightness < 30%). The spec_lock.md `text` field provides the canonical body text color — use it.
+
+**Forbidden**: dark text on dark background or light text on light background. If a card has the same darkness as the page background, add a subtle border (`stroke` on the card `<rect>`) to create visual separation.
+
+## 12. AI Image Type Distinction Rule (AI 生图类型区分规则)
+
+**Hard rule**: AI image prompts MUST be classified into two distinct types, with different prompt strategies.
+
+### Type A: Concept Images (概念图)
+
+Used for: cover, TOC, transition, ending backgrounds.
+
+**Prompt strategy**: describe the **atmosphere, mood, and visual metaphor**. NO text, NO data, NO specific informational content. These images are pure visual backdrop for text overlays.
+
+**Example prompt**: "Deep space dark background, glowing cyan data streams forming abstract network topology, holographic UI elements floating in space, cinematic lighting, no text letters numbers signs watermarks"
+
+### Type B: Informational Images (讲解配图)
+
+Used for: deep-dive side images, data page illustrations, comparison page visuals.
+
+**Prompt strategy**: describe **specific informational content** — diagrams, charts, data visualizations, comparison layouts, annotated illustrations. The image itself should convey information that the SVG text then enhances (not duplicates).
+
+**Example prompt**: "Vertical infographic showing 5-step research pipeline with labeled stages, flow arrows connecting each step, data icons at each node, clean diagram style on dark background, informational visualization"
+
+**Key distinction**: 
+- Concept images = "what does it feel like?" (emotion, atmosphere)
+- Informational images = "what does it show?" (data, structure, comparison)
+
+**Forbidden**: using a concept-style prompt (atmospheric, no information) for a deep-dive page that needs to convey specific data or comparison content.
+
+**When informational images are needed but AI cannot generate them well** (real screenshots, actual data charts, specific UI captures): use web-sourced assets instead. See Rule 13.
+
+## 13. Dual-Track Image Enforcement Rule (双轨图片强制执行规则)
+
+**Hard rule**: the dual-track image strategy MUST be enforced — visual pages use AI images, information pages use web-sourced assets.
+
+| Page type | Image source | Enforcement |
+|-----------|-------------|-------------|
+| Cover, TOC, Transition, Ending | AI concept images | Type A prompts |
+| Content (hero image) | AI concept images | Type A prompts |
+| **Deep-dive, Comparison, Data, Timeline** | **Web-sourced assets** | **Playwright/curl download, NOT AI** |
+| Gallery thumbnails | Real project screenshots | Render from svg_output/ |
+
+**Enforcement in ppt-deep-research skill Step 7**:
+- Step 7A (AI generation): ONLY generates images for `Acquire Via: ai` rows (cover/transition/content/ending)
+- Step 7B (web assets): MUST acquire real images for ALL deep-dive/comparison/data/timeline pages
+- Before Step 8 (SVG generation): verify every deep-dive page has ≥1 web-sourced image in `web_assets/`
+
+**Web asset acquisition priority**:
+1. Playwright browser capture (preferred — actual page screenshots, real UI, real charts)
+2. Direct curl/wget download (fallback for static images)
+3. AI informational image (last resort — Type B prompt, NOT Type A)
+
+**Forbidden**: filling deep-dive pages with AI concept images instead of web-sourced assets. A deep-dive page showing an atmospheric AI image instead of real data/screenshots is a quality failure.
+
+**When the topic has no obvious web sources** (e.g., fictional topics, personal projects): use AI informational images (Type B) as fallback, but the prompt MUST describe specific informational content, NOT atmospheric visuals.
 ```
+
+## 14. Layout Quality Rules (版式质量规则)
+
+**Hard rule**: every SVG page must pass these layout quality checks before moving to the next page.
+
+### 14.1 Whitespace control
+- Safe margins: left/right 50px, top/bottom 40px
+- Content must fill ≥75% of the safe area for text pages, ≥85% for image+text pages
+- Adjacent element gap > 40px = **whitespace violation** — reduce gap or enlarge elements
+- Empty corners or dead zones are forbidden — fill with content, decorative elements, or background images
+
+### 14.2 Font size minimums
+- Deep-dive page body text: **≥ 22px** (never use 15-16px for body)
+- Deep-dive page titles: **≥ 32px**
+- Content page body text: **≥ 20px**
+- Line height: **1.5x–1.6x** (not default tight spacing)
+- Text-to-image visual weight ratio: 1:3 to 1:4 (text must not look tiny next to a large image)
+
+### 14.3 Centering discipline
+- All text inside content boxes must be horizontally centered (`text-anchor="middle"`)
+- Multi-line text blocks: left-align content, center the block within its container
+- Titles: always centered on the page
+- Data cards / info boxes: text centered within each card
+
+### 14.4 Complex pages → AI-generated full images
+- Relationship networks, data dashboards, complex comparison layouts: do NOT hand-draw in SVG
+- Instead: generate one AI image that contains the full visual, then overlay only title + minimal annotations in SVG
+- The AI image must use a character reference when depicting characters (see Rule 15)
+
+## 15. Character Consistency Rule (角色一致性规则)
+
+**Hard rule**: any AI-generated image depicting a named character MUST include a reference image.
+
+### 15.1 Reference image requirement
+- Use `image_gen.py --reference-image <path>` for any image containing a character
+- Reference images come from `projects/<name>/ref/` (collected during research phase)
+- **Forbidden**: generating a character image without `--reference-image`
+- If no reference image exists, search for one before generating
+
+### 15.2 Per-image generation (no batch for character images)
+- Character images MUST be generated one at a time, not via `--manifest` batch mode
+- Each image gets its own tailored prompt based on the specific page layout
+- Verify the generated image matches the character before proceeding
+
+### 15.3 Size-first design
+- Design the page layout FIRST → determine exact image dimensions and position
+- THEN write the image prompt with matching aspect ratio and size
+- Image dimensions in the prompt MUST match the `<image>` element's `width`/`height` in the SVG
+
+## 16. Web Asset Visual Review Rule (网络素材视觉审查规则)
+
+**Hard rule**: every web-sourced image MUST pass visual review before use.
+
+### 16.1 Post-download review
+After downloading a web image, verify:
+1. Image content matches the page's topic/theme
+2. If the image depicts a game/character, it is from the correct game/property
+3. Image quality is sufficient (not a thumbnail, not blurry, not watermarked)
+
+### 16.2 Rejection criteria
+- Image depicts wrong game, wrong character, or unrelated content → mark as `Needs-Manual`
+- Image is a generic stock photo unrelated to the specific topic → re-search with refined query
+- Image has visible watermarks, text overlays, or UI elements from unrelated apps → reject
+
+### 16.3 Review method
+Use a sub-agent or visual model to evaluate each downloaded image against the page description:
+- Prompt: "Does this image directly relate to '{page topic}'? Is the content from the correct game/property? Answer YES/NO with reasoning."
+- Any NO → re-search or mark Needs-Manual

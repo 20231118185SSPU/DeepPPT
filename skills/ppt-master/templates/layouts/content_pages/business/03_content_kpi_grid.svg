@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="1280" height="720" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1280 720">
+  <!-- Background -->
+  <rect width="1280" height="720" fill="#F7F9FC"/>
+
+  <!-- ==================== Header ==================== -->
+  <rect x="0" y="0" width="1280" height="80" fill="#1A5276"/>
+  <rect x="0" y="0" width="6" height="80" fill="#E74C3C"/>
+  <text text-anchor="start" x="60" y="50" fill="#FFFFFF" font-family="Microsoft YaHei, Arial, sans-serif" font-size="28" font-weight="bold" data-role="title">
+    {{PAGE_TITLE}}
+  </text>
+
+  <!-- ==================== Content Area ==================== -->
+  <!-- Card 1 (x=45) -->
+  <rect x="45" y="110" width="280" height="480" rx="10" fill="#FFFFFF" stroke="#E0E6ED" stroke-width="1"/>
+  <text x="185" y="155" text-anchor="middle" fill="#888888" font-family="Microsoft YaHei, Arial, sans-serif" font-size="14" data-role="kpi-label-1">
+    {{KPI_LABEL_1}}
+  </text>
+  <text x="185" y="310" text-anchor="middle" fill="#1A5276" font-family="Microsoft YaHei, Arial, sans-serif" font-size="56" font-weight="bold" data-role="kpi-value-1">
+    {{KPI_VALUE_1}}
+  </text>
+  <!-- Delta indicator (up arrow placeholder) -->
+  <text x="185" y="370" text-anchor="middle" fill="#27AE60" font-family="Microsoft YaHei, Arial, sans-serif" font-size="18" font-weight="bold" data-role="kpi-delta-1">
+    {{KPI_DELTA_1}}
+  </text>
+  <line x1="100" y1="400" x2="270" y2="400" stroke="#E8EDF2" stroke-width="1"/>
+  <text x="185" y="450" text-anchor="middle" fill="#666666" font-family="Microsoft YaHei, Arial, sans-serif" font-size="13" data-role="kpi-desc-1">
+    {{KPI_DESC_1}}
+  </text>
+
+  <!-- Card 2 (x=340) -->
+  <rect x="340" y="110" width="280" height="480" rx="10" fill="#FFFFFF" stroke="#E0E6ED" stroke-width="1"/>
+  <text x="480" y="155" text-anchor="middle" fill="#888888" font-family="Microsoft YaHei, Arial, sans-serif" font-size="14" data-role="kpi-label-2">
+    {{KPI_LABEL_2}}
+  </text>
+  <text x="480" y="310" text-anchor="middle" fill="#1A5276" font-family="Microsoft YaHei, Arial, sans-serif" font-size="56" font-weight="bold" data-role="kpi-value-2">
+    {{KPI_VALUE_2}}
+  </text>
+  <text x="480" y="370" text-anchor="middle" fill="#27AE60" font-family="Microsoft YaHei, Arial, sans-serif" font-size="18" font-weight="bold" data-role="kpi-delta-2">
+    {{KPI_DELTA_2}}
+  </text>
+  <line x1="395" y1="400" x2="565" y2="400" stroke="#E8EDF2" stroke-width="1"/>
+  <text x="480" y="450" text-anchor="middle" fill="#666666" font-family="Microsoft YaHei, Arial, sans-serif" font-size="13" data-role="kpi-desc-2">
+    {{KPI_DESC_2}}
+  </text>
+
+  <!-- Card 3 (x=635) -->
+  <rect x="635" y="110" width="280" height="480" rx="10" fill="#FFFFFF" stroke="#E0E6ED" stroke-width="1"/>
+  <text x="775" y="155" text-anchor="middle" fill="#888888" font-family="Microsoft YaHei, Arial, sans-serif" font-size="14" data-role="kpi-label-3">
+    {{KPI_LABEL_3}}
+  </text>
+  <text x="775" y="310" text-anchor="middle" fill="#1A5276" font-family="Microsoft YaHei, Arial, sans-serif" font-size="56" font-weight="bold" data-role="kpi-value-3">
+    {{KPI_VALUE_3}}
+  </text>
+  <text x="775" y="370" text-anchor="middle" fill="#E74C3C" font-family="Microsoft YaHei, Arial, sans-serif" font-size="18" font-weight="bold" data-role="kpi-delta-3">
+    {{KPI_DELTA_3}}
+  </text>
+  <line x1="690" y1="400" x2="860" y2="400" stroke="#E8EDF2" stroke-width="1"/>
+  <text x="775" y="450" text-anchor="middle" fill="#666666" font-family="Microsoft YaHei, Arial, sans-serif" font-size="13" data-role="kpi-desc-3">
+    {{KPI_DESC_3}}
+  </text>
+
+  <!-- Card 4 (x=930) -->
+  <rect x="930" y="110" width="310" height="480" rx="10" fill="#FFFFFF" stroke="#E0E6ED" stroke-width="1"/>
+  <text x="1085" y="155" text-anchor="middle" fill="#888888" font-family="Microsoft YaHei, Arial, sans-serif" font-size="14" data-role="kpi-label-4">
+    {{KPI_LABEL_4}}
+  </text>
+  <text x="1085" y="310" text-anchor="middle" fill="#1A5276" font-family="Microsoft YaHei, Arial, sans-serif" font-size="56" font-weight="bold" data-role="kpi-value-4">
+    {{KPI_VALUE_4}}
+  </text>
+  <text x="1085" y="370" text-anchor="middle" fill="#27AE60" font-family="Microsoft YaHei, Arial, sans-serif" font-size="18" font-weight="bold" data-role="kpi-delta-4">
+    {{KPI_DELTA_4}}
+  </text>
+  <line x1="985" y1="400" x2="1185" y2="400" stroke="#E8EDF2" stroke-width="1"/>
+  <text x="1085" y="450" text-anchor="middle" fill="#666666" font-family="Microsoft YaHei, Arial, sans-serif" font-size="13" data-role="kpi-desc-4">
+    {{KPI_DESC_4}}
+  </text>
+
+  <!-- ==================== Footer ==================== -->
+  <line x1="40" y1="665" x2="1240" y2="665" stroke="#E0E6ED" stroke-width="1"/>
+  <text x="640" y="695" text-anchor="middle" fill="#999999" font-family="Microsoft YaHei, Arial, sans-serif" font-size="14" data-role="page-num">
+    {{PAGE_NUM}}
+  </text>
+</svg>

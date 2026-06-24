@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- gallery.svg — 项目画廊版式
+     用途：多项目展示、作品集、案例展示
+     占位标记：TITLE, GALLERY_IMG_N, GALLERY_TITLE_N, GALLERY_DESC_N (N=1..9)
+-->
+<svg width="1280" height="720" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1280 720">
+    <defs>
+        <clipPath id="galClip1"><rect width="360" height="170" rx="6"/></clipPath>
+        <clipPath id="galClip2"><rect width="360" height="170" rx="6"/></clipPath>
+        <clipPath id="galClip3"><rect width="360" height="170" rx="6"/></clipPath>
+        <clipPath id="galClip4"><rect width="360" height="170" rx="6"/></clipPath>
+        <clipPath id="galClip5"><rect width="360" height="170" rx="6"/></clipPath>
+        <clipPath id="galClip6"><rect width="360" height="170" rx="6"/></clipPath>
+        <clipPath id="galClip7"><rect width="360" height="170" rx="6"/></clipPath>
+        <clipPath id="galClip8"><rect width="360" height="170" rx="6"/></clipPath>
+        <clipPath id="galClip9"><rect width="360" height="170" rx="6"/></clipPath>
+    </defs>
+
+    <g id="gallery">
+        <!-- Background -->
+        <rect width="1280" height="720" fill="#0D1117"/>
+
+        <!-- Title -->
+        <rect x="60" y="30" width="60" height="3" fill="#00D4FF" rx="1.5"/>
+        <text x="60" y="70" fill="#E6EDF3" font-family="Microsoft YaHei, Inter, sans-serif"
+            font-size="32" font-weight="bold">{{TITLE}}</text>
+
+        <!-- Row 1: items 1-3 -->
+        <g id="gallery-row-1" transform="translate(60, 95)">
+            <!-- Item 1 -->
+            <rect width="370" height="260" fill="#161B22" rx="8" stroke="#30363D" stroke-width="1"/>
+            <image href="{{GALLERY_IMG_1}}" x="5" y="5" width="360" height="170" clip-path="url(#galClip1)" preserveAspectRatio="xMidYMid slice"/>
+            <text x="10" y="200" fill="#E6EDF3" font-family="Microsoft YaHei, Inter, sans-serif" font-size="14" font-weight="bold">{{GALLERY_TITLE_1}}</text>
+            <text x="10" y="222" fill="#8B949E" font-family="Microsoft YaHei, Inter, sans-serif" font-size="12">{{GALLERY_DESC_1}}</text>
+
+            <!-- Item 2 -->
+            <g transform="translate(410, 0)">
+                <rect width="370" height="260" fill="#161B22" rx="8" stroke="#30363D" stroke-width="1"/>
+                <image href="{{GALLERY_IMG_2}}" x="5" y="5" width="360" height="170" clip-path="url(#galClip2)" preserveAspectRatio="xMidYMid slice"/>
+                <text x="10" y="200" fill="#E6EDF3" font-family="Microsoft YaHei, Inter, sans-serif" font-size="14" font-weight="bold">{{GALLERY_TITLE_2}}</text>
+                <text x="10" y="222" fill="#8B949E" font-family="Microsoft YaHei, Inter, sans-serif" font-size="12">{{GALLERY_DESC_2}}</text>
+            </g>
+
+            <!-- Item 3 -->
+            <g transform="translate(820, 0)">
+                <rect width="370" height="260" fill="#161B22" rx="8" stroke="#30363D" stroke-width="1"/>
+                <image href="{{GALLERY_IMG_3}}" x="5" y="5" width="360" height="170" clip-path="url(#galClip3)" preserveAspectRatio="xMidYMid slice"/>
+                <text x="10" y="200" fill="#E6EDF3" font-family="Microsoft YaHei, Inter, sans-serif" font-size="14" font-weight="bold">{{GALLERY_TITLE_3}}</text>
+                <text x="10" y="222" fill="#8B949E" font-family="Microsoft YaHei, Inter, sans-serif" font-size="12">{{GALLERY_DESC_3}}</text>
+            </g>
+        </g>
+
+        <!-- Row 2: items 4-6 -->
+        <g id="gallery-row-2" transform="translate(60, 370)">
+            <!-- Item 4 -->
+            <rect width="370" height="260" fill="#161B22" rx="8" stroke="#30363D" stroke-width="1"/>
+            <image href="{{GALLERY_IMG_4}}" x="5" y="5" width="360" height="170" clip-path="url(#galClip4)" preserveAspectRatio="xMidYMid slice"/>
+            <text x="10" y="200" fill="#E6EDF3" font-family="Microsoft YaHei, Inter, sans-serif" font-size="14" font-weight="bold">{{GALLERY_TITLE_4}}</text>
+            <text x="10" y="222" fill="#8B949E" font-family="Microsoft YaHei, Inter, sans-serif" font-size="12">{{GALLERY_DESC_4}}</text>
+
+            <!-- Item 5 -->
+            <g transform="translate(410, 0)">
+                <rect width="370" height="260" fill="#161B22" rx="8" stroke="#30363D" stroke-width="1"/>
+                <image href="{{GALLERY_IMG_5}}" x="5" y="5" width="360" height="170" clip-path="url(#galClip5)" preserveAspectRatio="xMidYMid slice"/>
+                <text x="10" y="200" fill="#E6EDF3" font-family="Microsoft YaHei, Inter, sans-serif" font-size="14" font-weight="bold">{{GALLERY_TITLE_5}}</text>
+                <text x="10" y="222" fill="#8B949E" font-family="Microsoft YaHei, Inter, sans-serif" font-size="12">{{GALLERY_DESC_5}}</text>
+            </g>
+
+            <!-- Item 6 -->
+            <g transform="translate(820, 0)">
+                <rect width="370" height="260" fill="#161B22" rx="8" stroke="#30363D" stroke-width="1"/>
+                <image href="{{GALLERY_IMG_6}}" x="5" y="5" width="360" height="170" clip-path="url(#galClip6)" preserveAspectRatio="xMidYMid slice"/>
+                <text x="10" y="200" fill="#E6EDF3" font-family="Microsoft YaHei, Inter, sans-serif" font-size="14" font-weight="bold">{{GALLERY_TITLE_6}}</text>
+                <text x="10" y="222" fill="#8B949E" font-family="Microsoft YaHei, Inter, sans-serif" font-size="12">{{GALLERY_DESC_6}}</text>
+            </g>
+        </g>
+    </g>
+</svg>

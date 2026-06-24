@@ -1,0 +1,164 @@
+{
+  "layout_type": "roadmap",
+  "scenario": "project_management",
+  "description": "Four-column roadmap (NOW / NEXT / LATER / VISION) with task cards, status dots, and progressive visual fading from bold to muted",
+  "color_scheme": {
+    "primary": "#1A5276",
+    "accent": "#2E86C1",
+    "secondary": "#AED6F1",
+    "bg": "#F7F9FC",
+    "card_bg": "#FFFFFF",
+    "muted": "#F5F5F5"
+  },
+  "image_slots": [],
+  "text_slots": [
+    {
+      "role": "title",
+      "data_key": "PAGE_TITLE",
+      "description": "Page title above the roadmap columns"
+    },
+    {
+      "role": "col-title-1",
+      "data_key": "COL_TITLE_1",
+      "description": "NOW column title (e.g. Theme System)"
+    },
+    {
+      "role": "now-task-1-title",
+      "data_key": "NOW_TASK_1_TITLE",
+      "description": "NOW column task 1 title"
+    },
+    {
+      "role": "now-task-1-desc",
+      "data_key": "NOW_TASK_1_DESC",
+      "description": "NOW column task 1 description"
+    },
+    {
+      "role": "now-task-2-title",
+      "data_key": "NOW_TASK_2_TITLE",
+      "description": "NOW column task 2 title"
+    },
+    {
+      "role": "now-task-2-desc",
+      "data_key": "NOW_TASK_2_DESC",
+      "description": "NOW column task 2 description"
+    },
+    {
+      "role": "now-task-3-title",
+      "data_key": "NOW_TASK_3_TITLE",
+      "description": "NOW column task 3 title"
+    },
+    {
+      "role": "now-task-3-desc",
+      "data_key": "NOW_TASK_3_DESC",
+      "description": "NOW column task 3 description"
+    },
+    {
+      "role": "col-title-2",
+      "data_key": "COL_TITLE_2",
+      "description": "NEXT column title (e.g. Export)"
+    },
+    {
+      "role": "next-task-1-title",
+      "data_key": "NEXT_TASK_1_TITLE",
+      "description": "NEXT column task 1 title"
+    },
+    {
+      "role": "next-task-1-desc",
+      "data_key": "NEXT_TASK_1_DESC",
+      "description": "NEXT column task 1 description"
+    },
+    {
+      "role": "next-task-2-title",
+      "data_key": "NEXT_TASK_2_TITLE",
+      "description": "NEXT column task 2 title"
+    },
+    {
+      "role": "next-task-2-desc",
+      "data_key": "NEXT_TASK_2_DESC",
+      "description": "NEXT column task 2 description"
+    },
+    {
+      "role": "next-task-3-title",
+      "data_key": "NEXT_TASK_3_TITLE",
+      "description": "NEXT column task 3 title"
+    },
+    {
+      "role": "next-task-3-desc",
+      "data_key": "NEXT_TASK_3_DESC",
+      "description": "NEXT column task 3 description"
+    },
+    {
+      "role": "col-title-3",
+      "data_key": "COL_TITLE_3",
+      "description": "LATER column title (e.g. Interaction)"
+    },
+    {
+      "role": "later-task-1-title",
+      "data_key": "LATER_TASK_1_TITLE",
+      "description": "LATER column task 1 title"
+    },
+    {
+      "role": "later-task-1-desc",
+      "data_key": "LATER_TASK_1_DESC",
+      "description": "LATER column task 1 description"
+    },
+    {
+      "role": "later-task-2-title",
+      "data_key": "LATER_TASK_2_TITLE",
+      "description": "LATER column task 2 title"
+    },
+    {
+      "role": "later-task-2-desc",
+      "data_key": "LATER_TASK_2_DESC",
+      "description": "LATER column task 2 description"
+    },
+    {
+      "role": "later-task-3-title",
+      "data_key": "LATER_TASK_3_TITLE",
+      "description": "LATER column task 3 title"
+    },
+    {
+      "role": "later-task-3-desc",
+      "data_key": "LATER_TASK_3_DESC",
+      "description": "LATER column task 3 description"
+    },
+    {
+      "role": "col-title-4",
+      "data_key": "COL_TITLE_4",
+      "description": "VISION column title (e.g. AI Writing)"
+    },
+    {
+      "role": "vision-task-1-title",
+      "data_key": "VISION_TASK_1_TITLE",
+      "description": "VISION column task 1 title"
+    },
+    {
+      "role": "vision-task-1-desc",
+      "data_key": "VISION_TASK_1_DESC",
+      "description": "VISION column task 1 description"
+    },
+    {
+      "role": "vision-task-2-title",
+      "data_key": "VISION_TASK_2_TITLE",
+      "description": "VISION column task 2 title"
+    },
+    {
+      "role": "vision-task-2-desc",
+      "data_key": "VISION_TASK_2_DESC",
+      "description": "VISION column task 2 description"
+    },
+    {
+      "role": "vision-task-3-title",
+      "data_key": "VISION_TASK_3_TITLE",
+      "description": "VISION column task 3 title"
+    },
+    {
+      "role": "vision-task-3-desc",
+      "data_key": "VISION_TASK_3_DESC",
+      "description": "VISION column task 3 description"
+    }
+  ],
+  "content_mode": [
+    "text-primary"
+  ]
+}

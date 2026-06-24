@@ -1,0 +1,38 @@
+{
+  "layout_type": "big_quote",
+  "scenario": "shared",
+  "description": "Full-bleed breathing page with oversized decorative quotation mark, large italic quote text, and attribution line. Minimal elements, maximum visual impact — ideal for keynote moments, leader vision, or keynote pauses.",
+  "color_scheme": {
+    "primary": "#1A1A2E",
+    "accent": "#4A6CF7",
+    "secondary": "#9CA3AF",
+    "bg": "#FFFFFF",
+    "card_bg": "#FFFFFF"
+  },
+  "image_slots": [],
+  "text_slots": [
+    {
+      "role": "quote-line-1",
+      "description": "First line of the quote text"
+    },
+    {
+      "role": "quote-line-2",
+      "description": "Second line of the quote text"
+    },
+    {
+      "role": "quote-line-3",
+      "description": "Third line of the quote text"
+    },
+    {
+      "role": "quote-author",
+      "description": "Attribution name (person who said the quote)"
+    },
+    {
+      "role": "quote-author-title",
+      "description": "Attribution title/position/source"
+    }
+  ],
+  "content_mode": [
+    "image-primary"
+  ]
+}

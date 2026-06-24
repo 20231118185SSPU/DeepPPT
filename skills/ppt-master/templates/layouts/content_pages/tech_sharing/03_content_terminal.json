@@ -1,0 +1,93 @@
+{
+  "layout_type": "terminal_console",
+  "scenario": "tech_sharing",
+  "description": "Hacker-style terminal window with green-on-black aesthetic, traffic-light dots, 4 command prompt lines each followed by output lines, and a blinking cursor at the bottom. Suitable for showing CLI workflows, deployment steps, or demo commands in tech presentations.",
+  "color_scheme": {
+    "primary": "#00FF78",
+    "accent": "#00FF78",
+    "secondary": "#8A8A8A",
+    "bg": "#0C0C0C",
+    "card_bg": "#020803",
+    "title_bar": "#0A0A0A",
+    "text": "#E0E0E0",
+    "glow": "#00FF78"
+  },
+  "image_slots": [],
+  "text_slots": [
+    {
+      "role": "kicker",
+      "description": "Small accent label above the title"
+    },
+    {
+      "role": "title",
+      "description": "Page title"
+    },
+    {
+      "role": "session-name",
+      "description": "Terminal session name shown in window title bar"
+    },
+    {
+      "role": "cmd-line-1",
+      "description": "First command (after $ prompt)"
+    },
+    {
+      "role": "output-line-1",
+      "description": "Output line for first command"
+    },
+    {
+      "role": "output-line-2",
+      "description": "Output line for first command"
+    },
+    {
+      "role": "output-line-3",
+      "description": "Output line for first command"
+    },
+    {
+      "role": "cmd-line-2",
+      "description": "Second command (after $ prompt)"
+    },
+    {
+      "role": "output-line-4",
+      "description": "Output line for second command"
+    },
+    {
+      "role": "output-line-5",
+      "description": "Output line for second command"
+    },
+    {
+      "role": "cmd-line-3",
+      "description": "Third command (after $ prompt)"
+    },
+    {
+      "role": "output-line-6",
+      "description": "Output line for third command"
+    },
+    {
+      "role": "output-line-7",
+      "description": "Output line for third command"
+    },
+    {
+      "role": "cmd-line-4",
+      "description": "Fourth command (after $ prompt)"
+    },
+    {
+      "role": "output-line-8",
+      "description": "Output line for fourth command"
+    },
+    {
+      "role": "output-line-9",
+      "description": "Output line for fourth command"
+    },
+    {
+      "role": "output-line-10",
+      "description": "Output line for fourth command"
+    },
+    {
+      "role": "page-num",
+      "description": "Page number"
+    }
+  ],
+  "content_mode": [
+    "text-primary"
+  ]
+}

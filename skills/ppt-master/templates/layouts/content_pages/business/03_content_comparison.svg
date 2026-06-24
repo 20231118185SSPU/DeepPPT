@@ -1,0 +1,94 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="1280" height="720" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1280 720">
+  <!-- Background -->
+  <rect width="1280" height="720" fill="#F7F9FC"/>
+
+  <!-- ==================== Header ==================== -->
+  <text x="640" y="52" text-anchor="middle" fill="#1A5276" font-family="Microsoft YaHei, Arial, sans-serif" font-size="28" font-weight="bold" data-role="title">
+    {{PAGE_TITLE}}
+  </text>
+
+  <!-- ==================== Center VS ==================== -->
+  <circle cx="640" cy="370" r="32" fill="#1A5276" fill-opacity="0.08"/>
+  <text x="640" y="380" text-anchor="middle" fill="#1A5276" font-family="Microsoft YaHei, Arial, sans-serif" font-size="24" font-weight="bold">VS</text>
+
+  <!-- ==================== LEFT Panel ==================== -->
+  <rect x="45" y="100" width="575" height="520" rx="10" fill="#FFFFFF" stroke="#E0E6ED" stroke-width="1"/>
+  <!-- Red top border -->
+  <rect x="45" y="100" width="575" height="6" rx="3" fill="#E74C3C"/>
+  <!-- Icon area -->
+  <circle cx="332" cy="160" r="28" fill="#E74C3C" fill-opacity="0.1"/>
+  <text x="332" y="170" text-anchor="middle" fill="#E74C3C" font-family="Microsoft YaHei, Arial, sans-serif" font-size="24" data-role="left-icon">
+    {{LEFT_ICON}}
+  </text>
+  <!-- Panel title -->
+  <text x="332" y="225" text-anchor="middle" fill="#E74C3C" font-family="Microsoft YaHei, Arial, sans-serif" font-size="20" font-weight="bold" data-role="left-title">
+    {{LEFT_TITLE}}
+  </text>
+  <!-- Bullet items -->
+  <rect x="100" y="260" width="8" height="8" rx="2" fill="#E74C3C"/>
+  <text text-anchor="start" x="124" y="270" fill="#333333" font-family="Microsoft YaHei, Arial, sans-serif" font-size="15" data-role="left-item-1">
+    {{LEFT_ITEM_1}}
+  </text>
+  <line x1="90" y1="290" x2="590" y2="290" stroke="#F0F0F0" stroke-width="1"/>
+
+  <rect x="100" y="310" width="8" height="8" rx="2" fill="#E74C3C"/>
+  <text text-anchor="start" x="124" y="320" fill="#333333" font-family="Microsoft YaHei, Arial, sans-serif" font-size="15" data-role="left-item-2">
+    {{LEFT_ITEM_2}}
+  </text>
+  <line x1="90" y1="340" x2="590" y2="340" stroke="#F0F0F0" stroke-width="1"/>
+
+  <rect x="100" y="360" width="8" height="8" rx="2" fill="#E74C3C"/>
+  <text text-anchor="start" x="124" y="370" fill="#333333" font-family="Microsoft YaHei, Arial, sans-serif" font-size="15" data-role="left-item-3">
+    {{LEFT_ITEM_3}}
+  </text>
+  <line x1="90" y1="390" x2="590" y2="390" stroke="#F0F0F0" stroke-width="1"/>
+
+  <rect x="100" y="410" width="8" height="8" rx="2" fill="#E74C3C"/>
+  <text text-anchor="start" x="124" y="420" fill="#333333" font-family="Microsoft YaHei, Arial, sans-serif" font-size="15" data-role="left-item-4">
+    {{LEFT_ITEM_4}}
+  </text>
+
+  <!-- ==================== RIGHT Panel ==================== -->
+  <rect x="660" y="100" width="575" height="520" rx="10" fill="#FFFFFF" stroke="#E0E6ED" stroke-width="1"/>
+  <!-- Green top border -->
+  <rect x="660" y="100" width="575" height="6" rx="3" fill="#27AE60"/>
+  <!-- Icon area -->
+  <circle cx="947" cy="160" r="28" fill="#27AE60" fill-opacity="0.1"/>
+  <text x="947" y="170" text-anchor="middle" fill="#27AE60" font-family="Microsoft YaHei, Arial, sans-serif" font-size="24" data-role="right-icon">
+    {{RIGHT_ICON}}
+  </text>
+  <!-- Panel title -->
+  <text x="947" y="225" text-anchor="middle" fill="#27AE60" font-family="Microsoft YaHei, Arial, sans-serif" font-size="20" font-weight="bold" data-role="right-title">
+    {{RIGHT_TITLE}}
+  </text>
+  <!-- Bullet items -->
+  <rect x="715" y="260" width="8" height="8" rx="2" fill="#27AE60"/>
+  <text text-anchor="start" x="739" y="270" fill="#333333" font-family="Microsoft YaHei, Arial, sans-serif" font-size="15" data-role="right-item-1">
+    {{RIGHT_ITEM_1}}
+  </text>
+  <line x1="705" y1="290" x2="1205" y2="290" stroke="#F0F0F0" stroke-width="1"/>
+
+  <rect x="715" y="310" width="8" height="8" rx="2" fill="#27AE60"/>
+  <text text-anchor="start" x="739" y="320" fill="#333333" font-family="Microsoft YaHei, Arial, sans-serif" font-size="15" data-role="right-item-2">
+    {{RIGHT_ITEM_2}}
+  </text>
+  <line x1="705" y1="340" x2="1205" y2="340" stroke="#F0F0F0" stroke-width="1"/>
+
+  <rect x="715" y="360" width="8" height="8" rx="2" fill="#27AE60"/>
+  <text text-anchor="start" x="739" y="370" fill="#333333" font-family="Microsoft YaHei, Arial, sans-serif" font-size="15" data-role="right-item-3">
+    {{RIGHT_ITEM_3}}
+  </text>
+  <line x1="705" y1="390" x2="1205" y2="390" stroke="#F0F0F0" stroke-width="1"/>
+
+  <rect x="715" y="410" width="8" height="8" rx="2" fill="#27AE60"/>
+  <text text-anchor="start" x="739" y="420" fill="#333333" font-family="Microsoft YaHei, Arial, sans-serif" font-size="15" data-role="right-item-4">
+    {{RIGHT_ITEM_4}}
+  </text>
+
+  <!-- ==================== Footer ==================== -->
+  <line x1="40" y1="665" x2="1240" y2="665" stroke="#E0E6ED" stroke-width="1"/>
+  <text x="640" y="695" text-anchor="middle" fill="#999999" font-family="Microsoft YaHei, Arial, sans-serif" font-size="14" data-role="page-num">
+    {{PAGE_NUM}}
+  </text>
+</svg>

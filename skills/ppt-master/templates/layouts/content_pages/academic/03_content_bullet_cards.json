@@ -1,0 +1,99 @@
+{
+  "layout_type": "bullet_cards_grid_2x3",
+  "scenario": "academic",
+  "description": "6 bullet point cards in a 2-row by 3-column grid with accent left borders and icon placeholders",
+  "color_scheme": {
+    "primary": "#003366",
+    "accent": "#CC0000",
+    "secondary": "#0066CC",
+    "bg": "#FFFFFF",
+    "card_bg": "#F8FCFF",
+    "header_bg": "#003366"
+  },
+  "image_slots": [],
+  "text_slots": [
+    {
+      "role": "title",
+      "description": "Page title in header bar"
+    },
+    {
+      "role": "key-message",
+      "description": "Key message bar text"
+    },
+    {
+      "role": "card-icon-1",
+      "description": "Card 1 icon placeholder character"
+    },
+    {
+      "role": "card-title-1",
+      "description": "Card 1 title"
+    },
+    {
+      "role": "card-body-1",
+      "description": "Card 1 description"
+    },
+    {
+      "role": "card-icon-2",
+      "description": "Card 2 icon placeholder character"
+    },
+    {
+      "role": "card-title-2",
+      "description": "Card 2 title"
+    },
+    {
+      "role": "card-body-2",
+      "description": "Card 2 description"
+    },
+    {
+      "role": "card-icon-3",
+      "description": "Card 3 icon placeholder character"
+    },
+    {
+      "role": "card-title-3",
+      "description": "Card 3 title"
+    },
+    {
+      "role": "card-body-3",
+      "description": "Card 3 description"
+    },
+    {
+      "role": "card-icon-4",
+      "description": "Card 4 icon placeholder character"
+    },
+    {
+      "role": "card-title-4",
+      "description": "Card 4 title"
+    },
+    {
+      "role": "card-body-4",
+      "description": "Card 4 description"
+    },
+    {
+      "role": "card-icon-5",
+      "description": "Card 5 icon placeholder character"
+    },
+    {
+      "role": "card-title-5",
+      "description": "Card 5 title"
+    },
+    {
+      "role": "card-body-5",
+      "description": "Card 5 description"
+    },
+    {
+      "role": "card-icon-6",
+      "description": "Card 6 icon placeholder character"
+    },
+    {
+      "role": "card-title-6",
+      "description": "Card 6 title"
+    },
+    {
+      "role": "card-body-6",
+      "description": "Card 6 description"
+    }
+  ],
+  "content_mode": [
+    "text-primary"
+  ]
+}

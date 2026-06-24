@@ -1,0 +1,101 @@
+{
+  "layout_type": "gantt_chart",
+  "scenario": "project_management",
+  "description": "Gantt chart with task list on the left, 12-week timeline grid on the right, colored bars for durations, and diamond milestone markers",
+  "color_scheme": {
+    "primary": "#1A5276",
+    "accent": "#2E86C1",
+    "secondary": "#E0E6ED",
+    "bg": "#F7F9FC",
+    "card_bg": "#FFFFFF",
+    "bar_colors": [
+      "#2E86C1",
+      "#E67E22",
+      "#8E44AD",
+      "#27AE60",
+      "#C0392B",
+      "#16A085"
+    ]
+  },
+  "image_slots": [],
+  "text_slots": [
+    {
+      "role": "title",
+      "data_key": "PAGE_TITLE",
+      "description": "Page title above the Gantt chart"
+    },
+    {
+      "role": "task-1-name",
+      "data_key": "TASK_1_NAME",
+      "description": "First task name in the left label column"
+    },
+    {
+      "role": "task-1-label",
+      "data_key": "TASK_1_LABEL",
+      "description": "First task bar inner label"
+    },
+    {
+      "role": "task-2-name",
+      "data_key": "TASK_2_NAME",
+      "description": "Second task name in the left label column"
+    },
+    {
+      "role": "task-2-label",
+      "data_key": "TASK_2_LABEL",
+      "description": "Second task bar inner label"
+    },
+    {
+      "role": "task-3-name",
+      "data_key": "TASK_3_NAME",
+      "description": "Third task name in the left label column"
+    },
+    {
+      "role": "task-3-label",
+      "data_key": "TASK_3_LABEL",
+      "description": "Third task bar inner label"
+    },
+    {
+      "role": "task-4-name",
+      "data_key": "TASK_4_NAME",
+      "description": "Fourth task name in the left label column"
+    },
+    {
+      "role": "task-4-label",
+      "data_key": "TASK_4_LABEL",
+      "description": "Fourth task bar inner label"
+    },
+    {
+      "role": "task-5-name",
+      "data_key": "TASK_5_NAME",
+      "description": "Fifth task name in the left label column"
+    },
+    {
+      "role": "task-5-label",
+      "data_key": "TASK_5_LABEL",
+      "description": "Fifth task bar inner label"
+    },
+    {
+      "role": "task-6-name",
+      "data_key": "TASK_6_NAME",
+      "description": "Sixth task name in the left label column (optional)"
+    },
+    {
+      "role": "task-6-label",
+      "data_key": "TASK_6_LABEL",
+      "description": "Sixth task bar inner label"
+    },
+    {
+      "role": "milestone-1-label",
+      "data_key": "MILESTONE_1_LABEL",
+      "description": "First milestone label below the diamond marker"
+    },
+    {
+      "role": "milestone-2-label",
+      "data_key": "MILESTONE_2_LABEL",
+      "description": "Second milestone label below the diamond marker"
+    }
+  ],
+  "content_mode": [
+    "text-primary"
+  ]
+}

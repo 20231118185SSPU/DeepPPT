@@ -1,0 +1,113 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="1280" height="720" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1280 720">
+  <!-- Background -->
+  <rect width="1280" height="720" fill="#FFFFFF"/>
+
+  <!-- ==================== Header ==================== -->
+  <rect x="0" y="0" width="1280" height="70" fill="#003366"/>
+  <rect x="0" y="0" width="6" height="70" fill="#CC0000"/>
+  <text text-anchor="start" x="40" y="46" fill="#FFFFFF" font-family="Microsoft YaHei, Arial, sans-serif" font-size="28" font-weight="bold" data-role="title">
+    {{PAGE_TITLE}}
+  </text>
+  <text x="1220" y="46" text-anchor="end" fill="#FFFFFF" font-family="Microsoft YaHei, Arial, sans-serif" font-size="18" font-weight="bold" data-role="logo">
+    {{LOGO}}
+  </text>
+
+  <!-- ==================== Key Message Bar ==================== -->
+  <rect x="0" y="70" width="1280" height="50" fill="#E8F4FC"/>
+  <rect x="0" y="70" width="6" height="50" fill="#0066CC"/>
+  <text text-anchor="start" x="40" y="102" fill="#333333" font-family="Microsoft YaHei, Arial, sans-serif" font-size="18" data-role="key-message">
+    {{KEY_MESSAGE}}
+  </text>
+
+  <!-- ==================== Timeline Area ==================== -->
+  <!-- Horizontal timeline line -->
+  <line x1="120" y1="380" x2="1160" y2="380" stroke="#003366" stroke-width="3"/>
+
+  <!-- Milestone 1 -->
+  <line x1="226" y1="310" x2="226" y2="380" stroke="#003366" stroke-width="2"/>
+  <circle cx="226" cy="380" r="10" fill="#003366" stroke="#FFFFFF" stroke-width="2"/>
+  <circle cx="226" cy="380" r="4" fill="#FFFFFF"/>
+  <text x="226" y="295" text-anchor="middle" fill="#CC0000" font-family="Microsoft YaHei, Arial, sans-serif" font-size="16" font-weight="bold" data-role="milestone-year-1">
+    {{YEAR_1}}
+  </text>
+  <text x="226" y="420" text-anchor="middle" fill="#003366" font-family="Microsoft YaHei, Arial, sans-serif" font-size="15" font-weight="bold" data-role="milestone-title-1">
+    {{TITLE_1}}
+  </text>
+  <text x="226" y="445" text-anchor="middle" fill="#666666" font-family="Microsoft YaHei, Arial, sans-serif" font-size="13" data-role="milestone-desc-1">
+    {{DESC_1}}
+  </text>
+
+  <!-- Milestone 2 -->
+  <line x1="432" y1="310" x2="432" y2="380" stroke="#003366" stroke-width="2"/>
+  <circle cx="432" cy="380" r="10" fill="#0066CC" stroke="#FFFFFF" stroke-width="2"/>
+  <circle cx="432" cy="380" r="4" fill="#FFFFFF"/>
+  <text x="432" y="295" text-anchor="middle" fill="#CC0000" font-family="Microsoft YaHei, Arial, sans-serif" font-size="16" font-weight="bold" data-role="milestone-year-2">
+    {{YEAR_2}}
+  </text>
+  <text x="432" y="420" text-anchor="middle" fill="#003366" font-family="Microsoft YaHei, Arial, sans-serif" font-size="15" font-weight="bold" data-role="milestone-title-2">
+    {{TITLE_2}}
+  </text>
+  <text x="432" y="445" text-anchor="middle" fill="#666666" font-family="Microsoft YaHei, Arial, sans-serif" font-size="13" data-role="milestone-desc-2">
+    {{DESC_2}}
+  </text>
+
+  <!-- Milestone 3 (center, elevated) -->
+  <line x1="640" y1="270" x2="640" y2="380" stroke="#CC0000" stroke-width="2"/>
+  <circle cx="640" cy="380" r="14" fill="#CC0000" stroke="#FFFFFF" stroke-width="3"/>
+  <circle cx="640" cy="380" r="5" fill="#FFFFFF"/>
+  <text x="640" y="255" text-anchor="middle" fill="#CC0000" font-family="Microsoft YaHei, Arial, sans-serif" font-size="18" font-weight="bold" data-role="milestone-year-3">
+    {{YEAR_3}}
+  </text>
+  <text x="640" y="420" text-anchor="middle" fill="#003366" font-family="Microsoft YaHei, Arial, sans-serif" font-size="15" font-weight="bold" data-role="milestone-title-3">
+    {{TITLE_3}}
+  </text>
+  <text x="640" y="445" text-anchor="middle" fill="#666666" font-family="Microsoft YaHei, Arial, sans-serif" font-size="13" data-role="milestone-desc-3">
+    {{DESC_3}}
+  </text>
+
+  <!-- Milestone 4 -->
+  <line x1="848" y1="310" x2="848" y2="380" stroke="#003366" stroke-width="2"/>
+  <circle cx="848" cy="380" r="10" fill="#0066CC" stroke="#FFFFFF" stroke-width="2"/>
+  <circle cx="848" cy="380" r="4" fill="#FFFFFF"/>
+  <text x="848" y="295" text-anchor="middle" fill="#CC0000" font-family="Microsoft YaHei, Arial, sans-serif" font-size="16" font-weight="bold" data-role="milestone-year-4">
+    {{YEAR_4}}
+  </text>
+  <text x="848" y="420" text-anchor="middle" fill="#003366" font-family="Microsoft YaHei, Arial, sans-serif" font-size="15" font-weight="bold" data-role="milestone-title-4">
+    {{TITLE_4}}
+  </text>
+  <text x="848" y="445" text-anchor="middle" fill="#666666" font-family="Microsoft YaHei, Arial, sans-serif" font-size="13" data-role="milestone-desc-4">
+    {{DESC_4}}
+  </text>
+
+  <!-- Milestone 5 -->
+  <line x1="1054" y1="310" x2="1054" y2="380" stroke="#003366" stroke-width="2"/>
+  <circle cx="1054" cy="380" r="10" fill="#003366" stroke="#FFFFFF" stroke-width="2"/>
+  <circle cx="1054" cy="380" r="4" fill="#FFFFFF"/>
+  <text x="1054" y="295" text-anchor="middle" fill="#CC0000" font-family="Microsoft YaHei, Arial, sans-serif" font-size="16" font-weight="bold" data-role="milestone-year-5">
+    {{YEAR_5}}
+  </text>
+  <text x="1054" y="420" text-anchor="middle" fill="#003366" font-family="Microsoft YaHei, Arial, sans-serif" font-size="15" font-weight="bold" data-role="milestone-title-5">
+    {{TITLE_5}}
+  </text>
+  <text x="1054" y="445" text-anchor="middle" fill="#666666" font-family="Microsoft YaHei, Arial, sans-serif" font-size="13" data-role="milestone-desc-5">
+    {{DESC_5}}
+  </text>
+
+  <!-- Left arrow cap -->
+  <polygon points="120,380 135,370 135,390" fill="#003366"/>
+  <!-- Right arrow cap -->
+  <polygon points="1160,380 1145,370 1145,390" fill="#003366"/>
+
+  <!-- ==================== Footer ==================== -->
+  <line x1="40" y1="665" x2="1240" y2="665" stroke="#E8F4FC" stroke-width="1"/>
+  <text text-anchor="start" x="40" y="695" fill="#999999" font-family="Microsoft YaHei, Arial, sans-serif" font-size="12" data-role="source">
+    数据来源：{{SOURCE}}
+  </text>
+  <text x="640" y="695" text-anchor="middle" fill="#999999" font-family="Microsoft YaHei, Arial, sans-serif" font-size="12" data-role="section-name">
+    {{SECTION_NAME}}
+  </text>
+  <text x="1220" y="695" text-anchor="end" fill="#666666" font-family="Microsoft YaHei, Arial, sans-serif" font-size="14" data-role="page-num">
+    {{PAGE_NUM}}
+  </text>
+</svg>

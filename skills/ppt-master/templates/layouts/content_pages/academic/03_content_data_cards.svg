@@ -1,0 +1,107 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="1280" height="720" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1280 720">
+  <!-- Background -->
+  <rect width="1280" height="720" fill="#FFFFFF"/>
+
+  <!-- ==================== Header ==================== -->
+  <rect x="0" y="0" width="1280" height="70" fill="#003366"/>
+  <rect x="0" y="0" width="6" height="70" fill="#CC0000"/>
+  <text text-anchor="start" x="40" y="46" fill="#FFFFFF" font-family="Microsoft YaHei, Arial, sans-serif" font-size="28" font-weight="bold" data-role="title">
+    {{PAGE_TITLE}}
+  </text>
+  <text x="1220" y="46" text-anchor="end" fill="#FFFFFF" font-family="Microsoft YaHei, Arial, sans-serif" font-size="18" font-weight="bold" data-role="logo">
+    {{LOGO}}
+  </text>
+
+  <!-- ==================== Key Message Bar ==================== -->
+  <rect x="0" y="70" width="1280" height="50" fill="#E8F4FC"/>
+  <rect x="0" y="70" width="6" height="50" fill="#0066CC"/>
+  <text text-anchor="start" x="40" y="102" fill="#333333" font-family="Microsoft YaHei, Arial, sans-serif" font-size="18" data-role="key-message">
+    {{KEY_MESSAGE}}
+  </text>
+
+  <!-- ==================== Content Area ==================== -->
+  <!-- LEFT column: 3 stacked data cards (x=60, w=400) -->
+  <!-- Card 1 -->
+  <rect x="60" y="140" width="400" height="150" rx="8" fill="#F8FCFF" stroke="#D0D7E0" stroke-width="1"/>
+  <rect x="60" y="140" width="6" height="150" rx="3" fill="#003366"/>
+  <text text-anchor="start" x="90" y="175" fill="#666666" font-family="Microsoft YaHei, Arial, sans-serif" font-size="14" data-role="metric-name-1">
+    {{METRIC_NAME}}
+  </text>
+  <text text-anchor="start" x="90" y="220" fill="#003366" font-family="Microsoft YaHei, Arial, sans-serif" font-size="42" font-weight="bold" data-role="metric-value-1">
+    {{METRIC_VALUE}}
+  </text>
+  <text text-anchor="start" x="90" y="260" fill="#00A86B" font-family="Microsoft YaHei, Arial, sans-serif" font-size="14" data-role="metric-change-1">
+    {{METRIC_CHANGE}}
+  </text>
+
+  <!-- Card 2 -->
+  <rect x="60" y="305" width="400" height="150" rx="8" fill="#F8FCFF" stroke="#D0D7E0" stroke-width="1"/>
+  <rect x="60" y="305" width="6" height="150" rx="3" fill="#0066CC"/>
+  <text text-anchor="start" x="90" y="340" fill="#666666" font-family="Microsoft YaHei, Arial, sans-serif" font-size="14" data-role="metric-name-2">
+    {{METRIC_NAME}}
+  </text>
+  <text text-anchor="start" x="90" y="385" fill="#0066CC" font-family="Microsoft YaHei, Arial, sans-serif" font-size="42" font-weight="bold" data-role="metric-value-2">
+    {{METRIC_VALUE}}
+  </text>
+  <text text-anchor="start" x="90" y="425" fill="#00A86B" font-family="Microsoft YaHei, Arial, sans-serif" font-size="14" data-role="metric-change-2">
+    {{METRIC_CHANGE}}
+  </text>
+
+  <!-- Card 3 -->
+  <rect x="60" y="470" width="400" height="150" rx="8" fill="#F8FCFF" stroke="#D0D7E0" stroke-width="1"/>
+  <rect x="60" y="470" width="6" height="150" rx="3" fill="#CC0000"/>
+  <text text-anchor="start" x="90" y="505" fill="#666666" font-family="Microsoft YaHei, Arial, sans-serif" font-size="14" data-role="metric-name-3">
+    {{METRIC_NAME}}
+  </text>
+  <text text-anchor="start" x="90" y="550" fill="#CC0000" font-family="Microsoft YaHei, Arial, sans-serif" font-size="42" font-weight="bold" data-role="metric-value-3">
+    {{METRIC_VALUE}}
+  </text>
+  <text text-anchor="start" x="90" y="590" fill="#00A86B" font-family="Microsoft YaHei, Arial, sans-serif" font-size="14" data-role="metric-change-3">
+    {{METRIC_CHANGE}}
+  </text>
+
+  <!-- RIGHT column: bullet content area (x=490, w=730) -->
+  <rect x="490" y="140" width="730" height="480" rx="8" fill="#FFFFFF" stroke="#E8F4FC" stroke-width="1"/>
+  <!-- Bullet points -->
+  <circle cx="520" cy="185" r="5" fill="#0066CC"/>
+  <text text-anchor="start" x="540" y="190" fill="#333333" font-family="Microsoft YaHei, Arial, sans-serif" font-size="16" data-role="body-1">
+    {{BODY_1}}
+  </text>
+  <line x1="510" y1="215" x2="1190" y2="215" stroke="#E8F4FC" stroke-width="1"/>
+
+  <circle cx="520" cy="255" r="5" fill="#0066CC"/>
+  <text text-anchor="start" x="540" y="260" fill="#333333" font-family="Microsoft YaHei, Arial, sans-serif" font-size="16" data-role="body-2">
+    {{BODY_2}}
+  </text>
+  <line x1="510" y1="285" x2="1190" y2="285" stroke="#E8F4FC" stroke-width="1"/>
+
+  <circle cx="520" cy="325" r="5" fill="#0066CC"/>
+  <text text-anchor="start" x="540" y="330" fill="#333333" font-family="Microsoft YaHei, Arial, sans-serif" font-size="16" data-role="body-3">
+    {{BODY_3}}
+  </text>
+  <line x1="510" y1="355" x2="1190" y2="355" stroke="#E8F4FC" stroke-width="1"/>
+
+  <circle cx="520" cy="395" r="5" fill="#0066CC"/>
+  <text text-anchor="start" x="540" y="400" fill="#333333" font-family="Microsoft YaHei, Arial, sans-serif" font-size="16" data-role="body-4">
+    {{BODY_4}}
+  </text>
+  <line x1="510" y1="425" x2="1190" y2="425" stroke="#E8F4FC" stroke-width="1"/>
+
+  <circle cx="520" cy="465" r="5" fill="#0066CC"/>
+  <text text-anchor="start" x="540" y="470" fill="#333333" font-family="Microsoft YaHei, Arial, sans-serif" font-size="16" data-role="body-5">
+    {{BODY_5}}
+  </text>
+
+  <!-- ==================== Footer ==================== -->
+  <line x1="40" y1="665" x2="1240" y2="665" stroke="#E8F4FC" stroke-width="1"/>
+  <text text-anchor="start" x="40" y="695" fill="#999999" font-family="Microsoft YaHei, Arial, sans-serif" font-size="12" data-role="source">
+    数据来源：{{SOURCE}}
+  </text>
+  <text x="640" y="695" text-anchor="middle" fill="#999999" font-family="Microsoft YaHei, Arial, sans-serif" font-size="12" data-role="section-name">
+    {{SECTION_NAME}}
+  </text>
+  <text x="1220" y="695" text-anchor="end" fill="#666666" font-family="Microsoft YaHei, Arial, sans-serif" font-size="14" data-role="page-num">
+    {{PAGE_NUM}}
+  </text>
+</svg>

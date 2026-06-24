@@ -78,15 +78,19 @@ from image_sources.provider_common import (  # noqa: E402
 PROVIDER_MODULES: dict[str, str] = {
     "openverse": "image_sources.provider_openverse",
     "wikimedia": "image_sources.provider_wikimedia",
+    "nasa": "image_sources.provider_nasa",
+    "smithsonian": "image_sources.provider_smithsonian",
     "pexels": "image_sources.provider_pexels",
     "pixabay": "image_sources.provider_pixabay",
+    "unsplash": "image_sources.provider_unsplash",
+    "flickr": "image_sources.provider_flickr",
     "browser": "image_sources.provider_browser",
 }
 
 # Providers that work without configuration. ``image_search.py`` defaults
 # to these so a fresh clone can search immediately.
-ZERO_CONFIG_PROVIDERS: tuple[str, ...] = ("openverse", "wikimedia")
-KEYED_PROVIDERS: tuple[str, ...] = ("pexels", "pixabay")
+ZERO_CONFIG_PROVIDERS: tuple[str, ...] = ("openverse", "wikimedia", "nasa", "smithsonian")
+KEYED_PROVIDERS: tuple[str, ...] = ("pexels", "pixabay", "unsplash", "flickr")
 # Browser provider: Playwright-based fallback when API providers fail.
 # Requires: pip install playwright && python -m playwright install chromium
 BROWSER_PROVIDER: str = "browser"
@@ -125,7 +129,7 @@ SEARCH_REQUIRED_ITEM_FIELDS = ("filename", "query", "status")
 
 def _load_search_env_file() -> None:
     """Load image-search keys from the shared PPT Master .env locations."""
-    load_prefixed_env_file(("PEXELS_", "PIXABAY_"))
+    load_prefixed_env_file(("PEXELS_", "PIXABAY_", "UNSPLASH_", "FLICKR_"))
 
 
 # ---------------------------------------------------------------------------
@@ -985,6 +989,10 @@ def _default_provider_chain() -> list[str]:
         chain.append("pexels")
     if os.environ.get("PIXABAY_API_KEY"):
         chain.append("pixabay")
+    if os.environ.get("UNSPLASH_ACCESS_KEY"):
+        chain.append("unsplash")
+    if os.environ.get("FLICKR_API_KEY"):
+        chain.append("flickr")
     chain.extend(ZERO_CONFIG_PROVIDERS)
     return chain
 

@@ -1,0 +1,35 @@
+{
+  "layout_type": "image_hero",
+  "scenario": "business",
+  "description": "Full-bleed hero image with gradient overlay and bottom-left text area for magazine-style impact",
+  "color_scheme": {
+    "primary": "#1A5276",
+    "accent": "#E74C3C",
+    "secondary": "#2E86C1",
+    "bg": "#FFFFFF",
+    "card_bg": "#FFFFFF"
+  },
+  "image_slots": [
+    {
+      "role": "image-slot-hero",
+      "description": "Full-bleed hero image covering the entire canvas"
+    }
+  ],
+  "text_slots": [
+    {
+      "role": "pill-badge",
+      "description": "Small accent badge label"
+    },
+    {
+      "role": "hero-title",
+      "description": "Large title over the image"
+    },
+    {
+      "role": "hero-subtitle",
+      "description": "Subtitle text below the title"
+    }
+  ],
+  "content_mode": [
+    "image-primary"
+  ]
+}

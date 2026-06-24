@@ -49,16 +49,23 @@ Strict:  provider chain, license filter = cc0,pdm,pexels,pixabay
 |---|---|---|
 | Openverse | zero-config | fallback aggregator: Wikimedia + Flickr + museums + rawpixel |
 | Wikimedia Commons | zero-config | educational, scientific, geographic, historical |
+| NASA Image Library | zero-config | space, astronomy, science, technology — all Public Domain |
+| Smithsonian Open Access | zero-config | history, art, culture, science — all CC0 |
 | Pexels | recommended: `PEXELS_API_KEY` (free, [signup](https://www.pexels.com/api/)) | modern stock photography, people, workplace, lifestyle |
 | Pixabay | recommended: `PIXABAY_API_KEY` (free, [signup](https://pixabay.com/api/docs/)) | broad type coverage including photos and illustrations |
+| Unsplash | recommended: `UNSPLASH_ACCESS_KEY` (free, [signup](https://unsplash.com/developers)) | high-quality free photography, artistic/editorial |
+| Flickr | recommended: `FLICKR_API_KEY` (free, [signup](https://www.flickr.com/services/apps/create/)) | massive CC-licensed photo library |
+| **Browser (Playwright)** | `pip install playwright && python -m playwright install chromium` | **Fallback**: multi-engine search (Google/Bing/Yandex) when API providers fail. Also provides URL screenshot capture. |
 
 Default chain (when `--provider` is unset):
 
 ```
-openverse → wikimedia → pexels (if PEXELS_API_KEY set) → pixabay (if PIXABAY_API_KEY set)
+openverse → wikimedia → nasa → smithsonian → pexels (if PEXELS_API_KEY set) → pixabay (if PIXABAY_API_KEY set) → unsplash (if UNSPLASH_ACCESS_KEY set) → flickr (if FLICKR_API_KEY set) → browser (automatic fallback)
 ```
 
 Keyed providers without an API key are silently skipped — not an error.
+
+**Browser fallback**: when all API providers return no results, the system automatically falls back to Playwright-based browser search across multiple search engines. This is transparent to the user — no additional flags needed. The browser provider uses multi-dimensional query expansion and CLIP-based semantic filtering (when available) to find relevant images.
 
 **Validation**: For polished visual decks, configure at least one keyed provider before using `Acquire Via: web`.
 
@@ -151,6 +158,33 @@ The runner searches all `Pending` / `Failed` rows concurrently, appends each suc
 
 **Pacing**: free providers (Wikimedia/Openverse) are rate-sensitive, so batch concurrency defaults to a modest **3** (`--concurrency N`, or `IMAGE_SEARCH_CONCURRENCY` env). Use `--concurrency 1` to restore strict one-at-a-time pacing. Single-query mode is one request at a time by nature.
 
+### URL capture mode (deep-dive product pages)
+
+When slides need screenshots of specific product pages or websites (e.g., competitor analysis, product demo pages), use `--url-capture`:
+
+```bash
+python3 scripts/image_search.py \
+  --url-capture https://gamma.app https://www.beautiful.ai \
+  --filename web_gamma.jpg \
+  -o <project_path>/images/web_assets
+```
+
+| Parameter | Required | Default | Description |
+|---|---|---|---|
+| `--url-capture` | yes (in this mode) | — | One or more URLs to capture |
+| `--filename` | no | auto-generated | Output filename |
+| `--wait-ms` | no | 3000 | Page render wait time in milliseconds |
+| `-o / --output` | no | `.` | Output directory |
+
+**Features**:
+- Stealth headers to avoid bot detection
+- 3-second render wait for JS-heavy pages
+- Auto-scroll for lazy-loaded content
+- Output: 1920×1080 JPEG, ≤300KB after compression
+- License: `Browser License (verify before public use)` — requires manual verification before public distribution
+
+**Pipeline**: URL → Playwright headless Chrome → screenshot → compress → save + manifest entry
+
 ---
 
 ## 6. Manifest Format (`image_sources.json`)
@@ -203,6 +237,24 @@ Every successful download appends or replaces one entry keyed on `filename`:
 
 > Manifest is **idempotent on `filename`**. Rerunning the CLI replaces that entry; other entries are preserved.
 
+### 6.1 Post-download quality validation
+
+After downloading, validate against the target slot dimensions from `detailed_outline.json`:
+
+| Check | Threshold | Action |
+|---|---|---|
+| **Size check** | Downloaded width < target width × 0.8 OR height < target height × 0.8 | Mark `Needs-Manual` — image too small for the layout slot |
+| **Aspect ratio** | Aspect ratio deviation > 15% from target slot | Mark `Needs-Manual` — will cause significant cropping |
+| **Minimum resolution** | Width < 400px OR height < 300px | Mark `Needs-Manual` — too low-res for any PPT use |
+| **File size** | < 10KB | Likely a placeholder or error image — Mark `Needs-Manual` |
+
+When checks pass, record the recommended `preserveAspectRatio` crop in `image_sources.json`:
+```json
+"crop_strategy": "xMidYMid slice"
+```
+
+> The Executor uses `preserveAspectRatio="xMidYMid slice"` on all `<image>` elements as a safety net. But pre-validating dimensions avoids wasting layout space on heavily-cropped images.
+
 ---
 
 ## 7. On-Slide Attribution — Visual Specification
@@ -253,12 +305,13 @@ Extends [`image-base.md`](./image-base.md) §6.
 
 | Situation | Behavior |
 |---|---|
-| No candidates from any provider in either stage | Mark row `Needs-Manual`. Suggest: shorter query, drop `--strict-no-attribution`, or set keyed provider's API key. |
+| No candidates from any provider in either stage | **Automatic browser fallback**: system tries Playwright-based multi-engine search (Google/Bing/Yandex). Only marks `Needs-Manual` if browser fallback also fails. |
+| Browser fallback fails (Playwright not installed) | Mark row `Needs-Manual`. Suggest: `pip install playwright && python -m playwright install chromium`. |
 | Single candidate fails to download (HTTP 403/404) | Dispatcher auto-falls through to the next ranked candidate. No user action. |
 | All candidates from one provider fail | Dispatcher moves to the next provider in the chain. |
 | Keyed provider has no API key | Silently skipped. Not an error. |
 
-CLI exit: `0` on success, `1` only when no acceptable image was found across the entire dispatch matrix.
+CLI exit: `0` on success, `1` only when no acceptable image was found across the entire dispatch matrix (including browser fallback).
 
 ---
 

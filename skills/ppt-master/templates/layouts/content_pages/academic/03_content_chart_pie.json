@@ -1,0 +1,137 @@
+{
+  "layout_type": "chart_pie",
+  "scenario": "academic",
+  "description": "Donut chart with 5 segments on the left, takeaways/legend card on the right, matching the HTML pie template's two-column layout",
+  "color_scheme": {
+    "primary": "#003366",
+    "accent": "#CC0000",
+    "secondary": "#0066CC",
+    "bg": "#FFFFFF",
+    "card_bg": "#FAFCFE",
+    "header_bg": "#003366",
+    "green": "#00A86B",
+    "amber": "#FFB020"
+  },
+  "image_slots": [],
+  "text_slots": [
+    {
+      "role": "title",
+      "description": "Page title in header bar"
+    },
+    {
+      "role": "key-message",
+      "description": "Key message bar text"
+    },
+    {
+      "role": "pie-center-value",
+      "description": "Center total value in donut hole"
+    },
+    {
+      "role": "pie-center-label",
+      "description": "Center unit/label in donut hole"
+    },
+    {
+      "role": "pie-label-1",
+      "description": "First segment label"
+    },
+    {
+      "role": "pie-pct-1",
+      "description": "First segment percentage"
+    },
+    {
+      "role": "pie-label-2",
+      "description": "Second segment label"
+    },
+    {
+      "role": "pie-pct-2",
+      "description": "Second segment percentage"
+    },
+    {
+      "role": "pie-label-3",
+      "description": "Third segment label"
+    },
+    {
+      "role": "pie-pct-3",
+      "description": "Third segment percentage"
+    },
+    {
+      "role": "pie-label-4",
+      "description": "Fourth segment label"
+    },
+    {
+      "role": "pie-pct-4",
+      "description": "Fourth segment percentage"
+    },
+    {
+      "role": "pie-label-5",
+      "description": "Fifth segment label"
+    },
+    {
+      "role": "pie-pct-5",
+      "description": "Fifth segment percentage"
+    },
+    {
+      "role": "takeaway-title",
+      "description": "Takeaways card title"
+    },
+    {
+      "role": "takeaway-desc",
+      "description": "Takeaways card description paragraph"
+    },
+    {
+      "role": "legend-item-1",
+      "description": "First legend entry name"
+    },
+    {
+      "role": "legend-pct-1",
+      "description": "First legend entry percentage"
+    },
+    {
+      "role": "legend-item-2",
+      "description": "Second legend entry name"
+    },
+    {
+      "role": "legend-pct-2",
+      "description": "Second legend entry percentage"
+    },
+    {
+      "role": "legend-item-3",
+      "description": "Third legend entry name"
+    },
+    {
+      "role": "legend-pct-3",
+      "description": "Third legend entry percentage"
+    },
+    {
+      "role": "legend-item-4",
+      "description": "Fourth legend entry name"
+    },
+    {
+      "role": "legend-pct-4",
+      "description": "Fourth legend entry percentage"
+    },
+    {
+      "role": "legend-item-5",
+      "description": "Fifth legend entry name"
+    },
+    {
+      "role": "legend-pct-5",
+      "description": "Fifth legend entry percentage"
+    },
+    {
+      "role": "insight-1",
+      "description": "First insight bullet"
+    },
+    {
+      "role": "insight-2",
+      "description": "Second insight bullet"
+    },
+    {
+      "role": "insight-3",
+      "description": "Third insight bullet"
+    }
+  ],
+  "content_mode": [
+    "text-primary"
+  ]
+}

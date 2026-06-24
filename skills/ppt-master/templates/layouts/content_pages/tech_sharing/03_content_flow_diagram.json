@@ -1,0 +1,100 @@
+{
+  "layout_type": "flow_diagram_5col",
+  "scenario": "tech_sharing",
+  "description": "Horizontal 5-node flow diagram with arrow connectors. One node is highlighted as the active/current step. Each node has an icon placeholder, title, and description. Suitable for pipeline overviews, workflow explanations, and process walkthroughs.",
+  "color_scheme": {
+    "primary": "#1B2A4A",
+    "accent": "#3B6CB5",
+    "secondary": "#778899",
+    "bg": "#F4F6FA",
+    "card_bg": "#FFFFFF",
+    "icon_bg": "#EBF0FA",
+    "highlight_bg": "#D6E4F7"
+  },
+  "image_slots": [],
+  "text_slots": [
+    {
+      "role": "title",
+      "description": "Page title"
+    },
+    {
+      "role": "subtitle",
+      "description": "Page subtitle / pipeline label"
+    },
+    {
+      "role": "node-icon-1",
+      "description": "First node icon or emoji"
+    },
+    {
+      "role": "node-title-1",
+      "description": "First node title"
+    },
+    {
+      "role": "node-desc-1",
+      "description": "First node description"
+    },
+    {
+      "role": "node-icon-2",
+      "description": "Second node icon or emoji"
+    },
+    {
+      "role": "node-title-2",
+      "description": "Second node title"
+    },
+    {
+      "role": "node-desc-2",
+      "description": "Second node description"
+    },
+    {
+      "role": "node-icon-3",
+      "description": "Third node icon or emoji (highlighted)"
+    },
+    {
+      "role": "node-title-3",
+      "description": "Third node title (highlighted)"
+    },
+    {
+      "role": "node-desc-3",
+      "description": "Third node description (highlighted)"
+    },
+    {
+      "role": "node-badge-3",
+      "description": "Highlight badge text, e.g. 'Active' or 'Current'"
+    },
+    {
+      "role": "node-icon-4",
+      "description": "Fourth node icon or emoji"
+    },
+    {
+      "role": "node-title-4",
+      "description": "Fourth node title"
+    },
+    {
+      "role": "node-desc-4",
+      "description": "Fourth node description"
+    },
+    {
+      "role": "node-icon-5",
+      "description": "Fifth node icon or emoji"
+    },
+    {
+      "role": "node-title-5",
+      "description": "Fifth node title"
+    },
+    {
+      "role": "node-desc-5",
+      "description": "Fifth node description"
+    },
+    {
+      "role": "footnote",
+      "description": "Optional footnote text"
+    },
+    {
+      "role": "page-num",
+      "description": "Page number"
+    }
+  ],
+  "content_mode": [
+    "image_with_text"
+  ]
+}

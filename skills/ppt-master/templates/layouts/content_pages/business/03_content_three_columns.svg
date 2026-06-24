@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="1280" height="720" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1280 720">
+  <!-- Background -->
+  <rect width="1280" height="720" fill="#F7F9FC"/>
+
+  <!-- ==================== Header ==================== -->
+  <text text-anchor="start" x="60" y="42" fill="#E74C3C" font-family="Microsoft YaHei, Arial, sans-serif" font-size="14" font-weight="bold" letter-spacing="3" data-role="kicker">
+    {{KICKER_LABEL}}
+  </text>
+  <text text-anchor="start" x="60" y="78" fill="#1A5276" font-family="Microsoft YaHei, Arial, sans-serif" font-size="28" font-weight="bold" data-role="title">
+    {{PAGE_TITLE}}
+  </text>
+
+  <!-- ==================== Column 1 (x=45, w=380) ==================== -->
+  <rect x="45" y="110" width="380" height="500" rx="10" fill="#FFFFFF" stroke="#E0E6ED" stroke-width="1"/>
+  <!-- Bottom accent gradient -->
+  <rect x="45" y="590" width="380" height="20" rx="0" fill="#1A5276" fill-opacity="0.06"/>
+  <rect x="45" y="597" width="380" height="3" fill="#1A5276" fill-opacity="0.3"/>
+  <!-- Icon placeholder -->
+  <circle cx="235" cy="185" r="36" fill="#1A5276" fill-opacity="0.08"/>
+  <text x="235" y="198" text-anchor="middle" fill="#1A5276" font-family="Microsoft YaHei, Arial, sans-serif" font-size="30" data-role="col-icon-1">
+    {{COL_ICON_1}}
+  </text>
+  <!-- Title -->
+  <text x="235" y="265" text-anchor="middle" fill="#1A5276" font-family="Microsoft YaHei, Arial, sans-serif" font-size="20" font-weight="bold" data-role="col-title-1">
+    {{COL_TITLE_1}}
+  </text>
+  <!-- Description -->
+  <text x="235" y="310" text-anchor="middle" fill="#666666" font-family="Microsoft YaHei, Arial, sans-serif" font-size="14" data-role="col-desc-1a">
+    {{COL_DESC_1A}}
+  </text>
+  <text x="235" y="335" text-anchor="middle" fill="#666666" font-family="Microsoft YaHei, Arial, sans-serif" font-size="14" data-role="col-desc-1b">
+    {{COL_DESC_1B}}
+  </text>
+  <text x="235" y="360" text-anchor="middle" fill="#666666" font-family="Microsoft YaHei, Arial, sans-serif" font-size="14" data-role="col-desc-1c">
+    {{COL_DESC_1C}}
+  </text>
+
+  <!-- ==================== Column 2 (x=450, w=380) ==================== -->
+  <rect x="450" y="110" width="380" height="500" rx="10" fill="#FFFFFF" stroke="#E0E6ED" stroke-width="1"/>
+  <rect x="450" y="590" width="380" height="20" rx="0" fill="#E74C3C" fill-opacity="0.06"/>
+  <rect x="450" y="597" width="380" height="3" fill="#E74C3C" fill-opacity="0.3"/>
+  <circle cx="640" cy="185" r="36" fill="#E74C3C" fill-opacity="0.08"/>
+  <text x="640" y="198" text-anchor="middle" fill="#E74C3C" font-family="Microsoft YaHei, Arial, sans-serif" font-size="30" data-role="col-icon-2">
+    {{COL_ICON_2}}
+  </text>
+  <text x="640" y="265" text-anchor="middle" fill="#1A5276" font-family="Microsoft YaHei, Arial, sans-serif" font-size="20" font-weight="bold" data-role="col-title-2">
+    {{COL_TITLE_2}}
+  </text>
+  <text x="640" y="310" text-anchor="middle" fill="#666666" font-family="Microsoft YaHei, Arial, sans-serif" font-size="14" data-role="col-desc-2a">
+    {{COL_DESC_2A}}
+  </text>
+  <text x="640" y="335" text-anchor="middle" fill="#666666" font-family="Microsoft YaHei, Arial, sans-serif" font-size="14" data-role="col-desc-2b">
+    {{COL_DESC_2B}}
+  </text>
+  <text x="640" y="360" text-anchor="middle" fill="#666666" font-family="Microsoft YaHei, Arial, sans-serif" font-size="14" data-role="col-desc-2c">
+    {{COL_DESC_2C}}
+  </text>
+
+  <!-- ==================== Column 3 (x=855, w=380) ==================== -->
+  <rect x="855" y="110" width="380" height="500" rx="10" fill="#FFFFFF" stroke="#E0E6ED" stroke-width="1"/>
+  <rect x="855" y="590" width="380" height="20" rx="0" fill="#2E86C1" fill-opacity="0.06"/>
+  <rect x="855" y="597" width="380" height="3" fill="#2E86C1" fill-opacity="0.3"/>
+  <circle cx="1045" cy="185" r="36" fill="#2E86C1" fill-opacity="0.08"/>
+  <text x="1045" y="198" text-anchor="middle" fill="#2E86C1" font-family="Microsoft YaHei, Arial, sans-serif" font-size="30" data-role="col-icon-3">
+    {{COL_ICON_3}}
+  </text>
+  <text x="1045" y="265" text-anchor="middle" fill="#1A5276" font-family="Microsoft YaHei, Arial, sans-serif" font-size="20" font-weight="bold" data-role="col-title-3">
+    {{COL_TITLE_3}}
+  </text>
+  <text x="1045" y="310" text-anchor="middle" fill="#666666" font-family="Microsoft YaHei, Arial, sans-serif" font-size="14" data-role="col-desc-3a">
+    {{COL_DESC_3A}}
+  </text>
+  <text x="1045" y="335" text-anchor="middle" fill="#666666" font-family="Microsoft YaHei, Arial, sans-serif" font-size="14" data-role="col-desc-3b">
+    {{COL_DESC_3B}}
+  </text>
+  <text x="1045" y="360" text-anchor="middle" fill="#666666" font-family="Microsoft YaHei, Arial, sans-serif" font-size="14" data-role="col-desc-3c">
+    {{COL_DESC_3C}}
+  </text>
+
+  <!-- ==================== Footer ==================== -->
+  <line x1="40" y1="665" x2="1240" y2="665" stroke="#E0E6ED" stroke-width="1"/>
+  <text x="640" y="695" text-anchor="middle" fill="#999999" font-family="Microsoft YaHei, Arial, sans-serif" font-size="14" data-role="page-num">
+    {{PAGE_NUM}}
+  </text>
+</svg>

@@ -1,0 +1,114 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="1280" height="720" viewBox="0 0 1280 720" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="headerGrad" x1="0" y1="0" x2="1280" y2="0" gradientUnits="userSpaceOnUse">
+      <stop offset="0%" stop-color="#00B4D8"/>
+      <stop offset="100%" stop-color="#0050B3"/>
+    </linearGradient>
+    <linearGradient id="badgeGrad" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#00B4D8"/>
+      <stop offset="100%" stop-color="#0050B3"/>
+    </linearGradient>
+    <linearGradient id="donutGrad" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#00B4D8"/>
+      <stop offset="100%" stop-color="#0050B3"/>
+    </linearGradient>
+    <filter id="cardShadow" x="-2%" y="-2%" width="104%" height="108%">
+      <feDropShadow dx="0" dy="2" stdDeviation="4" flood-color="#0050B3" flood-opacity="0.08"/>
+    </filter>
+  </defs>
+
+  <!-- Header gradient bar -->
+  <rect x="0" y="0" width="1280" height="6" fill="url(#headerGrad)"/>
+
+  <!-- Header area -->
+  <rect x="60" y="26" width="42" height="42" rx="8" fill="url(#badgeGrad)"/>
+  <text x="81" y="55" font-family="Microsoft YaHei, Arial, sans-serif" font-size="18" font-weight="700" fill="#FFFFFF" text-anchor="middle">03</text>
+  <text text-anchor="start" x="118" y="54" font-family="Microsoft YaHei, Arial, sans-serif" font-size="24" font-weight="700" fill="#1A1A2E">{{PAGE_TITLE}}</text>
+  <text x="1220" y="54" font-family="Microsoft YaHei, Arial, sans-serif" font-size="14" fill="#6B7280" text-anchor="end">{{ORG_NAME}}</text>
+  <line x1="60" y1="82" x2="1220" y2="82" stroke="#E5E7EB" stroke-width="1"/>
+
+  <!-- Widget 1: KPI large number (top-left) -->
+  <rect x="60" y="100" width="550" height="260" rx="12" fill="#FFFFFF" stroke="#E5E7EB" stroke-width="1" filter="url(#cardShadow)"/>
+  <rect x="60" y="100" width="6" height="260" rx="3" fill="#00B4D8"/>
+  <text text-anchor="start" x="90" y="140" font-family="Microsoft YaHei, Arial, sans-serif" font-size="14" font-weight="600" fill="#6B7280">{{KPI_LABEL}}</text>
+  <text text-anchor="start" x="90" y="230" font-family="Microsoft YaHei, Arial, sans-serif" font-size="72" font-weight="800" fill="#0050B3">{{KPI_VALUE}}</text>
+  <text text-anchor="start" x="90" y="270" font-family="Microsoft YaHei, Arial, sans-serif" font-size="14" fill="#00B4D8">{{KPI_UNIT}}</text>
+  <text text-anchor="start" x="90" y="310" font-family="Microsoft YaHei, Arial, sans-serif" font-size="13" fill="#9CA3AF">{{KPI_COMPARISON}}</text>
+  <!-- KPI delta badge -->
+  <rect x="460" y="200" width="70" height="30" rx="15" fill="#ECFDF5"/>
+  <text x="495" y="220" font-family="Microsoft YaHei, Arial, sans-serif" font-size="13" font-weight="600" fill="#059669" text-anchor="middle">{{KPI_DELTA}}</text>
+
+  <!-- Widget 2: Mini bar chart (top-right) -->
+  <rect x="630" y="100" width="590" height="260" rx="12" fill="#FFFFFF" stroke="#E5E7EB" stroke-width="1" filter="url(#cardShadow)"/>
+  <rect x="630" y="100" width="6" height="260" rx="3" fill="#0050B3"/>
+  <text text-anchor="start" x="660" y="140" font-family="Microsoft YaHei, Arial, sans-serif" font-size="14" font-weight="600" fill="#6B7280">{{CHART_TITLE}}</text>
+  <!-- Bar chart bars -->
+  <text text-anchor="start" x="660" y="195" font-family="Microsoft YaHei, Arial, sans-serif" font-size="12" fill="#6B7280">{{BAR_LABEL_1}}</text>
+  <rect x="760" y="180" width="380" height="20" rx="4" fill="#E0F2FE"/>
+  <rect x="760" y="180" width="300" height="20" rx="4" fill="url(#donutGrad)"/>
+  <text text-anchor="start" x="1068" y="195" font-family="Microsoft YaHei, Arial, sans-serif" font-size="12" font-weight="600" fill="#0050B3">{{BAR_VALUE_1}}</text>
+
+  <text text-anchor="start" x="660" y="235" font-family="Microsoft YaHei, Arial, sans-serif" font-size="12" fill="#6B7280">{{BAR_LABEL_2}}</text>
+  <rect x="760" y="220" width="380" height="20" rx="4" fill="#E0F2FE"/>
+  <rect x="760" y="220" width="260" height="20" rx="4" fill="#0077B6"/>
+  <text text-anchor="start" x="1028" y="235" font-family="Microsoft YaHei, Arial, sans-serif" font-size="12" font-weight="600" fill="#0050B3">{{BAR_VALUE_2}}</text>
+
+  <text text-anchor="start" x="660" y="275" font-family="Microsoft YaHei, Arial, sans-serif" font-size="12" fill="#6B7280">{{BAR_LABEL_3}}</text>
+  <rect x="760" y="260" width="380" height="20" rx="4" fill="#E0F2FE"/>
+  <rect x="760" y="260" width="200" height="20" rx="4" fill="#00B4D8"/>
+  <text text-anchor="start" x="968" y="275" font-family="Microsoft YaHei, Arial, sans-serif" font-size="12" font-weight="600" fill="#0050B3">{{BAR_VALUE_3}}</text>
+
+  <text text-anchor="start" x="660" y="315" font-family="Microsoft YaHei, Arial, sans-serif" font-size="12" fill="#6B7280">{{BAR_LABEL_4}}</text>
+  <rect x="760" y="300" width="380" height="20" rx="4" fill="#E0F2FE"/>
+  <rect x="760" y="300" width="340" height="20" rx="4" fill="#0050B3"/>
+  <text text-anchor="start" x="1108" y="315" font-family="Microsoft YaHei, Arial, sans-serif" font-size="12" font-weight="600" fill="#0050B3">{{BAR_VALUE_4}}</text>
+
+  <!-- Widget 3: Progress indicators (bottom-left) -->
+  <rect x="60" y="380" width="550" height="260" rx="12" fill="#FFFFFF" stroke="#E5E7EB" stroke-width="1" filter="url(#cardShadow)"/>
+  <rect x="60" y="380" width="6" height="260" rx="3" fill="#0077B6"/>
+  <text text-anchor="start" x="90" y="420" font-family="Microsoft YaHei, Arial, sans-serif" font-size="14" font-weight="600" fill="#6B7280">{{PROGRESS_TITLE}}</text>
+
+  <!-- Progress item 1 -->
+  <text text-anchor="start" x="90" y="464" font-family="Microsoft YaHei, Arial, sans-serif" font-size="13" fill="#374151">{{PROG_LABEL_1}}</text>
+  <text x="560" y="464" font-family="Microsoft YaHei, Arial, sans-serif" font-size="13" font-weight="600" fill="#0050B3" text-anchor="end">{{PROG_PCT_1}}</text>
+  <rect x="90" y="474" width="470" height="10" rx="5" fill="#E0F2FE"/>
+  <rect x="90" y="474" width="376" height="10" rx="5" fill="url(#badgeGrad)"/>
+
+  <!-- Progress item 2 -->
+  <text text-anchor="start" x="90" y="518" font-family="Microsoft YaHei, Arial, sans-serif" font-size="13" fill="#374151">{{PROG_LABEL_2}}</text>
+  <text x="560" y="518" font-family="Microsoft YaHei, Arial, sans-serif" font-size="13" font-weight="600" fill="#0050B3" text-anchor="end">{{PROG_PCT_2}}</text>
+  <rect x="90" y="528" width="470" height="10" rx="5" fill="#E0F2FE"/>
+  <rect x="90" y="528" width="282" height="10" rx="5" fill="#0077B6"/>
+
+  <!-- Progress item 3 -->
+  <text text-anchor="start" x="90" y="572" font-family="Microsoft YaHei, Arial, sans-serif" font-size="13" fill="#374151">{{PROG_LABEL_3}}</text>
+  <text x="560" y="572" font-family="Microsoft YaHei, Arial, sans-serif" font-size="13" font-weight="600" fill="#0050B3" text-anchor="end">{{PROG_PCT_3}}</text>
+  <rect x="90" y="582" width="470" height="10" rx="5" fill="#E0F2FE"/>
+  <rect x="90" y="582" width="423" height="10" rx="5" fill="#00B4D8"/>
+
+  <!-- Widget 4: Donut chart (bottom-right) -->
+  <rect x="630" y="380" width="590" height="260" rx="12" fill="#FFFFFF" stroke="#E5E7EB" stroke-width="1" filter="url(#cardShadow)"/>
+  <rect x="630" y="380" width="6" height="260" rx="3" fill="#00B4D8"/>
+  <text text-anchor="start" x="660" y="420" font-family="Microsoft YaHei, Arial, sans-serif" font-size="14" font-weight="600" fill="#6B7280">{{DONUT_TITLE}}</text>
+  <!-- Donut ring -->
+  <circle cx="790" cy="530" r="70" fill="none" stroke="#E0F2FE" stroke-width="20"/>
+  <circle cx="790" cy="530" r="70" fill="none" stroke="url(#donutGrad)" stroke-width="20" stroke-dasharray="330 440" stroke-dashoffset="0" stroke-linecap="round" transform="rotate(-90 790 530)"/>
+  <text x="790" y="522" font-family="Microsoft YaHei, Arial, sans-serif" font-size="32" font-weight="800" fill="#0050B3" text-anchor="middle">{{DONUT_VALUE}}</text>
+  <text x="790" y="550" font-family="Microsoft YaHei, Arial, sans-serif" font-size="13" fill="#6B7280" text-anchor="middle">{{DONUT_LABEL}}</text>
+  <!-- Legend -->
+  <circle cx="920" cy="490" r="6" fill="#00B4D8"/>
+  <text text-anchor="start" x="934" y="495" font-family="Microsoft YaHei, Arial, sans-serif" font-size="12" fill="#374151">{{LEGEND_1}}</text>
+  <circle cx="920" cy="520" r="6" fill="#0050B3"/>
+  <text text-anchor="start" x="934" y="525" font-family="Microsoft YaHei, Arial, sans-serif" font-size="12" fill="#374151">{{LEGEND_2}}</text>
+  <circle cx="920" cy="550" r="6" fill="#0077B6"/>
+  <text text-anchor="start" x="934" y="555" font-family="Microsoft YaHei, Arial, sans-serif" font-size="12" fill="#374151">{{LEGEND_3}}</text>
+  <circle cx="920" cy="580" r="6" fill="#E0F2FE"/>
+  <text text-anchor="start" x="934" y="585" font-family="Microsoft YaHei, Arial, sans-serif" font-size="12" fill="#374151">{{LEGEND_4}}</text>
+
+  <!-- Footer -->
+  <line x1="60" y1="680" x2="1220" y2="680" stroke="#E5E7EB" stroke-width="1"/>
+  <text text-anchor="start" x="60" y="702" font-family="Microsoft YaHei, Arial, sans-serif" font-size="10" fill="#9CA3AF">{{SOURCE_TEXT}}</text>
+  <text x="640" y="702" font-family="Microsoft YaHei, Arial, sans-serif" font-size="10" fill="#9CA3AF" text-anchor="middle">{{SECTION_NAME}}</text>
+  <text x="1220" y="702" font-family="Microsoft YaHei, Arial, sans-serif" font-size="10" fill="#9CA3AF" text-anchor="end">3 / {{TOTAL_PAGES}}</text>
+</svg>

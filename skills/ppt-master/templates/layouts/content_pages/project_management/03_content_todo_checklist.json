@@ -1,0 +1,66 @@
+{
+  "layout_type": "todo_checklist",
+  "scenario": "project_management",
+  "description": "Checklist page with 8 items, mixed checked/unchecked states, priority dots (red/yellow/green), and a clean minimal layout",
+  "color_scheme": {
+    "primary": "#1A5276",
+    "accent": "#27AE60",
+    "secondary": "#CCCCCC",
+    "bg": "#F7F9FC",
+    "card_bg": "#FFFFFF",
+    "priority_high": "#E74C3C",
+    "priority_medium": "#F39C12",
+    "priority_low": "#2ECC71"
+  },
+  "image_slots": [],
+  "text_slots": [
+    {
+      "role": "title",
+      "data_key": "PAGE_TITLE",
+      "description": "Page title above the checklist"
+    },
+    {
+      "role": "item-1-text",
+      "data_key": "ITEM_1_TEXT",
+      "description": "Checklist item 1 text (shown as checked)"
+    },
+    {
+      "role": "item-2-text",
+      "data_key": "ITEM_2_TEXT",
+      "description": "Checklist item 2 text (shown as checked)"
+    },
+    {
+      "role": "item-3-text",
+      "data_key": "ITEM_3_TEXT",
+      "description": "Checklist item 3 text (shown as checked)"
+    },
+    {
+      "role": "item-4-text",
+      "data_key": "ITEM_4_TEXT",
+      "description": "Checklist item 4 text (shown as unchecked)"
+    },
+    {
+      "role": "item-5-text",
+      "data_key": "ITEM_5_TEXT",
+      "description": "Checklist item 5 text (shown as unchecked)"
+    },
+    {
+      "role": "item-6-text",
+      "data_key": "ITEM_6_TEXT",
+      "description": "Checklist item 6 text (shown as unchecked)"
+    },
+    {
+      "role": "item-7-text",
+      "data_key": "ITEM_7_TEXT",
+      "description": "Checklist item 7 text (shown as unchecked)"
+    },
+    {
+      "role": "item-8-text",
+      "data_key": "ITEM_8_TEXT",
+      "description": "Checklist item 8 text (shown as unchecked)"
+    }
+  ],
+  "content_mode": [
+    "text-primary"
+  ]
+}

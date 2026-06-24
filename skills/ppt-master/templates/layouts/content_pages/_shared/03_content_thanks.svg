@@ -1,0 +1,90 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="1280" height="720" viewBox="0 0 1280 720" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="titleGrad" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0%" stop-color="#4A6CF7"/>
+      <stop offset="100%" stop-color="#8B5CF6"/>
+    </linearGradient>
+    <linearGradient id="bgAccent1" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#4A6CF7" stop-opacity="0.08"/>
+      <stop offset="100%" stop-color="#4A6CF7" stop-opacity="0"/>
+    </linearGradient>
+    <linearGradient id="bgAccent2" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#8B5CF6" stop-opacity="0.06"/>
+      <stop offset="100%" stop-color="#8B5CF6" stop-opacity="0"/>
+    </linearGradient>
+  </defs>
+
+  <!-- Background -->
+  <rect width="1280" height="720" fill="#FFFFFF"/>
+
+  <!-- ==================== Decorative Elements ==================== -->
+  <!-- Top-left soft gradient blob -->
+  <ellipse cx="180" cy="120" rx="220" ry="160" fill="url(#bgAccent1)"/>
+
+  <!-- Bottom-right soft gradient blob -->
+  <ellipse cx="1100" cy="600" rx="260" ry="180" fill="url(#bgAccent2)"/>
+
+  <!-- Scattered decorative dots -->
+  <circle cx="320" cy="200" r="4" fill="#4A6CF7" fill-opacity="0.15"/>
+  <circle cx="960" cy="180" r="3" fill="#8B5CF6" fill-opacity="0.12"/>
+  <circle cx="280" cy="560" r="3" fill="#8B5CF6" fill-opacity="0.10"/>
+  <circle cx="1000" cy="340" r="4" fill="#4A6CF7" fill-opacity="0.12"/>
+  <circle cx="400" cy="480" r="2" fill="#4A6CF7" fill-opacity="0.10"/>
+  <circle cx="880" cy="500" r="3" fill="#8B5CF6" fill-opacity="0.10"/>
+
+  <!-- Top accent line -->
+  <rect x="0" y="0" width="1280" height="3" fill="url(#titleGrad)"/>
+
+  <!-- ==================== Main Title ==================== -->
+  <text x="640" y="300" text-anchor="middle" font-family="Microsoft YaHei, Arial, sans-serif" font-size="120" font-weight="800" fill="url(#titleGrad)" data-role="main-title">
+    {{MAIN_TITLE}}
+  </text>
+
+  <!-- Thin accent rule below title -->
+  <rect x="560" y="330" width="160" height="3" rx="1.5" fill="url(#titleGrad)"/>
+
+  <!-- ==================== Subtitle ==================== -->
+  <text x="640" y="390" text-anchor="middle" font-family="Microsoft YaHei, Arial, sans-serif" font-size="20" fill="#6B7280" data-role="subtitle-1">
+    {{SUBTITLE_1}}
+  </text>
+  <text x="640" y="420" text-anchor="middle" font-family="Microsoft YaHei, Arial, sans-serif" font-size="20" fill="#6B7280" data-role="subtitle-2">
+    {{SUBTITLE_2}}
+  </text>
+
+  <!-- ==================== Contact Info Row ==================== -->
+  <!-- Contact item 1 -->
+  <rect x="300" y="500" width="200" height="80" rx="12" fill="#F8FAFC" stroke="#E2E8F0" stroke-width="1"/>
+  <text x="400" y="535" text-anchor="middle" font-family="Microsoft YaHei, Arial, sans-serif" font-size="13" font-weight="600" fill="#4A6CF7" data-role="contact-label-1">
+    {{CONTACT_LABEL_1}}
+  </text>
+  <text x="400" y="560" text-anchor="middle" font-family="Microsoft YaHei, Arial, sans-serif" font-size="12" fill="#6B7280" data-role="contact-value-1">
+    {{CONTACT_VALUE_1}}
+  </text>
+
+  <!-- Contact item 2 -->
+  <rect x="540" y="500" width="200" height="80" rx="12" fill="#F8FAFC" stroke="#E2E8F0" stroke-width="1"/>
+  <text x="640" y="535" text-anchor="middle" font-family="Microsoft YaHei, Arial, sans-serif" font-size="13" font-weight="600" fill="#4A6CF7" data-role="contact-label-2">
+    {{CONTACT_LABEL_2}}
+  </text>
+  <text x="640" y="560" text-anchor="middle" font-family="Microsoft YaHei, Arial, sans-serif" font-size="12" fill="#6B7280" data-role="contact-value-2">
+    {{CONTACT_VALUE_2}}
+  </text>
+
+  <!-- Contact item 3 -->
+  <rect x="780" y="500" width="200" height="80" rx="12" fill="#F8FAFC" stroke="#E2E8F0" stroke-width="1"/>
+  <text x="880" y="535" text-anchor="middle" font-family="Microsoft YaHei, Arial, sans-serif" font-size="13" font-weight="600" fill="#4A6CF7" data-role="contact-label-3">
+    {{CONTACT_LABEL_3}}
+  </text>
+  <text x="880" y="560" text-anchor="middle" font-family="Microsoft YaHei, Arial, sans-serif" font-size="12" fill="#6B7280" data-role="contact-value-3">
+    {{CONTACT_VALUE_3}}
+  </text>
+
+  <!-- ==================== Footer ==================== -->
+  <text x="640" y="660" text-anchor="middle" font-family="Microsoft YaHei, Arial, sans-serif" font-size="12" fill="#CCCCCC" data-role="footer-note">
+    {{FOOTER_NOTE}}
+  </text>
+
+  <!-- Bottom gradient accent line -->
+  <rect x="0" y="717" width="1280" height="3" fill="url(#titleGrad)"/>
+</svg>

@@ -38,6 +38,26 @@ from image_sources.provider_common import (
 API_URL = "https://commons.wikimedia.org/w/api.php"
 DEFAULT_SEARCH_LIMIT = 20
 DEFAULT_TIMEOUT = 30
+_MAX_RETRIES = 2
+_RETRY_BACKOFF = 2  # seconds; doubles each retry
+
+
+def _request_with_retry(method, url, *, retries=_MAX_RETRIES, **kwargs):
+    """HTTP request with exponential backoff retry on transient errors."""
+    import time
+    last_exc = None
+    for attempt in range(retries + 1):
+        try:
+            resp = method(url, **kwargs)
+            resp.raise_for_status()
+            return resp
+        except (requests.ConnectionError, requests.Timeout) as exc:
+            last_exc = exc
+            if attempt < retries:
+                time.sleep(_RETRY_BACKOFF * (2 ** attempt))
+        except requests.HTTPError:
+            raise  # non-transient HTTP errors propagate immediately
+    raise last_exc
 
 # File extensions we are willing to embed in a deck. SVG/GIF/audio etc. are
 # excluded — Wikimedia returns these freely from a generic search.
@@ -176,13 +196,13 @@ def search(
             ),
         }
 
-        response = requests.get(
+        response = _request_with_retry(
+            requests.get,
             API_URL,
             params=params,
             headers={"User-Agent": USER_AGENT, "Accept": "application/json"},
             timeout=timeout,
         )
-        response.raise_for_status()
         all_candidates = parse_results(response.json())
 
         if license_tier_filter == "no-attribution-only":

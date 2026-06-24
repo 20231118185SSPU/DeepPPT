@@ -1,0 +1,129 @@
+{
+  "layout_type": "arch_diagram_3tier",
+  "scenario": "tech_sharing",
+  "description": "3-tier architecture diagram with stacked horizontal bars. Each tier has a left-side label and 3-4 component boxes containing title + description. Middle tier is highlighted as the core layer. Dashed vertical connectors link tiers. Suitable for system architecture overviews, layered stack presentations, and technology stack explanations.",
+  "color_scheme": {
+    "primary": "#1B2A4A",
+    "accent": "#3B6CB5",
+    "secondary": "#2D5FA0",
+    "muted": "#778899",
+    "bg": "#F4F6FA",
+    "card_bg": "#FFFFFF",
+    "card_tint": "#EBF3FE",
+    "highlight_bg": "#D6E4F7"
+  },
+  "image_slots": [],
+  "text_slots": [
+    {
+      "role": "title",
+      "description": "Page title"
+    },
+    {
+      "role": "subtitle",
+      "description": "Page subtitle"
+    },
+    {
+      "role": "tier-label-1",
+      "description": "Top tier label, e.g. 'Presentation' or 'UI Layer'"
+    },
+    {
+      "role": "comp-title-1-1",
+      "description": "Tier 1 component 1 title"
+    },
+    {
+      "role": "comp-desc-1-1",
+      "description": "Tier 1 component 1 description"
+    },
+    {
+      "role": "comp-title-1-2",
+      "description": "Tier 1 component 2 title"
+    },
+    {
+      "role": "comp-desc-1-2",
+      "description": "Tier 1 component 2 description"
+    },
+    {
+      "role": "comp-title-1-3",
+      "description": "Tier 1 component 3 title"
+    },
+    {
+      "role": "comp-desc-1-3",
+      "description": "Tier 1 component 3 description"
+    },
+    {
+      "role": "comp-title-1-4",
+      "description": "Tier 1 component 4 title"
+    },
+    {
+      "role": "comp-desc-1-4",
+      "description": "Tier 1 component 4 description"
+    },
+    {
+      "role": "tier-label-2",
+      "description": "Middle tier label (highlighted), e.g. 'Core' or 'Application'"
+    },
+    {
+      "role": "comp-title-2-1",
+      "description": "Tier 2 component 1 title (highlighted)"
+    },
+    {
+      "role": "comp-desc-2-1",
+      "description": "Tier 2 component 1 description (highlighted)"
+    },
+    {
+      "role": "comp-title-2-2",
+      "description": "Tier 2 component 2 title (highlighted)"
+    },
+    {
+      "role": "comp-desc-2-2",
+      "description": "Tier 2 component 2 description (highlighted)"
+    },
+    {
+      "role": "comp-title-2-3",
+      "description": "Tier 2 component 3 title (highlighted)"
+    },
+    {
+      "role": "comp-desc-2-3",
+      "description": "Tier 2 component 3 description (highlighted)"
+    },
+    {
+      "role": "tier-label-3",
+      "description": "Bottom tier label, e.g. 'Infrastructure' or 'Tooling'"
+    },
+    {
+      "role": "comp-title-3-1",
+      "description": "Tier 3 component 1 title"
+    },
+    {
+      "role": "comp-desc-3-1",
+      "description": "Tier 3 component 1 description"
+    },
+    {
+      "role": "comp-title-3-2",
+      "description": "Tier 3 component 2 title"
+    },
+    {
+      "role": "comp-desc-3-2",
+      "description": "Tier 3 component 2 description"
+    },
+    {
+      "role": "comp-title-3-3",
+      "description": "Tier 3 component 3 title"
+    },
+    {
+      "role": "comp-desc-3-3",
+      "description": "Tier 3 component 3 description"
+    },
+    {
+      "role": "footnote",
+      "description": "Optional footnote text"
+    },
+    {
+      "role": "page-num",
+      "description": "Page number"
+    }
+  ],
+  "content_mode": [
+    "image_with_text"
+  ]
+}

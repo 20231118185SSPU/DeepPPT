@@ -293,6 +293,10 @@ class SVGQualityChecker:
                 if not self.template_mode:
                     self._check_sourced_image_attribution(content, svg_path, result)
 
+                # 10. WCAG contrast check: text fill vs spec_lock background
+                if not self.template_mode:
+                    self._check_contrast(content, svg_path, result)
+
             # Determine pass/fail
             result['passed'] = len(result['errors']) == 0
 
@@ -460,6 +464,20 @@ class SVGQualityChecker:
         if re.search(r'<image[^>]*\sopacity\s*=', content_lower):
             result['errors'].append("Detected forbidden <image opacity> (use overlay mask approach)")
 
+        # Font-size minimum check
+        font_sizes = re.findall(r'font-size\s*=\s*["\']([^"\']+)["\']', content)
+        for fs in font_sizes:
+            try:
+                px = float(fs.replace('px', '').strip())
+                if px < 10:
+                    result['errors'].append(
+                        f"Font size {fs} is below absolute minimum 10px")
+                elif px < 13:
+                    result['warnings'].append(
+                        f"Font size {fs} is below recommended minimum 13px (annotation floor)")
+            except ValueError:
+                pass
+
     def _check_fonts(self, content: str, result: Dict):
         """Check font usage.
 
@@ -509,7 +527,7 @@ class SVGQualityChecker:
                 break
 
     def _check_dimensions(self, content: str, result: Dict):
-        """Check width/height consistency with viewBox"""
+        """Check width/height presence and consistency with viewBox"""
         width_match = re.search(r'width="(\d+)"', content)
         height_match = re.search(r'height="(\d+)"', content)
 
@@ -528,6 +546,14 @@ class SVGQualityChecker:
                             f"width/height ({width}x{height}) does not match viewBox "
                             f"({vb_width}x{vb_height})"
                         )
+        else:
+            # Missing width/height on root <svg> — preview engines may
+            # render at 0×0 or default to 300×150 (CSS intrinsic size).
+            result['warnings'].append(
+                "SVG root element missing width/height attributes — "
+                "preview may render incorrectly. Add width and height "
+                "matching the viewBox dimensions (e.g. width=\"1280\" height=\"720\")."
+            )
 
     def _check_text_elements(self, content: str, result: Dict):
         """Check text elements and wrapping methods"""
@@ -891,6 +917,50 @@ class SVGQualityChecker:
                     f"references/image-searcher.md §7."
                 )
 
+    def _check_contrast(self, content: str, svg_path: Path, result: Dict):
+        """WCAG contrast check: text fill colors vs spec_lock background.
+        
+        Only checks text with font-size >= 14px — decorative micro-text
+        (page numbers, footnotes) are exempt from the strict threshold.
+        """
+        lock = self._get_spec_lock(svg_path)
+        if not lock:
+            return
+        colors = lock.get('colors', {})
+        bg_color = colors.get('bg') or colors.get('background')
+        if not bg_color:
+            return
+        
+        # Extract text elements with both fill and font-size
+        text_blocks = re.findall(
+            r'<text[^>]*\sfill\s*=\s*["\']([^"\']+)["\'][^>]*\sfont-size\s*=\s*["\']([^"\']+)["\'][^>]*>',
+            content)
+        
+        for fill, fs in text_blocks:
+            if not (fill.startswith('#') and len(fill) == 7):
+                continue
+            if fill.upper() == bg_color.upper():
+                continue
+            try:
+                px = float(fs.replace('px', '').strip())
+            except ValueError:
+                continue
+            if px < 14:
+                continue  # decorative micro-text exempt
+            try:
+                contrast = self._wcag_contrast(fill, bg_color)
+            except Exception:
+                continue
+            if contrast < 3.0:
+                result['warnings'].append(
+                    f"Text fill {fill} vs bg {bg_color}: "
+                    f"WCAG contrast {contrast:.1f}:1 (below 4.5:1; "
+                    f"verify text sits on darker local background like a card)")
+            elif contrast < 4.5:
+                result['warnings'].append(
+                    f"Text fill {fill} vs bg {bg_color}: "
+                    f"WCAG contrast {contrast:.1f}:1 (below 4.5:1 standard)")
+
     @staticmethod
     def _normalize_size(value: str) -> str:
         """Normalize a font-size value for comparison: lowercase, strip spaces,
@@ -922,6 +992,22 @@ class SVGQualityChecker:
             return 'Font issues'
         else:
             return 'Other'
+
+    @staticmethod
+    def _wcag_contrast(hex1: str, hex2: str) -> float:
+        """Calculate WCAG 2.0 contrast ratio between two #RRGGBB colors."""
+        def _luminance(hex_color: str) -> float:
+            r = int(hex_color[1:3], 16) / 255.0
+            g = int(hex_color[3:5], 16) / 255.0
+            b = int(hex_color[5:7], 16) / 255.0
+            def _linearize(c: float) -> float:
+                return c / 12.92 if c <= 0.03928 else ((c + 0.055) / 1.055) ** 2.4
+            return 0.2126 * _linearize(r) + 0.7152 * _linearize(g) + 0.0722 * _linearize(b)
+        l1 = _luminance(hex1)
+        l2 = _luminance(hex2)
+        lighter = max(l1, l2)
+        darker = min(l1, l2)
+        return (lighter + 0.05) / (darker + 0.05)
 
     def check_directory(self, directory: str, expected_format: str = None) -> List[Dict]:
         """

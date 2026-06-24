@@ -1,0 +1,192 @@
+{
+  "layout_type": "milestone_timeline",
+  "scenario": "report",
+  "description": "Horizontal milestone timeline with 5 nodes and detail cards below, suitable for project phases, historical reviews, and work progress overviews",
+  "color_scheme": {
+    "primary": "#0050B3",
+    "accent": "#00B4D8",
+    "secondary": "#0077B6",
+    "bg": "#F8FCFF",
+    "card_bg": "#FFFFFF",
+    "header_gradient": [
+      "#00B4D8",
+      "#0050B3"
+    ]
+  },
+  "image_slots": [],
+  "text_slots": [
+    {
+      "role": "title",
+      "data_key": "PAGE_TITLE",
+      "description": "Page title displayed in the header"
+    },
+    {
+      "role": "org-name",
+      "data_key": "ORG_NAME",
+      "description": "Organization or department name, right-aligned in header"
+    },
+    {
+      "role": "milestone-year-1",
+      "data_key": "MILESTONE_YEAR_1",
+      "description": "First milestone date/period label"
+    },
+    {
+      "role": "milestone-title-1",
+      "data_key": "MILESTONE_TITLE_1",
+      "description": "First milestone title"
+    },
+    {
+      "role": "milestone-desc-1",
+      "data_key": "MILESTONE_DESC_1",
+      "description": "First milestone brief description"
+    },
+    {
+      "role": "detail-title-1",
+      "data_key": "DETAIL_TITLE_1",
+      "description": "First detail card title"
+    },
+    {
+      "role": "detail-desc-1",
+      "data_key": "DETAIL_DESC_1",
+      "description": "First detail card description line 1"
+    },
+    {
+      "role": "detail-extra-1",
+      "data_key": "DETAIL_EXTRA_1",
+      "description": "First detail card description line 2"
+    },
+    {
+      "role": "milestone-year-2",
+      "data_key": "MILESTONE_YEAR_2",
+      "description": "Second milestone date/period label"
+    },
+    {
+      "role": "milestone-title-2",
+      "data_key": "MILESTONE_TITLE_2",
+      "description": "Second milestone title"
+    },
+    {
+      "role": "milestone-desc-2",
+      "data_key": "MILESTONE_DESC_2",
+      "description": "Second milestone brief description"
+    },
+    {
+      "role": "detail-title-2",
+      "data_key": "DETAIL_TITLE_2",
+      "description": "Second detail card title"
+    },
+    {
+      "role": "detail-desc-2",
+      "data_key": "DETAIL_DESC_2",
+      "description": "Second detail card description line 1"
+    },
+    {
+      "role": "detail-extra-2",
+      "data_key": "DETAIL_EXTRA_2",
+      "description": "Second detail card description line 2"
+    },
+    {
+      "role": "milestone-year-3",
+      "data_key": "MILESTONE_YEAR_3",
+      "description": "Third milestone date/period label"
+    },
+    {
+      "role": "milestone-title-3",
+      "data_key": "MILESTONE_TITLE_3",
+      "description": "Third milestone title"
+    },
+    {
+      "role": "milestone-desc-3",
+      "data_key": "MILESTONE_DESC_3",
+      "description": "Third milestone brief description"
+    },
+    {
+      "role": "detail-title-3",
+      "data_key": "DETAIL_TITLE_3",
+      "description": "Third detail card title"
+    },
+    {
+      "role": "detail-desc-3",
+      "data_key": "DETAIL_DESC_3",
+      "description": "Third detail card description line 1"
+    },
+    {
+      "role": "detail-extra-3",
+      "data_key": "DETAIL_EXTRA_3",
+      "description": "Third detail card description line 2"
+    },
+    {
+      "role": "milestone-year-4",
+      "data_key": "MILESTONE_YEAR_4",
+      "description": "Fourth milestone date/period label"
+    },
+    {
+      "role": "milestone-title-4",
+      "data_key": "MILESTONE_TITLE_4",
+      "description": "Fourth milestone title"
+    },
+    {
+      "role": "milestone-desc-4",
+      "data_key": "MILESTONE_DESC_4",
+      "description": "Fourth milestone brief description"
+    },
+    {
+      "role": "detail-title-4",
+      "data_key": "DETAIL_TITLE_4",
+      "description": "Fourth detail card title"
+    },
+    {
+      "role": "detail-desc-4",
+      "data_key": "DETAIL_DESC_4",
+      "description": "Fourth detail card description line 1"
+    },
+    {
+      "role": "detail-extra-4",
+      "data_key": "DETAIL_EXTRA_4",
+      "description": "Fourth detail card description line 2"
+    },
+    {
+      "role": "milestone-year-5",
+      "data_key": "MILESTONE_YEAR_5",
+      "description": "Fifth milestone date/period label"
+    },
+    {
+      "role": "milestone-title-5",
+      "data_key": "MILESTONE_TITLE_5",
+      "description": "Fifth milestone title"
+    },
+    {
+      "role": "milestone-desc-5",
+      "data_key": "MILESTONE_DESC_5",
+      "description": "Fifth milestone brief description"
+    },
+    {
+      "role": "detail-title-5",
+      "data_key": "DETAIL_TITLE_5",
+      "description": "Fifth detail card title"
+    },
+    {
+      "role": "detail-desc-5",
+      "data_key": "DETAIL_DESC_5",
+      "description": "Fifth detail card description line 1"
+    },
+    {
+      "role": "detail-extra-5",
+      "data_key": "DETAIL_EXTRA_5",
+      "description": "Fifth detail card description line 2"
+    },
+    {
+      "role": "summary-label",
+      "data_key": "SUMMARY_LABEL",
+      "description": "Summary bar label text"
+    },
+    {
+      "role": "summary-text",
+      "data_key": "SUMMARY_TEXT",
+      "description": "Summary bar content text"
+    }
+  ],
+  "content_mode": [
+    "text-primary"
+  ]
+}

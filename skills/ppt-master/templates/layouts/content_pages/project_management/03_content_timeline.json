@@ -1,0 +1,87 @@
+{
+  "layout_type": "horizontal_timeline",
+  "scenario": "academic",
+  "description": "Horizontal timeline with 5 milestones, year labels, titles, and descriptions",
+  "color_scheme": {
+    "primary": "#003366",
+    "accent": "#CC0000",
+    "secondary": "#0066CC",
+    "bg": "#FFFFFF",
+    "card_bg": "#F8FCFF",
+    "header_bg": "#003366"
+  },
+  "image_slots": [],
+  "text_slots": [
+    {
+      "role": "title",
+      "description": "Page title in header bar"
+    },
+    {
+      "role": "key-message",
+      "description": "Key message bar text"
+    },
+    {
+      "role": "milestone-year-1",
+      "description": "First milestone year"
+    },
+    {
+      "role": "milestone-title-1",
+      "description": "First milestone title"
+    },
+    {
+      "role": "milestone-desc-1",
+      "description": "First milestone description"
+    },
+    {
+      "role": "milestone-year-2",
+      "description": "Second milestone year"
+    },
+    {
+      "role": "milestone-title-2",
+      "description": "Second milestone title"
+    },
+    {
+      "role": "milestone-desc-2",
+      "description": "Second milestone description"
+    },
+    {
+      "role": "milestone-year-3",
+      "description": "Third milestone year (center, key milestone)"
+    },
+    {
+      "role": "milestone-title-3",
+      "description": "Third milestone title"
+    },
+    {
+      "role": "milestone-desc-3",
+      "description": "Third milestone description"
+    },
+    {
+      "role": "milestone-year-4",
+      "description": "Fourth milestone year"
+    },
+    {
+      "role": "milestone-title-4",
+      "description": "Fourth milestone title"
+    },
+    {
+      "role": "milestone-desc-4",
+      "description": "Fourth milestone description"
+    },
+    {
+      "role": "milestone-year-5",
+      "description": "Fifth milestone year"
+    },
+    {
+      "role": "milestone-title-5",
+      "description": "Fifth milestone title"
+    },
+    {
+      "role": "milestone-desc-5",
+      "description": "Fifth milestone description"
+    }
+  ],
+  "content_mode": [
+    "text-primary"
+  ]
+}

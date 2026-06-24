@@ -1,0 +1,91 @@
+{
+  "layout_type": "process_steps_horizontal",
+  "scenario": "academic",
+  "description": "4-step numbered process flow with cards, arrow connectors, and optional tags",
+  "color_scheme": {
+    "primary": "#003366",
+    "accent": "#CC0000",
+    "secondary": "#0066CC",
+    "bg": "#FFFFFF",
+    "card_bg": "#F8FCFF",
+    "header_bg": "#003366"
+  },
+  "image_slots": [],
+  "text_slots": [
+    {
+      "role": "title",
+      "description": "Page title in header bar"
+    },
+    {
+      "role": "key-message",
+      "description": "Key message bar text"
+    },
+    {
+      "role": "step-num-1",
+      "description": "Step 1 number"
+    },
+    {
+      "role": "step-title-1",
+      "description": "Step 1 title"
+    },
+    {
+      "role": "step-desc-1",
+      "description": "Step 1 description"
+    },
+    {
+      "role": "step-tag-1",
+      "description": "Step 1 optional tag label"
+    },
+    {
+      "role": "step-num-2",
+      "description": "Step 2 number"
+    },
+    {
+      "role": "step-title-2",
+      "description": "Step 2 title"
+    },
+    {
+      "role": "step-desc-2",
+      "description": "Step 2 description"
+    },
+    {
+      "role": "step-tag-2",
+      "description": "Step 2 optional tag label"
+    },
+    {
+      "role": "step-num-3",
+      "description": "Step 3 number"
+    },
+    {
+      "role": "step-title-3",
+      "description": "Step 3 title"
+    },
+    {
+      "role": "step-desc-3",
+      "description": "Step 3 description"
+    },
+    {
+      "role": "step-tag-3",
+      "description": "Step 3 optional tag label"
+    },
+    {
+      "role": "step-num-4",
+      "description": "Step 4 number"
+    },
+    {
+      "role": "step-title-4",
+      "description": "Step 4 title"
+    },
+    {
+      "role": "step-desc-4",
+      "description": "Step 4 description"
+    },
+    {
+      "role": "step-tag-4",
+      "description": "Step 4 optional tag label"
+    }
+  ],
+  "content_mode": [
+    "text-primary"
+  ]
+}

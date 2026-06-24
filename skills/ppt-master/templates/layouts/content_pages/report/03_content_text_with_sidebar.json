@@ -1,0 +1,129 @@
+{
+  "layout_type": "text_with_sidebar",
+  "scenario": "report",
+  "description": "Main text area with left sidebar containing image, caption, and key statistics. Suitable for project introductions, department overviews, and contextual briefings.",
+  "color_scheme": {
+    "primary": "#0050B3",
+    "accent": "#00B4D8",
+    "secondary": "#0077B6",
+    "bg": "#F8FCFF",
+    "card_bg": "#FFFFFF",
+    "header_gradient": [
+      "#00B4D8",
+      "#0050B3"
+    ]
+  },
+  "image_slots": [
+    {
+      "role": "image-slot",
+      "data_key": "sidebar_image",
+      "description": "Sidebar image placeholder (350x260, rounded corners)",
+      "position": "left sidebar"
+    }
+  ],
+  "text_slots": [
+    {
+      "role": "title",
+      "data_key": "PAGE_TITLE",
+      "description": "Page title in header"
+    },
+    {
+      "role": "org-name",
+      "data_key": "ORG_NAME",
+      "description": "Organization name right-aligned in header"
+    },
+    {
+      "role": "image-caption",
+      "data_key": "IMAGE_CAPTION",
+      "description": "Caption text below sidebar image"
+    },
+    {
+      "role": "stat-value-1",
+      "data_key": "STAT_VALUE_1",
+      "description": "First sidebar stat value (large number)"
+    },
+    {
+      "role": "stat-label-1",
+      "data_key": "STAT_LABEL_1",
+      "description": "First sidebar stat label"
+    },
+    {
+      "role": "stat-value-2",
+      "data_key": "STAT_VALUE_2",
+      "description": "Second sidebar stat value"
+    },
+    {
+      "role": "stat-label-2",
+      "data_key": "STAT_LABEL_2",
+      "description": "Second sidebar stat label"
+    },
+    {
+      "role": "stat-value-3",
+      "data_key": "STAT_VALUE_3",
+      "description": "Third sidebar stat value"
+    },
+    {
+      "role": "stat-label-3",
+      "data_key": "STAT_LABEL_3",
+      "description": "Third sidebar stat label"
+    },
+    {
+      "role": "section-title",
+      "data_key": "SECTION_TITLE",
+      "description": "Main content section title"
+    },
+    {
+      "role": "bullet-1",
+      "data_key": "BULLET_1",
+      "description": "First bullet point text"
+    },
+    {
+      "role": "bullet-2",
+      "data_key": "BULLET_2",
+      "description": "Second bullet point text"
+    },
+    {
+      "role": "bullet-3",
+      "data_key": "BULLET_3",
+      "description": "Third bullet point text"
+    },
+    {
+      "role": "bullet-4",
+      "data_key": "BULLET_4",
+      "description": "Fourth bullet point text"
+    },
+    {
+      "role": "bullet-5",
+      "data_key": "BULLET_5",
+      "description": "Fifth bullet point text"
+    },
+    {
+      "role": "callout-title",
+      "data_key": "CALLOUT_TITLE",
+      "description": "Callout box title"
+    },
+    {
+      "role": "callout-text-1",
+      "data_key": "CALLOUT_TEXT_1",
+      "description": "Callout box first line of text"
+    },
+    {
+      "role": "callout-text-2",
+      "data_key": "CALLOUT_TEXT_2",
+      "description": "Callout box second line of text"
+    },
+    {
+      "role": "extra-title",
+      "data_key": "EXTRA_TITLE",
+      "description": "Additional detail section title"
+    },
+    {
+      "role": "extra-text",
+      "data_key": "EXTRA_TEXT",
+      "description": "Additional detail section text"
+    }
+  ],
+  "content_mode": [
+    "image_with_text"
+  ]
+}

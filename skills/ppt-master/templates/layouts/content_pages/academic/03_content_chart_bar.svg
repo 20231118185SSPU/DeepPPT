@@ -1,0 +1,105 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="1280" height="720" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1280 720">
+  <!-- Background -->
+  <rect width="1280" height="720" fill="#FFFFFF"/>
+
+  <!-- ==================== Header ==================== -->
+  <rect x="0" y="0" width="1280" height="70" fill="#003366"/>
+  <rect x="0" y="0" width="6" height="70" fill="#CC0000"/>
+  <text text-anchor="start" x="40" y="46" fill="#FFFFFF" font-family="Microsoft YaHei, Arial, sans-serif" font-size="28" font-weight="bold" data-role="title">
+    {{PAGE_TITLE}}
+  </text>
+  <text x="1220" y="46" text-anchor="end" fill="#FFFFFF" font-family="Microsoft YaHei, Arial, sans-serif" font-size="18" font-weight="bold" data-role="logo">
+    {{LOGO}}
+  </text>
+
+  <!-- ==================== Key Message Bar ==================== -->
+  <rect x="0" y="70" width="1280" height="50" fill="#E8F4FC"/>
+  <rect x="0" y="70" width="6" height="50" fill="#0066CC"/>
+  <text text-anchor="start" x="40" y="102" fill="#333333" font-family="Microsoft YaHei, Arial, sans-serif" font-size="18" data-role="key-message">
+    {{KEY_MESSAGE}}
+  </text>
+
+  <!-- ==================== Chart Area ==================== -->
+  <rect x="60" y="140" width="1160" height="500" rx="8" fill="#FAFCFE" stroke="#E0E6ED" stroke-width="1"/>
+
+  <!-- Chart container with padding -->
+  <!-- Chart origin: x=120, y=560 (bottom-left of plot area) -->
+  <!-- Plot area: x=120..1160, y=170..550 -->
+  <!-- Y-axis: 8 bars, bar width=80, gap=40, total=8*(80+40)=960, starts at x=160 -->
+
+  <!-- Y-axis gridlines -->
+  <line x1="150" y1="180" x2="1160" y2="180" stroke="#E8F0F6" stroke-width="1"/>
+  <line x1="150" y1="275" x2="1160" y2="275" stroke="#E8F0F6" stroke-width="1"/>
+  <line x1="150" y1="370" x2="1160" y2="370" stroke="#E8F0F6" stroke-width="1"/>
+  <line x1="150" y1="465" x2="1160" y2="465" stroke="#E8F0F6" stroke-width="1"/>
+
+  <!-- Y-axis labels -->
+  <text x="140" y="185" text-anchor="end" fill="#999999" font-family="Microsoft YaHei, Arial, sans-serif" font-size="12" data-role="y-label-max">{{Y_MAX}}</text>
+  <text x="140" y="280" text-anchor="end" fill="#999999" font-family="Microsoft YaHei, Arial, sans-serif" font-size="12" data-role="y-label-mid">{{Y_MID}}</text>
+  <text x="140" y="375" text-anchor="end" fill="#999999" font-family="Microsoft YaHei, Arial, sans-serif" font-size="12" data-role="y-label-low">{{Y_LOW}}</text>
+  <text x="140" y="470" text-anchor="end" fill="#999999" font-family="Microsoft YaHei, Arial, sans-serif" font-size="12" data-role="y-label-zero">{{Y_ZERO}}</text>
+
+  <!-- X-axis baseline -->
+  <line x1="150" y1="560" x2="1160" y2="560" stroke="#D0D7E0" stroke-width="1"/>
+  <!-- Y-axis baseline -->
+  <line x1="150" y1="170" x2="150" y2="560" stroke="#D0D7E0" stroke-width="1"/>
+
+  <!-- Bar 1 -->
+  <rect x="170" y="280" width="80" height="280" rx="6" fill="#003366" data-role="bar-1"/>
+  <text x="210" y="580" text-anchor="middle" fill="#666666" font-family="Microsoft YaHei, Arial, sans-serif" font-size="12" data-role="bar-label-1">{{LABEL_1}}</text>
+  <text x="210" y="272" text-anchor="middle" fill="#003366" font-family="Microsoft YaHei, Arial, sans-serif" font-size="12" font-weight="bold" data-role="bar-value-1">{{VALUE_1}}</text>
+
+  <!-- Bar 2 -->
+  <rect x="290" y="320" width="80" height="240" rx="6" fill="#003366" data-role="bar-2"/>
+  <text x="330" y="580" text-anchor="middle" fill="#666666" font-family="Microsoft YaHei, Arial, sans-serif" font-size="12" data-role="bar-label-2">{{LABEL_2}}</text>
+  <text x="330" y="312" text-anchor="middle" fill="#003366" font-family="Microsoft YaHei, Arial, sans-serif" font-size="12" font-weight="bold" data-role="bar-value-2">{{VALUE_2}}</text>
+
+  <!-- Bar 3 -->
+  <rect x="410" y="240" width="80" height="320" rx="6" fill="#0066CC" data-role="bar-3"/>
+  <text x="450" y="580" text-anchor="middle" fill="#666666" font-family="Microsoft YaHei, Arial, sans-serif" font-size="12" data-role="bar-label-3">{{LABEL_3}}</text>
+  <text x="450" y="232" text-anchor="middle" fill="#0066CC" font-family="Microsoft YaHei, Arial, sans-serif" font-size="12" font-weight="bold" data-role="bar-value-3">{{VALUE_3}}</text>
+
+  <!-- Bar 4 -->
+  <rect x="530" y="200" width="80" height="360" rx="6" fill="#0066CC" data-role="bar-4"/>
+  <text x="570" y="580" text-anchor="middle" fill="#666666" font-family="Microsoft YaHei, Arial, sans-serif" font-size="12" data-role="bar-label-4">{{LABEL_4}}</text>
+  <text x="570" y="192" text-anchor="middle" fill="#0066CC" font-family="Microsoft YaHei, Arial, sans-serif" font-size="12" font-weight="bold" data-role="bar-value-4">{{VALUE_4}}</text>
+
+  <!-- Bar 5 -->
+  <rect x="650" y="260" width="80" height="300" rx="6" fill="#003366" data-role="bar-5"/>
+  <text x="690" y="580" text-anchor="middle" fill="#666666" font-family="Microsoft YaHei, Arial, sans-serif" font-size="12" data-role="bar-label-5">{{LABEL_5}}</text>
+  <text x="690" y="252" text-anchor="middle" fill="#003366" font-family="Microsoft YaHei, Arial, sans-serif" font-size="12" font-weight="bold" data-role="bar-value-5">{{VALUE_5}}</text>
+
+  <!-- Bar 6 -->
+  <rect x="770" y="310" width="80" height="250" rx="6" fill="#003366" data-role="bar-6"/>
+  <text x="810" y="580" text-anchor="middle" fill="#666666" font-family="Microsoft YaHei, Arial, sans-serif" font-size="12" data-role="bar-label-6">{{LABEL_6}}</text>
+  <text x="810" y="302" text-anchor="middle" fill="#003366" font-family="Microsoft YaHei, Arial, sans-serif" font-size="12" font-weight="bold" data-role="bar-value-6">{{VALUE_6}}</text>
+
+  <!-- Bar 7 -->
+  <rect x="890" y="220" width="80" height="340" rx="6" fill="#0066CC" data-role="bar-7"/>
+  <text x="930" y="580" text-anchor="middle" fill="#666666" font-family="Microsoft YaHei, Arial, sans-serif" font-size="12" data-role="bar-label-7">{{LABEL_7}}</text>
+  <text x="930" y="212" text-anchor="middle" fill="#0066CC" font-family="Microsoft YaHei, Arial, sans-serif" font-size="12" font-weight="bold" data-role="bar-value-7">{{VALUE_7}}</text>
+
+  <!-- Bar 8 -->
+  <rect x="1010" y="180" width="80" height="380" rx="6" fill="#0066CC" data-role="bar-8"/>
+  <text x="1050" y="580" text-anchor="middle" fill="#666666" font-family="Microsoft YaHei, Arial, sans-serif" font-size="12" data-role="bar-label-8">{{LABEL_8}}</text>
+  <text x="1050" y="172" text-anchor="middle" fill="#0066CC" font-family="Microsoft YaHei, Arial, sans-serif" font-size="12" font-weight="bold" data-role="bar-value-8">{{VALUE_8}}</text>
+
+  <!-- Legend -->
+  <rect x="940" y="148" width="12" height="12" rx="2" fill="#003366"/>
+  <text text-anchor="start" x="958" y="159" fill="#666666" font-family="Microsoft YaHei, Arial, sans-serif" font-size="12" data-role="legend-1">{{LEGEND_1}}</text>
+  <rect x="1050" y="148" width="12" height="12" rx="2" fill="#0066CC"/>
+  <text text-anchor="start" x="1068" y="159" fill="#666666" font-family="Microsoft YaHei, Arial, sans-serif" font-size="12" data-role="legend-2">{{LEGEND_2}}</text>
+
+  <!-- ==================== Footer ==================== -->
+  <line x1="40" y1="665" x2="1240" y2="665" stroke="#E8F4FC" stroke-width="1"/>
+  <text text-anchor="start" x="40" y="695" fill="#999999" font-family="Microsoft YaHei, Arial, sans-serif" font-size="12" data-role="source">
+    数据来源：{{SOURCE}}
+  </text>
+  <text x="640" y="695" text-anchor="middle" fill="#999999" font-family="Microsoft YaHei, Arial, sans-serif" font-size="12" data-role="section-name">
+    {{SECTION_NAME}}
+  </text>
+  <text x="1220" y="695" text-anchor="end" fill="#666666" font-family="Microsoft YaHei, Arial, sans-serif" font-size="14" data-role="page-num">
+    {{PAGE_NUM}}
+  </text>
+</svg>

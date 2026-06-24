@@ -1,0 +1,94 @@
+{
+  "layout_type": "process_cards_4col",
+  "scenario": "business",
+  "description": "Horizontal process/workflow with 4 numbered cards, connecting arrows, and optional time estimate tags",
+  "color_scheme": {
+    "primary": "#1A5276",
+    "accent": "#E74C3C",
+    "secondary": "#2E86C1",
+    "bg": "#F7F9FC",
+    "card_bg": "#FFFFFF"
+  },
+  "image_slots": [],
+  "text_slots": [
+    {
+      "role": "title",
+      "description": "Page title"
+    },
+    {
+      "role": "subtitle",
+      "description": "Page subtitle"
+    },
+    {
+      "role": "card-title-1",
+      "description": "First step title"
+    },
+    {
+      "role": "card-desc-1a",
+      "description": "First step description line 1"
+    },
+    {
+      "role": "card-desc-1b",
+      "description": "First step description line 2"
+    },
+    {
+      "role": "card-tag-1",
+      "description": "First step time estimate"
+    },
+    {
+      "role": "card-title-2",
+      "description": "Second step title"
+    },
+    {
+      "role": "card-desc-2a",
+      "description": "Second step description line 1"
+    },
+    {
+      "role": "card-desc-2b",
+      "description": "Second step description line 2"
+    },
+    {
+      "role": "card-tag-2",
+      "description": "Second step time estimate"
+    },
+    {
+      "role": "card-title-3",
+      "description": "Third step title"
+    },
+    {
+      "role": "card-desc-3a",
+      "description": "Third step description line 1"
+    },
+    {
+      "role": "card-desc-3b",
+      "description": "Third step description line 2"
+    },
+    {
+      "role": "card-tag-3",
+      "description": "Third step time estimate"
+    },
+    {
+      "role": "card-title-4",
+      "description": "Fourth step title"
+    },
+    {
+      "role": "card-desc-4a",
+      "description": "Fourth step description line 1"
+    },
+    {
+      "role": "card-desc-4b",
+      "description": "Fourth step description line 2"
+    },
+    {
+      "role": "card-tag-4",
+      "description": "Fourth step time estimate"
+    },
+    {
+      "role": "footnote",
+      "description": "Optional footnote text"
+    }
+  ],
+  "content_mode": [
+    "image_with_text"
+  ]
+}

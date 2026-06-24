@@ -1,0 +1,115 @@
+{
+  "layout_type": "chart_bar",
+  "scenario": "academic",
+  "description": "Bar chart layout with 8 bars, y-axis scale, x-axis labels, dual-series legend, and key message bar",
+  "color_scheme": {
+    "primary": "#003366",
+    "accent": "#CC0000",
+    "secondary": "#0066CC",
+    "bg": "#FFFFFF",
+    "card_bg": "#FAFCFE",
+    "header_bg": "#003366"
+  },
+  "image_slots": [],
+  "text_slots": [
+    {
+      "role": "title",
+      "description": "Page title in header bar"
+    },
+    {
+      "role": "key-message",
+      "description": "Key message bar text"
+    },
+    {
+      "role": "y-max",
+      "description": "Y-axis maximum label"
+    },
+    {
+      "role": "y-mid",
+      "description": "Y-axis middle label"
+    },
+    {
+      "role": "y-low",
+      "description": "Y-axis low label"
+    },
+    {
+      "role": "y-zero",
+      "description": "Y-axis zero label"
+    },
+    {
+      "role": "bar-label-1",
+      "description": "First bar x-axis label"
+    },
+    {
+      "role": "bar-value-1",
+      "description": "First bar top value"
+    },
+    {
+      "role": "bar-label-2",
+      "description": "Second bar x-axis label"
+    },
+    {
+      "role": "bar-value-2",
+      "description": "Second bar top value"
+    },
+    {
+      "role": "bar-label-3",
+      "description": "Third bar x-axis label"
+    },
+    {
+      "role": "bar-value-3",
+      "description": "Third bar top value"
+    },
+    {
+      "role": "bar-label-4",
+      "description": "Fourth bar x-axis label"
+    },
+    {
+      "role": "bar-value-4",
+      "description": "Fourth bar top value"
+    },
+    {
+      "role": "bar-label-5",
+      "description": "Fifth bar x-axis label"
+    },
+    {
+      "role": "bar-value-5",
+      "description": "Fifth bar top value"
+    },
+    {
+      "role": "bar-label-6",
+      "description": "Sixth bar x-axis label"
+    },
+    {
+      "role": "bar-value-6",
+      "description": "Sixth bar top value"
+    },
+    {
+      "role": "bar-label-7",
+      "description": "Seventh bar x-axis label"
+    },
+    {
+      "role": "bar-value-7",
+      "description": "Seventh bar top value"
+    },
+    {
+      "role": "bar-label-8",
+      "description": "Eighth bar x-axis label"
+    },
+    {
+      "role": "bar-value-8",
+      "description": "Eighth bar top value"
+    },
+    {
+      "role": "legend-1",
+      "description": "First series legend label"
+    },
+    {
+      "role": "legend-2",
+      "description": "Second series legend label"
+    }
+  ],
+  "content_mode": [
+    "text-primary"
+  ]
+}

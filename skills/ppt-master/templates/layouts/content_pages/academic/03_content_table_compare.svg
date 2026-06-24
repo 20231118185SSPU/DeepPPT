@@ -1,0 +1,130 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="1280" height="720" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1280 720">
+  <!-- Background -->
+  <rect width="1280" height="720" fill="#FFFFFF"/>
+
+  <!-- ==================== Header ==================== -->
+  <rect x="0" y="0" width="1280" height="70" fill="#003366"/>
+  <rect x="0" y="0" width="6" height="70" fill="#CC0000"/>
+  <text text-anchor="start" x="40" y="46" fill="#FFFFFF" font-family="Microsoft YaHei, Arial, sans-serif" font-size="28" font-weight="bold" data-role="title">
+    {{PAGE_TITLE}}
+  </text>
+  <text x="1220" y="46" text-anchor="end" fill="#FFFFFF" font-family="Microsoft YaHei, Arial, sans-serif" font-size="18" font-weight="bold" data-role="logo">
+    {{LOGO}}
+  </text>
+
+  <!-- ==================== Key Message Bar ==================== -->
+  <rect x="0" y="70" width="1280" height="50" fill="#E8F4FC"/>
+  <rect x="0" y="70" width="6" height="50" fill="#0066CC"/>
+  <text text-anchor="start" x="40" y="102" fill="#333333" font-family="Microsoft YaHei, Arial, sans-serif" font-size="18" data-role="key-message">
+    {{KEY_MESSAGE}}
+  </text>
+
+  <!-- ==================== Content Area ==================== -->
+  <!-- CENTER ARROW DIVIDER -->
+  <line x1="640" y1="165" x2="640" y2="600" stroke="#D0D7E0" stroke-width="1" stroke-dasharray="6,3"/>
+  <!-- Arrow shape at center -->
+  <polygon points="640,340 628,355 636,355 636,370 644,370 644,355 652,355" fill="#0066CC"/>
+
+  <!-- LEFT card: "Before" column -->
+  <rect x="60" y="140" width="560" height="480" rx="8" fill="#FFF8F8" stroke="#E8D0D0" stroke-width="1"/>
+  <!-- Red top border -->
+  <rect x="60" y="140" width="560" height="5" rx="2" fill="#CC0000"/>
+  <!-- Column header -->
+  <text x="340" y="178" text-anchor="middle" fill="#CC0000" font-family="Microsoft YaHei, Arial, sans-serif" font-size="20" font-weight="bold" data-role="before-label">
+    {{BEFORE_LABEL}}
+  </text>
+  <line x1="90" y1="195" x2="590" y2="195" stroke="#E8D0D0" stroke-width="1"/>
+
+  <!-- Row 1 -->
+  <text text-anchor="start" x="90" y="240" fill="#555555" font-family="Microsoft YaHei, Arial, sans-serif" font-size="15" data-role="compare-item-before-1">
+    {{COMPARE_ITEM}}
+  </text>
+  <text x="570" y="240" text-anchor="end" fill="#CC0000" font-family="Microsoft YaHei, Arial, sans-serif" font-size="15" font-weight="bold" data-role="compare-value-before-1">
+    {{COMPARE_VALUE}}
+  </text>
+  <line x1="90" y1="265" x2="590" y2="265" stroke="#F0E0E0" stroke-width="1"/>
+
+  <!-- Row 2 -->
+  <text text-anchor="start" x="90" y="310" fill="#555555" font-family="Microsoft YaHei, Arial, sans-serif" font-size="15" data-role="compare-item-before-2">
+    {{COMPARE_ITEM}}
+  </text>
+  <text x="570" y="310" text-anchor="end" fill="#CC0000" font-family="Microsoft YaHei, Arial, sans-serif" font-size="15" font-weight="bold" data-role="compare-value-before-2">
+    {{COMPARE_VALUE}}
+  </text>
+  <line x1="90" y1="335" x2="590" y2="335" stroke="#F0E0E0" stroke-width="1"/>
+
+  <!-- Row 3 -->
+  <text text-anchor="start" x="90" y="380" fill="#555555" font-family="Microsoft YaHei, Arial, sans-serif" font-size="15" data-role="compare-item-before-3">
+    {{COMPARE_ITEM}}
+  </text>
+  <text x="570" y="380" text-anchor="end" fill="#CC0000" font-family="Microsoft YaHei, Arial, sans-serif" font-size="15" font-weight="bold" data-role="compare-value-before-3">
+    {{COMPARE_VALUE}}
+  </text>
+  <line x1="90" y1="405" x2="590" y2="405" stroke="#F0E0E0" stroke-width="1"/>
+
+  <!-- Row 4 -->
+  <text text-anchor="start" x="90" y="450" fill="#555555" font-family="Microsoft YaHei, Arial, sans-serif" font-size="15" data-role="compare-item-before-4">
+    {{COMPARE_ITEM}}
+  </text>
+  <text x="570" y="450" text-anchor="end" fill="#CC0000" font-family="Microsoft YaHei, Arial, sans-serif" font-size="15" font-weight="bold" data-role="compare-value-before-4">
+    {{COMPARE_VALUE}}
+  </text>
+
+  <!-- RIGHT card: "After" column -->
+  <rect x="660" y="140" width="560" height="480" rx="8" fill="#F0FFF8" stroke="#C0E0D0" stroke-width="1"/>
+  <!-- Green top border -->
+  <rect x="660" y="140" width="560" height="5" rx="2" fill="#00A86B"/>
+  <!-- Column header -->
+  <text x="940" y="178" text-anchor="middle" fill="#00A86B" font-family="Microsoft YaHei, Arial, sans-serif" font-size="20" font-weight="bold" data-role="after-label">
+    {{AFTER_LABEL}}
+  </text>
+  <line x1="690" y1="195" x2="1190" y2="195" stroke="#C0E0D0" stroke-width="1"/>
+
+  <!-- Row 1 -->
+  <text text-anchor="start" x="690" y="240" fill="#555555" font-family="Microsoft YaHei, Arial, sans-serif" font-size="15" data-role="compare-item-after-1">
+    {{COMPARE_ITEM}}
+  </text>
+  <text x="1170" y="240" text-anchor="end" fill="#00A86B" font-family="Microsoft YaHei, Arial, sans-serif" font-size="15" font-weight="bold" data-role="compare-value-after-1">
+    {{COMPARE_VALUE}}
+  </text>
+  <line x1="690" y1="265" x2="1190" y2="265" stroke="#D0F0E0" stroke-width="1"/>
+
+  <!-- Row 2 -->
+  <text text-anchor="start" x="690" y="310" fill="#555555" font-family="Microsoft YaHei, Arial, sans-serif" font-size="15" data-role="compare-item-after-2">
+    {{COMPARE_ITEM}}
+  </text>
+  <text x="1170" y="310" text-anchor="end" fill="#00A86B" font-family="Microsoft YaHei, Arial, sans-serif" font-size="15" font-weight="bold" data-role="compare-value-after-2">
+    {{COMPARE_VALUE}}
+  </text>
+  <line x1="690" y1="335" x2="1190" y2="335" stroke="#D0F0E0" stroke-width="1"/>
+
+  <!-- Row 3 -->
+  <text text-anchor="start" x="690" y="380" fill="#555555" font-family="Microsoft YaHei, Arial, sans-serif" font-size="15" data-role="compare-item-after-3">
+    {{COMPARE_ITEM}}
+  </text>
+  <text x="1170" y="380" text-anchor="end" fill="#00A86B" font-family="Microsoft YaHei, Arial, sans-serif" font-size="15" font-weight="bold" data-role="compare-value-after-3">
+    {{COMPARE_VALUE}}
+  </text>
+  <line x1="690" y1="405" x2="1190" y2="405" stroke="#D0F0E0" stroke-width="1"/>
+
+  <!-- Row 4 -->
+  <text text-anchor="start" x="690" y="450" fill="#555555" font-family="Microsoft YaHei, Arial, sans-serif" font-size="15" data-role="compare-item-after-4">
+    {{COMPARE_ITEM}}
+  </text>
+  <text x="1170" y="450" text-anchor="end" fill="#00A86B" font-family="Microsoft YaHei, Arial, sans-serif" font-size="15" font-weight="bold" data-role="compare-value-after-4">
+    {{COMPARE_VALUE}}
+  </text>
+
+  <!-- ==================== Footer ==================== -->
+  <line x1="40" y1="665" x2="1240" y2="665" stroke="#E8F4FC" stroke-width="1"/>
+  <text text-anchor="start" x="40" y="695" fill="#999999" font-family="Microsoft YaHei, Arial, sans-serif" font-size="12" data-role="source">
+    数据来源：{{SOURCE}}
+  </text>
+  <text x="640" y="695" text-anchor="middle" fill="#999999" font-family="Microsoft YaHei, Arial, sans-serif" font-size="12" data-role="section-name">
+    {{SECTION_NAME}}
+  </text>
+  <text x="1220" y="695" text-anchor="end" fill="#666666" font-family="Microsoft YaHei, Arial, sans-serif" font-size="14" data-role="page-num">
+    {{PAGE_NUM}}
+  </text>
+</svg>

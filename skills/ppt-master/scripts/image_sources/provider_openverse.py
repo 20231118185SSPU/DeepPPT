@@ -30,6 +30,26 @@ from image_sources.provider_common import (
 API_URL = "https://api.openverse.org/v1/images/"
 DEFAULT_PAGE_SIZE = 20
 DEFAULT_TIMEOUT = 30
+_MAX_RETRIES = 2
+_RETRY_BACKOFF = 2  # seconds; doubles each retry
+
+
+def _request_with_retry(method, url, *, retries=_MAX_RETRIES, **kwargs):
+    """HTTP request with exponential backoff retry on transient errors."""
+    import time
+    last_exc = None
+    for attempt in range(retries + 1):
+        try:
+            resp = method(url, **kwargs)
+            resp.raise_for_status()
+            return resp
+        except (requests.ConnectionError, requests.Timeout) as exc:
+            last_exc = exc
+            if attempt < retries:
+                time.sleep(_RETRY_BACKOFF * (2 ** attempt))
+        except requests.HTTPError:
+            raise  # non-transient HTTP errors propagate immediately
+    raise last_exc
 
 # Map our orientation vocabulary to Openverse's ``aspect_ratio`` parameter.
 _ASPECT_MAP = {"landscape": "wide", "portrait": "tall", "square": "square"}
@@ -106,13 +126,13 @@ def search(
         if orientation in _ASPECT_MAP:
             params["aspect_ratio"] = _ASPECT_MAP[orientation]
 
-        response = requests.get(
+        response = _request_with_retry(
+            requests.get,
             API_URL,
             params=params,
             headers={"User-Agent": USER_AGENT, "Accept": "application/json"},
             timeout=timeout,
         )
-        response.raise_for_status()
         candidates = parse_results(response.json())
         if candidates:
             return candidates

@@ -1,0 +1,159 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="1280" height="720" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1280 720">
+  <!-- Background -->
+  <rect width="1280" height="720" fill="#F7F9FC"/>
+
+  <!-- ==================== Header ==================== -->
+  <text text-anchor="start" x="60" y="42" fill="#E74C3C" font-family="Microsoft YaHei, Arial, sans-serif" font-size="14" font-weight="bold" letter-spacing="3" data-role="kicker">
+    {{KICKER_LABEL}}
+  </text>
+  <text text-anchor="start" x="60" y="78" fill="#1A5276" font-family="Microsoft YaHei, Arial, sans-serif" font-size="28" font-weight="bold" data-role="title">
+    {{PAGE_TITLE}}
+  </text>
+
+  <!-- ==================== Diff Window ==================== -->
+  <!-- Window border -->
+  <rect x="50" y="100" width="1180" height="545" rx="10" fill="#FFFFFF" stroke="#D5DAE1" stroke-width="1"/>
+
+  <!-- Title bar -->
+  <rect x="50" y="100" width="1180" height="40" rx="10" fill="#F0F2F5"/>
+  <rect x="50" y="125" width="1180" height="15" fill="#F0F2F5"/>
+  <!-- Traffic-light dots -->
+  <circle cx="76" cy="120" r="6" fill="#FF5F57"/>
+  <circle cx="96" cy="120" r="6" fill="#FFBD2E"/>
+  <circle cx="116" cy="120" r="6" fill="#28CA42"/>
+  <!-- File name -->
+  <text x="640" y="126" text-anchor="middle" fill="#6B7280" font-family="Consolas, Courier New, monospace" font-size="13" data-role="file-name">
+    {{FILE_NAME}}
+  </text>
+
+  <!-- ==================== Column Headers ==================== -->
+  <!-- Left (old) header -->
+  <rect x="51" y="140" width="589" height="30" fill="#FEF2F2"/>
+  <text x="345" y="160" text-anchor="middle" fill="#991B1B" font-family="Consolas, Courier New, monospace" font-size="12" font-weight="bold" letter-spacing="1" data-role="left-header">
+    {{LEFT_HEADER}}
+  </text>
+  <!-- Right (new) header -->
+  <rect x="641" y="140" width="588" height="30" fill="#F0FDF4"/>
+  <text x="935" y="160" text-anchor="middle" fill="#166534" font-family="Consolas, Courier New, monospace" font-size="12" font-weight="bold" letter-spacing="1" data-role="right-header">
+    {{RIGHT_HEADER}}
+  </text>
+  <!-- Divider line -->
+  <line x1="640" y1="140" x2="640" y2="645" stroke="#D5DAE1" stroke-width="1"/>
+
+  <!-- ==================== Diff Lines — Left (Old) ==================== -->
+  <!-- Row 1 -->
+  <rect x="51" y="172" width="589" height="22" fill="#FEF2F2"/>
+  <text text-anchor="start" x="66" y="187" fill="#EF4444" font-family="Consolas, Courier New, monospace" font-size="13" data-role="old-line-1">
+    {{OLD_LINE_1}}
+  </text>
+  <!-- Row 2 -->
+  <rect x="51" y="194" width="589" height="22" fill="#FEF2F2"/>
+  <text text-anchor="start" x="66" y="209" fill="#EF4444" font-family="Consolas, Courier New, monospace" font-size="13" data-role="old-line-2">
+    {{OLD_LINE_2}}
+  </text>
+  <!-- Row 3 -->
+  <rect x="51" y="216" width="589" height="22" fill="#FEF2F2"/>
+  <text text-anchor="start" x="66" y="231" fill="#EF4444" font-family="Consolas, Courier New, monospace" font-size="13" data-role="old-line-3">
+    {{OLD_LINE_3}}
+  </text>
+  <!-- Row 4 -->
+  <rect x="51" y="238" width="589" height="22" fill="#FEF2F2"/>
+  <text text-anchor="start" x="66" y="253" fill="#EF4444" font-family="Consolas, Courier New, monospace" font-size="13" data-role="old-line-4">
+    {{OLD_LINE_4}}
+  </text>
+  <!-- Row 5 -->
+  <rect x="51" y="260" width="589" height="22" fill="#FEF2F2"/>
+  <text text-anchor="start" x="66" y="275" fill="#EF4444" font-family="Consolas, Courier New, monospace" font-size="13" data-role="old-line-5">
+    {{OLD_LINE_5}}
+  </text>
+  <!-- Row 6 -->
+  <rect x="51" y="282" width="589" height="22" fill="#F9FAFB"/>
+  <text text-anchor="start" x="66" y="297" fill="#6B7280" font-family="Consolas, Courier New, monospace" font-size="13" data-role="old-line-6">
+    {{OLD_LINE_6}}
+  </text>
+  <!-- Row 7 -->
+  <rect x="51" y="304" width="589" height="22" fill="#F9FAFB"/>
+  <text text-anchor="start" x="66" y="319" fill="#6B7280" font-family="Consolas, Courier New, monospace" font-size="13" data-role="old-line-7">
+    {{OLD_LINE_7}}
+  </text>
+  <!-- Row 8 -->
+  <rect x="51" y="326" width="589" height="22" fill="#F9FAFB"/>
+  <text text-anchor="start" x="66" y="341" fill="#6B7280" font-family="Consolas, Courier New, monospace" font-size="13" data-role="old-line-8">
+    {{OLD_LINE_8}}
+  </text>
+  <!-- Row 9 -->
+  <rect x="51" y="348" width="589" height="22" fill="#FEF2F2"/>
+  <text text-anchor="start" x="66" y="363" fill="#EF4444" font-family="Consolas, Courier New, monospace" font-size="13" data-role="old-line-9">
+    {{OLD_LINE_9}}
+  </text>
+  <!-- Row 10 -->
+  <rect x="51" y="370" width="589" height="22" fill="#FEF2F2"/>
+  <text text-anchor="start" x="66" y="385" fill="#EF4444" font-family="Consolas, Courier New, monospace" font-size="13" data-role="old-line-10">
+    {{OLD_LINE_10}}
+  </text>
+
+  <!-- ==================== Diff Lines — Right (New) ==================== -->
+  <!-- Row 1 -->
+  <rect x="641" y="172" width="588" height="22" fill="#F0FDF4"/>
+  <text text-anchor="start" x="656" y="187" fill="#22C55E" font-family="Consolas, Courier New, monospace" font-size="13" data-role="new-line-1">
+    {{NEW_LINE_1}}
+  </text>
+  <!-- Row 2 -->
+  <rect x="641" y="194" width="588" height="22" fill="#F0FDF4"/>
+  <text text-anchor="start" x="656" y="209" fill="#22C55E" font-family="Consolas, Courier New, monospace" font-size="13" data-role="new-line-2">
+    {{NEW_LINE_2}}
+  </text>
+  <!-- Row 3 -->
+  <rect x="641" y="216" width="588" height="22" fill="#F0FDF4"/>
+  <text text-anchor="start" x="656" y="231" fill="#22C55E" font-family="Consolas, Courier New, monospace" font-size="13" data-role="new-line-3">
+    {{NEW_LINE_3}}
+  </text>
+  <!-- Row 4 -->
+  <rect x="641" y="238" width="588" height="22" fill="#F0FDF4"/>
+  <text text-anchor="start" x="656" y="253" fill="#22C55E" font-family="Consolas, Courier New, monospace" font-size="13" data-role="new-line-4">
+    {{NEW_LINE_4}}
+  </text>
+  <!-- Row 5 -->
+  <rect x="641" y="260" width="588" height="22" fill="#F0FDF4"/>
+  <text text-anchor="start" x="656" y="275" fill="#22C55E" font-family="Consolas, Courier New, monospace" font-size="13" data-role="new-line-5">
+    {{NEW_LINE_5}}
+  </text>
+  <!-- Row 6 -->
+  <rect x="641" y="282" width="588" height="22" fill="#F9FAFB"/>
+  <text text-anchor="start" x="656" y="297" fill="#6B7280" font-family="Consolas, Courier New, monospace" font-size="13" data-role="new-line-6">
+    {{NEW_LINE_6}}
+  </text>
+  <!-- Row 7 -->
+  <rect x="641" y="304" width="588" height="22" fill="#F9FAFB"/>
+  <text text-anchor="start" x="656" y="319" fill="#6B7280" font-family="Consolas, Courier New, monospace" font-size="13" data-role="new-line-7">
+    {{NEW_LINE_7}}
+  </text>
+  <!-- Row 8 -->
+  <rect x="641" y="326" width="588" height="22" fill="#F9FAFB"/>
+  <text text-anchor="start" x="656" y="341" fill="#6B7280" font-family="Consolas, Courier New, monospace" font-size="13" data-role="new-line-8">
+    {{NEW_LINE_8}}
+  </text>
+  <!-- Row 9 -->
+  <rect x="641" y="348" width="588" height="22" fill="#F0FDF4"/>
+  <text text-anchor="start" x="656" y="363" fill="#22C55E" font-family="Consolas, Courier New, monospace" font-size="13" data-role="new-line-9">
+    {{NEW_LINE_9}}
+  </text>
+  <!-- Row 10 -->
+  <rect x="641" y="370" width="588" height="22" fill="#F0FDF4"/>
+  <text text-anchor="start" x="656" y="385" fill="#22C55E" font-family="Consolas, Courier New, monospace" font-size="13" data-role="new-line-10">
+    {{NEW_LINE_10}}
+  </text>
+
+  <!-- ==================== Diff Summary Bar ==================== -->
+  <rect x="51" y="410" width="1178" height="35" fill="#F0F2F5"/>
+  <text x="640" y="433" text-anchor="middle" fill="#6B7280" font-family="Microsoft YaHei, Arial, sans-serif" font-size="13" data-role="diff-summary">
+    {{DIFF_SUMMARY}}
+  </text>
+
+  <!-- ==================== Footer ==================== -->
+  <line x1="40" y1="665" x2="1240" y2="665" stroke="#E0E6ED" stroke-width="1"/>
+  <text x="640" y="695" text-anchor="middle" fill="#999999" font-family="Microsoft YaHei, Arial, sans-serif" font-size="14" data-role="page-num">
+    {{PAGE_NUM}}
+  </text>
+</svg>

@@ -424,6 +424,8 @@ PROVIDER_DISPLAY_NAMES: dict[str, str] = {
     "wikimedia": "Wikimedia Commons",
     "pexels": "Pexels",
     "pixabay": "Pixabay",
+    "unsplash": "Unsplash",
+    "flickr": "Flickr",
 }
 
 

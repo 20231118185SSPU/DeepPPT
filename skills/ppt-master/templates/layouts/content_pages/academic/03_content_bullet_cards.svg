@@ -1,0 +1,124 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="1280" height="720" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1280 720">
+  <!-- Background -->
+  <rect width="1280" height="720" fill="#FFFFFF"/>
+
+  <!-- ==================== Header ==================== -->
+  <rect x="0" y="0" width="1280" height="70" fill="#003366"/>
+  <rect x="0" y="0" width="6" height="70" fill="#CC0000"/>
+  <text text-anchor="start" x="40" y="46" fill="#FFFFFF" font-family="Microsoft YaHei, Arial, sans-serif" font-size="28" font-weight="bold" data-role="title">
+    {{PAGE_TITLE}}
+  </text>
+  <text x="1220" y="46" text-anchor="end" fill="#FFFFFF" font-family="Microsoft YaHei, Arial, sans-serif" font-size="18" font-weight="bold" data-role="logo">
+    {{LOGO}}
+  </text>
+
+  <!-- ==================== Key Message Bar ==================== -->
+  <rect x="0" y="70" width="1280" height="50" fill="#E8F4FC"/>
+  <rect x="0" y="70" width="6" height="50" fill="#0066CC"/>
+  <text text-anchor="start" x="40" y="102" fill="#333333" font-family="Microsoft YaHei, Arial, sans-serif" font-size="18" data-role="key-message">
+    {{KEY_MESSAGE}}
+  </text>
+
+  <!-- ==================== Card Grid: 2 rows x 3 columns ==================== -->
+  <!-- Row 1 -->
+
+  <!-- Card 1 -->
+  <rect x="45" y="145" width="380" height="235" rx="8" fill="#F8FCFF" stroke="#D0D7E0" stroke-width="1"/>
+  <rect x="45" y="145" width="5" height="235" rx="2" fill="#0066CC"/>
+  <!-- Icon placeholder -->
+  <circle cx="85" cy="185" r="18" fill="#E8F4FC" stroke="#0066CC" stroke-width="1.5"/>
+  <text x="85" y="190" text-anchor="middle" fill="#0066CC" font-family="Microsoft YaHei, Arial, sans-serif" font-size="14" data-role="card-icon-1">
+    {{ICON}}
+  </text>
+  <text text-anchor="start" x="115" y="192" fill="#003366" font-family="Microsoft YaHei, Arial, sans-serif" font-size="17" font-weight="bold" data-role="card-title-1">
+    {{CARD_TITLE}}
+  </text>
+  <text text-anchor="start" x="70" y="225" fill="#555555" font-family="Microsoft YaHei, Arial, sans-serif" font-size="14" data-role="card-body-1">
+    {{CARD_BODY}}
+  </text>
+
+  <!-- Card 2 -->
+  <rect x="450" y="145" width="380" height="235" rx="8" fill="#F8FCFF" stroke="#D0D7E0" stroke-width="1"/>
+  <rect x="450" y="145" width="5" height="235" rx="2" fill="#0066CC"/>
+  <circle cx="490" cy="185" r="18" fill="#E8F4FC" stroke="#0066CC" stroke-width="1.5"/>
+  <text x="490" y="190" text-anchor="middle" fill="#0066CC" font-family="Microsoft YaHei, Arial, sans-serif" font-size="14" data-role="card-icon-2">
+    {{ICON}}
+  </text>
+  <text text-anchor="start" x="520" y="192" fill="#003366" font-family="Microsoft YaHei, Arial, sans-serif" font-size="17" font-weight="bold" data-role="card-title-2">
+    {{CARD_TITLE}}
+  </text>
+  <text text-anchor="start" x="475" y="225" fill="#555555" font-family="Microsoft YaHei, Arial, sans-serif" font-size="14" data-role="card-body-2">
+    {{CARD_BODY}}
+  </text>
+
+  <!-- Card 3 -->
+  <rect x="855" y="145" width="380" height="235" rx="8" fill="#F8FCFF" stroke="#D0D7E0" stroke-width="1"/>
+  <rect x="855" y="145" width="5" height="235" rx="2" fill="#0066CC"/>
+  <circle cx="895" cy="185" r="18" fill="#E8F4FC" stroke="#0066CC" stroke-width="1.5"/>
+  <text x="895" y="190" text-anchor="middle" fill="#0066CC" font-family="Microsoft YaHei, Arial, sans-serif" font-size="14" data-role="card-icon-3">
+    {{ICON}}
+  </text>
+  <text text-anchor="start" x="925" y="192" fill="#003366" font-family="Microsoft YaHei, Arial, sans-serif" font-size="17" font-weight="bold" data-role="card-title-3">
+    {{CARD_TITLE}}
+  </text>
+  <text text-anchor="start" x="880" y="225" fill="#555555" font-family="Microsoft YaHei, Arial, sans-serif" font-size="14" data-role="card-body-3">
+    {{CARD_BODY}}
+  </text>
+
+  <!-- Row 2 -->
+
+  <!-- Card 4 -->
+  <rect x="45" y="400" width="380" height="235" rx="8" fill="#F8FCFF" stroke="#D0D7E0" stroke-width="1"/>
+  <rect x="45" y="400" width="5" height="235" rx="2" fill="#0066CC"/>
+  <circle cx="85" cy="440" r="18" fill="#E8F4FC" stroke="#0066CC" stroke-width="1.5"/>
+  <text x="85" y="445" text-anchor="middle" fill="#0066CC" font-family="Microsoft YaHei, Arial, sans-serif" font-size="14" data-role="card-icon-4">
+    {{ICON}}
+  </text>
+  <text text-anchor="start" x="115" y="447" fill="#003366" font-family="Microsoft YaHei, Arial, sans-serif" font-size="17" font-weight="bold" data-role="card-title-4">
+    {{CARD_TITLE}}
+  </text>
+  <text text-anchor="start" x="70" y="480" fill="#555555" font-family="Microsoft YaHei, Arial, sans-serif" font-size="14" data-role="card-body-4">
+    {{CARD_BODY}}
+  </text>
+
+  <!-- Card 5 -->
+  <rect x="450" y="400" width="380" height="235" rx="8" fill="#F8FCFF" stroke="#D0D7E0" stroke-width="1"/>
+  <rect x="450" y="400" width="5" height="235" rx="2" fill="#0066CC"/>
+  <circle cx="490" cy="440" r="18" fill="#E8F4FC" stroke="#0066CC" stroke-width="1.5"/>
+  <text x="490" y="445" text-anchor="middle" fill="#0066CC" font-family="Microsoft YaHei, Arial, sans-serif" font-size="14" data-role="card-icon-5">
+    {{ICON}}
+  </text>
+  <text text-anchor="start" x="520" y="447" fill="#003366" font-family="Microsoft YaHei, Arial, sans-serif" font-size="17" font-weight="bold" data-role="card-title-5">
+    {{CARD_TITLE}}
+  </text>
+  <text text-anchor="start" x="475" y="480" fill="#555555" font-family="Microsoft YaHei, Arial, sans-serif" font-size="14" data-role="card-body-5">
+    {{CARD_BODY}}
+  </text>
+
+  <!-- Card 6 -->
+  <rect x="855" y="400" width="380" height="235" rx="8" fill="#F8FCFF" stroke="#D0D7E0" stroke-width="1"/>
+  <rect x="855" y="400" width="5" height="235" rx="2" fill="#0066CC"/>
+  <circle cx="895" cy="440" r="18" fill="#E8F4FC" stroke="#0066CC" stroke-width="1.5"/>
+  <text x="895" y="445" text-anchor="middle" fill="#0066CC" font-family="Microsoft YaHei, Arial, sans-serif" font-size="14" data-role="card-icon-6">
+    {{ICON}}
+  </text>
+  <text text-anchor="start" x="925" y="447" fill="#003366" font-family="Microsoft YaHei, Arial, sans-serif" font-size="17" font-weight="bold" data-role="card-title-6">
+    {{CARD_TITLE}}
+  </text>
+  <text text-anchor="start" x="880" y="480" fill="#555555" font-family="Microsoft YaHei, Arial, sans-serif" font-size="14" data-role="card-body-6">
+    {{CARD_BODY}}
+  </text>
+
+  <!-- ==================== Footer ==================== -->
+  <line x1="40" y1="665" x2="1240" y2="665" stroke="#E8F4FC" stroke-width="1"/>
+  <text text-anchor="start" x="40" y="695" fill="#999999" font-family="Microsoft YaHei, Arial, sans-serif" font-size="12" data-role="source">
+    数据来源：{{SOURCE}}
+  </text>
+  <text x="640" y="695" text-anchor="middle" fill="#999999" font-family="Microsoft YaHei, Arial, sans-serif" font-size="12" data-role="section-name">
+    {{SECTION_NAME}}
+  </text>
+  <text x="1220" y="695" text-anchor="end" fill="#666666" font-family="Microsoft YaHei, Arial, sans-serif" font-size="14" data-role="page-num">
+    {{PAGE_NUM}}
+  </text>
+</svg>

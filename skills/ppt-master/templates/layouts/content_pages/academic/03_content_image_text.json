@@ -1,0 +1,61 @@
+{
+  "layout_type": "image_left_text_right",
+  "scenario": "academic",
+  "description": "Left image placeholder with right text area containing title, 3 bullet points, and an optional quote block",
+  "color_scheme": {
+    "primary": "#003366",
+    "accent": "#CC0000",
+    "secondary": "#0066CC",
+    "bg": "#FFFFFF",
+    "card_bg": "#F8FCFF",
+    "header_bg": "#003366"
+  },
+  "image_slots": [
+    {
+      "role": "image-slot-main",
+      "description": "Main content image placeholder (550x490)",
+      "caption": "Main content image"
+    }
+  ],
+  "text_slots": [
+    {
+      "role": "title",
+      "description": "Page title in header bar"
+    },
+    {
+      "role": "key-message",
+      "description": "Key message bar text"
+    },
+    {
+      "role": "image-caption",
+      "description": "Caption text inside the image placeholder"
+    },
+    {
+      "role": "body-title",
+      "description": "Text area section title"
+    },
+    {
+      "role": "body-1",
+      "description": "First content bullet point"
+    },
+    {
+      "role": "body-2",
+      "description": "Second content bullet point"
+    },
+    {
+      "role": "body-3",
+      "description": "Third content bullet point"
+    },
+    {
+      "role": "quote",
+      "description": "Optional blockquote text"
+    },
+    {
+      "role": "quote-source",
+      "description": "Quote attribution source"
+    }
+  ],
+  "content_mode": [
+    "image_with_text"
+  ]
+}

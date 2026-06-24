@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="1280" height="720" viewBox="0 0 1280 720" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="bgGrad" x1="0" y1="0" x2="1280" y2="720" gradientUnits="userSpaceOnUse">
+      <stop offset="0%" stop-color="#0F172A"/>
+      <stop offset="50%" stop-color="#1E293B"/>
+      <stop offset="100%" stop-color="#0F172A"/>
+    </linearGradient>
+    <linearGradient id="headlineGrad" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0%" stop-color="#60A5FA"/>
+      <stop offset="50%" stop-color="#A78BFA"/>
+      <stop offset="100%" stop-color="#F472B6"/>
+    </linearGradient>
+    <linearGradient id="btnGrad" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#60A5FA"/>
+      <stop offset="100%" stop-color="#A78BFA"/>
+    </linearGradient>
+    <linearGradient id="accentDot" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#60A5FA" stop-opacity="0.3"/>
+      <stop offset="100%" stop-color="#60A5FA" stop-opacity="0"/>
+    </linearGradient>
+  </defs>
+
+  <!-- ==================== Background ==================== -->
+  <rect width="1280" height="720" fill="url(#bgGrad)"/>
+
+  <!-- Decorative glow circles -->
+  <circle cx="200" cy="180" r="200" fill="#60A5FA" fill-opacity="0.06"/>
+  <circle cx="1100" cy="550" r="240" fill="#A78BFA" fill-opacity="0.06"/>
+  <circle cx="640" cy="100" r="120" fill="#F472B6" fill-opacity="0.04"/>
+
+  <!-- Subtle dot grid pattern -->
+  <circle cx="160" cy="320" r="2" fill="#FFFFFF" fill-opacity="0.08"/>
+  <circle cx="200" cy="320" r="2" fill="#FFFFFF" fill-opacity="0.08"/>
+  <circle cx="240" cy="320" r="2" fill="#FFFFFF" fill-opacity="0.08"/>
+  <circle cx="1040" cy="400" r="2" fill="#FFFFFF" fill-opacity="0.08"/>
+  <circle cx="1080" cy="400" r="2" fill="#FFFFFF" fill-opacity="0.08"/>
+  <circle cx="1120" cy="400" r="2" fill="#FFFFFF" fill-opacity="0.08"/>
+
+  <!-- ==================== Kicker ==================== -->
+  <text x="640" y="190" text-anchor="middle" font-family="Microsoft YaHei, Arial, sans-serif" font-size="14" font-weight="700" fill="#60A5FA" letter-spacing="6" data-role="kicker">
+    {{KICKER_LABEL}}
+  </text>
+
+  <!-- ==================== Headline ==================== -->
+  <text x="640" y="300" text-anchor="middle" font-family="Microsoft YaHei, Arial, sans-serif" font-size="72" font-weight="800" fill="url(#headlineGrad)" data-role="headline-1">
+    {{HEADLINE_1}}
+  </text>
+  <text x="640" y="380" text-anchor="middle" font-family="Microsoft YaHei, Arial, sans-serif" font-size="72" font-weight="800" fill="#FFFFFF" data-role="headline-2">
+    {{HEADLINE_2}}
+  </text>
+
+  <!-- ==================== Description ==================== -->
+  <text x="640" y="440" text-anchor="middle" font-family="Microsoft YaHei, Arial, sans-serif" font-size="18" fill="#94A3B8" data-role="description-1">
+    {{DESCRIPTION_1}}
+  </text>
+  <text x="640" y="470" text-anchor="middle" font-family="Microsoft YaHei, Arial, sans-serif" font-size="18" fill="#94A3B8" data-role="description-2">
+    {{DESCRIPTION_2}}
+  </text>
+
+  <!-- ==================== Action Buttons ==================== -->
+  <!-- Primary button -->
+  <rect x="420" y="520" width="240" height="52" rx="26" fill="url(#btnGrad)"/>
+  <text x="540" y="551" text-anchor="middle" font-family="Microsoft YaHei, Arial, sans-serif" font-size="16" font-weight="700" fill="#FFFFFF" data-role="btn-primary">
+    {{BTN_PRIMARY}}
+  </text>
+
+  <!-- Secondary button (outline style) -->
+  <rect x="690" y="520" width="240" height="52" rx="26" fill="none" stroke="#60A5FA" stroke-width="1.5"/>
+  <text x="810" y="551" text-anchor="middle" font-family="Microsoft YaHei, Arial, sans-serif" font-size="16" font-weight="700" fill="#60A5FA" data-role="btn-secondary">
+    {{BTN_SECONDARY}}
+  </text>
+
+  <!-- ==================== Footer hint ==================== -->
+  <text x="640" y="660" text-anchor="middle" font-family="Microsoft YaHei, Arial, sans-serif" font-size="12" fill="#475569" data-role="footer-hint">
+    {{FOOTER_HINT}}
+  </text>
+
+  <!-- Bottom gradient accent line -->
+  <rect x="0" y="716" width="1280" height="4" fill="url(#headlineGrad)"/>
+</svg>

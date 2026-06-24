@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="1280" height="720" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1280 720">
+  <!-- Background -->
+  <rect width="1280" height="720" fill="#FFFFFF"/>
+
+  <!-- ==================== Kicker Label ==================== -->
+  <text x="640" y="170" text-anchor="middle" fill="#E74C3C" font-family="Microsoft YaHei, Arial, sans-serif" font-size="16" font-weight="bold" letter-spacing="4" data-role="kicker">
+    {{KICKER_LABEL}}
+  </text>
+
+  <!-- ==================== Hero Number ==================== -->
+  <!-- Gradient definition for hero number -->
+  <defs>
+    <linearGradient id="numGradient" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#1A5276"/>
+      <stop offset="100%" stop-color="#2E86C1"/>
+    </linearGradient>
+  </defs>
+  <text x="640" y="400" text-anchor="middle" fill="url(#numGradient)" font-family="Microsoft YaHei, Arial, sans-serif" font-size="200" font-weight="bold" data-role="hero-number">
+    {{HERO_NUMBER}}
+  </text>
+
+  <!-- ==================== Subtitle ==================== -->
+  <text x="640" y="460" text-anchor="middle" fill="#1A5276" font-family="Microsoft YaHei, Arial, sans-serif" font-size="22" font-weight="bold" data-role="subtitle">
+    {{SUBTITLE}}
+  </text>
+
+  <!-- ==================== Lede Text ==================== -->
+  <text x="640" y="540" text-anchor="middle" fill="#888888" font-family="Microsoft YaHei, Arial, sans-serif" font-size="15" data-role="lede-1">
+    {{LEDE_1}}
+  </text>
+  <text x="640" y="570" text-anchor="middle" fill="#888888" font-family="Microsoft YaHei, Arial, sans-serif" font-size="15" data-role="lede-2">
+    {{LEDE_2}}
+  </text>
+
+  <!-- ==================== Decorative ==================== -->
+  <!-- Thin accent line under number -->
+  <rect x="540" y="420" width="200" height="3" rx="1.5" fill="#E74C3C" fill-opacity="0.6"/>
+
+  <!-- ==================== Footer ==================== -->
+  <text x="640" y="695" text-anchor="middle" fill="#CCCCCC" font-family="Microsoft YaHei, Arial, sans-serif" font-size="14" data-role="page-num">
+    {{PAGE_NUM}}
+  </text>
+</svg>

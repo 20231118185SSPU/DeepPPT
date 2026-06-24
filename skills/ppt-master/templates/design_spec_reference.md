@@ -252,8 +252,25 @@ Catalog read: 71 templates
 | Filename | Dimensions | Ratio | Purpose | Type | Layout pattern | Acquire Via | Status | Reference | text_policy | page_role |
 | -------- | --------- | ----- | ------- | ---- | -------------- | ----------- | ------ | --------- | ----------- | --------- |
 | cover_bg.png | {canvas_info['dimensions']} | [ratio] | Atmospheric cover backdrop — SVG title overlays the calm region | Background | #1 full-bleed background with floating title + #29 two-stop scrim | ai | Pending | [subject + intent + composition, no style/HEX] | none | hero_page |
-| comparison_p07.png | {canvas_info['dimensions']} | [ratio] | Three-panel approach comparison — panel labels stay inside the image | Diagram | #44 background image + native network/architecture diagram | ai | Pending | Three side-by-side schematic motifs comparing approach A / B / C, panel labels rendered inside each motif | embedded | local |
+| deepdive_side.png | 370×500 | 3:4 | Left-side image for deep-dive card pages (P05-P09) | Illustration | #42 side image + card columns | ai | Pending | [subject matching the deep-dive page's claim] | none | local |
+| gallery_thumb.png | 370×170 | ~2:1 | Gallery grid thumbnail | Photography | #38 gallery cell | web | Pending | [project representative page screenshot] | none | local |
 | formula_001.png | [actual dimensions from formula manifest / image_analysis] | [ratio] | Block equation on P03 | Latex Formula | formula-block | formula | Rendered | `E = mc^2` — energy-mass equation | | |
+
+> **Dimensions MUST come from SVG layout slots (HARD rule)**. Before filling this table, Strategist MUST determine each image's target SVG layout region (from the page's template SVG or the planned free-design layout) and write the exact pixel dimensions in the Dimensions column. Derivation rules:
+> - Cover / ending / transition background → canvas dimensions (1280×720 for PPT 16:9)
+> - Content page center image → from `03_content.svg` image area (typically 1160×425)
+> - Deep-dive side image → from `deepdive_card.svg` DEEPDIVE_IMAGE area (typically 370×500)
+> - Gallery thumbnail → from `gallery.svg` GALLERY_IMG area (typically 370×170)
+> - Screenshot grid cell → from `screenshot_grid.svg` screenshot area (typically 550×162)
+> - Free-design pages → measure from the planned SVG layout before writing the spec
+>
+> These dimensions drive image generation: `image_prompts.json` includes `target_width` and `target_height` fields so the image generator produces correctly sized images. **Do NOT generate images at a generic size and hope they fit** — layout first, then generate to fit.
+>
+> **Image type distinction (HARD rule)**: every image row MUST be classified as one of two types:
+> - **Type A (概念图)**: atmospheric, mood-based, no text/data. Used for cover/transition/content/ending backgrounds. Prompt describes "what does it feel like?"
+> - **Type B (讲解配图)**: informational, data-rich, contains specific content. Used for deep-dive/comparison/data/timeline pages. Prompt describes "what does it show?"
+>
+> The Type column in the table above encodes this: `Background` = Type A, `Diagram`/`Photography`/`Illustration` with informational content = Type B. Type B images are preferably web-sourced (`Acquire Via: web`), not AI-generated. Only when web sources are unavailable should Type B use AI generation with informational prompts.
 
 > **Layout pattern column is MANDATORY** — for non-formula rows, value is one or more `#<id> <name>` joined by ` + ` drawn verbatim from [`references/image-layout-patterns.md`](../references/image-layout-patterns.md) (Primary + optional Modifiers). Empty cells, paraphrased names, or invented ids invalidate the row. Formula rows are the only exception; use `formula-inline` or `formula-block`. See `strategist.md §h` GATE for the three-layer requirement (read → produce → image-as-canvas coverage).
 

@@ -1,0 +1,59 @@
+{
+  "layout_type": "chart_radar",
+  "scenario": "academic",
+  "description": "Radar/spider chart layout with 6 axes, dual datasets (hexagonal overlays), concentric grid, scale labels, and legend",
+  "color_scheme": {
+    "primary": "#003366",
+    "accent": "#CC0000",
+    "secondary": "#0066CC",
+    "bg": "#FFFFFF",
+    "card_bg": "#FAFCFE",
+    "header_bg": "#003366"
+  },
+  "image_slots": [],
+  "text_slots": [
+    {
+      "role": "title",
+      "description": "Page title in header bar"
+    },
+    {
+      "role": "key-message",
+      "description": "Key message bar text"
+    },
+    {
+      "role": "axis-label-1",
+      "description": "First radar axis label (top)"
+    },
+    {
+      "role": "axis-label-2",
+      "description": "Second radar axis label (top-right)"
+    },
+    {
+      "role": "axis-label-3",
+      "description": "Third radar axis label (bottom-right)"
+    },
+    {
+      "role": "axis-label-4",
+      "description": "Fourth radar axis label (bottom)"
+    },
+    {
+      "role": "axis-label-5",
+      "description": "Fifth radar axis label (bottom-left)"
+    },
+    {
+      "role": "axis-label-6",
+      "description": "Sixth radar axis label (top-left)"
+    },
+    {
+      "role": "legend-1",
+      "description": "First dataset legend label"
+    },
+    {
+      "role": "legend-2",
+      "description": "Second dataset legend label"
+    }
+  ],
+  "content_mode": [
+    "text-primary"
+  ]
+}

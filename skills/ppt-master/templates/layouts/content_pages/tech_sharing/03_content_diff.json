@@ -1,0 +1,132 @@
+{
+  "layout_type": "code_diff",
+  "scenario": "tech_sharing",
+  "description": "Side-by-side diff view with left (old/removed) and right (new/added) columns, red-green color coding, traffic-light window header, and diff summary bar. Suitable for showing code changes, migrations, or refactoring comparisons.",
+  "color_scheme": {
+    "primary": "#1A5276",
+    "accent": "#E74C3C",
+    "secondary": "#2E86C1",
+    "bg": "#F7F9FC",
+    "card_bg": "#FFFFFF",
+    "title_bar": "#F0F2F5",
+    "removed_bg": "#FEF2F2",
+    "removed_text": "#EF4444",
+    "added_bg": "#F0FDF4",
+    "added_text": "#22C55E",
+    "neutral_text": "#6B7280"
+  },
+  "image_slots": [],
+  "text_slots": [
+    {
+      "role": "kicker",
+      "description": "Small accent label above the title"
+    },
+    {
+      "role": "title",
+      "description": "Page title"
+    },
+    {
+      "role": "file-name",
+      "description": "File name shown in window title bar"
+    },
+    {
+      "role": "left-header",
+      "description": "Left column header (e.g. 'OLD' or 'BEFORE')"
+    },
+    {
+      "role": "right-header",
+      "description": "Right column header (e.g. 'NEW' or 'AFTER')"
+    },
+    {
+      "role": "old-line-1",
+      "description": "Old/removed line 1"
+    },
+    {
+      "role": "old-line-2",
+      "description": "Old/removed line 2"
+    },
+    {
+      "role": "old-line-3",
+      "description": "Old/removed line 3"
+    },
+    {
+      "role": "old-line-4",
+      "description": "Old/removed line 4"
+    },
+    {
+      "role": "old-line-5",
+      "description": "Old/removed line 5"
+    },
+    {
+      "role": "old-line-6",
+      "description": "Old/unchanged line 6"
+    },
+    {
+      "role": "old-line-7",
+      "description": "Old/unchanged line 7"
+    },
+    {
+      "role": "old-line-8",
+      "description": "Old/unchanged line 8"
+    },
+    {
+      "role": "old-line-9",
+      "description": "Old/removed line 9"
+    },
+    {
+      "role": "old-line-10",
+      "description": "Old/removed line 10"
+    },
+    {
+      "role": "new-line-1",
+      "description": "New/added line 1"
+    },
+    {
+      "role": "new-line-2",
+      "description": "New/added line 2"
+    },
+    {
+      "role": "new-line-3",
+      "description": "New/added line 3"
+    },
+    {
+      "role": "new-line-4",
+      "description": "New/added line 4"
+    },
+    {
+      "role": "new-line-5",
+      "description": "New/added line 5"
+    },
+    {
+      "role": "new-line-6",
+      "description": "New/unchanged line 6"
+    },
+    {
+      "role": "new-line-7",
+      "description": "New/unchanged line 7"
+    },
+    {
+      "role": "new-line-8",
+      "description": "New/unchanged line 8"
+    },
+    {
+      "role": "new-line-9",
+      "description": "New/added line 9"
+    },
+    {
+      "role": "new-line-10",
+      "description": "New/added line 10"
+    },
+    {
+      "role": "diff-summary",
+      "description": "Summary text below the diff (e.g. '4 additions, 4 deletions')"
+    },
+    {
+      "role": "page-num",
+      "description": "Page number"
+    }
+  ],
+  "content_mode": [
+    "text-primary"
+  ]
+}

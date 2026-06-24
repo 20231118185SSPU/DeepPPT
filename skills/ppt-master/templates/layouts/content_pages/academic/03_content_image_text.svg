@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="1280" height="720" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1280 720">
+  <!-- Background -->
+  <rect width="1280" height="720" fill="#FFFFFF"/>
+
+  <!-- ==================== Header ==================== -->
+  <rect x="0" y="0" width="1280" height="70" fill="#003366"/>
+  <rect x="0" y="0" width="6" height="70" fill="#CC0000"/>
+  <text text-anchor="start" x="40" y="46" fill="#FFFFFF" font-family="Microsoft YaHei, Arial, sans-serif" font-size="28" font-weight="bold" data-role="title">
+    {{PAGE_TITLE}}
+  </text>
+  <text x="1220" y="46" text-anchor="end" fill="#FFFFFF" font-family="Microsoft YaHei, Arial, sans-serif" font-size="18" font-weight="bold" data-role="logo">
+    {{LOGO}}
+  </text>
+
+  <!-- ==================== Key Message Bar ==================== -->
+  <rect x="0" y="70" width="1280" height="50" fill="#E8F4FC"/>
+  <rect x="0" y="70" width="6" height="50" fill="#0066CC"/>
+  <text text-anchor="start" x="40" y="102" fill="#333333" font-family="Microsoft YaHei, Arial, sans-serif" font-size="18" data-role="key-message">
+    {{KEY_MESSAGE}}
+  </text>
+
+  <!-- ==================== Content Area ==================== -->
+  <!-- LEFT: Image placeholder (x=60, y=140, w=550, h=490) -->
+  <rect x="60" y="140" width="550" height="490" rx="10" fill="#F0F4F8" stroke="#D0D7E0" stroke-width="1.5" data-role="image-slot-main" data-caption="Main content image"/>
+  <!-- Image placeholder icon -->
+  <rect x="270" y="310" width="60" height="45" rx="4" fill="none" stroke="#A0B0C0" stroke-width="2"/>
+  <circle cx="290" cy="325" r="6" fill="none" stroke="#A0B0C0" stroke-width="2"/>
+  <polygon points="275,348 290,330 300,340 310,325 330,348" fill="none" stroke="#A0B0C0" stroke-width="2"/>
+  <text x="340" y="340" text-anchor="middle" fill="#A0B0C0" font-family="Microsoft YaHei, Arial, sans-serif" font-size="14" data-role="image-caption">
+    {{IMAGE_CAPTION}}
+  </text>
+
+  <!-- RIGHT: Text area (x=640, y=140, w=580) -->
+  <!-- Section title -->
+  <rect x="640" y="145" width="5" height="32" fill="#003366"/>
+  <text text-anchor="start" x="660" y="170" fill="#003366" font-family="Microsoft YaHei, Arial, sans-serif" font-size="22" font-weight="bold" data-role="body-title">
+    {{BODY_TITLE}}
+  </text>
+  <line x1="640" y1="190" x2="1200" y2="190" stroke="#E8F4FC" stroke-width="1.5"/>
+
+  <!-- Bullet 1 -->
+  <circle cx="660" cy="230" r="5" fill="#0066CC"/>
+  <text text-anchor="start" x="680" y="235" fill="#333333" font-family="Microsoft YaHei, Arial, sans-serif" font-size="16" data-role="body-1">
+    {{BODY_1}}
+  </text>
+
+  <!-- Bullet 2 -->
+  <circle cx="660" cy="290" r="5" fill="#0066CC"/>
+  <text text-anchor="start" x="680" y="295" fill="#333333" font-family="Microsoft YaHei, Arial, sans-serif" font-size="16" data-role="body-2">
+    {{BODY_2}}
+  </text>
+
+  <!-- Bullet 3 -->
+  <circle cx="660" cy="350" r="5" fill="#0066CC"/>
+  <text text-anchor="start" x="680" y="355" fill="#333333" font-family="Microsoft YaHei, Arial, sans-serif" font-size="16" data-role="body-3">
+    {{BODY_3}}
+  </text>
+
+  <!-- Optional quote block -->
+  <line x1="640" y1="410" x2="1200" y2="410" stroke="#E8F4FC" stroke-width="1"/>
+  <rect x="640" y="425" width="560" height="4" rx="2" fill="#0066CC"/>
+  <rect x="640" y="440" width="4" height="90" fill="#0066CC"/>
+  <text text-anchor="start" x="665" y="465" fill="#555555" font-family="Microsoft YaHei, Arial, sans-serif" font-size="15" font-style="italic" data-role="quote">
+    {{QUOTE}}
+  </text>
+  <text text-anchor="start" x="665" y="510" fill="#0066CC" font-family="Microsoft YaHei, Arial, sans-serif" font-size="13" font-weight="bold" data-role="quote-source">
+    {{QUOTE_SOURCE}}
+  </text>
+
+  <!-- ==================== Footer ==================== -->
+  <line x1="40" y1="665" x2="1240" y2="665" stroke="#E8F4FC" stroke-width="1"/>
+  <text text-anchor="start" x="40" y="695" fill="#999999" font-family="Microsoft YaHei, Arial, sans-serif" font-size="12" data-role="source">
+    数据来源：{{SOURCE}}
+  </text>
+  <text x="640" y="695" text-anchor="middle" fill="#999999" font-family="Microsoft YaHei, Arial, sans-serif" font-size="12" data-role="section-name">
+    {{SECTION_NAME}}
+  </text>
+  <text x="1220" y="695" text-anchor="end" fill="#666666" font-family="Microsoft YaHei, Arial, sans-serif" font-size="14" data-role="page-num">
+    {{PAGE_NUM}}
+  </text>
+</svg>

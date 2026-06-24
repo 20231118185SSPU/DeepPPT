@@ -1,0 +1,132 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="1280" height="720" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1280 720">
+  <!-- Background -->
+  <rect width="1280" height="720" fill="#FFFFFF"/>
+
+  <!-- ==================== Header ==================== -->
+  <rect x="0" y="0" width="1280" height="70" fill="#003366"/>
+  <rect x="0" y="0" width="6" height="70" fill="#CC0000"/>
+  <text text-anchor="start" x="40" y="46" fill="#FFFFFF" font-family="Microsoft YaHei, Arial, sans-serif" font-size="28" font-weight="bold" data-role="title">
+    {{PAGE_TITLE}}
+  </text>
+  <text x="1220" y="46" text-anchor="end" fill="#FFFFFF" font-family="Microsoft YaHei, Arial, sans-serif" font-size="18" font-weight="bold" data-role="logo">
+    {{LOGO}}
+  </text>
+
+  <!-- ==================== Key Message Bar ==================== -->
+  <rect x="0" y="70" width="1280" height="50" fill="#E8F4FC"/>
+  <rect x="0" y="70" width="6" height="50" fill="#0066CC"/>
+  <text text-anchor="start" x="40" y="102" fill="#333333" font-family="Microsoft YaHei, Arial, sans-serif" font-size="18" data-role="key-message">
+    {{KEY_MESSAGE}}
+  </text>
+
+  <!-- ==================== Two-column layout ==================== -->
+  <!-- LEFT: Donut chart (x=60..600, centered at cx=330, cy=380) -->
+  <rect x="60" y="140" width="540" height="500" rx="8" fill="#FAFCFE" stroke="#E0E6ED" stroke-width="1"/>
+
+  <!-- Donut segments using stroke-dasharray on circles -->
+  <!-- Radius=170, circumference = 2 * pi * 170 = 1068.14 -->
+  <!-- Segment 1: 55% = 587.48, dashoffset = 0 -->
+  <circle cx="330" cy="390" r="170" fill="none" stroke="#003366" stroke-width="60"
+          stroke-dasharray="587.48 480.66" stroke-dashoffset="0" transform="rotate(-90 330 390)"
+          data-role="pie-segment-1"/>
+  <!-- Segment 2: 18% = 192.27, dashoffset = -(587.48) -->
+  <circle cx="330" cy="390" r="170" fill="none" stroke="#0066CC" stroke-width="60"
+          stroke-dasharray="192.27 875.87" stroke-dashoffset="-587.48" transform="rotate(-90 330 390)"
+          data-role="pie-segment-2"/>
+  <!-- Segment 3: 14% = 149.54 -->
+  <circle cx="330" cy="390" r="170" fill="none" stroke="#CC0000" stroke-width="60"
+          stroke-dasharray="149.54 918.60" stroke-dashoffset="-779.75" transform="rotate(-90 330 390)"
+          data-role="pie-segment-3"/>
+  <!-- Segment 4: 8% = 85.45 -->
+  <circle cx="330" cy="390" r="170" fill="none" stroke="#00A86B" stroke-width="60"
+          stroke-dasharray="85.45 982.69" stroke-dashoffset="-929.29" transform="rotate(-90 330 390)"
+          data-role="pie-segment-4"/>
+  <!-- Segment 5: 5% = 53.41 -->
+  <circle cx="330" cy="390" r="170" fill="none" stroke="#FFB020" stroke-width="60"
+          stroke-dasharray="53.41 1014.73" stroke-dashoffset="-1014.73" transform="rotate(-90 330 390)"
+          data-role="pie-segment-5"/>
+
+  <!-- Donut center text -->
+  <text x="330" y="382" text-anchor="middle" fill="#333333" font-family="Microsoft YaHei, Arial, sans-serif" font-size="28" font-weight="bold" data-role="pie-center-value">{{PIE_TOTAL}}</text>
+  <text x="330" y="410" text-anchor="middle" fill="#999999" font-family="Microsoft YaHei, Arial, sans-serif" font-size="14" data-role="pie-center-label">{{PIE_UNIT}}</text>
+
+  <!-- Segment labels with lines around the donut -->
+  <!-- Label 1 (55%, top-right) -->
+  <line x1="425" y1="290" x2="470" y2="260" stroke="#CCCCCC" stroke-width="1"/>
+  <text text-anchor="start" x="475" y="255" fill="#333333" font-family="Microsoft YaHei, Arial, sans-serif" font-size="13" font-weight="bold" data-role="pie-label-1">{{LABEL_1}}</text>
+  <text text-anchor="start" x="475" y="272" fill="#666666" font-family="Microsoft YaHei, Arial, sans-serif" font-size="12" data-role="pie-pct-1">{{PCT_1}}</text>
+
+  <!-- Label 2 (18%, right) -->
+  <line x1="480" y1="420" x2="510" y2="430" stroke="#CCCCCC" stroke-width="1"/>
+  <text text-anchor="start" x="515" y="425" fill="#333333" font-family="Microsoft YaHei, Arial, sans-serif" font-size="13" font-weight="bold" data-role="pie-label-2">{{LABEL_2}}</text>
+  <text text-anchor="start" x="515" y="442" fill="#666666" font-family="Microsoft YaHei, Arial, sans-serif" font-size="12" data-role="pie-pct-2">{{PCT_2}}</text>
+
+  <!-- Label 3 (14%, bottom-right) -->
+  <line x1="380" y1="540" x2="400" y2="570" stroke="#CCCCCC" stroke-width="1"/>
+  <text text-anchor="start" x="405" y="565" fill="#333333" font-family="Microsoft YaHei, Arial, sans-serif" font-size="13" font-weight="bold" data-role="pie-label-3">{{LABEL_3}}</text>
+  <text text-anchor="start" x="405" y="582" fill="#666666" font-family="Microsoft YaHei, Arial, sans-serif" font-size="12" data-role="pie-pct-3">{{PCT_3}}</text>
+
+  <!-- Label 4 (8%, bottom-left) -->
+  <line x1="240" y1="530" x2="180" y2="560" stroke="#CCCCCC" stroke-width="1"/>
+  <text text-anchor="start" x="100" y="555" fill="#333333" font-family="Microsoft YaHei, Arial, sans-serif" font-size="13" font-weight="bold" data-role="pie-label-4">{{LABEL_4}}</text>
+  <text text-anchor="start" x="100" y="572" fill="#666666" font-family="Microsoft YaHei, Arial, sans-serif" font-size="12" data-role="pie-pct-4">{{PCT_4}}</text>
+
+  <!-- Label 5 (5%, left) -->
+  <line x1="175" y1="360" x2="130" y2="340" stroke="#CCCCCC" stroke-width="1"/>
+  <text text-anchor="start" x="70" y="335" fill="#333333" font-family="Microsoft YaHei, Arial, sans-serif" font-size="13" font-weight="bold" data-role="pie-label-5">{{LABEL_5}}</text>
+  <text text-anchor="start" x="70" y="352" fill="#666666" font-family="Microsoft YaHei, Arial, sans-serif" font-size="12" data-role="pie-pct-5">{{PCT_5}}</text>
+
+  <!-- RIGHT: Takeaways card (x=630..1220) -->
+  <rect x="630" y="140" width="590" height="500" rx="8" fill="#FAFCFE" stroke="#E0E6ED" stroke-width="1"/>
+
+  <!-- Card title -->
+  <text text-anchor="start" x="660" y="185" fill="#333333" font-family="Microsoft YaHei, Arial, sans-serif" font-size="20" font-weight="bold" data-role="takeaway-title">
+    {{TAKEAWAY_TITLE}}
+  </text>
+  <line x1="660" y1="200" x2="1190" y2="200" stroke="#E8F4FC" stroke-width="1"/>
+
+  <!-- Card description -->
+  <text text-anchor="start" x="660" y="235" fill="#666666" font-family="Microsoft YaHei, Arial, sans-serif" font-size="15" data-role="takeaway-desc">
+    {{TAKEAWAY_DESC}}
+  </text>
+
+  <!-- Legend list items -->
+  <rect x="660" y="280" width="14" height="14" rx="3" fill="#003366"/>
+  <text text-anchor="start" x="682" y="292" fill="#333333" font-family="Microsoft YaHei, Arial, sans-serif" font-size="15" data-role="legend-item-1">{{LEGEND_1}}</text>
+  <text text-anchor="start" x="870" y="292" fill="#003366" font-family="Microsoft YaHei, Arial, sans-serif" font-size="15" font-weight="bold" data-role="legend-pct-1">{{LEGEND_PCT_1}}</text>
+
+  <rect x="660" y="320" width="14" height="14" rx="3" fill="#0066CC"/>
+  <text text-anchor="start" x="682" y="332" fill="#333333" font-family="Microsoft YaHei, Arial, sans-serif" font-size="15" data-role="legend-item-2">{{LEGEND_2}}</text>
+  <text text-anchor="start" x="870" y="332" fill="#0066CC" font-family="Microsoft YaHei, Arial, sans-serif" font-size="15" font-weight="bold" data-role="legend-pct-2">{{LEGEND_PCT_2}}</text>
+
+  <rect x="660" y="360" width="14" height="14" rx="3" fill="#CC0000"/>
+  <text text-anchor="start" x="682" y="372" fill="#333333" font-family="Microsoft YaHei, Arial, sans-serif" font-size="15" data-role="legend-item-3">{{LEGEND_3}}</text>
+  <text text-anchor="start" x="870" y="372" fill="#CC0000" font-family="Microsoft YaHei, Arial, sans-serif" font-size="15" font-weight="bold" data-role="legend-pct-3">{{LEGEND_PCT_3}}</text>
+
+  <rect x="660" y="400" width="14" height="14" rx="3" fill="#00A86B"/>
+  <text text-anchor="start" x="682" y="412" fill="#333333" font-family="Microsoft YaHei, Arial, sans-serif" font-size="15" data-role="legend-item-4">{{LEGEND_4}}</text>
+  <text text-anchor="start" x="870" y="412" fill="#00A86B" font-family="Microsoft YaHei, Arial, sans-serif" font-size="15" font-weight="bold" data-role="legend-pct-4">{{LEGEND_PCT_4}}</text>
+
+  <rect x="660" y="440" width="14" height="14" rx="3" fill="#FFB020"/>
+  <text text-anchor="start" x="682" y="452" fill="#333333" font-family="Microsoft YaHei, Arial, sans-serif" font-size="15" data-role="legend-item-5">{{LEGEND_5}}</text>
+  <text text-anchor="start" x="870" y="452" fill="#FFB020" font-family="Microsoft YaHei, Arial, sans-serif" font-size="15" font-weight="bold" data-role="legend-pct-5">{{LEGEND_PCT_5}}</text>
+
+  <!-- Additional insight lines -->
+  <line x1="660" y1="480" x2="1190" y2="480" stroke="#E8F4FC" stroke-width="1"/>
+  <text text-anchor="start" x="660" y="510" fill="#666666" font-family="Microsoft YaHei, Arial, sans-serif" font-size="14" data-role="insight-1">{{INSIGHT_1}}</text>
+  <text text-anchor="start" x="660" y="540" fill="#666666" font-family="Microsoft YaHei, Arial, sans-serif" font-size="14" data-role="insight-2">{{INSIGHT_2}}</text>
+  <text text-anchor="start" x="660" y="570" fill="#666666" font-family="Microsoft YaHei, Arial, sans-serif" font-size="14" data-role="insight-3">{{INSIGHT_3}}</text>
+
+  <!-- ==================== Footer ==================== -->
+  <line x1="40" y1="665" x2="1240" y2="665" stroke="#E8F4FC" stroke-width="1"/>
+  <text text-anchor="start" x="40" y="695" fill="#999999" font-family="Microsoft YaHei, Arial, sans-serif" font-size="12" data-role="source">
+    数据来源：{{SOURCE}}
+  </text>
+  <text x="640" y="695" text-anchor="middle" fill="#999999" font-family="Microsoft YaHei, Arial, sans-serif" font-size="12" data-role="section-name">
+    {{SECTION_NAME}}
+  </text>
+  <text x="1220" y="695" text-anchor="end" fill="#666666" font-family="Microsoft YaHei, Arial, sans-serif" font-size="14" data-role="page-num">
+    {{PAGE_NUM}}
+  </text>
+</svg>

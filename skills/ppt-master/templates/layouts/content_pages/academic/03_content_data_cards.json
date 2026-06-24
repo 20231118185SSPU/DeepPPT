@@ -1,0 +1,83 @@
+{
+  "layout_type": "data_cards_left_text_right",
+  "scenario": "academic",
+  "description": "Data-heavy layout with 3 metric cards on the left and bullet content on the right",
+  "color_scheme": {
+    "primary": "#003366",
+    "accent": "#CC0000",
+    "secondary": "#0066CC",
+    "bg": "#FFFFFF",
+    "card_bg": "#F8FCFF",
+    "header_bg": "#003366"
+  },
+  "image_slots": [],
+  "text_slots": [
+    {
+      "role": "title",
+      "description": "Page title in header bar"
+    },
+    {
+      "role": "key-message",
+      "description": "Key message bar text"
+    },
+    {
+      "role": "metric-name-1",
+      "description": "First metric label"
+    },
+    {
+      "role": "metric-value-1",
+      "description": "First metric number"
+    },
+    {
+      "role": "metric-change-1",
+      "description": "First metric change indicator"
+    },
+    {
+      "role": "metric-name-2",
+      "description": "Second metric label"
+    },
+    {
+      "role": "metric-value-2",
+      "description": "Second metric number"
+    },
+    {
+      "role": "metric-change-2",
+      "description": "Second metric change indicator"
+    },
+    {
+      "role": "metric-name-3",
+      "description": "Third metric label"
+    },
+    {
+      "role": "metric-value-3",
+      "description": "Third metric number"
+    },
+    {
+      "role": "metric-change-3",
+      "description": "Third metric change indicator"
+    },
+    {
+      "role": "body-1",
+      "description": "First content bullet"
+    },
+    {
+      "role": "body-2",
+      "description": "Second content bullet"
+    },
+    {
+      "role": "body-3",
+      "description": "Third content bullet"
+    },
+    {
+      "role": "body-4",
+      "description": "Fourth content bullet"
+    },
+    {
+      "role": "body-5",
+      "description": "Fifth content bullet"
+    }
+  ],
+  "content_mode": [
+    "text-primary"
+  ]
+}

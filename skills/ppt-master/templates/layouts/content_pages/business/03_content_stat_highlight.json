@@ -1,0 +1,38 @@
+{
+  "layout_type": "stat_highlight_hero",
+  "scenario": "business",
+  "description": "Full-page hero number with gradient fill, kicker label, subtitle, and lede text",
+  "color_scheme": {
+    "primary": "#1A5276",
+    "accent": "#E74C3C",
+    "secondary": "#2E86C1",
+    "bg": "#FFFFFF",
+    "card_bg": "#FFFFFF"
+  },
+  "image_slots": [],
+  "text_slots": [
+    {
+      "role": "kicker",
+      "description": "Small accent-colored label above the number"
+    },
+    {
+      "role": "hero-number",
+      "description": "Massive central statistic number"
+    },
+    {
+      "role": "subtitle",
+      "description": "Explanation of the statistic"
+    },
+    {
+      "role": "lede-1",
+      "description": "First line of supporting text"
+    },
+    {
+      "role": "lede-2",
+      "description": "Second line of supporting text"
+    }
+  ],
+  "content_mode": [
+    "text-primary"
+  ]
+}

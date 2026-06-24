@@ -1,0 +1,86 @@
+{
+  "layout_type": "three_columns_pillars",
+  "scenario": "business",
+  "description": "Three equal feature pillar cards with icon placeholders, titles, descriptions, and decorative bottom accent lines",
+  "color_scheme": {
+    "primary": "#1A5276",
+    "accent": "#E74C3C",
+    "secondary": "#2E86C1",
+    "bg": "#F7F9FC",
+    "card_bg": "#FFFFFF"
+  },
+  "image_slots": [],
+  "text_slots": [
+    {
+      "role": "kicker",
+      "description": "Small accent label above the title"
+    },
+    {
+      "role": "title",
+      "description": "Page title"
+    },
+    {
+      "role": "col-icon-1",
+      "description": "First column icon or emoji"
+    },
+    {
+      "role": "col-title-1",
+      "description": "First column title"
+    },
+    {
+      "role": "col-desc-1a",
+      "description": "First column description line 1"
+    },
+    {
+      "role": "col-desc-1b",
+      "description": "First column description line 2"
+    },
+    {
+      "role": "col-desc-1c",
+      "description": "First column description line 3"
+    },
+    {
+      "role": "col-icon-2",
+      "description": "Second column icon or emoji"
+    },
+    {
+      "role": "col-title-2",
+      "description": "Second column title"
+    },
+    {
+      "role": "col-desc-2a",
+      "description": "Second column description line 1"
+    },
+    {
+      "role": "col-desc-2b",
+      "description": "Second column description line 2"
+    },
+    {
+      "role": "col-desc-2c",
+      "description": "Second column description line 3"
+    },
+    {
+      "role": "col-icon-3",
+      "description": "Third column icon or emoji"
+    },
+    {
+      "role": "col-title-3",
+      "description": "Third column title"
+    },
+    {
+      "role": "col-desc-3a",
+      "description": "Third column description line 1"
+    },
+    {
+      "role": "col-desc-3b",
+      "description": "Third column description line 2"
+    },
+    {
+      "role": "col-desc-3c",
+      "description": "Third column description line 3"
+    }
+  ],
+  "content_mode": [
+    "text-primary"
+  ]
+}

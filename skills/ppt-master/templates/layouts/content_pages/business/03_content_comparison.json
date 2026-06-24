@@ -1,0 +1,70 @@
+{
+  "layout_type": "comparison_two_panel",
+  "scenario": "business",
+  "description": "Before/After or Pros/Cons two-panel comparison with color-coded top borders and bullet items",
+  "color_scheme": {
+    "primary": "#1A5276",
+    "accent": "#E74C3C",
+    "secondary": "#2E86C1",
+    "bg": "#F7F9FC",
+    "card_bg": "#FFFFFF"
+  },
+  "image_slots": [],
+  "text_slots": [
+    {
+      "role": "title",
+      "description": "Page title"
+    },
+    {
+      "role": "left-icon",
+      "description": "Left panel icon or emoji"
+    },
+    {
+      "role": "left-title",
+      "description": "Left panel title (e.g. Before / Cons)"
+    },
+    {
+      "role": "left-item-1",
+      "description": "Left panel bullet item 1"
+    },
+    {
+      "role": "left-item-2",
+      "description": "Left panel bullet item 2"
+    },
+    {
+      "role": "left-item-3",
+      "description": "Left panel bullet item 3"
+    },
+    {
+      "role": "left-item-4",
+      "description": "Left panel bullet item 4"
+    },
+    {
+      "role": "right-icon",
+      "description": "Right panel icon or emoji"
+    },
+    {
+      "role": "right-title",
+      "description": "Right panel title (e.g. After / Pros)"
+    },
+    {
+      "role": "right-item-1",
+      "description": "Right panel bullet item 1"
+    },
+    {
+      "role": "right-item-2",
+      "description": "Right panel bullet item 2"
+    },
+    {
+      "role": "right-item-3",
+      "description": "Right panel bullet item 3"
+    },
+    {
+      "role": "right-item-4",
+      "description": "Right panel bullet item 4"
+    }
+  ],
+  "content_mode": [
+    "text-primary"
+  ]
+}

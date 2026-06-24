@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="1280" height="720" viewBox="0 0 1280 720" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="accentLine" x1="0" y1="0" x2="200" y2="0" gradientUnits="userSpaceOnUse">
+      <stop offset="0%" stop-color="#4A6CF7"/>
+      <stop offset="100%" stop-color="#4A6CF7" stop-opacity="0.2"/>
+    </linearGradient>
+  </defs>
+
+  <!-- Background -->
+  <rect width="1280" height="720" fill="#FFFFFF"/>
+
+  <!-- Decorative top-left accent bar -->
+  <rect x="0" y="0" width="1280" height="4" fill="url(#accentLine)"/>
+
+  <!-- Large decorative quotation mark -->
+  <text text-anchor="start" x="100" y="220" font-family="Georgia, serif" font-size="180" fill="#4A6CF7" fill-opacity="0.12" font-weight="bold">"</text>
+
+  <!-- ==================== Quote Text ==================== -->
+  <!-- Left-aligned quote area, breathing layout with generous whitespace -->
+  <text text-anchor="start" x="140" y="260" font-family="Microsoft YaHei, Arial, sans-serif" font-size="36" font-weight="600" fill="#1A1A2E" font-style="italic" data-role="quote-line-1">
+    {{QUOTE_LINE_1}}
+  </text>
+  <text text-anchor="start" x="140" y="310" font-family="Microsoft YaHei, Arial, sans-serif" font-size="36" font-weight="600" fill="#1A1A2E" font-style="italic" data-role="quote-line-2">
+    {{QUOTE_LINE_2}}
+  </text>
+  <text text-anchor="start" x="140" y="360" font-family="Microsoft YaHei, Arial, sans-serif" font-size="36" font-weight="600" fill="#1A1A2E" font-style="italic" data-role="quote-line-3">
+    {{QUOTE_LINE_3}}
+  </text>
+
+  <!-- Accent underline below quote -->
+  <rect x="140" y="390" width="80" height="3" rx="1.5" fill="#4A6CF7"/>
+
+  <!-- ==================== Attribution ==================== -->
+  <text text-anchor="start" x="140" y="440" font-family="Microsoft YaHei, Arial, sans-serif" font-size="18" font-weight="600" fill="#4A6CF7" data-role="quote-author">
+    {{QUOTE_AUTHOR}}
+  </text>
+  <text text-anchor="start" x="140" y="470" font-family="Microsoft YaHei, Arial, sans-serif" font-size="14" fill="#9CA3AF" letter-spacing="1" data-role="quote-author-title">
+    {{QUOTE_AUTHOR_TITLE}}
+  </text>
+
+  <!-- ==================== Decorative Elements ==================== -->
+  <!-- Subtle bottom-right accent circle -->
+  <circle cx="1180" cy="640" r="60" fill="#4A6CF7" fill-opacity="0.04"/>
+  <circle cx="1160" cy="660" r="30" fill="#4A6CF7" fill-opacity="0.06"/>
+
+  <!-- ==================== Footer ==================== -->
+  <line x1="100" y1="680" x2="1180" y2="680" stroke="#F0F0F5" stroke-width="1"/>
+  <text text-anchor="start" x="100" y="702" font-family="Microsoft YaHei, Arial, sans-serif" font-size="10" fill="#CCCCCC" data-role="page-num">
+    {{PAGE_NUM}}
+  </text>
+</svg>

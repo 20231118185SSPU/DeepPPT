@@ -1,0 +1,143 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="1280" height="720" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1280 720">
+  <!-- Background -->
+  <rect width="1280" height="720" fill="#F4F6FA"/>
+
+  <!-- ==================== Header ==================== -->
+  <text text-anchor="start" x="60" y="50" fill="#1B2A4A" font-family="Microsoft YaHei, Arial, sans-serif" font-size="28" font-weight="bold" data-role="title">
+    {{PAGE_TITLE}}
+  </text>
+  <text text-anchor="start" x="60" y="78" fill="#8899AA" font-family="Microsoft YaHei, Arial, sans-serif" font-size="14" data-role="subtitle">
+    {{PAGE_SUBTITLE}}
+  </text>
+
+  <!-- ==================== Tier 1 (Top — Presentation) ==================== -->
+  <!-- Tier label -->
+  <rect x="45" y="120" width="100" height="150" rx="8" fill="#2D5FA0" fill-opacity="0.08" stroke="#2D5FA0" stroke-width="1" stroke-opacity="0.2"/>
+  <text x="95" y="188" text-anchor="middle" fill="#2D5FA0" font-family="Microsoft YaHei, Arial, sans-serif" font-size="13" font-weight="bold" data-role="tier-label-1">
+    {{TIER_LABEL_1}}
+  </text>
+  <!-- Tier bar background -->
+  <rect x="165" y="120" width="1060" height="150" rx="8" fill="#FFFFFF" stroke="#D8DFEA" stroke-width="1"/>
+  <!-- Component 1.1 -->
+  <rect x="185" y="140" width="235" height="110" rx="8" fill="#EBF3FE" stroke="#D8DFEA" stroke-width="1"/>
+  <text x="302" y="178" text-anchor="middle" fill="#1B2A4A" font-family="Microsoft YaHei, Arial, sans-serif" font-size="15" font-weight="bold" data-role="comp-title-1-1">
+    {{COMP_TITLE_1_1}}
+  </text>
+  <text x="302" y="200" text-anchor="middle" fill="#778899" font-family="Microsoft YaHei, Arial, sans-serif" font-size="11" data-role="comp-desc-1-1">
+    {{COMP_DESC_1_1}}
+  </text>
+  <!-- Component 1.2 -->
+  <rect x="440" y="140" width="235" height="110" rx="8" fill="#EBF3FE" stroke="#D8DFEA" stroke-width="1"/>
+  <text x="557" y="178" text-anchor="middle" fill="#1B2A4A" font-family="Microsoft YaHei, Arial, sans-serif" font-size="15" font-weight="bold" data-role="comp-title-1-2">
+    {{COMP_TITLE_1_2}}
+  </text>
+  <text x="557" y="200" text-anchor="middle" fill="#778899" font-family="Microsoft YaHei, Arial, sans-serif" font-size="11" data-role="comp-desc-1-2">
+    {{COMP_DESC_1_2}}
+  </text>
+  <!-- Component 1.3 -->
+  <rect x="695" y="140" width="235" height="110" rx="8" fill="#EBF3FE" stroke="#D8DFEA" stroke-width="1"/>
+  <text x="812" y="178" text-anchor="middle" fill="#1B2A4A" font-family="Microsoft YaHei, Arial, sans-serif" font-size="15" font-weight="bold" data-role="comp-title-1-3">
+    {{COMP_TITLE_1_3}}
+  </text>
+  <text x="812" y="200" text-anchor="middle" fill="#778899" font-family="Microsoft YaHei, Arial, sans-serif" font-size="11" data-role="comp-desc-1-3">
+    {{COMP_DESC_1_3}}
+  </text>
+  <!-- Component 1.4 -->
+  <rect x="950" y="140" width="235" height="110" rx="8" fill="#EBF3FE" stroke="#D8DFEA" stroke-width="1"/>
+  <text x="1067" y="178" text-anchor="middle" fill="#1B2A4A" font-family="Microsoft YaHei, Arial, sans-serif" font-size="15" font-weight="bold" data-role="comp-title-1-4">
+    {{COMP_TITLE_1_4}}
+  </text>
+  <text x="1067" y="200" text-anchor="middle" fill="#778899" font-family="Microsoft YaHei, Arial, sans-serif" font-size="11" data-role="comp-desc-1-4">
+    {{COMP_DESC_1_4}}
+  </text>
+
+  <!-- Vertical connectors Tier1 -> Tier2 -->
+  <line x1="302" y1="270" x2="302" y2="305" stroke="#8899AA" stroke-width="1.5" stroke-dasharray="4,3"/>
+  <line x1="557" y1="270" x2="557" y2="305" stroke="#8899AA" stroke-width="1.5" stroke-dasharray="4,3"/>
+  <line x1="812" y1="270" x2="812" y2="305" stroke="#8899AA" stroke-width="1.5" stroke-dasharray="4,3"/>
+  <line x1="1067" y1="270" x2="1067" y2="305" stroke="#8899AA" stroke-width="1.5" stroke-dasharray="4,3"/>
+
+  <!-- ==================== Tier 2 (Middle — Core, HIGHLIGHTED) ==================== -->
+  <!-- Tier label -->
+  <rect x="45" y="305" width="100" height="150" rx="8" fill="#3B6CB5" fill-opacity="0.12" stroke="#3B6CB5" stroke-width="1.5"/>
+  <text x="95" y="373" text-anchor="middle" fill="#3B6CB5" font-family="Microsoft YaHei, Arial, sans-serif" font-size="13" font-weight="bold" data-role="tier-label-2">
+    {{TIER_LABEL_2}}
+  </text>
+  <!-- Tier bar background — highlighted -->
+  <rect x="165" y="305" width="1060" height="150" rx="8" fill="#FFFFFF" stroke="#3B6CB5" stroke-width="2"/>
+  <!-- Accent top bar -->
+  <rect x="165" y="305" width="1060" height="5" rx="2" fill="#3B6CB5"/>
+  <!-- Component 2.1 -->
+  <rect x="185" y="325" width="320" height="110" rx="8" fill="#D6E4F7" stroke="#3B6CB5" stroke-width="1" stroke-opacity="0.3"/>
+  <text x="345" y="363" text-anchor="middle" fill="#1B2A4A" font-family="Microsoft YaHei, Arial, sans-serif" font-size="15" font-weight="bold" data-role="comp-title-2-1">
+    {{COMP_TITLE_2_1}}
+  </text>
+  <text x="345" y="385" text-anchor="middle" fill="#3B6CB5" font-family="Microsoft YaHei, Arial, sans-serif" font-size="11" data-role="comp-desc-2-1">
+    {{COMP_DESC_2_1}}
+  </text>
+  <!-- Component 2.2 -->
+  <rect x="525" y="325" width="320" height="110" rx="8" fill="#D6E4F7" stroke="#3B6CB5" stroke-width="1" stroke-opacity="0.3"/>
+  <text x="685" y="363" text-anchor="middle" fill="#1B2A4A" font-family="Microsoft YaHei, Arial, sans-serif" font-size="15" font-weight="bold" data-role="comp-title-2-2">
+    {{COMP_TITLE_2_2}}
+  </text>
+  <text x="685" y="385" text-anchor="middle" fill="#3B6CB5" font-family="Microsoft YaHei, Arial, sans-serif" font-size="11" data-role="comp-desc-2-2">
+    {{COMP_DESC_2_2}}
+  </text>
+  <!-- Component 2.3 -->
+  <rect x="865" y="325" width="320" height="110" rx="8" fill="#D6E4F7" stroke="#3B6CB5" stroke-width="1" stroke-opacity="0.3"/>
+  <text x="1025" y="363" text-anchor="middle" fill="#1B2A4A" font-family="Microsoft YaHei, Arial, sans-serif" font-size="15" font-weight="bold" data-role="comp-title-2-3">
+    {{COMP_TITLE_2_3}}
+  </text>
+  <text x="1025" y="385" text-anchor="middle" fill="#3B6CB5" font-family="Microsoft YaHei, Arial, sans-serif" font-size="11" data-role="comp-desc-2-3">
+    {{COMP_DESC_2_3}}
+  </text>
+
+  <!-- Vertical connectors Tier2 -> Tier3 -->
+  <line x1="345" y1="455" x2="345" y2="490" stroke="#8899AA" stroke-width="1.5" stroke-dasharray="4,3"/>
+  <line x1="685" y1="455" x2="685" y2="490" stroke="#8899AA" stroke-width="1.5" stroke-dasharray="4,3"/>
+  <line x1="1025" y1="455" x2="1025" y2="490" stroke="#8899AA" stroke-width="1.5" stroke-dasharray="4,3"/>
+
+  <!-- ==================== Tier 3 (Bottom — Infrastructure) ==================== -->
+  <!-- Tier label -->
+  <rect x="45" y="490" width="100" height="150" rx="8" fill="#2D5FA0" fill-opacity="0.08" stroke="#2D5FA0" stroke-width="1" stroke-opacity="0.2"/>
+  <text x="95" y="558" text-anchor="middle" fill="#2D5FA0" font-family="Microsoft YaHei, Arial, sans-serif" font-size="13" font-weight="bold" data-role="tier-label-3">
+    {{TIER_LABEL_3}}
+  </text>
+  <!-- Tier bar background -->
+  <rect x="165" y="490" width="1060" height="150" rx="8" fill="#FFFFFF" stroke="#D8DFEA" stroke-width="1"/>
+  <!-- Component 3.1 -->
+  <rect x="185" y="510" width="320" height="110" rx="8" fill="#F4F6FA" stroke="#D8DFEA" stroke-width="1"/>
+  <text x="345" y="548" text-anchor="middle" fill="#1B2A4A" font-family="Microsoft YaHei, Arial, sans-serif" font-size="15" font-weight="bold" data-role="comp-title-3-1">
+    {{COMP_TITLE_3_1}}
+  </text>
+  <text x="345" y="570" text-anchor="middle" fill="#778899" font-family="Microsoft YaHei, Arial, sans-serif" font-size="11" data-role="comp-desc-3-1">
+    {{COMP_DESC_3_1}}
+  </text>
+  <!-- Component 3.2 -->
+  <rect x="525" y="510" width="320" height="110" rx="8" fill="#F4F6FA" stroke="#D8DFEA" stroke-width="1"/>
+  <text x="685" y="548" text-anchor="middle" fill="#1B2A4A" font-family="Microsoft YaHei, Arial, sans-serif" font-size="15" font-weight="bold" data-role="comp-title-3-2">
+    {{COMP_TITLE_3_2}}
+  </text>
+  <text x="685" y="570" text-anchor="middle" fill="#778899" font-family="Microsoft YaHei, Arial, sans-serif" font-size="11" data-role="comp-desc-3-2">
+    {{COMP_DESC_3_2}}
+  </text>
+  <!-- Component 3.3 -->
+  <rect x="865" y="510" width="320" height="110" rx="8" fill="#F4F6FA" stroke="#D8DFEA" stroke-width="1"/>
+  <text x="1025" y="548" text-anchor="middle" fill="#1B2A4A" font-family="Microsoft YaHei, Arial, sans-serif" font-size="15" font-weight="bold" data-role="comp-title-3-3">
+    {{COMP_TITLE_3_3}}
+  </text>
+  <text x="1025" y="570" text-anchor="middle" fill="#778899" font-family="Microsoft YaHei, Arial, sans-serif" font-size="11" data-role="comp-desc-3-3">
+    {{COMP_DESC_3_3}}
+  </text>
+
+  <!-- ==================== Footnote ==================== -->
+  <text text-anchor="start" x="60" y="695" fill="#999999" font-family="Microsoft YaHei, Arial, sans-serif" font-size="12" data-role="footnote">
+    {{FOOTNOTE}}
+  </text>
+
+  <!-- ==================== Page Number ==================== -->
+  <text x="1220" y="695" text-anchor="end" fill="#666666" font-family="Microsoft YaHei, Arial, sans-serif" font-size="14" data-role="page-num">
+    {{PAGE_NUM}}
+  </text>
+</svg>

@@ -1,0 +1,95 @@
+{
+  "layout_type": "mindmap_6branch",
+  "scenario": "tech_sharing",
+  "description": "Radial mind map with a central topic node and 6 branches radiating outward (top-left, top, top-right, bottom-left, bottom, bottom-right). Each branch has a primary node connected by curved paths, plus optional sub-branch nodes. Suitable for concept maps, topic breakdowns, knowledge organization, and brainstorming summaries.",
+  "color_scheme": {
+    "primary": "#1B2A4A",
+    "accent": "#3B6CB5",
+    "secondary": "#778899",
+    "bg": "#F4F6FA",
+    "node_bg": "#FFFFFF",
+    "sub_bg": "#EBF3FE"
+  },
+  "image_slots": [],
+  "text_slots": [
+    {
+      "role": "title",
+      "description": "Page title"
+    },
+    {
+      "role": "subtitle",
+      "description": "Page subtitle"
+    },
+    {
+      "role": "center-topic",
+      "description": "Central mind map topic"
+    },
+    {
+      "role": "branch-title-1",
+      "description": "Branch 1 (top-left) title"
+    },
+    {
+      "role": "sub-title-1a",
+      "description": "Branch 1 sub-node A"
+    },
+    {
+      "role": "sub-title-1b",
+      "description": "Branch 1 sub-node B"
+    },
+    {
+      "role": "branch-title-2",
+      "description": "Branch 2 (top center) title"
+    },
+    {
+      "role": "sub-title-2a",
+      "description": "Branch 2 sub-node A"
+    },
+    {
+      "role": "sub-title-2b",
+      "description": "Branch 2 sub-node B"
+    },
+    {
+      "role": "branch-title-3",
+      "description": "Branch 3 (top-right) title"
+    },
+    {
+      "role": "sub-title-3a",
+      "description": "Branch 3 sub-node A"
+    },
+    {
+      "role": "branch-title-4",
+      "description": "Branch 4 (bottom-left) title"
+    },
+    {
+      "role": "sub-title-4a",
+      "description": "Branch 4 sub-node A"
+    },
+    {
+      "role": "branch-title-5",
+      "description": "Branch 5 (bottom center) title"
+    },
+    {
+      "role": "sub-title-5a",
+      "description": "Branch 5 sub-node A"
+    },
+    {
+      "role": "branch-title-6",
+      "description": "Branch 6 (bottom-right) title"
+    },
+    {
+      "role": "sub-title-6a",
+      "description": "Branch 6 sub-node A"
+    },
+    {
+      "role": "footnote",
+      "description": "Optional footnote text"
+    },
+    {
+      "role": "page-num",
+      "description": "Page number"
+    }
+  ],
+  "content_mode": [
+    "image_with_text"
+  ]
+}

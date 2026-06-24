@@ -1,0 +1,128 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="1280" height="720" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1280 720">
+  <!-- Background -->
+  <rect width="1280" height="720" fill="#FFFFFF"/>
+
+  <!-- ==================== Header ==================== -->
+  <rect x="0" y="0" width="1280" height="70" fill="#003366"/>
+  <rect x="0" y="0" width="6" height="70" fill="#CC0000"/>
+  <text text-anchor="start" x="40" y="46" fill="#FFFFFF" font-family="Microsoft YaHei, Arial, sans-serif" font-size="28" font-weight="bold" data-role="title">
+    {{PAGE_TITLE}}
+  </text>
+  <text x="1220" y="46" text-anchor="end" fill="#FFFFFF" font-family="Microsoft YaHei, Arial, sans-serif" font-size="18" font-weight="bold" data-role="logo">
+    {{LOGO}}
+  </text>
+
+  <!-- ==================== Key Message Bar ==================== -->
+  <rect x="0" y="70" width="1280" height="50" fill="#E8F4FC"/>
+  <rect x="0" y="70" width="6" height="50" fill="#0066CC"/>
+  <text text-anchor="start" x="40" y="102" fill="#333333" font-family="Microsoft YaHei, Arial, sans-serif" font-size="18" data-role="key-message">
+    {{KEY_MESSAGE}}
+  </text>
+
+  <!-- ==================== Process Steps ==================== -->
+  <!-- Step 1 -->
+  <rect x="45" y="160" width="260" height="400" rx="10" fill="#F8FCFF" stroke="#D0D7E0" stroke-width="1.5"/>
+  <rect x="45" y="160" width="260" height="6" rx="3" fill="#003366"/>
+  <!-- Number circle -->
+  <circle cx="175" cy="210" r="24" fill="#003366"/>
+  <text x="175" y="218" text-anchor="middle" fill="#FFFFFF" font-family="Microsoft YaHei, Arial, sans-serif" font-size="22" font-weight="bold" data-role="step-num-1">
+    1
+  </text>
+  <!-- Step title -->
+  <text x="175" y="265" text-anchor="middle" fill="#003366" font-family="Microsoft YaHei, Arial, sans-serif" font-size="18" font-weight="bold" data-role="step-title-1">
+    {{STEP_TITLE}}
+  </text>
+  <!-- Divider -->
+  <line x1="115" y1="280" x2="235" y2="280" stroke="#D0D7E0" stroke-width="1"/>
+  <!-- Description -->
+  <text x="175" y="310" text-anchor="middle" fill="#555555" font-family="Microsoft YaHei, Arial, sans-serif" font-size="14" data-role="step-desc-1">
+    {{STEP_DESC}}
+  </text>
+  <!-- Tag -->
+  <rect x="130" y="490" width="90" height="28" rx="14" fill="#E8F4FC" stroke="#0066CC" stroke-width="1"/>
+  <text x="175" y="510" text-anchor="middle" fill="#0066CC" font-family="Microsoft YaHei, Arial, sans-serif" font-size="12" data-role="step-tag-1">
+    {{TAG}}
+  </text>
+
+  <!-- Arrow 1-2 -->
+  <line x1="315" y1="350" x2="340" y2="350" stroke="#0066CC" stroke-width="2"/>
+  <polygon points="340,350 330,342 330,358" fill="#0066CC"/>
+
+  <!-- Step 2 -->
+  <rect x="350" y="160" width="260" height="400" rx="10" fill="#F8FCFF" stroke="#D0D7E0" stroke-width="1.5"/>
+  <rect x="350" y="160" width="260" height="6" rx="3" fill="#0066CC"/>
+  <circle cx="480" cy="210" r="24" fill="#0066CC"/>
+  <text x="480" y="218" text-anchor="middle" fill="#FFFFFF" font-family="Microsoft YaHei, Arial, sans-serif" font-size="22" font-weight="bold" data-role="step-num-2">
+    2
+  </text>
+  <text x="480" y="265" text-anchor="middle" fill="#0066CC" font-family="Microsoft YaHei, Arial, sans-serif" font-size="18" font-weight="bold" data-role="step-title-2">
+    {{STEP_TITLE}}
+  </text>
+  <line x1="420" y1="280" x2="540" y2="280" stroke="#D0D7E0" stroke-width="1"/>
+  <text x="480" y="310" text-anchor="middle" fill="#555555" font-family="Microsoft YaHei, Arial, sans-serif" font-size="14" data-role="step-desc-2">
+    {{STEP_DESC}}
+  </text>
+  <rect x="435" y="490" width="90" height="28" rx="14" fill="#E8F4FC" stroke="#0066CC" stroke-width="1"/>
+  <text x="480" y="510" text-anchor="middle" fill="#0066CC" font-family="Microsoft YaHei, Arial, sans-serif" font-size="12" data-role="step-tag-2">
+    {{TAG}}
+  </text>
+
+  <!-- Arrow 2-3 -->
+  <line x1="620" y1="350" x2="645" y2="350" stroke="#0066CC" stroke-width="2"/>
+  <polygon points="645,350 635,342 635,358" fill="#0066CC"/>
+
+  <!-- Step 3 -->
+  <rect x="655" y="160" width="260" height="400" rx="10" fill="#F8FCFF" stroke="#D0D7E0" stroke-width="1.5"/>
+  <rect x="655" y="160" width="260" height="6" rx="3" fill="#003366"/>
+  <circle cx="785" cy="210" r="24" fill="#003366"/>
+  <text x="785" y="218" text-anchor="middle" fill="#FFFFFF" font-family="Microsoft YaHei, Arial, sans-serif" font-size="22" font-weight="bold" data-role="step-num-3">
+    3
+  </text>
+  <text x="785" y="265" text-anchor="middle" fill="#003366" font-family="Microsoft YaHei, Arial, sans-serif" font-size="18" font-weight="bold" data-role="step-title-3">
+    {{STEP_TITLE}}
+  </text>
+  <line x1="725" y1="280" x2="845" y2="280" stroke="#D0D7E0" stroke-width="1"/>
+  <text x="785" y="310" text-anchor="middle" fill="#555555" font-family="Microsoft YaHei, Arial, sans-serif" font-size="14" data-role="step-desc-3">
+    {{STEP_DESC}}
+  </text>
+  <rect x="740" y="490" width="90" height="28" rx="14" fill="#E8F4FC" stroke="#0066CC" stroke-width="1"/>
+  <text x="785" y="510" text-anchor="middle" fill="#0066CC" font-family="Microsoft YaHei, Arial, sans-serif" font-size="12" data-role="step-tag-3">
+    {{TAG}}
+  </text>
+
+  <!-- Arrow 3-4 -->
+  <line x1="925" y1="350" x2="950" y2="350" stroke="#0066CC" stroke-width="2"/>
+  <polygon points="950,350 940,342 940,358" fill="#0066CC"/>
+
+  <!-- Step 4 -->
+  <rect x="960" y="160" width="260" height="400" rx="10" fill="#F8FCFF" stroke="#D0D7E0" stroke-width="1.5"/>
+  <rect x="960" y="160" width="260" height="6" rx="3" fill="#CC0000"/>
+  <circle cx="1090" cy="210" r="24" fill="#CC0000"/>
+  <text x="1090" y="218" text-anchor="middle" fill="#FFFFFF" font-family="Microsoft YaHei, Arial, sans-serif" font-size="22" font-weight="bold" data-role="step-num-4">
+    4
+  </text>
+  <text x="1090" y="265" text-anchor="middle" fill="#CC0000" font-family="Microsoft YaHei, Arial, sans-serif" font-size="18" font-weight="bold" data-role="step-title-4">
+    {{STEP_TITLE}}
+  </text>
+  <line x1="1030" y1="280" x2="1150" y2="280" stroke="#D0D7E0" stroke-width="1"/>
+  <text x="1090" y="310" text-anchor="middle" fill="#555555" font-family="Microsoft YaHei, Arial, sans-serif" font-size="14" data-role="step-desc-4">
+    {{STEP_DESC}}
+  </text>
+  <rect x="1045" y="490" width="90" height="28" rx="14" fill="#E8F4FC" stroke="#0066CC" stroke-width="1"/>
+  <text x="1090" y="510" text-anchor="middle" fill="#0066CC" font-family="Microsoft YaHei, Arial, sans-serif" font-size="12" data-role="step-tag-4">
+    {{TAG}}
+  </text>
+
+  <!-- ==================== Footer ==================== -->
+  <line x1="40" y1="665" x2="1240" y2="665" stroke="#E8F4FC" stroke-width="1"/>
+  <text text-anchor="start" x="40" y="695" fill="#999999" font-family="Microsoft YaHei, Arial, sans-serif" font-size="12" data-role="source">
+    数据来源：{{SOURCE}}
+  </text>
+  <text x="640" y="695" text-anchor="middle" fill="#999999" font-family="Microsoft YaHei, Arial, sans-serif" font-size="12" data-role="section-name">
+    {{SECTION_NAME}}
+  </text>
+  <text x="1220" y="695" text-anchor="end" fill="#666666" font-family="Microsoft YaHei, Arial, sans-serif" font-size="14" data-role="page-num">
+    {{PAGE_NUM}}
+  </text>
+</svg>

@@ -1,0 +1,155 @@
+{
+  "layout_type": "progress_cards",
+  "scenario": "report",
+  "description": "Three stacked progress-tracking cards with status badges, progress bars, and key metrics. Ideal for project status reports, quarterly reviews, and executive summaries.",
+  "color_scheme": {
+    "primary": "#0050B3",
+    "accent": "#00B4D8",
+    "secondary": "#0077B6",
+    "bg": "#F8FCFF",
+    "card_bg": "#FFFFFF",
+    "header_gradient": [
+      "#00B4D8",
+      "#0050B3"
+    ],
+    "status_done": "#059669",
+    "status_active": "#0050B3",
+    "status_pending": "#9CA3AF"
+  },
+  "image_slots": [],
+  "text_slots": [
+    {
+      "role": "title",
+      "data_key": "PAGE_TITLE",
+      "description": "Page title in header"
+    },
+    {
+      "role": "org-name",
+      "data_key": "ORG_NAME",
+      "description": "Organization name right-aligned in header"
+    },
+    {
+      "role": "project-name-1",
+      "data_key": "PROJECT_NAME_1",
+      "description": "First project/task name"
+    },
+    {
+      "role": "status-1",
+      "data_key": "STATUS_1",
+      "description": "First project status label (e.g., Completed)"
+    },
+    {
+      "role": "metric-label-1a",
+      "data_key": "METRIC_LABEL_1A",
+      "description": "First project metric 1 label"
+    },
+    {
+      "role": "metric-value-1a",
+      "data_key": "METRIC_VALUE_1A",
+      "description": "First project metric 1 value"
+    },
+    {
+      "role": "metric-label-1b",
+      "data_key": "METRIC_LABEL_1B",
+      "description": "First project metric 2 label"
+    },
+    {
+      "role": "metric-value-1b",
+      "data_key": "METRIC_VALUE_1B",
+      "description": "First project metric 2 value"
+    },
+    {
+      "role": "metric-label-1c",
+      "data_key": "METRIC_LABEL_1C",
+      "description": "First project metric 3 label"
+    },
+    {
+      "role": "metric-value-1c",
+      "data_key": "METRIC_VALUE_1C",
+      "description": "First project metric 3 value"
+    },
+    {
+      "role": "project-name-2",
+      "data_key": "PROJECT_NAME_2",
+      "description": "Second project/task name"
+    },
+    {
+      "role": "status-2",
+      "data_key": "STATUS_2",
+      "description": "Second project status label (e.g., In Progress)"
+    },
+    {
+      "role": "metric-label-2a",
+      "data_key": "METRIC_LABEL_2A",
+      "description": "Second project metric 1 label"
+    },
+    {
+      "role": "metric-value-2a",
+      "data_key": "METRIC_VALUE_2A",
+      "description": "Second project metric 1 value"
+    },
+    {
+      "role": "metric-label-2b",
+      "data_key": "METRIC_LABEL_2B",
+      "description": "Second project metric 2 label"
+    },
+    {
+      "role": "metric-value-2b",
+      "data_key": "METRIC_VALUE_2B",
+      "description": "Second project metric 2 value"
+    },
+    {
+      "role": "metric-label-2c",
+      "data_key": "METRIC_LABEL_2C",
+      "description": "Second project metric 3 label"
+    },
+    {
+      "role": "metric-value-2c",
+      "data_key": "METRIC_VALUE_2C",
+      "description": "Second project metric 3 value"
+    },
+    {
+      "role": "project-name-3",
+      "data_key": "PROJECT_NAME_3",
+      "description": "Third project/task name"
+    },
+    {
+      "role": "status-3",
+      "data_key": "STATUS_3",
+      "description": "Third project status label (e.g., Pending)"
+    },
+    {
+      "role": "metric-label-3a",
+      "data_key": "METRIC_LABEL_3A",
+      "description": "Third project metric 1 label"
+    },
+    {
+      "role": "metric-value-3a",
+      "data_key": "METRIC_VALUE_3A",
+      "description": "Third project metric 1 value"
+    },
+    {
+      "role": "metric-label-3b",
+      "data_key": "METRIC_LABEL_3B",
+      "description": "Third project metric 2 label"
+    },
+    {
+      "role": "metric-value-3b",
+      "data_key": "METRIC_VALUE_3B",
+      "description": "Third project metric 2 value"
+    },
+    {
+      "role": "metric-label-3c",
+      "data_key": "METRIC_LABEL_3C",
+      "description": "Third project metric 3 label"
+    },
+    {
+      "role": "metric-value-3c",
+      "data_key": "METRIC_VALUE_3C",
+      "description": "Third project metric 3 value"
+    }
+  ],
+  "content_mode": [
+    "text-primary"
+  ]
+}

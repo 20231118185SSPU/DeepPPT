@@ -51,6 +51,7 @@ description: >
 | `${SKILL_DIR}/scripts/source_to_md/ppt_to_md.py` | PowerPoint to Markdown |
 | `${SKILL_DIR}/scripts/pptx_intake.py` | Standard PPTX intake enrichment — canvas / identity / slide geometry / tables / native chart data |
 | `${SKILL_DIR}/scripts/source_to_md/web_to_md.py` | Web page to Markdown (supports WeChat via `curl_cffi`) |
+| `agent-reach doctor --json` | Multi-platform content availability check (optional; when `agent-reach` is installed. Zero-config: B站/V2EX/RSS/web/YouTube) |
 | `${SKILL_DIR}/scripts/project_manager.py` | Project init / validate / manage |
 | `${SKILL_DIR}/scripts/icon_sync.py` | Copy chosen library icons into `<project>/icons/` at selection time; missing names reported + non-zero (re-pick gate) |
 | `${SKILL_DIR}/scripts/analyze_images.py` | Image analysis |
@@ -76,6 +77,7 @@ For complete tool documentation, see `${SKILL_DIR}/scripts/README.md`.
 | Index | Path | Purpose |
 |-------|------|---------|
 | Layout templates | `${SKILL_DIR}/templates/layouts/layouts_index.json` | Query available page layout templates |
+| Content page variants | `${SKILL_DIR}/templates/layouts/content_pages/` | Pre-built content page SVG layouts by scenario (academic / business / report). Each scenario has 6 variants; JSON sidecar describes layout type and slots. |
 | Brand presets | `${SKILL_DIR}/templates/brands/brands_index.json` | Query available brand identity presets (color / typography / logo / voice) |
 | Visualization templates | `${SKILL_DIR}/templates/charts/charts_index.json` | Query available visualization SVG templates (charts, infographics, diagrams, frameworks) |
 | Icon library | `${SKILL_DIR}/templates/icons/` | See `${SKILL_DIR}/templates/icons/README.md`; search icons on demand with `ls templates/icons/<library>/ \| grep <keyword>` |
@@ -95,6 +97,9 @@ For complete tool documentation, see `${SKILL_DIR}/scripts/README.md`.
 | `live-preview` | `workflows/live-preview.md` | Browser-based live preview — auto-started during generation and re-enterable any time the user mentions "live preview", "preview", "看效果", or wants to click/select a slide element |
 | `visual-review` | `workflows/visual-review.md` | Per-page rubric-based visual self-check — run only when the user explicitly asks for a visual re-pass on the generated SVGs (between Executor and post-processing). Opt-in only; never invoked by the main pipeline. |
 | `revision-loop` | `workflows/revision-loop.md` | Multi-turn local revision — apply targeted patches to generated SVG pages without full regeneration. Enter when user says "修改"/"调整"/"revise" after Step 6. Uses Plan-Act-Guard pipeline. |
+| `content-selection` | `workflows/content-selection.md` | Phase 1 — interactive content dimension selection after deep research. Parse report → present dimensions → user picks → confirm. Triggered automatically when `research_report.md` exists. |
+| `detailed-outline` | `workflows/detailed-outline.md` | Phase 2 — per-page detailed outline generation (core argument, content bullets, narrative function, visual need). Feeds into Strategist's Eight Confirmations. |
+| `image-text-linking` | `workflows/image-text-linking.md` | Phase 3 — ensure AI image prompts and web search keywords include page text context from detailed outline. Triggered when `detailed_outline.json` exists and image rows are present. |
 
 ### PPTX Route Boundary
 
@@ -182,7 +187,9 @@ Multi-deck: several PPTX files may be imported into one main-pipeline project �
 
 > ⚠️ **MUST use `--move`** (not copy): all source files — Step 1's generated Markdown, original PDFs / MDs / images — go into `sources/` via `import-sources --move`. After execution they no longer exist at the original location. Intermediate artifacts (e.g., `_files/`) are handled automatically.
 
-**✅ Checkpoint — Confirm project structure created successfully, `sources/` contains all source files, converted materials are ready. Proceed to Step 3.**
+**✅ Checkpoint — Confirm project structure created successfully, `sources/` contains all source files, converted materials are ready.**
+
+> **Content Selection Phase (Conditional)**: if `research_report.md` exists in the project (produced by `topic-research` or `deep-research` workflow) and `content_selection.json` does NOT yet exist, run the [`content-selection`](workflows/content-selection.md) workflow before proceeding. This interactive step parses the research report into dimensions and lets the user pick which content to include in the PPT. Skip if the user provided source files directly (PDF/DOCX/URL) — content selection applies to research-generated reports only. After content selection completes (outputs `content_selection.json`), proceed to Step 3.
 
 ---
 
@@ -320,6 +327,8 @@ Read references/strategist.md
 
 > **Layout pattern selection**: when planning the page structure, check for scenarios that match reusable layout patterns — screenshot comparison grids (`screenshot_grid`), project galleries (`gallery`), deep-dive card pages (`deepdive_card`), and centered transition pages (`transition_centered`). See strategist.md §b.1 for the full selection table and hard rules. All transition pages default to centered layout; content pages with expandable claims must be followed by deep-dive pages.
 
+> **Detailed Outline (Conditional)**: if `content_selection.json` exists (from the content-selection workflow), Strategist MUST run the [`detailed-outline`](workflows/detailed-outline.md) workflow **before** the Eight Confirmations. This generates `detailed_outline.json` — a per-page plan with core arguments, content bullets, narrative functions, and visual needs. The detailed outline feeds into the Eight Confirmations as the content basis (page count, outline structure) and into Step 5 as the image-text context source. Skip if `content_selection.json` does not exist (user provided source files directly).
+
 > ⚠️ **Mandatory gate**: before writing `design_spec.md`, Strategist MUST `read_file templates/design_spec_reference.md` and follow its full I–XI section structure. See `strategist.md` Section 1.
 
 **`<project_path>/analysis/` is the project's intermediate-analysis folder: the canonical home for machine-extracted source/asset facts — the PPTX intake bundle (`source_profile.json` index + per-deck `<stem>.identity.json` / `<stem>.slide_library.json`) and `image_analysis.csv`. It holds facts, not design contracts — `design_spec.md` / `spec_lock.md` stay at the project root.** The MUST-read contract covers only the **compact structured data files (`.json` / `.csv`)**; other artifacts that may live under `analysis/` (e.g. a beautify `source_svg_import/` vector reference package) are NOT bulk-read — they are read selectively only when a specific workflow step calls for them. Before the Eight Confirmations, Strategist MUST read the auto-extracted fact files already in `analysis/` — currently `source_profile.json` (PPTX intake), when present. This file is the multi-deck index: read it once for the `decks[]` digests (canvas / chart / table entries per source deck), then open a specific deck's `<stem>.identity.json` / `<stem>.slide_library.json` only if you need its full raw facts. Use these entries as **factual source context** (format default + content facts); when several decks are present, synthesize across all of them. The source's **palette / typography / visual identity are a reference, not a constraint**: the main pipeline may inherit them where they fit the content and the confirmed style, or design fresh where they don't — the Strategist's judgment, never an obligation to either keep or discard. (Template-fill preserves the native source design by editing cloned slides directly; beautify defaults to the source identity but still follows the confirmed values; the main pipeline treats source identity as reference only and defaults to fresh design.) (`image_analysis.csv` lands later, at the image-analysis step below, and is the authoritative regenerated image-fact view there — re-derived from the live `images/` folder, not a durable store.)
@@ -434,6 +443,8 @@ python3 ${SKILL_DIR}/scripts/analyze_images.py <project_path>/images
 🚧 **GATE**: Step 4 complete; Design Specification & Content Outline generated and user confirmed. Any formula rows already have `Acquire Via: formula` and `Status: Rendered`.
 
 > **Trigger**: At least one row in the resource list has `Acquire Via: ai` and/or `Acquire Via: web`. If every row is `user`, `formula`, or `placeholder`, skip to Step 6.
+
+> **Image-Text Linking (Conditional)**: if `detailed_outline.json` exists (from the detailed-outline workflow), run the [`image-text-linking`](workflows/image-text-linking.md) workflow before generating image prompts or search queries. This ensures every AI image prompt includes the corresponding page's `core_argument` + `content_bullets` context (4-part template: description + style + scene + text-image-link), and every web search keyword is extracted from `content_bullets` rather than generic topic words. Minimum AI prompt length: 80 characters. Skip if `detailed_outline.json` does not exist.
 
 **Always load the common framework**:
 

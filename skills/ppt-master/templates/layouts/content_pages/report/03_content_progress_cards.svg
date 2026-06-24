@@ -1,0 +1,89 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="1280" height="720" viewBox="0 0 1280 720" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="headerGrad" x1="0" y1="0" x2="1280" y2="0" gradientUnits="userSpaceOnUse">
+      <stop offset="0%" stop-color="#00B4D8"/>
+      <stop offset="100%" stop-color="#0050B3"/>
+    </linearGradient>
+    <linearGradient id="badgeGrad" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#00B4D8"/>
+      <stop offset="100%" stop-color="#0050B3"/>
+    </linearGradient>
+    <filter id="cardShadow" x="-2%" y="-2%" width="104%" height="108%">
+      <feDropShadow dx="0" dy="2" stdDeviation="4" flood-color="#0050B3" flood-opacity="0.08"/>
+    </filter>
+  </defs>
+
+  <!-- Header gradient bar -->
+  <rect x="0" y="0" width="1280" height="6" fill="url(#headerGrad)"/>
+
+  <!-- Header area -->
+  <rect x="60" y="26" width="42" height="42" rx="8" fill="url(#badgeGrad)"/>
+  <text x="81" y="55" font-family="Microsoft YaHei, Arial, sans-serif" font-size="18" font-weight="700" fill="#FFFFFF" text-anchor="middle">03</text>
+  <text text-anchor="start" x="118" y="54" font-family="Microsoft YaHei, Arial, sans-serif" font-size="24" font-weight="700" fill="#1A1A2E">{{PAGE_TITLE}}</text>
+  <text x="1220" y="54" font-family="Microsoft YaHei, Arial, sans-serif" font-size="14" fill="#6B7280" text-anchor="end">{{ORG_NAME}}</text>
+  <line x1="60" y1="82" x2="1220" y2="82" stroke="#E5E7EB" stroke-width="1"/>
+
+  <!-- Progress Card 1: COMPLETED -->
+  <rect x="60" y="100" width="1160" height="160" rx="12" fill="#FFFFFF" stroke="#E5E7EB" stroke-width="1" filter="url(#cardShadow)"/>
+  <rect x="60" y="100" width="6" height="160" rx="3" fill="#059669"/>
+  <!-- Row 1: name + status -->
+  <text text-anchor="start" x="90" y="140" font-family="Microsoft YaHei, Arial, sans-serif" font-size="18" font-weight="700" fill="#1A1A2E">{{PROJECT_NAME_1}}</text>
+  <rect x="420" y="122" width="80" height="28" rx="14" fill="#ECFDF5"/>
+  <text x="460" y="141" font-family="Microsoft YaHei, Arial, sans-serif" font-size="12" font-weight="600" fill="#059669" text-anchor="middle">{{STATUS_1}}</text>
+  <!-- Row 2: progress bar -->
+  <rect x="90" y="160" width="1080" height="12" rx="6" fill="#F3F4F6"/>
+  <rect x="90" y="160" width="1080" height="12" rx="6" fill="#059669"/>
+  <text x="1180" y="172" font-family="Microsoft YaHei, Arial, sans-serif" font-size="13" font-weight="700" fill="#059669" text-anchor="end">100%</text>
+  <!-- Row 3: metrics -->
+  <text text-anchor="start" x="90" y="220" font-family="Microsoft YaHei, Arial, sans-serif" font-size="12" fill="#9CA3AF">{{METRIC_LABEL_1A}}</text>
+  <text text-anchor="start" x="90" y="240" font-family="Microsoft YaHei, Arial, sans-serif" font-size="16" font-weight="700" fill="#374151">{{METRIC_VALUE_1A}}</text>
+  <line x1="280" y1="200" x2="280" y2="240" stroke="#E5E7EB" stroke-width="1"/>
+  <text text-anchor="start" x="300" y="220" font-family="Microsoft YaHei, Arial, sans-serif" font-size="12" fill="#9CA3AF">{{METRIC_LABEL_1B}}</text>
+  <text text-anchor="start" x="300" y="240" font-family="Microsoft YaHei, Arial, sans-serif" font-size="16" font-weight="700" fill="#374151">{{METRIC_VALUE_1B}}</text>
+  <line x1="490" y1="200" x2="490" y2="240" stroke="#E5E7EB" stroke-width="1"/>
+  <text text-anchor="start" x="510" y="220" font-family="Microsoft YaHei, Arial, sans-serif" font-size="12" fill="#9CA3AF">{{METRIC_LABEL_1C}}</text>
+  <text text-anchor="start" x="510" y="240" font-family="Microsoft YaHei, Arial, sans-serif" font-size="16" font-weight="700" fill="#374151">{{METRIC_VALUE_1C}}</text>
+
+  <!-- Progress Card 2: IN PROGRESS -->
+  <rect x="60" y="280" width="1160" height="160" rx="12" fill="#FFFFFF" stroke="#E5E7EB" stroke-width="1" filter="url(#cardShadow)"/>
+  <rect x="60" y="280" width="6" height="160" rx="3" fill="#0050B3"/>
+  <text text-anchor="start" x="90" y="320" font-family="Microsoft YaHei, Arial, sans-serif" font-size="18" font-weight="700" fill="#1A1A2E">{{PROJECT_NAME_2}}</text>
+  <rect x="420" y="302" width="100" height="28" rx="14" fill="#EFF6FF"/>
+  <text x="470" y="321" font-family="Microsoft YaHei, Arial, sans-serif" font-size="12" font-weight="600" fill="#0050B3" text-anchor="middle">{{STATUS_2}}</text>
+  <rect x="90" y="340" width="1080" height="12" rx="6" fill="#F3F4F6"/>
+  <rect x="90" y="340" width="680" height="12" rx="6" fill="#0050B3"/>
+  <text x="780" y="352" font-family="Microsoft YaHei, Arial, sans-serif" font-size="13" font-weight="700" fill="#0050B3" text-anchor="start"> 63%</text>
+  <text text-anchor="start" x="90" y="400" font-family="Microsoft YaHei, Arial, sans-serif" font-size="12" fill="#9CA3AF">{{METRIC_LABEL_2A}}</text>
+  <text text-anchor="start" x="90" y="420" font-family="Microsoft YaHei, Arial, sans-serif" font-size="16" font-weight="700" fill="#374151">{{METRIC_VALUE_2A}}</text>
+  <line x1="280" y1="380" x2="280" y2="420" stroke="#E5E7EB" stroke-width="1"/>
+  <text text-anchor="start" x="300" y="400" font-family="Microsoft YaHei, Arial, sans-serif" font-size="12" fill="#9CA3AF">{{METRIC_LABEL_2B}}</text>
+  <text text-anchor="start" x="300" y="420" font-family="Microsoft YaHei, Arial, sans-serif" font-size="16" font-weight="700" fill="#374151">{{METRIC_VALUE_2B}}</text>
+  <line x1="490" y1="380" x2="490" y2="420" stroke="#E5E7EB" stroke-width="1"/>
+  <text text-anchor="start" x="510" y="400" font-family="Microsoft YaHei, Arial, sans-serif" font-size="12" fill="#9CA3AF">{{METRIC_LABEL_2C}}</text>
+  <text text-anchor="start" x="510" y="420" font-family="Microsoft YaHei, Arial, sans-serif" font-size="16" font-weight="700" fill="#374151">{{METRIC_VALUE_2C}}</text>
+
+  <!-- Progress Card 3: PENDING -->
+  <rect x="60" y="460" width="1160" height="160" rx="12" fill="#FFFFFF" stroke="#E5E7EB" stroke-width="1" filter="url(#cardShadow)"/>
+  <rect x="60" y="460" width="6" height="160" rx="3" fill="#9CA3AF"/>
+  <text text-anchor="start" x="90" y="500" font-family="Microsoft YaHei, Arial, sans-serif" font-size="18" font-weight="700" fill="#1A1A2E">{{PROJECT_NAME_3}}</text>
+  <rect x="420" y="482" width="80" height="28" rx="14" fill="#F3F4F6"/>
+  <text x="460" y="501" font-family="Microsoft YaHei, Arial, sans-serif" font-size="12" font-weight="600" fill="#6B7280" text-anchor="middle">{{STATUS_3}}</text>
+  <rect x="90" y="520" width="1080" height="12" rx="6" fill="#F3F4F6"/>
+  <rect x="90" y="520" width="108" height="12" rx="6" fill="#9CA3AF"/>
+  <text x="208" y="532" font-family="Microsoft YaHei, Arial, sans-serif" font-size="13" font-weight="700" fill="#6B7280" text-anchor="start"> 10%</text>
+  <text text-anchor="start" x="90" y="580" font-family="Microsoft YaHei, Arial, sans-serif" font-size="12" fill="#9CA3AF">{{METRIC_LABEL_3A}}</text>
+  <text text-anchor="start" x="90" y="600" font-family="Microsoft YaHei, Arial, sans-serif" font-size="16" font-weight="700" fill="#374151">{{METRIC_VALUE_3A}}</text>
+  <line x1="280" y1="560" x2="280" y2="600" stroke="#E5E7EB" stroke-width="1"/>
+  <text text-anchor="start" x="300" y="580" font-family="Microsoft YaHei, Arial, sans-serif" font-size="12" fill="#9CA3AF">{{METRIC_LABEL_3B}}</text>
+  <text text-anchor="start" x="300" y="600" font-family="Microsoft YaHei, Arial, sans-serif" font-size="16" font-weight="700" fill="#374151">{{METRIC_VALUE_3B}}</text>
+  <line x1="490" y1="560" x2="490" y2="600" stroke="#E5E7EB" stroke-width="1"/>
+  <text text-anchor="start" x="510" y="580" font-family="Microsoft YaHei, Arial, sans-serif" font-size="12" fill="#9CA3AF">{{METRIC_LABEL_3C}}</text>
+  <text text-anchor="start" x="510" y="600" font-family="Microsoft YaHei, Arial, sans-serif" font-size="16" font-weight="700" fill="#374151">{{METRIC_VALUE_3C}}</text>
+
+  <!-- Footer -->
+  <line x1="60" y1="680" x2="1220" y2="680" stroke="#E5E7EB" stroke-width="1"/>
+  <text text-anchor="start" x="60" y="702" font-family="Microsoft YaHei, Arial, sans-serif" font-size="10" fill="#9CA3AF">{{SOURCE_TEXT}}</text>
+  <text x="640" y="702" font-family="Microsoft YaHei, Arial, sans-serif" font-size="10" fill="#9CA3AF" text-anchor="middle">{{SECTION_NAME}}</text>
+  <text x="1220" y="702" font-family="Microsoft YaHei, Arial, sans-serif" font-size="10" fill="#9CA3AF" text-anchor="end">3 / {{TOTAL_PAGES}}</text>
+</svg>

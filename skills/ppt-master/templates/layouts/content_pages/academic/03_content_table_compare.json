@@ -1,0 +1,100 @@
+{
+  "layout_type": "table_compare_before_after",
+  "scenario": "academic",
+  "description": "Before/After comparison table with red and green colored columns and arrow divider",
+  "color_scheme": {
+    "primary": "#003366",
+    "accent": "#CC0000",
+    "secondary": "#0066CC",
+    "bg": "#FFFFFF",
+    "card_bg": "#F8FCFF",
+    "header_bg": "#003366",
+    "success": "#00A86B"
+  },
+  "image_slots": [],
+  "text_slots": [
+    {
+      "role": "title",
+      "description": "Page title in header bar"
+    },
+    {
+      "role": "key-message",
+      "description": "Key message bar text"
+    },
+    {
+      "role": "before-label",
+      "description": "Before column header label"
+    },
+    {
+      "role": "after-label",
+      "description": "After column header label"
+    },
+    {
+      "role": "compare-item-before-1",
+      "description": "Before row 1 item name"
+    },
+    {
+      "role": "compare-value-before-1",
+      "description": "Before row 1 value"
+    },
+    {
+      "role": "compare-item-before-2",
+      "description": "Before row 2 item name"
+    },
+    {
+      "role": "compare-value-before-2",
+      "description": "Before row 2 value"
+    },
+    {
+      "role": "compare-item-before-3",
+      "description": "Before row 3 item name"
+    },
+    {
+      "role": "compare-value-before-3",
+      "description": "Before row 3 value"
+    },
+    {
+      "role": "compare-item-before-4",
+      "description": "Before row 4 item name"
+    },
+    {
+      "role": "compare-value-before-4",
+      "description": "Before row 4 value"
+    },
+    {
+      "role": "compare-item-after-1",
+      "description": "After row 1 item name"
+    },
+    {
+      "role": "compare-value-after-1",
+      "description": "After row 1 value"
+    },
+    {
+      "role": "compare-item-after-2",
+      "description": "After row 2 item name"
+    },
+    {
+      "role": "compare-value-after-2",
+      "description": "After row 2 value"
+    },
+    {
+      "role": "compare-item-after-3",
+      "description": "After row 3 item name"
+    },
+    {
+      "role": "compare-value-after-3",
+      "description": "After row 3 value"
+    },
+    {
+      "role": "compare-item-after-4",
+      "description": "After row 4 item name"
+    },
+    {
+      "role": "compare-value-after-4",
+      "description": "After row 4 value"
+    }
+  ],
+  "content_mode": [
+    "text-primary"
+  ]
+}

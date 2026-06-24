@@ -1,0 +1,116 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="1280" height="720" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1280 720">
+  <!-- Background -->
+  <rect width="1280" height="720" fill="#F4F6FA"/>
+
+  <!-- ==================== Header ==================== -->
+  <text text-anchor="start" x="60" y="50" fill="#1B2A4A" font-family="Microsoft YaHei, Arial, sans-serif" font-size="28" font-weight="bold" data-role="title">
+    {{PAGE_TITLE}}
+  </text>
+  <text text-anchor="start" x="60" y="78" fill="#8899AA" font-family="Microsoft YaHei, Arial, sans-serif" font-size="14" data-role="subtitle">
+    {{PAGE_SUBTITLE}}
+  </text>
+
+  <!-- ==================== Flow Nodes ==================== -->
+
+  <!-- Node 1 -->
+  <rect x="45" y="200" width="180" height="260" rx="12" fill="#FFFFFF" stroke="#D8DFEA" stroke-width="1.5"/>
+  <!-- Icon placeholder circle -->
+  <circle cx="135" cy="260" r="28" fill="#EBF0FA"/>
+  <text x="135" y="268" text-anchor="middle" fill="#3B6CB5" font-family="Microsoft YaHei, Arial, sans-serif" font-size="22" data-role="node-icon-1">
+    {{NODE_ICON_1}}
+  </text>
+  <!-- Node label -->
+  <text x="135" y="320" text-anchor="middle" fill="#1B2A4A" font-family="Microsoft YaHei, Arial, sans-serif" font-size="16" font-weight="bold" data-role="node-title-1">
+    {{NODE_TITLE_1}}
+  </text>
+  <!-- Node description -->
+  <text x="135" y="350" text-anchor="middle" fill="#778899" font-family="Microsoft YaHei, Arial, sans-serif" font-size="12" data-role="node-desc-1">
+    {{NODE_DESC_1}}
+  </text>
+
+  <!-- Arrow 1->2 -->
+  <line x1="235" y1="330" x2="270" y2="330" stroke="#8899AA" stroke-width="2"/>
+  <polygon points="270,324 282,330 270,336" fill="#8899AA"/>
+
+  <!-- Node 2 -->
+  <rect x="290" y="200" width="180" height="260" rx="12" fill="#FFFFFF" stroke="#D8DFEA" stroke-width="1.5"/>
+  <circle cx="380" cy="260" r="28" fill="#EBF0FA"/>
+  <text x="380" y="268" text-anchor="middle" fill="#3B6CB5" font-family="Microsoft YaHei, Arial, sans-serif" font-size="22" data-role="node-icon-2">
+    {{NODE_ICON_2}}
+  </text>
+  <text x="380" y="320" text-anchor="middle" fill="#1B2A4A" font-family="Microsoft YaHei, Arial, sans-serif" font-size="16" font-weight="bold" data-role="node-title-2">
+    {{NODE_TITLE_2}}
+  </text>
+  <text x="380" y="350" text-anchor="middle" fill="#778899" font-family="Microsoft YaHei, Arial, sans-serif" font-size="12" data-role="node-desc-2">
+    {{NODE_DESC_2}}
+  </text>
+
+  <!-- Arrow 2->3 -->
+  <line x1="480" y1="330" x2="515" y2="330" stroke="#8899AA" stroke-width="2"/>
+  <polygon points="515,324 527,330 515,336" fill="#8899AA"/>
+
+  <!-- Node 3 — HIGHLIGHTED (active step) -->
+  <rect x="535" y="190" width="196" height="280" rx="12" fill="#FFFFFF" stroke="#3B6CB5" stroke-width="3"/>
+  <!-- Accent top bar -->
+  <rect x="535" y="190" width="196" height="6" rx="3" fill="#3B6CB5"/>
+  <circle cx="633" cy="258" r="30" fill="#D6E4F7"/>
+  <text x="633" y="267" text-anchor="middle" fill="#3B6CB5" font-family="Microsoft YaHei, Arial, sans-serif" font-size="24" font-weight="bold" data-role="node-icon-3">
+    {{NODE_ICON_3}}
+  </text>
+  <text x="633" y="318" text-anchor="middle" fill="#1B2A4A" font-family="Microsoft YaHei, Arial, sans-serif" font-size="16" font-weight="bold" data-role="node-title-3">
+    {{NODE_TITLE_3}}
+  </text>
+  <text x="633" y="348" text-anchor="middle" fill="#3B6CB5" font-family="Microsoft YaHei, Arial, sans-serif" font-size="12" data-role="node-desc-3">
+    {{NODE_DESC_3}}
+  </text>
+  <!-- Active badge -->
+  <rect x="597" y="390" width="72" height="24" rx="12" fill="#3B6CB5" fill-opacity="0.12"/>
+  <text x="633" y="407" text-anchor="middle" fill="#3B6CB5" font-family="Microsoft YaHei, Arial, sans-serif" font-size="11" font-weight="bold" data-role="node-badge-3">
+    {{NODE_BADGE_3}}
+  </text>
+
+  <!-- Arrow 3->4 -->
+  <line x1="741" y1="330" x2="776" y2="330" stroke="#8899AA" stroke-width="2"/>
+  <polygon points="776,324 788,330 776,336" fill="#8899AA"/>
+
+  <!-- Node 4 -->
+  <rect x="796" y="200" width="180" height="260" rx="12" fill="#FFFFFF" stroke="#D8DFEA" stroke-width="1.5"/>
+  <circle cx="886" cy="260" r="28" fill="#EBF0FA"/>
+  <text x="886" y="268" text-anchor="middle" fill="#3B6CB5" font-family="Microsoft YaHei, Arial, sans-serif" font-size="22" data-role="node-icon-4">
+    {{NODE_ICON_4}}
+  </text>
+  <text x="886" y="320" text-anchor="middle" fill="#1B2A4A" font-family="Microsoft YaHei, Arial, sans-serif" font-size="16" font-weight="bold" data-role="node-title-4">
+    {{NODE_TITLE_4}}
+  </text>
+  <text x="886" y="350" text-anchor="middle" fill="#778899" font-family="Microsoft YaHei, Arial, sans-serif" font-size="12" data-role="node-desc-4">
+    {{NODE_DESC_4}}
+  </text>
+
+  <!-- Arrow 4->5 -->
+  <line x1="986" y1="330" x2="1021" y2="330" stroke="#8899AA" stroke-width="2"/>
+  <polygon points="1021,324 1033,330 1021,336" fill="#8899AA"/>
+
+  <!-- Node 5 -->
+  <rect x="1041" y="200" width="180" height="260" rx="12" fill="#FFFFFF" stroke="#D8DFEA" stroke-width="1.5"/>
+  <circle cx="1131" cy="260" r="28" fill="#EBF0FA"/>
+  <text x="1131" y="268" text-anchor="middle" fill="#3B6CB5" font-family="Microsoft YaHei, Arial, sans-serif" font-size="22" data-role="node-icon-5">
+    {{NODE_ICON_5}}
+  </text>
+  <text x="1131" y="320" text-anchor="middle" fill="#1B2A4A" font-family="Microsoft YaHei, Arial, sans-serif" font-size="16" font-weight="bold" data-role="node-title-5">
+    {{NODE_TITLE_5}}
+  </text>
+  <text x="1131" y="350" text-anchor="middle" fill="#778899" font-family="Microsoft YaHei, Arial, sans-serif" font-size="12" data-role="node-desc-5">
+    {{NODE_DESC_5}}
+  </text>
+
+  <!-- ==================== Footnote ==================== -->
+  <text text-anchor="start" x="60" y="695" fill="#999999" font-family="Microsoft YaHei, Arial, sans-serif" font-size="12" data-role="footnote">
+    {{FOOTNOTE}}
+  </text>
+
+  <!-- ==================== Page Number ==================== -->
+  <text x="1220" y="695" text-anchor="end" fill="#666666" font-family="Microsoft YaHei, Arial, sans-serif" font-size="14" data-role="page-num">
+    {{PAGE_NUM}}
+  </text>
+</svg>

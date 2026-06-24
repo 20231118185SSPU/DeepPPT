@@ -45,8 +45,9 @@ projects/<project_slug>/          ← single source of truth
 - Do NOT create multiple folders for the same task under `projects/` (e.g., `xxx_analysis/` and `xxx_ppt169_/` must not coexist)
 - Research reports (`research_report.md`) and narrative copy must be saved INSIDE the project folder, not in `projects/` root
 - The folder name from `project_manager.py init` is the project's single canonical identifier
+- **All artifacts write directly into the project directory from Step 1 onward** — no staging directories, no sibling folders, no copy-in-later
 
-> **Two-phase artifact flow**: during Steps 2-5, analysis artifacts are first written to a sibling staging directory (`projects/<topic_slug>_analysis/`). During Step 6 (project initialization), they are copied into `<project>/analysis/` and the staging directory is deleted. The folder structure above shows the final state after Step 6.
+> **Single-phase artifact flow**: `project_manager.py init` runs at Step 1 (scope confirmed), producing the canonical `<project>` path. Steps 2–5 write analysis, images, and narrative directly into `<project>/analysis/`, `<project>/images/`, and `<project>/sources/`. No staging, no cleanup step.
 
 ---
 
@@ -66,11 +67,46 @@ projects/<project_slug>/          ← single source of truth
 
 **Forbidden — itemized confirmation**: do NOT ask each row separately. One bundled clarifier or none.
 
+### 1.1 Initialize project directory
+
+⛔ **BLOCKING**: immediately after scope confirmation, create the canonical project directory. All subsequent steps write directly into it — no staging directories.
+
+```bash
+python3 ${SKILL_DIR}/scripts/project_manager.py init <project_name> --format <format>
+```
+
+Save the returned path as `<project>`. Create subdirectories for research artifacts:
+
+```bash
+mkdir -p <project>/analysis
+mkdir -p <project>/images/ref
+mkdir -p <project>/images/web_assets
+```
+
+All Steps 2–5 use `<project>` as the base path. No `projects/<topic_slug>/` or `projects/<topic_slug>_analysis/` directories are created.
+
 ---
 
 ## Step 2: Multi-dimensional search
 
 ⛔ **BLOCKING**: present the search plan to the user before executing. Proceed on approval.
+
+### 2.0 Depth contract（调研深度合约）
+
+**Hard rule**: deep-research 的核心价值是"深度"。以下是最低标准，不可协商：
+
+| 指标 | 最低要求 | 说明 |
+|------|---------|------|
+| 搜索维度 | 4-6 个 | 每个维度代表一个独立视角 |
+| 每维度搜索轮次 | ≥3 轮 | 广搜→深挖→交叉验证 |
+| 每维度 Tier 1-2 来源 | ≥2 个 | 官方/权威来源不可缺 |
+| 总来源数 | ≥15 个 | 含所有层级 |
+| 交叉验证事实 | ≥8 个 | 同一事实被 ≥2 个独立来源确认 |
+| 结构化数据点 | ≥10 个 | 统计数字、时间线事件、对比项、引言 |
+| 调研报告正文 | ≥3000 字 | 不含来源列表和标记注释 |
+| 每个叙事章节 | ≥400 字 | §1-§6 每章必须有足够的展开深度 |
+
+**低于以上任何一项 = 调研不达标，必须补充搜索后再进入 Step 3。**
 
 ### 2.1 Generate search plan
 
@@ -110,6 +146,27 @@ python3 ${SKILL_DIR}/scripts/source_to_md/web_to_md.py <URL>
 | Cross-fill | Search for claims, data points, or entities surfaced in deep fetch that lack corroboration | Targeted pages |
 | Gap review | Identify under-sourced dimensions; run additional targeted searches | 1-2 extra pages per gap |
 
+### 2.2a Multi-platform content gathering（Agent-Reach 增强）
+
+当系统安装了 `agent-reach` 时，可在搜索阶段额外调用以下平台获取中文场景素材：
+
+**零配置平台（直接调用）：**
+
+| 平台 | 命令 | 适用场景 |
+|------|------|---------|
+| 网页阅读 | `curl -s "https://r.jina.ai/<URL>"` | 将任意 URL 转为干净 Markdown |
+| B站搜索 | `curl -s "https://api.bilibili.com/x/web-interface/search/all/v2?keyword=<关键词>"` | 技术教程、科普视频、中文场景 |
+| V2EX | `curl -s "https://www.v2ex.com/api/v2/nodes/<node>/topics"` 或 `https://www.v2ex.com/api/topics/hot.json` | 技术讨论、开发者观点 |
+| RSS 订阅 | `python3 -c "import feedparser; d=feedparser.parse('<RSS_URL>'); [print(e.title, e.link) for e in d.entries[:10]]"` | 行业博客、新闻源 |
+| YouTube 字幕 | `yt-dlp --write-auto-sub --sub-lang zh,en --skip-download -o "<project>/sources/%(title)s" "<URL>"` | 技术演讲、英文教程 |
+
+**使用规则：**
+- 这些平台作为 IDE WebSearch 的补充，不替代主要搜索流程
+- B站/V2EX 内容属于 Tier 3-4 来源（用户观点、社区讨论），不能作为 Tier 1-2 事实来源
+- YouTube 字幕可作为 Tier 3 来源（演讲/教程内容）
+- 网页阅读（Jina Reader）可替代 `web_to_md.py`，输出质量更稳定
+- 每个维度最多从这些平台获取 2-3 条补充素材，避免喧宾夺主
+
 **Source priority**:
 
 | Tier | Source | Credibility |
@@ -126,20 +183,22 @@ python3 ${SKILL_DIR}/scripts/source_to_md/web_to_md.py <URL>
 
 Collect images during every search round — do not defer to the end.
 
+> **Layout-driven dimensions**: before collecting images, determine each image's target SVG layout slot from the planned page structure (§4.3 PAGE_PLAN). Standard slot sizes for PPT 16:9: cover background 1280×720, content center 1160×425, deep-dive side 370×500, gallery thumbnail 370×170. When collecting or generating images, target these dimensions to avoid awkward cropping in the final SVG.
+
 | Decision | Rule |
 |---|---|
 | Quantity | ≥1 per search dimension + cover-likely scenes + key entities |
 | Resolution | Prefer originals. Wikimedia: strip `/thumb/` and the `Npx-` prefix |
+| Target dimensions | Match the image's SVG layout slot (see above). For AI generation, write `target_width`/`target_height` in `image_prompts.json` |
 | License | Wikimedia / public-domain / CC-licensed; avoid stock-aggregator watermarks |
 | Filename | descriptive English snake_case (`coal_mine_shaft_gantry.jpg`, not `image1.jpg`) |
 | Relevance tag | Note which dimension each image belongs to (used in Phase 4 visual strategy) |
 
 ```bash
-mkdir -p "projects/<topic_slug>"
-curl -L -o "projects/<topic_slug>/assets/<descriptive_name>.<ext>" "<image_url>"
+curl -L -o "<project>/images/web_assets/<descriptive_name>.<ext>" "<image_url>"
 ```
 
-> **Note**: `assets/` is a temporary staging directory. During project initialization (Step 6), assets are copied to `<project>/images/web_assets/`. Reference images go to `<project>/images/ref/`.
+> Images are saved directly to `<project>/images/web_assets/`. Reference images go to `<project>/images/ref/`.
 
 ### 2.4 Web asset collection with fallback strategy (three-track)
 
@@ -158,6 +217,26 @@ Deep-dive pages require real images (charts, diagrams, photos, infographics). Us
 - Image dimensions must match the deep-dive page layout (typically 1280×720 for full-width, or proportional for in-layout images)
 
 **Hard rule**: the image collection step must NEVER be skipped. Even if all images fall back to AI generation, every deep-dive page MUST have ≥1 image.
+
+**素材来源适配规则（2026-06-24 新增 — 防止讲解页素材不匹配）**：
+
+通用素材库（Pexels / Pixabay / Openverse）对特定领域的覆盖率差异巨大。必须按主题类型选择素材来源：
+
+| 主题类型 | 推荐来源 | 原因 |
+|---------|---------|------|
+| 风光/自然/建筑 | 通用素材库 ✅ | 关键词匹配率高，结果可用 |
+| 办公/科技/商务 | 通用素材库 ✅ | 大量相关图片 |
+| 历史人物/事件 | Playwright 或 AI 降级 | 通用库几乎不可能有匹配的特定历史内容 |
+| 古籍/书法/文物 | Playwright 或 AI 降级 | 必须从专业文物网站采集 |
+| 地域文化/民俗 | Playwright 优先 | 通用库标签粗糙，匹配度低 |
+
+**svg-native 信息卡方案**（第④降级）：当 ①②③ 全部失败或图片内容明显不匹配时，不使用强制配图，改用纯 SVG 构建的信息卡片：
+- 白底（`#FFFFFF`）+ 项目主色装饰条（3px，`primary`色）+ 结构化文本
+- 内容为页面主题相关的文献出处、数据摘要、后世评价
+- 100% 由项目色板和字体控制，保证内容准确
+- 标记 `Acquire Via: svg-native` 于 `design_spec.md §VIII`
+
+**清理规则**：步骤 8 导出前，删除 `web_assets/` 中未被任何 SVG 引用的僵尸文件（参考 `spec_lock.md` images 节）。
 
 ---
 
@@ -208,13 +287,15 @@ From the gathered material, extract and structure:
 
 Before moving to narrative construction (Step 4), evaluate each chapter's content density to determine deep-dive page allocation:
 
-**Per-dimension minimum output**:
+**Per-dimension minimum output（不可协商）**:
 
-| Requirement | Threshold |
-|---|---|
-| Cross-verified facts from Tier 1-2 sources | ≥3 per dimension |
-| Quantifiable data points (effect sizes, percentages, sample counts) | ≥2 per dimension |
-| Directly usable case study or quote for deep-dive pages | ≥1 per dimension |
+| Requirement | Threshold | Why |
+|---|---|---|
+| Cross-verified facts from Tier 1-2 sources | ≥3 per dimension | 确保每个维度有可靠的事实骨架 |
+| Quantifiable data points (effect sizes, percentages, sample counts) | ≥2 per dimension | 数字让叙事有说服力 |
+| Directly usable case study or quote for deep-dive pages | ≥1 per dimension | 给讲解页提供具体素材 |
+| Detailed narrative paragraphs (≥100 字/段) | ≥2 per dimension | 调研不是关键词罗列，必须有展开的叙述 |
+| Counter-arguments or alternative perspectives | ≥1 per dimension | 避免单面叙事，增加深度感 |
 
 If a dimension falls below these thresholds, run additional targeted searches before proceeding.
 
@@ -270,7 +351,7 @@ For each core claim identified in 3.4, plan how deep the presenter needs to go:
 
 🚧 **GATE**: analysis artifact must be written before proceeding to narrative construction.
 
-Save `projects/<topic_slug>_analysis/research_analysis.json`:
+Save `<project>/analysis/research_analysis.json`:
 
 ```json
 {
@@ -329,19 +410,35 @@ Save `projects/<topic_slug>_analysis/research_analysis.json`:
 
 Transform the structured analysis into a story-arc Markdown document. This is the core differentiator from quick research — the output reads as a coherent narrative, not a fact list.
 
+### 4.0 Narrative depth contract（叙事深度合约）
+
+**Hard rule**: 调研报告是给演讲者（Presenter）用的"讲稿素材库"，不是给机器读的摘要。每个章节必须有**足够的展开深度**，让演讲者翻到任何一页都有东西可讲。
+
+| 质量指标 | 最低标准 | 判定方法 |
+|---------|---------|---------|
+| 报告总字数 | ≥3000 字（中文） | 不含来源列表、HTML 标记、JSON |
+| 每个 §1-§6 章节 | ≥400 字 | 逐章检查 |
+| §3 核心论证 | 2-4 个 evidence block，每个 ≥200 字 | 每个 block 必须有：主张→数据/案例→来源→分析 |
+| §4 转折 | ≥300 字 | 必须有具体的反面证据或意外发现，不能只是一句概括 |
+| 引用/数据嵌入 | 每章 ≥2 个具体数据或直接引言 | 不能全是概括性描述 |
+| 来源标注 | 每个事实性陈述后跟 `[来源: URL]` | 方便演讲者验证和展开 |
+| DEEP_DIVE 标记 | ≥5 个 | 每个标记包含 ≥50 字的展开方向描述 |
+
+**不达标处理**：任何章节低于字数要求 → 回到 Step 2 补充搜索对应维度，然后重写该章节。不允许通过"注水"（重复、废话、空洞概括）来凑字数。
+
 ### 4.1 Story arc structure
 
 **Hard rule**: the document must follow this narrative skeleton — section names adapt to the topic, but the arc is fixed:
 
-| Section | Narrative role | Content |
-|---|---|---|
-| §1 Opening | Hook the audience | Surprising fact / counterintuitive claim / vivid case. Pull from `narrative_nodes.opening_hook` |
-| §2 Background | Set the stage | What the audience needs to know before the main argument. History, definitions, context |
-| §3 Core argument | The main thesis | 2-4 evidence blocks, each: claim → data/case → source. Pull from `narrative_nodes.evidence_blocks` |
-| §4 Turning point | Shift perspective | Counter-evidence, surprising finding, or "but the real story is..." moment |
-| §5 Implications | The "so what" | Why this matters to the audience. Synthesis of evidence |
-| §6 Conclusion | Forward look | Open questions, future trends, actionable takeaway |
-| §7 Sources | Provenance | All URLs used, grouped by tier |
+| Section | Narrative role | Content | **最低深度要求** |
+|---|---|---|---|
+| §1 Opening | Hook the audience | Surprising fact / counterintuitive claim / vivid case | ≥200 字，必须有一个具体的生动案例或数据 |
+| §2 Background | Set the stage | History, definitions, context | ≥400 字，必须有时间线/发展脉络，不能只是定义 |
+| §3 Core argument | The main thesis | 2-4 evidence blocks, each: claim → data/case → source | 每个 block ≥200 字，含具体数据+来源+分析 |
+| §4 Turning point | Shift perspective | Counter-evidence, surprising finding | ≥300 字，必须有具体的反面案例或意外发现 |
+| §5 Implications | The "so what" | Why this matters to the audience | ≥300 字，必须有对受众的具体影响分析 |
+| §6 Conclusion | Forward look | Open questions, future trends | ≥200 字，必须有可操作的建议或展望 |
+| §7 Sources | Provenance | All URLs used, grouped by tier | 不限，按可信度分组 |
 
 ### 4.2 Deep-dive markers
 
@@ -403,11 +500,14 @@ These markers tell the PPT generator to create a "deep-dive page" (讲解页) af
 
 **⛔ BLOCKING — Web asset gate (HARD rule)**: before generating any deep-dive SVG, the Executor MUST verify that `<project>/images/web_assets/` contains ≥1 image file for EACH deep-dive page listed in spec_lock.md's page_rhythm table. If files are missing:
 1. Attempt Playwright MCP browser capture from target URLs
-2. If Playwright fails, attempt direct curl/wget download
+2. If Playwright fails, attempt direct curl/wget下载
 3. If both fail, generate AI fallback images via image_gen.py (prompt describes the target content, NOT the deck's visual style)
-4. Only after all deep-dive pages have ≥1 image file in web_assets/ may SVG generation proceed
+4. If AI also fails or topic is niche historical/cultural (通用素材库不可能匹配), build **svg-native info card** — a white card with project accent bar + structured text from research_analysis.json. Mark `Acquire Via: svg-native` in design_spec.md §VIII.
+5. Only after all deep-dive pages have ≥1 visual element (image or svg-native card) may SVG generation proceed
 
-**Do NOT generate deep-dive SVGs without images.** A deep-dive page with only text and no image is a quality failure — the image IS the content for information-heavy pages.
+**Do NOT generate deep-dive SVGs without visual elements.** A deep-dive page needs visual content — either a matching web image, AI-generated infographic, or svg-native info card. Pure text walls are a quality failure.
+
+**Post-generation cleanup**: after export, delete any `web_assets/*.png` not referenced by SVGs (verify against `spec_lock.md` images section). Unused files waste ~135MB per project on average.
 | Narrative continuity | Title must explicitly reference the preceding content page's core message |
 
 **Narrative continuity rule (MANDATORY)**: every deep-dive page title must echo or continue the preceding content page's core claim. This creates a reading chain: content page makes a claim → deep-dive page proves it.
@@ -422,6 +522,14 @@ Examples:
 **Core principle**: content pages are the visual hooks — they use a large central AI image with minimal text (title + caption + takeaway). The layout structure follows the story_driven template's `03_content.svg` / `03a_content.svg` as a reference: full-width central image area, title at top, takeaway at bottom.
 
 **Color adaptation (MANDATORY)**: the content page background and text colors MUST match the project's `spec_lock.md` color scheme. Do NOT blindly copy the template's dark background (#1A1A2E) — if the project uses a light theme (e.g., warm white #F5F0E6 or ice white #F8F4F0), the content page must use that light background with appropriate text colors. The template provides the STRUCTURE (image placement, text hierarchy); the project's spec provides the COLORS.
+
+**Light-theme adaptation checklist (2026-06-24 新增)** — when converting dark templates to light theme, verify:
+1. All tertiary text (#8C8C8C level) is upgraded to secondary (#5C5C5C) or darker — light gray text on light background is invisible
+2. Background overlay opacities on AI images are ≥0.50 for readable text contrast
+3. Card borders and divider lines use #D5CFC5 minimum (not blending into #F5F0E8 background)
+4. Deep-dive body text is ≥16px and uses `text-anchor="middle"` for centered card content
+5. All font sizes are ≥13px (absolute minimum; annotation floor) — run `svg_quality_checker.py` to verify
+6. Check WCAG contrast: all body text fills must have ≥4.5:1 contrast against page background
 
 **Layout variety**: alternate between variant A (clean line decoration) and variant B (dot decoration + bordered image) for visual rhythm. The Executor may also create project-specific variations that maintain the "large central image + sparse text" principle while adapting to the theme. Both template-based and self-created layouts are acceptable, as long as they:
 - Feature a large central AI image (≥60% of content area)
@@ -476,9 +584,27 @@ Place one marker between §1→§2, §2→§3, §3→§4, §4→§5, §5→§6. 
 
 ### 4.6 Write the narrative document
 
-Save to `projects/<topic_slug>.md`. The document MUST end with a `## Sources` section listing all URLs grouped by tier.
+Save to `<project>/sources/research_report.md`. The document MUST end with a `## Sources` section listing all URLs grouped by tier.
 
 **Content density**: concrete facts (dates, names, numbers, quotes) with inline sources. The Strategist composes final slide copy from this material.
+
+### 4.7 Quality gate — research depth verification
+
+⛔ **BLOCKING**: before proceeding to Step 5, verify the research report meets the depth contract:
+
+```markdown
+## 调研深度自检报告
+- [ ] 总字数 ≥3000：实际 ___ 字
+- [ ] 每章 ≥400 字：§1 ___ / §2 ___ / §3 ___ / §4 ___ / §5 ___ / §6 ___
+- [ ] §3 evidence blocks 每个 ≥200 字：共 ___ 个，最短 ___ 字
+- [ ] §4 转折 ≥300 字：实际 ___ 字
+- [ ] 每章 ≥2 个具体数据/引言：§1___ / §2___ / §3___ / §4___ / §5___ / §6___
+- [ ] 来源标注覆盖：___ 个事实性陈述带 [来源: URL]
+- [ ] DEEP_DIVE 标记 ≥5 个：实际 ___ 个
+- [ ] 交叉验证事实 ≥8 个：实际 ___ 个
+```
+
+**任何一项不达标 → 回到 Step 2 补充搜索，然后重写不达标的章节。不允许跳过。**
 
 ---
 
@@ -513,7 +639,7 @@ For each planned PPT page that needs an AI image, draft a prompt reference:
 
 ### 5.3 Write visual strategy artifact
 
-Save `projects/<topic_slug>_analysis/visual_strategy.json`:
+Save `<project>/analysis/visual_strategy.json`:
 
 ```json
 {
@@ -552,27 +678,15 @@ Save `projects/<topic_slug>_analysis/visual_strategy.json`:
 
 ## Hand-off
 
-Output a checkpoint, then continue with the main pipeline. The artifacts feed into Step 2's `import-sources`:
+Output a checkpoint, then continue with the main pipeline. All artifacts are already inside `<project>`:
 
 ```markdown
 ## ✅ Deep Research Complete
-- [x] Document: `projects/<topic_slug>.md` (N sections, narrative arc)
-- [x] Analysis: `projects/<topic_slug>_analysis/research_analysis.json` (N sources, M verified claims)
-- [x] Visual strategy: `projects/<topic_slug>_analysis/visual_strategy.json`
-- [x] Images: `projects/<topic_slug>/` (N files)
-- [ ] **Next**: SKILL.md Step 2 →
-  `python3 ${SKILL_DIR}/scripts/project_manager.py init <project_name> --format <format>`
-  `python3 ${SKILL_DIR}/scripts/project_manager.py import-sources <project_path> projects/<topic_slug>.md projects/<topic_slug>/*.* --move`
+- [x] Document: `<project>/sources/research_report.md` (N sections, narrative arc)
+- [x] Analysis: `<project>/analysis/research_analysis.json` (N sources, M verified claims)
+- [x] Visual strategy: `<project>/analysis/visual_strategy.json`
+- [x] Images: `<project>/images/` (N files)
+- [ ] **Next**: Content Selection phase — interactive dimension picking (SKILL.md Step 2 checkpoint triggers this automatically when `research_report.md` exists)
 ```
 
-`<project_name>` is the user's chosen project identifier (typically `<format>_<topic_slug>`, e.g. `ppt169_joe_hisaishi`); `--move` removes the research artifacts from `projects/<topic_slug>` after they are imported.
-
-After `import-sources`, copy the analysis artifacts into the project:
-
-```bash
-mkdir -p <project_path>/analysis
-cp projects/<topic_slug>_analysis/*.json <project_path>/analysis/
-rm -rf projects/<topic_slug>_analysis
-```
-
-The Strategist in Step 4 reads `<project_path>/analysis/research_analysis.json` for cross-verified claims, structured data, and narrative nodes. It reads `<project_path>/analysis/visual_strategy.json` for domain-informed color and image prompt direction. Both files are optional supplements — the pipeline works without them.
+The Strategist reads `<project>/analysis/research_analysis.json` for cross-verified claims, structured data, and narrative nodes. It reads `<project>/analysis/visual_strategy.json` for domain-informed color and image prompt direction. Both files are optional supplements — the pipeline works without them.

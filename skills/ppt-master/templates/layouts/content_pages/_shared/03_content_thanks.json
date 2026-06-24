@@ -1,0 +1,58 @@
+{
+  "layout_type": "thanks",
+  "scenario": "shared",
+  "description": "Clean professional closing/thank-you page with large gradient title, subtitle, three contact info cards, and subtle decorative elements. Suitable for any presentation ending — academic defense, business pitch, or general talk.",
+  "color_scheme": {
+    "primary": "#4A6CF7",
+    "accent": "#8B5CF6",
+    "secondary": "#6B7280",
+    "bg": "#FFFFFF",
+    "card_bg": "#F8FAFC"
+  },
+  "image_slots": [],
+  "text_slots": [
+    {
+      "role": "main-title",
+      "description": "Large closing title (e.g., 'Thank You', 'Thanks', '谢谢')"
+    },
+    {
+      "role": "subtitle-1",
+      "description": "First subtitle line (closing message or quote)"
+    },
+    {
+      "role": "subtitle-2",
+      "description": "Second subtitle line"
+    },
+    {
+      "role": "contact-label-1",
+      "description": "First contact card label (e.g., 'Email')"
+    },
+    {
+      "role": "contact-value-1",
+      "description": "First contact card value (e.g., 'name@example.com')"
+    },
+    {
+      "role": "contact-label-2",
+      "description": "Second contact card label (e.g., 'Website')"
+    },
+    {
+      "role": "contact-value-2",
+      "description": "Second contact card value (e.g., 'github.com/...')"
+    },
+    {
+      "role": "contact-label-3",
+      "description": "Third contact card label (e.g., 'Date')"
+    },
+    {
+      "role": "contact-value-3",
+      "description": "Third contact card value (e.g., '2026')"
+    },
+    {
+      "role": "footer-note",
+      "description": "Small footer note (e.g., copyright or license info)"
+    }
+  ],
+  "content_mode": [
+    "text-primary"
+  ]
+}

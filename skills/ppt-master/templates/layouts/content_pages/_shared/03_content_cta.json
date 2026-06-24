@@ -1,0 +1,50 @@
+{
+  "layout_type": "cta",
+  "scenario": "shared",
+  "description": "Dark-background call-to-action page with gradient headline, description text, two action buttons (primary filled + secondary outline), and decorative glow effects. Energetic, forward-looking feel for prompting audience action.",
+  "color_scheme": {
+    "primary": "#FFFFFF",
+    "accent": "#60A5FA",
+    "secondary": "#A78BFA",
+    "bg": "#0F172A",
+    "card_bg": "#1E293B"
+  },
+  "image_slots": [],
+  "text_slots": [
+    {
+      "role": "kicker",
+      "description": "Small label above the headline (e.g., 'Call to action')"
+    },
+    {
+      "role": "headline-1",
+      "description": "First line of the bold headline"
+    },
+    {
+      "role": "headline-2",
+      "description": "Second line of the bold headline"
+    },
+    {
+      "role": "description-1",
+      "description": "First line of supporting description"
+    },
+    {
+      "role": "description-2",
+      "description": "Second line of supporting description"
+    },
+    {
+      "role": "btn-primary",
+      "description": "Primary action button text"
+    },
+    {
+      "role": "btn-secondary",
+      "description": "Secondary action button text (outline style)"
+    },
+    {
+      "role": "footer-hint",
+      "description": "Small footer hint text (e.g., keyboard shortcuts or disclaimer)"
+    }
+  ],
+  "content_mode": [
+    "image-primary"
+  ]
+}
