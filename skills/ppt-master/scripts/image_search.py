@@ -43,9 +43,11 @@ import concurrent.futures
 import importlib
 import json
 import os
+import re
 import sys
 import tempfile
 import threading
+import urllib.parse
 from datetime import datetime, timezone
 from pathlib import Path
 from typing import Optional
@@ -78,13 +80,17 @@ PROVIDER_MODULES: dict[str, str] = {
     "wikimedia": "image_sources.provider_wikimedia",
     "pexels": "image_sources.provider_pexels",
     "pixabay": "image_sources.provider_pixabay",
+    "browser": "image_sources.provider_browser",
 }
 
 # Providers that work without configuration. ``image_search.py`` defaults
 # to these so a fresh clone can search immediately.
 ZERO_CONFIG_PROVIDERS: tuple[str, ...] = ("openverse", "wikimedia")
 KEYED_PROVIDERS: tuple[str, ...] = ("pexels", "pixabay")
-ALL_PROVIDERS: tuple[str, ...] = ZERO_CONFIG_PROVIDERS + KEYED_PROVIDERS
+# Browser provider: Playwright-based fallback when API providers fail.
+# Requires: pip install playwright && python -m playwright install chromium
+BROWSER_PROVIDER: str = "browser"
+ALL_PROVIDERS: tuple[str, ...] = ZERO_CONFIG_PROVIDERS + KEYED_PROVIDERS + (BROWSER_PROVIDER,)
 
 ORIENTATION_CHOICES = ("any", "landscape", "portrait", "square")
 
@@ -651,9 +657,11 @@ def _search_one_item(
     default_strict: bool,
     default_min_width: int,
     default_min_height: int,
+    search_engines: Optional[list[str]] = None,
 ) -> tuple[Optional[dict], Optional[str]]:
     """Run the full search + download for one batch item (thread worker).
 
+    Includes browser fallback when API providers return no results.
     Returns ``(manifest_item, error)``. Only the network/disk work happens
     here; all manifest writes are serialized by the caller.
     """
@@ -681,8 +689,32 @@ def _search_one_item(
         save_candidates=save_candidates,
         max_candidates=max_candidates,
     )
+
+    # --- Browser fallback for batch items ---
+    if candidate is None and pinned != BROWSER_PROVIDER:
+        try:
+            from image_sources.provider_browser import search as browser_search
+            browser_candidates = browser_search(request, search_engines=search_engines)
+            if browser_candidates:
+                for bc in browser_candidates:
+                    try:
+                        download_image(
+                            bc.download_url,
+                            str(output_path),
+                            headers={"User-Agent": USER_AGENT},
+                        )
+                        if _validate_downloaded_quality(output_path):
+                            candidate = bc
+                            provider_name = "browser"
+                            stage = "browser-fallback"
+                            break
+                    except (OSError, ValueError, RuntimeError):
+                        continue
+        except (OSError, ValueError, RuntimeError):
+            pass  # Browser fallback is best-effort in batch mode
+
     if candidate is None:
-        return None, "no acceptable candidate across all providers/stages"
+        return None, "no acceptable candidate across all providers/stages (including browser fallback)"
 
     actual_dimensions = _measure_actual_image(output_path)
     item_args = argparse.Namespace(
@@ -715,6 +747,7 @@ def run_search_manifest(
     default_strict: bool,
     default_min_width: int,
     default_min_height: int,
+    search_engines: Optional[list[str]] = None,
 ) -> tuple[int, int, int]:
     """Process all Pending/Failed rows concurrently with a bounded pool.
 
@@ -759,6 +792,7 @@ def run_search_manifest(
                 default_strict=default_strict,
                 default_min_width=default_min_width,
                 default_min_height=default_min_height,
+                search_engines=search_engines,
             )
             return idx, manifest_item, error
         except Exception as exc:  # noqa: BLE001 — provider code raises freely
@@ -916,6 +950,30 @@ def build_parser() -> argparse.ArgumentParser:
             "Example: --promote candidate_03.jpg --filename 05_wulong.jpg -o images/"
         ),
     )
+    parser.add_argument(
+        "--url-capture",
+        nargs="+",
+        metavar="URL",
+        help=(
+            "Capture screenshots of specific URLs (for deep-dive product/page slides). "
+            "Example: --url-capture https://gamma.app https://beautiful.ai "
+            "-o project/images/web_assets"
+        ),
+    )
+    parser.add_argument(
+        "--wait-ms",
+        type=int,
+        default=3000,
+        help="Wait time in milliseconds for page rendering in URL capture mode (default: 3000).",
+    )
+    parser.add_argument(
+        "--search-engines",
+        default=None,
+        help=(
+            "Comma-separated list of search engines for browser fallback. "
+            "Default: bing,yandex. Options: google,bing,yandex"
+        ),
+    )
     return parser
 
 
@@ -939,6 +997,11 @@ def main(argv: Optional[list[str]] = None) -> int:
 
     output_dir = Path(args.output)
 
+    # Parse search engines for browser fallback (used by all modes)
+    search_engines = None
+    if args.search_engines:
+        search_engines = [e.strip() for e in args.search_engines.split(",")]
+
     # --- Promote mode ---
     if args.promote:
         if not args.filename:
@@ -949,6 +1012,55 @@ def main(argv: Optional[list[str]] = None) -> int:
             args.promote,
             manifest_path=Path(args.manifest) if args.manifest else None,
         )
+
+    # --- URL capture mode ---
+    if args.url_capture:
+        output_dir.mkdir(parents=True, exist_ok=True)
+        try:
+            from image_sources.provider_browser import capture_url_screenshots
+        except ImportError as exc:
+            print(f"Error: URL capture requires Playwright: {exc}", file=sys.stderr)
+            return 1
+
+        targets = []
+        for i, url in enumerate(args.url_capture):
+            # Generate filename from URL
+            parsed = urllib.parse.urlparse(url)
+            slug = (parsed.netloc + parsed.path).replace("/", "_").replace(".", "_")
+            slug = re.sub(r"[^a-zA-Z0-9_-]", "", slug)[:40]
+            targets.append({
+                "url": url,
+                "filename": args.filename or f"web_{slug or i+1:02d}.jpg",
+                "title": f"Screenshot: {url}",
+            })
+
+        print(f"[URL Capture] Capturing {len(targets)} URL(s) ...", file=sys.stderr)
+        results = capture_url_screenshots(targets, output_dir, wait_ms=args.wait_ms)
+
+        if not results:
+            print("Error: No screenshots captured.", file=sys.stderr)
+            return 1
+
+        # Write manifest entries
+        manifest_path = Path(args.manifest) if args.manifest else default_manifest_path(args.output)
+        for target, candidate in zip(targets, results):
+            item_args = argparse.Namespace(
+                filename=target["filename"],
+                slide=args.slide,
+                purpose="url-capture",
+                query=target["url"],
+                orientation="landscape",
+            )
+            item = _candidate_to_manifest_item(
+                candidate, item_args,
+                provider_name="browser", stage="url-capture",
+                actual_dimensions=(candidate.width, candidate.height),
+            )
+            write_sources_manifest(manifest_path, item)
+            print(f"  [OK] {target['filename']}", file=sys.stderr)
+
+        print(f"\n[URL Capture] Done: {len(results)} screenshot(s). Manifest: {manifest_path}", file=sys.stderr)
+        return 0
 
     # --- Batch mode ---
     if args.batch:
@@ -981,6 +1093,7 @@ def main(argv: Optional[list[str]] = None) -> int:
                 default_strict=args.strict_no_attribution,
                 default_min_width=args.min_width,
                 default_min_height=args.min_height,
+                search_engines=search_engines,
             )
         except KeyboardInterrupt:
             print("\n\nInterrupted by user. Partial progress preserved in manifest.")
@@ -1020,6 +1133,37 @@ def main(argv: Optional[list[str]] = None) -> int:
         save_candidates=not args.no_candidates,
         max_candidates=args.max_candidates,
     )
+
+    # --- Browser fallback: when API providers fail, try Playwright search ---
+    if candidate is None and args.provider != BROWSER_PROVIDER:
+        print("\n  API providers returned no results. Trying browser search (Playwright)...\n", file=sys.stderr)
+        try:
+            from image_sources.provider_browser import search as browser_search
+            browser_candidates = browser_search(
+                request,
+                search_engines=search_engines,
+            )
+            if browser_candidates:
+                # Try to download the best browser candidate
+                for bc in browser_candidates:
+                    try:
+                        download_image(
+                            bc.download_url,
+                            str(output_path),
+                            headers={"User-Agent": USER_AGENT},
+                        )
+                        if _validate_downloaded_quality(output_path):
+                            candidate = bc
+                            provider_name = "browser"
+                            stage = "browser-fallback"
+                            print(f"  [browser] picked: {bc.title}", file=sys.stderr)
+                            break
+                    except (OSError, ValueError, RuntimeError):
+                        continue
+        except RuntimeError as exc:
+            print(f"  [browser] skipped: {exc}", file=sys.stderr)
+        except Exception as exc:
+            print(f"  [browser] error: {exc}", file=sys.stderr)
 
     if candidate is None:
         print(
