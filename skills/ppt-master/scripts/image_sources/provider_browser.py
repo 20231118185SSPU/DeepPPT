@@ -23,6 +23,7 @@ import re
 import sys
 import tempfile
 import urllib.parse
+from concurrent.futures import ThreadPoolExecutor, as_completed
 from pathlib import Path
 from typing import Optional
 
@@ -531,28 +532,36 @@ def search(
     ranked: list[tuple[float, str, str, bytes]] = []
     has_clip = _load_clip()
 
-    for url, engine, query in unique_urls[:max_results]:
+    # Phase 1: Concurrent download + compress
+    def _download_and_compress(item: tuple[str, str, str]) -> tuple[bytes, str, str, str] | None:
+        url, engine, query = item
         result = _download_and_validate(url)
         if result is None:
-            continue
+            return None
         data, content_type = result
         try:
             compressed = _compress_to_jpeg(data)
-        except Exception:
-            continue
+        except (OSError, ValueError):
+            return None
+        return compressed, url, engine, query
 
+    downloaded: list[tuple[bytes, str, str, str]] = []
+    with ThreadPoolExecutor(max_workers=6) as pool:
+        futures = {pool.submit(_download_and_compress, item): item
+                   for item in unique_urls[:max_results]}
+        for future in as_completed(futures):
+            result = future.result()
+            if result is not None:
+                downloaded.append(result)
+
+    # Phase 2: Serial scoring (CLIP model is not thread-safe)
+    for compressed, url, engine, query in downloaded:
         if has_clip:
             clip_score = score_image_relevance(compressed, request.query)
             if clip_score < CLIP_MIN_SCORE:
                 continue
             relevance = clip_score
         else:
-            try:
-                from PIL import Image  # type: ignore
-                with Image.open(io.BytesIO(compressed)) as img:
-                    w, h = img.size
-            except Exception:
-                w, h = 0, 0
             relevance = 0.8  # Default for browser results
 
         ranked.append((relevance, url, engine, compressed))
