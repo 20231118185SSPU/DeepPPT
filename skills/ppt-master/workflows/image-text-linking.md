@@ -1,0 +1,179 @@
+---
+description: 确保 AI 生图和网络素材搜索指令包含对应页面的文字内容上下文，保证图文语义一致。读取详细大纲为每张图片注入 core_argument 和 content_bullets，替换通用关键词。
+---
+
+# 图文联动工作流（Image-Text Linking）
+
+> 确保 AI 生图（`image_gen.py --manifest`）和网络素材搜索（`image_search.py --batch`）指令包含对应页面的文字内容上下文，保证图文语义一致。读取 `detailed_outline.json` 为每张图片注入 `core_argument` 和 `content_bullets`，替换通用关键词。
+
+This workflow is **transversal**: it does not run as a standalone step but modifies the image acquisition preparation inside the Strategist and Image_Generator phases. It reads `detailed_outline.json` (from `detailed-outline.md`) and enforces content-aware prompt assembly for all image acquisition methods.
+
+## When to Run
+
+| Condition | Action |
+|---|---|
+| `detailed_outline.json` exists AND `design_spec.md §VIII` has ≥1 row with `Acquire Via: ai` or `Acquire Via: web` | Apply this workflow during image prompt/query generation |
+| No `detailed_outline.json` (user-provided source, no content selection) | Skip — fall back to default prompt assembly in `image-generator.md` / `image-searcher.md` |
+| All images are `Acquire Via: icon` or `Acquire Via: executor` | Skip — no external image acquisition needed |
+
+---
+
+## Step 1: Build Context Map
+
+Read `<project>/detailed_outline.json` and build a lookup table mapping each page to its content context.
+
+**1.1 Filter relevant pages**
+
+For each page in `detailed_outline.json.pages`, include it in the context map if:
+
+- `visual_need.image_type` is NOT `"icon"` (icons are selected from the library, no prompt needed)
+- `visual_need.image_type` is NOT `"chart"` (charts are rendered natively by the Executor in SVG)
+
+**1.2 Build context entry**
+
+For each included page, create a context entry with:
+
+| Field | Source |
+|---|---|
+| `page_number` | `pages[i].page_number` |
+| `core_argument` | `pages[i].core_argument` — the one thing the page must communicate |
+| `content_bullets` | `pages[i].content_bullets` — all 3–5 items |
+| `image_type` | `pages[i].visual_need.image_type` |
+| `image_description` | `pages[i].visual_need.image_description` |
+| `text_image_link` | `pages[i].visual_need.text_image_link` — how image supports the argument |
+
+**1.3 Output format**
+
+The context map is an in-memory structure (not written to disk). It is consumed directly by the prompt assembly logic in Steps 2 and 3.
+
+---
+
+## Step 2: Enhance AI Image Prompts
+
+When generating `image_prompts.json` for `image_gen.py --manifest`, every prompt MUST incorporate the page's content context.
+
+**2.1 Prompt template (4-part mandatory structure)**
+
+Each AI image prompt MUST follow this template:
+
+```
+{image_description}。风格：{deck_rendering}。场景：{core_argument 具体化}。文字呼应：{text_image_link}
+```
+
+| Part | Source | Purpose |
+|---|---|---|
+| `{image_description}` | `visual_need.image_description` | What the image shows |
+| `{deck_rendering}` | `spec_lock.md` rendering lock | Visual style consistency (e.g., "扁平矢量、蓝绿渐变配色") |
+| `{core_argument 具体化}` | `core_argument` made concrete | Grounds the image in the page's specific message |
+| `{text_image_link}` | `visual_need.text_image_link` | Explains how the image supports the page text |
+
+**2.2 Minimum length**
+
+Every assembled prompt MUST be ≥80 characters after template assembly. Shorter prompts lack sufficient context for meaningful image generation.
+
+**2.3 Forbidden patterns**
+
+| Pattern | Example | Why forbidden |
+|---|---|---|
+| Generic topic words only | "科技感背景图" | No page context — generates generic stock imagery |
+| Style-only prompts | "水彩风格插画" | Describes rendering, not content |
+| Page number without argument | "第三页配图" | No semantic link to the page's message |
+| Duplicate prompts across pages | Same prompt for pages 5 and 8 | Violates one-image-per-claim principle |
+
+**2.4 Good vs bad examples**
+
+```
+❌ "科技感背景图"
+✅ "柱状图展示2020-2025年新能源汽车市场规模增长趋势，从120万辆到680万辆。
+    风格：扁平矢量、蓝绿渐变配色。场景：宏观市场鸟瞰视角。
+    文字呼应：支撑'市场规模翻5倍'的核心论点"
+```
+
+```
+❌ "医疗健康插画"
+✅ "MRI脑部扫描对比图，左侧为训练前灰质密度，右侧为8周正念训练后灰质密度增加区域（高亮标注海马体）。
+    风格：医学信息图、冷色调。场景：临床研究证据展示。
+    文字呼应：支撑'8周改变大脑结构'的实验结论"
+```
+
+---
+
+## Step 3: Enhance Web Search Keywords
+
+When generating `image_queries.json` for `image_search.py --batch`, every query MUST extract keywords from the page's content context, not from generic topic words.
+
+**3.1 Keyword extraction rules**
+
+| Rule | Description |
+|---|---|
+| Source from `content_bullets` | Keywords MUST be derived from the page's `content_bullets`, not from the topic name alone |
+| Include `core_argument` | The page's `core_argument` should appear as part of the search context |
+| 3–5 keyword combinations | Each query should have multiple keyword variants to improve hit rate |
+| Include specificity markers | Add years, numbers, proper nouns from `content_bullets` to narrow results |
+
+**3.2 Good vs bad examples**
+
+```
+❌ keywords: ["新能源汽车", "市场"]
+✅ keywords: ["新能源汽车销量增长", "2020-2025市场规模", "柱状图数据可视化"]
+```
+
+```
+❌ keywords: ["脑科学", "健康"]
+✅ keywords: ["正念冥想MRI脑部变化", "灰质密度对比图", "海马体体积增长数据"]
+```
+
+**3.3 Query structure**
+
+Each entry in the **advisory** `image_queries.json` (produced by this workflow as guidance for the Strategist) should follow:
+
+```json
+{
+  "page_number": 5,
+  "keywords": ["关键词组合1", "关键词组合2", "关键词组合3"],
+  "context": "core_argument 原文",
+  "preferred_sources": ["wikimedia", "pexels"]
+}
+```
+
+> **Schema note**: This advisory format uses `keywords` (array) and `page_number` for Strategist context. The **authoritative** `image_queries.json` consumed by `image_search.py --batch` uses a different schema defined in [`image-searcher.md`](../references/image-searcher.md): `{items: [{filename, query, slide, purpose, orientation, status}]}`. The Strategist is responsible for transforming this advisory format into the authoritative schema (merging `keywords` into a single `query` string, adding `filename`/`status`, wrapping in `items` array) before writing the final `image_queries.json`.
+
+The `context` field carries the `core_argument` verbatim — search providers may use it for relevance ranking.
+
+---
+
+## Constraints
+
+| Constraint | Threshold | Enforcement |
+|---|---|---|
+| No image prompt without page text context | 100% | Every AI prompt must contain `core_argument` or `content_bullets` content |
+| No stock search keywords from generic topic words alone | 100% | Keywords must trace to `content_bullets` |
+| Minimum AI prompt length | ≥80 characters | After template assembly; reject shorter prompts |
+| `text_image_link` present in every AI prompt | 100% | The 4-part template includes it as the final segment |
+| No duplicate prompts across pages | 0 duplicates | Each page gets a unique prompt reflecting its specific `core_argument` |
+
+---
+
+## Integration Points
+
+| Direction | Target | Data |
+|---|---|---|
+| **Reads from** | `<project>/detailed_outline.json` | Per-page `core_argument`, `content_bullets`, `visual_need` |
+| **Reads from** | `<project>/spec_lock.md` | Deck-wide rendering style for `{deck_rendering}` segment |
+| **Feeds into** | `references/image-generator.md` §4 (Prompt Assembly) | Enhanced prompt template and constraints |
+| **Feeds into** | `references/image-searcher.md` §5 (Batch Queries) | Content-aware keyword extraction rules |
+| **Consumed by** | `image_gen.py --manifest` | Reads `<project>/images/image_prompts.json` with enhanced prompts |
+| **Consumed by** | `image_search.py --batch` | Reads `<project>/images/image_queries.json` with enhanced keywords |
+
+---
+
+## Output
+
+This workflow does not produce a standalone artifact. It modifies the **content** of two files that the Image_Generator phase produces:
+
+| File | Enhancement |
+|---|---|
+| `<project>/images/image_prompts.json` | Every `prompt` field follows the 4-part template with page context |
+| `<project>/images/image_queries.json` | Every `keywords` array is derived from `content_bullets`, not generic terms |
+
+These files are written by the Image_Generator role as usual — this workflow only constrains *how* their content is assembled.
