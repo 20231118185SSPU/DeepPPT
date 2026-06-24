@@ -633,6 +633,7 @@ def create_pptx_with_native_svg(
         notes_slides_created: set[int] = set()
         narration_slides_created: set[int] = set()
         audio_exts_used: set[str] = set()
+        failed_slides: list[str] = []
         mixed_animation_offset = 0
         conversion_trace: list[dict[str, Any]] | None = [] if conversion_trace_path else None
 
@@ -938,6 +939,11 @@ def create_pptx_with_native_svg(
                     print(f"  [{i}/{len(svg_files)}] {svg_path.name} - Error: {e}")
                 if use_native_shapes:
                     raise
+                failed_slides.append(svg_path.name)
+
+        if failed_slides:
+            print(f"  [warn] {len(failed_slides)} slide(s) had errors and were skipped: "
+                  f"{', '.join(failed_slides)}")
 
         # Update [Content_Types].xml
         content_types_path = extract_dir / '[Content_Types].xml'
