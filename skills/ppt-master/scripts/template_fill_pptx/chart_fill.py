@@ -266,7 +266,11 @@ def _rewrite_chart_workbook(xlsx_bytes: bytes, chart_edit: dict[str, Any]) -> by
 
     rows = [["Category"] + [str(item.get("name", f"系列{idx + 1}")) for idx, item in enumerate(series_payload)]]
     for row_index, category in enumerate(categories):
-        rows.append([category] + [item.get("values", [])[row_index] for item in series_payload])
+        row = [category]
+        for item in series_payload:
+            values = item.get("values", [])
+            row.append(values[row_index] if row_index < len(values) else "")
+        rows.append(row)
     for row_index, values in enumerate(rows, start=1):
         row = ET.SubElement(sheet_data, _qn(sheet_ns, "row"), {"r": str(row_index)})
         for col_index, value in enumerate(values, start=1):

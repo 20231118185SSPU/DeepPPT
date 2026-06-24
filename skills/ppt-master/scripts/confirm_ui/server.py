@@ -161,8 +161,12 @@ def _shutdown_existing(lock_file: Path) -> int:
         time.sleep(0.1)
     if _process_alive(pid):
         try:
-            os.kill(pid, signal.SIGTERM)
-        except OSError:
+            if sys.platform == 'win32':
+                subprocess.run(['taskkill', '/PID', str(pid), '/F'],
+                               capture_output=True, timeout=5)
+            else:
+                os.kill(pid, signal.SIGTERM)
+        except (OSError, subprocess.SubprocessError):
             pass
     _release_lock(lock_file)
     logger.info('confirm server stopped (pid=%s)', pid)

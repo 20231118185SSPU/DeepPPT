@@ -122,10 +122,13 @@ def claim_lock(lock_file: Path, port: int) -> Optional[dict]:
     existing = read_lock(lock_file)
     if existing and process_alive(int(existing.get('pid', 0))):
         return existing
-    lock_file.write_text(
-        json.dumps({'pid': os.getpid(), 'port': port}),
-        encoding='utf-8',
-    )
+    try:
+        lock_file.write_text(
+            json.dumps({'pid': os.getpid(), 'port': port}),
+            encoding='utf-8',
+        )
+    except OSError:
+        return {'pid': 0, 'port': port, 'error': 'Cannot write lock file'}
     return None
 
 

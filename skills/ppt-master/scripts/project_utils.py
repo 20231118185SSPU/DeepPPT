@@ -422,19 +422,30 @@ def get_project_stats(project_path: str) -> Dict:
     if not project_path.exists():
         return stats
 
-    for file in project_path.rglob('*'):
-        if file.is_file():
-            stats['total_files'] += 1
-            file_size = file.stat().st_size
-            stats['total_size'] += file_size
+    # Walk with depth limit to avoid runaway traversal on large/deep trees
+    max_depth = 5
+    stack = [(project_path, 0)]
+    while stack:
+        current, depth = stack.pop()
+        try:
+            entries = list(current.iterdir())
+        except OSError:
+            continue
+        for entry in entries:
+            if entry.is_file():
+                stats['total_files'] += 1
+                file_size = entry.stat().st_size
+                stats['total_size'] += file_size
 
-            if file.suffix == '.svg':
-                stats['svg_files'] += 1
-                stats['svg_size'] += file_size
-            elif file.suffix == '.md':
-                stats['md_files'] += 1
-            elif file.suffix == '.html':
-                stats['html_files'] += 1
+                if entry.suffix == '.svg':
+                    stats['svg_files'] += 1
+                    stats['svg_size'] += file_size
+                elif entry.suffix == '.md':
+                    stats['md_files'] += 1
+                elif entry.suffix == '.html':
+                    stats['html_files'] += 1
+            elif entry.is_dir() and depth < max_depth:
+                stack.append((entry, depth + 1))
 
     return stats
 

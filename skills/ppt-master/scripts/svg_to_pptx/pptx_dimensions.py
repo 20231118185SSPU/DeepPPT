@@ -120,7 +120,8 @@ def get_viewbox_dimensions(svg_path: Path) -> tuple[int, int] | None:
             return None
 
         return int(round(width)), int(round(height))
-    except Exception:
+    except (ValueError, TypeError):
+        # non-numeric viewBox values or unexpected format
         return None
 
 
@@ -143,6 +144,7 @@ def detect_format_from_svg(svg_path: Path) -> str | None:
             for fmt_key, fmt_info in CANVAS_FORMATS.items():
                 if fmt_info['viewbox'] == viewbox:
                     return fmt_key
-    except Exception:
+    except (OSError, ValueError):
+        # file not found / unreadable or regex/content parsing failure
         pass
     return None

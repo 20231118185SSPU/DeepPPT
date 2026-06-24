@@ -20,6 +20,7 @@ from __future__ import annotations
 
 import argparse
 import json
+import sys
 from pathlib import Path
 
 from template_import.manifest import build_manifest
@@ -77,10 +78,10 @@ def main() -> int:
     args = parse_args()
     pptx_path = Path(args.pptx_file).expanduser().resolve()
     if not pptx_path.exists():
-        print(f"Error: file does not exist: {pptx_path}")
+        print(f"Error: file does not exist: {pptx_path}", file=sys.stderr)
         return 1
     if pptx_path.suffix.lower() != ".pptx":
-        print(f"Error: expected a .pptx file, got: {pptx_path.name}")
+        print(f"Error: expected a .pptx file, got: {pptx_path.name}", file=sys.stderr)
         return 1
 
     output_dir = (
@@ -91,7 +92,7 @@ def main() -> int:
     output_dir.mkdir(parents=True, exist_ok=True)
 
     if args.skip_manifest and args.manifest_only:
-        print("Error: --skip-manifest and --manifest-only cannot be used together")
+        print("Error: --skip-manifest and --manifest-only cannot be used together", file=sys.stderr)
         return 1
 
     manifest = None
@@ -100,7 +101,7 @@ def main() -> int:
         try:
             manifest = build_manifest(pptx_path, output_dir)
         except (RuntimeError, OSError, ValueError) as exc:
-            print(f"Error: failed to extract PPTX metadata: {exc}")
+            print(f"Error: failed to extract PPTX metadata: {exc}", file=sys.stderr)
             return 1
 
         manifest_path.write_text(

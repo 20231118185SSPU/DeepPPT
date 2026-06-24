@@ -18,7 +18,7 @@ import os
 import re
 from pathlib import Path
 from typing import List, Dict, Union, Any, Optional
-from PIL import Image, ExifTags
+from PIL import Image
 
 
 ORIENTATION_TAG_ID = 274  # 0x0112
@@ -288,18 +288,6 @@ class ImageRotator:
         except Exception as e:
             print(f"  [WARN] Failed to read EXIF for {file_path.name}: {e}")
             return False
-
-    def _get_exif_orientation(self, img: Image.Image) -> Optional[int]:
-        """Get the Orientation value"""
-        try:
-            exif = img._getexif()
-            if exif:
-                for tag, value in exif.items():
-                    if ExifTags.TAGS.get(tag) == 'Orientation':
-                        return value
-        except Exception:
-            pass
-        return None
 
     def _apply_exif_orientation(self, img: Image.Image, orientation: int) -> Image.Image:
         """Rotate image according to the Orientation value"""

@@ -42,14 +42,19 @@ EMU_PER_INCH = 914400
 PX_PER_INCH = 96
 
 
-for prefix, uri in NS.items():
-    ET.register_namespace(prefix, uri)
-ET.register_namespace("", REL_NS)
-ET.register_namespace("mc", MC_NS)
-ET.register_namespace("c14", C14_NS)
-ET.register_namespace("c16", C16_NS)
-ET.register_namespace("c16r2", C16R2_NS)
-ET.register_namespace("p14", P14_NS)
+def _register_namespaces() -> None:
+    """Register OOXML namespaces with ElementTree (idempotent)."""
+    for prefix, uri in NS.items():
+        ET.register_namespace(prefix, uri)
+    ET.register_namespace("", REL_NS)
+    ET.register_namespace("mc", MC_NS)
+    ET.register_namespace("c14", C14_NS)
+    ET.register_namespace("c16", C16_NS)
+    ET.register_namespace("c16r2", C16R2_NS)
+    ET.register_namespace("p14", P14_NS)
+
+
+_register_namespaces()
 
 
 @dataclass(frozen=True)

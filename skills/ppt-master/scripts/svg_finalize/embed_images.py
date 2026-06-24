@@ -14,6 +14,7 @@ Examples:
 
 import os
 import base64
+import html
 import re
 import sys
 import argparse
@@ -72,7 +73,8 @@ def _optimize_image_bytes(img_bytes: bytes, mime_type: str,
 
     try:
         img = PILImage.open(io.BytesIO(img_bytes))
-    except Exception:
+    except (OSError, ValueError):
+        # PIL raises OSError for unreadable files and ValueError for corrupt data
         return img_bytes
 
     changed = False
@@ -139,9 +141,8 @@ def embed_images_in_svg(svg_path: str, dry_run: bool = False,
     def replace_with_base64(match):
         nonlocal images_embedded
         img_path = match.group(1)
-        
+
         # Decode XML/HTML entities (e.g., &amp; -> &)
-        import html
         img_path_decoded = html.unescape(img_path)
         
         # Handle relative paths

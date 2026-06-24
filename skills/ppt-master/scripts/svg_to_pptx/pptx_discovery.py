@@ -95,7 +95,8 @@ def find_notes_files(
             # Filename-based matching (overrides index-based)
             if stem in svg_stems_mapping:
                 notes[stem] = content
-        except Exception:
+        except (OSError, UnicodeDecodeError):
+            # Skip unreadable or non-UTF-8 notes files
             pass
 
     return notes

@@ -755,15 +755,22 @@ def _convert_docx(input_file: Path, out_file: Path) -> str:
     markdown = _html_img_to_md(markdown)
     out_file.write_text(markdown, encoding="utf-8")
 
-    if manifest:
-        (media_dir / "image_manifest.json").write_text(
-            json.dumps(manifest, ensure_ascii=False, indent=2) + "\n",
-            encoding="utf-8",
-        )
+    if manifest and media_dir is not None:
+        try:
+            (media_dir / "image_manifest.json").write_text(
+                json.dumps(manifest, ensure_ascii=False, indent=2) + "\n",
+                encoding="utf-8",
+            )
+        except OSError:
+            pass
 
-    if not any(media_dir.iterdir()):
-        media_dir.rmdir()
-        media_dir = None  # type: ignore[assignment]
+    if media_dir is not None:
+        try:
+            if not any(media_dir.iterdir()):
+                media_dir.rmdir()
+                media_dir = None  # type: ignore[assignment]
+        except OSError:
+            pass
 
     for msg in result.messages:
         if msg.type == "warning":
@@ -789,7 +796,8 @@ def _save_data_uri(data_uri: str, media_dir: Path, index: int) -> str | None:
     filename = f"image_{index:03d}{ext}"
     try:
         (media_dir / filename).write_bytes(base64.b64decode(match.group("data")))
-    except Exception:
+    except (OSError, ValueError):
+        # bad base64 data or filesystem write failure
         return None
     return filename
 
@@ -820,7 +828,8 @@ def _download_remote_image(url: str, media_dir: Path, index: int) -> str | None:
     try:
         resp = requests.get(url, timeout=10, stream=True)
         resp.raise_for_status()
-    except Exception:
+    except (OSError, ValueError):
+        # network/timeout failure or malformed URL
         return None
     content_type = resp.headers.get("Content-Type", "").split(";")[0].strip()
     ext = mimetypes.guess_extension(content_type) if content_type else None
@@ -888,9 +897,13 @@ def _convert_html(input_file: Path, out_file: Path) -> str:
     out_file.write_text(markdown, encoding="utf-8")
     _write_generic_image_manifest(media_dir, rel_media_dir, markdown, "html_image")
 
-    if not any(media_dir.iterdir()):
-        media_dir.rmdir()
-        media_dir = None  # type: ignore[assignment]
+    if media_dir is not None:
+        try:
+            if not any(media_dir.iterdir()):
+                media_dir.rmdir()
+                media_dir = None  # type: ignore[assignment]
+        except OSError:
+            pass
 
     _report_result(out_file, media_dir)
     return markdown
@@ -1084,9 +1097,13 @@ def _convert_epub(input_file: Path, out_file: Path) -> str:
     out_file.write_text(markdown, encoding="utf-8")
     _write_generic_image_manifest(media_dir, rel_media_dir, markdown, "epub_image")
 
-    if not any(media_dir.iterdir()):
-        media_dir.rmdir()
-        media_dir = None  # type: ignore[assignment]
+    if media_dir is not None:
+        try:
+            if not any(media_dir.iterdir()):
+                media_dir.rmdir()
+                media_dir = None  # type: ignore[assignment]
+        except OSError:
+            pass
 
     _report_result(out_file, media_dir)
     return markdown
@@ -1129,7 +1146,8 @@ def _convert_ipynb(input_file: Path, out_file: Path) -> str:
                 out_path = f"{rel_media_dir}/{filename}"
                 try:
                     extra_outputs[out_path] = base64.b64decode(b64)
-                except Exception:
+                except ValueError:
+                    # invalid base64 payload in notebook attachment
                     continue
                 # Rewrite source references: attachment:<name> → <rel_path>
                 src = cell.source if isinstance(cell.source, str) else "".join(cell.source)

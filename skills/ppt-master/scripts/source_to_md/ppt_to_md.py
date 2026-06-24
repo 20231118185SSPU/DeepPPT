@@ -130,7 +130,7 @@ def _safe_position(shape: object, attr: str) -> int:
     """
     try:
         return int(getattr(shape, attr, 0) or 0)
-    except Exception:
+    except (AttributeError, TypeError, ValueError):
         return 0
 
 
@@ -438,7 +438,7 @@ def _image_part_for_shape(shape: object) -> object | None:
 
     try:
         blips = element.xpath(".//a:blip")
-    except Exception:
+    except (AttributeError, TypeError):
         return None
 
     for blip in blips:
@@ -447,7 +447,7 @@ def _image_part_for_shape(shape: object) -> object | None:
             continue
         try:
             return part.related_part(rel_id)
-        except Exception:
+        except KeyError:
             continue
     return None
 
@@ -666,7 +666,8 @@ def extract_notes(slide: object) -> str:
     """Extract speaker notes text from a slide, if available."""
     try:
         notes_slide = slide.notes_slide
-    except Exception:
+    except Exception as exc:
+        print(f"[WARN] extract_notes: {exc}")
         return ""
 
     blocks = []

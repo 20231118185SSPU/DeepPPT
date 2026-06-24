@@ -27,6 +27,7 @@ import argparse
 import asyncio
 import os
 import sys
+from concurrent.futures import ThreadPoolExecutor, as_completed
 from dataclasses import dataclass
 from pathlib import Path
 
@@ -83,6 +84,8 @@ def main() -> int:
     )
     parser.add_argument("project_path", type=Path, nargs="?")
     parser.add_argument("-o", "--output", type=Path, default=None)
+    parser.add_argument("-w", "--workers", type=int, default=4,
+                        help="Number of concurrent TTS workers (default: 4)")
     parser.add_argument(
         "--provider",
         choices=["edge", "elevenlabs", "minimax", "qwen", "cosyvoice"],
@@ -298,78 +301,86 @@ def main() -> int:
         return 2
 
     generated = 0
-    for note_path in note_files:
+    errors: list[str] = []
+
+    def _generate_one(note_path: Path) -> tuple[Path, bool, str]:
+        """Generate TTS for one slide. Returns (output_path, success, error_msg)."""
         text = spoken_text(note_path.read_text(encoding="utf-8"))
         if not text:
-            print(f"[skip] {note_path.name}: empty spoken text")
-            continue
+            return note_path, True, "empty spoken text"
         output_path = output_dir / f"{note_path.stem}{backend.extension}"
         try:
             if backend.provider == "elevenlabs":
                 backend_elevenlabs.generate(
-                    text,
-                    output_path,
-                    api_key=backend.api_key,
-                    voice_id=backend.voice_id,
-                    model=args.elevenlabs_model,
-                    output_format=args.elevenlabs_output_format,
-                    stability=args.elevenlabs_stability,
-                    similarity_boost=args.elevenlabs_similarity_boost,
-                    style=args.elevenlabs_style,
-                    speaker_boost=args.elevenlabs_speaker_boost,
+                    text, output_path,
+                    api_key=backend.api_key, voice_id=backend.voice_id,
+                    model=args.elevenlabs_model, output_format=args.elevenlabs_output_format,
+                    stability=args.elevenlabs_stability, similarity_boost=args.elevenlabs_similarity_boost,
+                    style=args.elevenlabs_style, speaker_boost=args.elevenlabs_speaker_boost,
                 )
             elif backend.provider == "minimax":
                 backend_minimax.generate(
-                    text,
-                    output_path,
-                    api_key=backend.api_key,
-                    voice_id=backend.voice_id,
-                    model=args.minimax_model,
-                    audio_format=args.minimax_output_format,
-                    sample_rate=args.minimax_sample_rate,
-                    bitrate=args.minimax_bitrate,
-                    channel=args.minimax_channel,
-                    speed=args.minimax_speed,
-                    volume=args.minimax_volume,
-                    pitch=args.minimax_pitch,
-                    language_boost=args.minimax_language_boost,
-                    base_url=args.minimax_base_url,
+                    text, output_path,
+                    api_key=backend.api_key, voice_id=backend.voice_id,
+                    model=args.minimax_model, audio_format=args.minimax_output_format,
+                    sample_rate=args.minimax_sample_rate, bitrate=args.minimax_bitrate,
+                    channel=args.minimax_channel, speed=args.minimax_speed,
+                    volume=args.minimax_volume, pitch=args.minimax_pitch,
+                    language_boost=args.minimax_language_boost, base_url=args.minimax_base_url,
                 )
             elif backend.provider == "qwen":
                 backend_qwen.generate(
-                    text,
-                    output_path,
-                    api_key=backend.api_key,
-                    voice_id=backend.voice_id,
-                    model=args.qwen_model,
-                    language_type=args.qwen_language_type,
-                    instructions=args.qwen_instructions,
-                    optimize_instructions=args.qwen_optimize_instructions,
+                    text, output_path,
+                    api_key=backend.api_key, voice_id=backend.voice_id,
+                    model=args.qwen_model, language_type=args.qwen_language_type,
+                    instructions=args.qwen_instructions, optimize_instructions=args.qwen_optimize_instructions,
                     base_url=args.qwen_base_url,
                 )
             elif backend.provider == "cosyvoice":
                 backend_cosyvoice.generate(
-                    text,
-                    output_path,
-                    api_key=backend.api_key,
-                    voice_id=backend.voice_id,
-                    model=args.cosyvoice_model,
-                    audio_format=args.cosyvoice_output_format,
-                    sample_rate=args.cosyvoice_sample_rate,
-                    volume=args.cosyvoice_volume,
-                    rate=args.cosyvoice_rate,
-                    pitch=args.cosyvoice_pitch,
-                    instruction=args.cosyvoice_instruction,
-                    language_hint=args.cosyvoice_language_hint,
+                    text, output_path,
+                    api_key=backend.api_key, voice_id=backend.voice_id,
+                    model=args.cosyvoice_model, audio_format=args.cosyvoice_output_format,
+                    sample_rate=args.cosyvoice_sample_rate, volume=args.cosyvoice_volume,
+                    rate=args.cosyvoice_rate, pitch=args.cosyvoice_pitch,
+                    instruction=args.cosyvoice_instruction, language_hint=args.cosyvoice_language_hint,
                     base_url=args.cosyvoice_base_url,
                 )
             else:
                 asyncio.run(backend_edge.generate(text, output_path, voice=args.voice, rate=args.rate))
         except Exception as exc:
-            print(f"error: failed to generate {output_path}: {exc}", file=sys.stderr)
-            return 1
-        generated += 1
-        print(f"[OK] {output_path}")
+            return note_path, False, str(exc)
+        return note_path, True, ""
+
+    workers = max(1, args.workers)
+    if workers == 1:
+        # Sequential mode (backward compatible)
+        for note_path in note_files:
+            path, ok, err = _generate_one(note_path)
+            if not ok:
+                print(f"error: failed to generate {path}: {err}", file=sys.stderr)
+                return 1
+            if err:  # skipped (empty text)
+                print(f"[skip] {path.name}: {err}")
+            else:
+                generated += 1
+                print(f"[OK] {path}")
+    else:
+        # Concurrent mode
+        with ThreadPoolExecutor(max_workers=workers) as pool:
+            futures = {pool.submit(_generate_one, p): p for p in note_files}
+            for future in as_completed(futures):
+                path, ok, err = future.result()
+                if not ok:
+                    errors.append(f"{path.name}: {err}")
+                    print(f"[FAIL] {path.name}: {err}", file=sys.stderr)
+                elif err:
+                    print(f"[skip] {path.name}: {err}")
+                else:
+                    generated += 1
+                    print(f"[OK] {path.name}")
+        if errors:
+            print(f"[warn] {len(errors)} file(s) failed", file=sys.stderr)
 
     print(f"[Done] Generated {generated}/{len(note_files)} audio file(s): {output_dir}")
     return 0

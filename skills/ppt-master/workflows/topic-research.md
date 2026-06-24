@@ -51,6 +51,17 @@ This workflow is **independent**: it owns the source-acquisition step when no fi
 python3 ${SKILL_DIR}/scripts/source_to_md/web_to_md.py <URL>
 ```
 
+**Multi-platform supplement（Agent-Reach 增强）**：当 `agent-reach` 已安装时，可额外调用以下平台补充中文场景素材：
+
+| 平台 | 命令 | 用途 |
+|------|------|------|
+| 网页阅读 | `curl -s "https://r.jina.ai/<URL>"` | 替代 web_to_md.py，输出更干净 |
+| B站搜索 | `curl -s "https://api.bilibili.com/x/web-interface/search/all/v2?keyword=<关键词>"` | 技术教程、中文科普 |
+| V2EX | `curl -s "https://www.v2ex.com/api/topics/hot.json"` | 技术社区讨论 |
+| YouTube 字幕 | `yt-dlp --write-auto-sub --sub-lang zh,en --skip-download -o "projects/<slug>/%(title)s" "<URL>"` | 英文教程/演讲 |
+
+> 这些平台素材属于 Tier 3-4 来源，作为主搜索的补充而非替代。每个维度最多 2-3 条补充素材。
+
 **Search strategy**:
 
 | Phase | Action |
@@ -78,10 +89,10 @@ Two artifacts under `projects/`:
 
 | Artifact | Path |
 |---|---|
-| Research document | `projects/<topic_slug>.md` |
+| Research document | `projects/research_report.md` |
 | Image folder | `projects/<topic_slug>/` |
 
-**Hard rule — naming**: filename (without `.md`) and folder name MUST match. **Hard rule — location**: under `projects/`, never the repository root.
+**Hard rule — naming**: the research document is always `research_report.md` (matches the content-selection trigger). Image folder name uses the topic slug. **Hard rule — location**: under `projects/`, never the repository root.
 
 **Document structure** — section layout follows the topic: person → biography / works / impact; technology → background / mechanism / applications / outlook; company → overview / products / market / culture. The file MUST end with a `## Sources` section listing the URLs used.
 
@@ -109,11 +120,11 @@ Output a checkpoint, then continue with the main pipeline. The artifacts feed di
 
 ```markdown
 ## ✅ Topic Research Complete
-- [x] Document: `projects/<topic_slug>.md` (N sections)
+- [x] Document: `projects/research_report.md` (N sections)
 - [x] Images: `projects/<topic_slug>/` (N files)
 - [ ] **Next**: SKILL.md Step 2 →
   `project_manager.py init <project_name> --format <format>`
-  `project_manager.py import-sources projects/<project_name> projects/<topic_slug>.md projects/<topic_slug>/*.* --move`
+  `project_manager.py import-sources projects/<project_name> projects/research_report.md projects/<topic_slug>/*.* --move`
 ```
 
 `<project_name>` is the user's chosen project identifier (typically `<format>_<topic_slug>`, e.g. `ppt169_joe_hisaishi`); `--move` removes the research artifacts from `projects/<topic_slug>` after they are imported.

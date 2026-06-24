@@ -639,19 +639,6 @@ class Config:
         return FONT_SIZES.get(size_name, FONT_SIZES['body'])
 
     @staticmethod
-    def validate_svg_element(element_name: str) -> bool:
-        """
-        Validate whether an SVG element is allowed.
-
-        Args:
-            element_name: Element name
-
-        Returns:
-            Whether the element is allowed
-        """
-        return element_name.lower() not in [e.lower() for e in SVG_CONSTRAINTS['forbidden_elements']]
-
-    @staticmethod
     def get_project_path(subdir: str = '') -> Path:
         """
         Get project path.
@@ -747,6 +734,9 @@ def main(argv: list[str] | None = None) -> int:
 
     elif args.command == 'format':
         info = Config.get_canvas_format(args.key)
+        if info is None:
+            print(f"\nUnknown canvas format: {args.key}")
+            return 1
         print(f"\nCanvas Format: {args.key}\n")
         for key, value in info.items():
             print(f"  {key}: {value}")

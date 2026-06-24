@@ -1180,7 +1180,8 @@ def convert_text(elem: ET.Element, ctx: ConvertContext) -> ShapeResult | None:
     if text_transform and 'rotate' not in text_transform and not ctx.use_transform_matrix:
         try:
             a, b, c, d, e, f = parse_transform_matrix(text_transform)
-        except Exception:
+        except (ValueError, TypeError):
+            # Malformed or incomplete transform matrix; fall back to identity
             a, b, c, d, e, f = 1.0, 0.0, 0.0, 1.0, 0.0, 0.0
         # A pure-translate transform on a text element (hand-authored, or written
         # by a live-preview move) was otherwise ignored here, drifting the text.
