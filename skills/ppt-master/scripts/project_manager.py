@@ -116,6 +116,7 @@ class ProjectManager:
 
     def __init__(self, base_dir: str | Path | None = None) -> None:
         self.base_dir = Path(base_dir) if base_dir is not None else Path.cwd() / "projects"
+        self._canonical_md_cache: dict[Path, str] = {}
 
     def init_project(
         self,
@@ -140,18 +141,15 @@ class ProjectManager:
         if project_path.exists():
             raise FileExistsError(f"Project directory already exists: {project_path}")
 
+        # Only create directories that the pipeline always populates.
+        # Other dirs (svg_final/, exports/, notes/, icons/, analysis/,
+        # templates/, images/web_assets/, images/ref/) are created lazily
+        # by the scripts that write to them, avoiding empty leftovers in
+        # projects that never reach those stages.
         for rel_path in (
             "svg_output",
-            "svg_final",
             "images",
-            "images/web_assets",
-            "images/ref",
-            "icons",
-            "notes",
-            "templates",
             SOURCE_DIRNAME,
-            "analysis",
-            "exports",
         ):
             (project_path / rel_path).mkdir(parents=True, exist_ok=True)
 
@@ -164,14 +162,18 @@ class ProjectManager:
                 f"- Created: {date_str}\n\n"
                 "## Directories\n\n"
                 "- `svg_output/`: raw SVG output\n"
-                "- `svg_final/`: finalized SVG output\n"
                 "- `images/`: runtime image pool; converter assets keep their original short filenames when possible\n"
+                "- `sources/`: source materials and normalized markdown\n\n"
+                "The following directories are created on demand by their\n"
+                "respective scripts (not pre-created at init):\n\n"
+                "- `svg_final/`: finalized SVG output (finalize_svg.py)\n"
+                "- `exports/`: main native pptx (timestamped); `_svg.pptx` sibling added when exported with `--svg-snapshot` (svg_to_pptx.py)\n"
                 "- `icons/`: project icon set — selected library icons copied in (via icon_sync.py) plus any custom icons you add; embedded from here at export\n"
-                "- `notes/`: speaker notes\n"
-                "- `templates/`: project templates\n"
-                "- `sources/`: source materials and normalized markdown\n"
+                "- `notes/`: speaker notes (total.md written by Executor; split by total_md_split.py)\n"
+                "- `templates/`: project templates (created when a template path is applied)\n"
                 "- `analysis/`: machine-extracted intermediate analysis (PPTX intake, image_analysis.csv) — the pipeline's canonical must-read source/asset facts\n"
-                "- `exports/`: main native pptx (timestamped); `_svg.pptx` sibling added when exported with `--svg-snapshot`\n"
+                "- `images/web_assets/`: web search captures (image_search.py)\n"
+                "- `images/ref/`: user-supplied reference images\n"
                 "- `backup/<timestamp>/`: svg_output/ archive (always written in default-flow mode; safe to delete old timestamps)\n"
             ),
             encoding="utf-8",
@@ -367,19 +369,26 @@ class ProjectManager:
         source_content = source_path.read_text(encoding="utf-8", errors="replace")
         canonical_source = self._canonicalize_markdown_content(source_content)
 
-        for existing in sorted(sources_dir.iterdir()):
-            if existing.suffix.lower() not in {".md", ".markdown"}:
-                continue
-            try:
-                if existing.resolve() == source_path.resolve():
+        # Build cache on first call, reuse on subsequent calls
+        if not self._canonical_md_cache:
+            for existing in sorted(sources_dir.iterdir()):
+                if existing.suffix.lower() not in {".md", ".markdown"}:
                     continue
-            except FileNotFoundError:
-                pass
+                try:
+                    content = existing.read_text(encoding="utf-8", errors="replace")
+                    self._canonical_md_cache[existing.resolve()] = self._canonicalize_markdown_content(content)
+                except OSError:
+                    continue
 
-            existing_content = existing.read_text(encoding="utf-8", errors="replace")
-            if self._canonicalize_markdown_content(existing_content) == canonical_source:
-                return existing
+        source_resolved = source_path.resolve()
+        for resolved, canonical in self._canonical_md_cache.items():
+            if resolved == source_resolved:
+                continue
+            if canonical == canonical_source:
+                return Path(resolved)
 
+        # Cache the new file's canonical content for future comparisons
+        self._canonical_md_cache[source_resolved] = canonical_source
         return None
 
     def _companion_asset_dir(self, source_path: Path) -> Path | None:
