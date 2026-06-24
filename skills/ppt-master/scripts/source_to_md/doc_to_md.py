@@ -755,15 +755,22 @@ def _convert_docx(input_file: Path, out_file: Path) -> str:
     markdown = _html_img_to_md(markdown)
     out_file.write_text(markdown, encoding="utf-8")
 
-    if manifest:
-        (media_dir / "image_manifest.json").write_text(
-            json.dumps(manifest, ensure_ascii=False, indent=2) + "\n",
-            encoding="utf-8",
-        )
+    if manifest and media_dir is not None:
+        try:
+            (media_dir / "image_manifest.json").write_text(
+                json.dumps(manifest, ensure_ascii=False, indent=2) + "\n",
+                encoding="utf-8",
+            )
+        except OSError:
+            pass
 
-    if not any(media_dir.iterdir()):
-        media_dir.rmdir()
-        media_dir = None  # type: ignore[assignment]
+    if media_dir is not None:
+        try:
+            if not any(media_dir.iterdir()):
+                media_dir.rmdir()
+                media_dir = None  # type: ignore[assignment]
+        except OSError:
+            pass
 
     for msg in result.messages:
         if msg.type == "warning":
@@ -888,9 +895,13 @@ def _convert_html(input_file: Path, out_file: Path) -> str:
     out_file.write_text(markdown, encoding="utf-8")
     _write_generic_image_manifest(media_dir, rel_media_dir, markdown, "html_image")
 
-    if not any(media_dir.iterdir()):
-        media_dir.rmdir()
-        media_dir = None  # type: ignore[assignment]
+    if media_dir is not None:
+        try:
+            if not any(media_dir.iterdir()):
+                media_dir.rmdir()
+                media_dir = None  # type: ignore[assignment]
+        except OSError:
+            pass
 
     _report_result(out_file, media_dir)
     return markdown
@@ -1084,9 +1095,13 @@ def _convert_epub(input_file: Path, out_file: Path) -> str:
     out_file.write_text(markdown, encoding="utf-8")
     _write_generic_image_manifest(media_dir, rel_media_dir, markdown, "epub_image")
 
-    if not any(media_dir.iterdir()):
-        media_dir.rmdir()
-        media_dir = None  # type: ignore[assignment]
+    if media_dir is not None:
+        try:
+            if not any(media_dir.iterdir()):
+                media_dir.rmdir()
+                media_dir = None  # type: ignore[assignment]
+        except OSError:
+            pass
 
     _report_result(out_file, media_dir)
     return markdown
