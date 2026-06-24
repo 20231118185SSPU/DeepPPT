@@ -123,19 +123,21 @@ def remove_watermark(image: Image.Image, alpha_map: np.ndarray, position: dict) 
     img_array = np.array(image.convert("RGBA"), dtype=np.float32)
     x, y, w, h = position["x"], position["y"], position["width"], position["height"]
 
-    for row in range(h):
-        for col in range(w):
-            alpha = alpha_map[row, col]
-            if alpha < ALPHA_THRESHOLD:
-                continue
-            alpha = min(alpha, MAX_ALPHA)
-            one_minus_alpha = 1.0 - alpha
+    # Extract watermark region and alpha map
+    region = img_array[y:y+h, x:x+w, :3]  # RGB channels
+    alpha = np.clip(alpha_map[:h, :w], 0, MAX_ALPHA)
 
-            img_y, img_x = y + row, x + col
-            for c in range(3):
-                watermarked = img_array[img_y, img_x, c]
-                original = (watermarked - alpha * LOGO_VALUE) / one_minus_alpha
-                img_array[img_y, img_x, c] = np.clip(original, 0, 255)
+    # Build mask for pixels above threshold
+    mask = alpha >= ALPHA_THRESHOLD
+    if not np.any(mask):
+        return Image.fromarray(img_array.astype(np.uint8))
+
+    # Vectorized watermark removal: original = (watermarked - alpha * LOGO_VALUE) / (1 - alpha)
+    alpha_3d = alpha[mask][:, np.newaxis]  # shape (N, 1) for broadcasting over RGB
+    one_minus_alpha = 1.0 - alpha_3d
+    watermarked = region[mask]  # shape (N, 3)
+    original = (watermarked - alpha_3d * LOGO_VALUE) / one_minus_alpha
+    region[mask] = np.clip(original, 0, 255)
 
     return Image.fromarray(img_array.astype(np.uint8))
 
