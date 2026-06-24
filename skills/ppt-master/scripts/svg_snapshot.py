@@ -133,7 +133,10 @@ def save_snapshot(svg_dir: Path | str, snapshot_path: Path | str | None = None) 
 def load_snapshot(snapshot_path: Path | str) -> Dict[str, str]:
     """Load a snapshot JSON file previously written by :func:`save_snapshot`."""
     path = Path(snapshot_path)
-    return json.loads(path.read_text(encoding="utf-8"))
+    try:
+        return json.loads(path.read_text(encoding="utf-8"))
+    except json.JSONDecodeError:
+        return {}
 
 
 # ---------------------------------------------------------------------------

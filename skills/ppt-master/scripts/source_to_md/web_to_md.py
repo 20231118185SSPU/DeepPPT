@@ -685,6 +685,8 @@ def main() -> None:
     args = parser.parse_args()
 
     if args.dir:
+        # Mutate module-level CONFIG for this CLI invocation.
+        # Acceptable because main() is a CLI entry point called once per process.
         CONFIG["output_dir"] = args.dir
 
     targets = []
