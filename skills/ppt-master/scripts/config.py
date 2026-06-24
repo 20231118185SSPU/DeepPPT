@@ -747,6 +747,9 @@ def main(argv: list[str] | None = None) -> int:
 
     elif args.command == 'format':
         info = Config.get_canvas_format(args.key)
+        if info is None:
+            print(f"\nUnknown canvas format: {args.key}")
+            return 1
         print(f"\nCanvas Format: {args.key}\n")
         for key, value in info.items():
             print(f"  {key}: {value}")
