@@ -1,6 +1,6 @@
 # CLAUDE.md
 
-This file is the project entry point for Claude Code.
+This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
 
 **You MUST read [`skills/ppt-master/SKILL.md`](skills/ppt-master/SKILL.md) before any PPT generation task or repo modification.** This repository exists to generate presentations; SKILL.md is the authoritative workflow that owns project creation, role switching, serial execution, quality gates, post-processing, export, and every per-step command. The rest of this file only points to where related material lives — it never substitutes for SKILL.md.
 
@@ -19,6 +19,24 @@ PPT Master is an AI-driven presentation generation system. Multi-role collaborat
 > Choose deep-research when the user says "深度调研" / "deep research" or when content quality is the priority.
 >
 > **deep-research creates the project directory at its own Step 1** (via `project_manager.py init`). All research artifacts write directly into `<project>/` — no staging directories, no scatter across `projects/`.
+
+### Standalone Workflow Routing
+
+| User Intent | Workflow | Trigger Phrases |
+|-------------|----------|-----------------|
+| Reuse existing PPT design / fill template | [`template-fill-pptx`](skills/ppt-master/workflows/template-fill-pptx.md) | "fill this deck", "reuse this design" |
+| Beautify / re-layout existing PPT | [`beautify-pptx`](skills/ppt-master/workflows/beautify-pptx.md) | "美化", "re-layout", "内容别动" |
+| Resume generation in new chat | [`resume-execute`](skills/ppt-master/workflows/resume-execute.md) | "继续生成 projects/…" |
+| Refine spec before generation | [`refine-spec`](skills/ppt-master/workflows/refine-spec.md) | "refine the spec first" (opt-in, default OFF) |
+| Calibrate chart coordinates | [`verify-charts`](skills/ppt-master/workflows/verify-charts.md) | decks with data charts |
+| Record narration / video export | [`generate-audio`](skills/ppt-master/workflows/generate-audio.md) | "录音", "video export" |
+| Object-level animation tuning | [`customize-animations`](skills/ppt-master/workflows/customize-animations.md) | "change animation order/effect" |
+| Live preview of slides | [`live-preview`](skills/ppt-master/workflows/live-preview.md) | "preview", "看效果" |
+| Brand identity setup | [`create-brand`](skills/ppt-master/workflows/create-brand.md) | "set up brand", "品牌规范" |
+| Per-page visual review | [`visual-review`](skills/ppt-master/workflows/visual-review.md) | "视觉自检", "visual review" (explicit request only) |
+| Standalone template creation | [`create-template`](skills/ppt-master/workflows/create-template.md) | no source deck, just design a template |
+
+Detailed routing rules (discriminator logic for beautify vs. main pipeline, etc.):
 >
 > Template fill: when the user provides an existing `.pptx` template plus text materials or a topic and asks to reuse the original PPT design or fill content back into it (for example, "fill this deck with the new content", "fill this back into the template", or "reuse this deck's design"), run the standalone [`template-fill-pptx`](skills/ppt-master/workflows/template-fill-pptx.md) workflow. This route edits PPTX directly and must not enter the SVG generation pipeline.
 >
@@ -39,6 +57,62 @@ PPT Master is an AI-driven presentation generation system. Multi-role collaborat
 > Brand identity setup: when the user asks to "set up brand" / "建立品牌" / "做品牌规范", provides a brand asset (logo / brand site URL / branded PPTX / brand PDF), or wants to extract a brand from existing materials, run the standalone [`create-brand`](skills/ppt-master/workflows/create-brand.md) workflow. Output goes to `skills/ppt-master/templates/brands/<id>/`. Brands apply at SKILL.md Step 3 via the same explicit-path rule as layout templates — the user supplies the brand directory path to apply it; bare brand names never trigger.
 >
 > Visual self-check: only when the user explicitly requests a per-page visual review on the generated SVGs (e.g., "跑一下视觉自检 / 视觉回看 / 视觉 rubric", "visual review", "check each page visually"), run the standalone [`visual-review`](skills/ppt-master/workflows/visual-review.md) workflow between the executor and post-processing steps. The main pipeline does NOT invoke it automatically; do not infer or recommend it from deck size, model identity, or any other signal — user request is the only trigger.
+
+## Environment & Setup
+
+| Dependency | Required | Notes |
+|------------|:--------:|-------|
+| Python ≥3.10 | ✅ | Only runtime needed |
+| Git | ✅ | For cloning |
+| Playwright + Chromium | ❌ | Only for browser screenshots in web image capture |
+
+```bash
+# One-click install (recommended)
+bash scripts/setup/install_deps.sh                    # Linux / Mac
+powershell -ExecutionPolicy Bypass -File scripts/setup/install_deps.ps1  # Windows
+
+# Check dependency status
+python3 scripts/setup/check_deps.py
+python3 scripts/setup/check_deps.py --install          # auto-install missing
+
+# Manual install (core only)
+pip install python-pptx Pillow requests beautifulsoup4 lxml
+```
+
+API configuration: copy `.env.example` → `.env`, set `IMAGE_BACKEND` and the corresponding API key. Zero-config image search sources (Openverse, Wikimedia, NASA, Smithsonian) need no API key.
+
+## Multi-Role Architecture
+
+The pipeline operates through three serial roles. Each role is a distinct prompt/persona loaded from `skills/ppt-master/references/`, not a separate process:
+
+| Role | Responsibility | Key Output |
+|------|---------------|------------|
+| **Strategist** | Outline, Eight Confirmations, `design_spec.md`, `spec_lock.md`, image strategy | `design_spec.md`, `spec_lock.md`, `notes/*.md`, `image_prompts.json` / `image_queries.json` |
+| **Image_Generator** | Acquire images (AI generation or web search) per Strategist's manifest | `images/*.png` + `image_sources.json` |
+| **Executor** | Render one SVG per page following `spec_lock.md` constraints, run quality checks | `pages/*.svg` |
+
+Steps are strictly serial. Steps marked ⛔ BLOCKING require explicit user confirmation. SVG pages are hand-written by the agent (never script-generated). Before generating each SVG page, re-read `spec_lock.md` for colors/fonts/icons/images.
+
+## Project Artifact Structure
+
+Each generated project lives under `projects/<name>/` with this layout:
+
+```
+projects/<name>/
+├── design_spec.md          # Strategist's full design specification
+├── spec_lock.md            # Locked palette/typography/icons/images for Executor
+├── notes/                  # Per-page content notes (01_cover.md, 02_..., total.md)
+├── images/                 # Acquired images + manifest files
+│   ├── image_prompts.json  # AI generation manifest (Strategist writes)
+│   ├── image_queries.json  # Web search manifest (Strategist writes)
+│   └── image_sources.json  # Provenance metadata (Image_Generator writes)
+├── icons/                  # Selected icons copied from template library
+├── pages/                  # SVG files, one per slide (Executor writes)
+├── source/                 # Imported source documents
+└── <name>.pptx             # Final exported presentation
+```
+
+Format is set at init time (`--format ppt169` for 16:9, `--format ppt43` for 4:3). The `research_report.md` file (produced by topic-research or deep-research) activates conditional pipeline phases (Content Selection, Detailed Outline, Image-Text Linking).
 
 ## Execution Requirements
 
@@ -104,6 +178,11 @@ python3 skills/ppt-master/scripts/image_search.py --batch <project_path>/images/
 python3 skills/ppt-master/scripts/image_search.py --url-capture https://example.com -o <project_path>/images/web_assets/web_assets
 python3 skills/ppt-master/scripts/svg_editor/server.py <project_path> --live
 python3 skills/ppt-master/scripts/svg_quality_checker.py <project_path>
+python3 skills/ppt-master/scripts/spec_lock_digest.py generate <project_path>  # Step 4 end: seal spec_lock integrity
+python3 skills/ppt-master/scripts/spec_lock_digest.py verify <project_path>    # Step 6 start: verify before Executor reads
+python3 skills/ppt-master/scripts/e2e_validate.py <project_path>               # post-export: page count + notes + images + PPTX
+python3 skills/ppt-master/scripts/e2e_validate.py <project_path> --pptx exports/deck.pptx  # with PPTX slide-level checks
+python3 skills/ppt-master/scripts/smoke_check.py                                # import + CLI smoke check for all scripts
 python3 skills/ppt-master/scripts/animation_config.py scaffold <project_path>  # optional, only for custom object-level animation
 python3 skills/ppt-master/scripts/animation_config.py validate <project_path>  # optional, before re-export
 

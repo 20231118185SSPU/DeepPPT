@@ -1,0 +1,108 @@
+# CI: Smoke check + SVG quality validation
+# Runs on push to main and PRs that touch scripts or examples
+
+name: CI
+
+on:
+  push:
+    branches: ["main"]
+    paths:
+      - 'skills/ppt-master/scripts/**'
+      - 'skills/ppt-master/references/**'
+      - 'skills/ppt-master/templates/**'
+      - 'examples/**'
+      - '.github/workflows/ci.yml'
+  pull_request:
+    paths:
+      - 'skills/ppt-master/scripts/**'
+      - 'skills/ppt-master/references/**'
+      - 'skills/ppt-master/templates/**'
+      - 'examples/**'
+      - '.github/workflows/ci.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  smoke-check:
+    name: Script Smoke Check
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install dependencies
+        run: |
+          pip install -r skills/ppt-master/requirements.txt
+
+      - name: Run smoke check (import + --help)
+        run: |
+          python3 skills/ppt-master/scripts/smoke_check.py
+
+  svg-quality:
+    name: SVG Quality Check
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install dependencies
+        run: |
+          pip install -r skills/ppt-master/requirements.txt
+
+      - name: Validate example projects
+        run: |
+          # Run svg_quality_checker on each example project that has svg_output/
+          status=0
+          for project_dir in examples/*/; do
+            if [ -d "$project_dir/svg_output" ]; then
+              echo "::group::$(basename "$project_dir")"
+              python3 skills/ppt-master/scripts/svg_quality_checker.py "$project_dir" || status=1
+              echo "::endgroup::"
+            fi
+          done
+          exit $status
+
+  e2e-validate:
+    name: End-to-End Pipeline Validation
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install dependencies
+        run: |
+          pip install -r skills/ppt-master/requirements.txt
+
+      - name: Validate example projects
+        run: |
+          status=0
+          for project_dir in examples/*/; do
+            if [ -f "$project_dir/spec_lock.md" ]; then
+              pptx=$(find "$project_dir/exports" -name "*.pptx" 2>/dev/null | head -1)
+              echo "::group::$(basename "$project_dir")"
+              if [ -n "$pptx" ]; then
+                python3 skills/ppt-master/scripts/e2e_validate.py "$project_dir" --pptx "$pptx" || status=1
+              else
+                python3 skills/ppt-master/scripts/e2e_validate.py "$project_dir" || status=1
+              fi
+              echo "::endgroup::"
+            fi
+          done
+          exit $status

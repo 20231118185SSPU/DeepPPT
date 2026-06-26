@@ -64,6 +64,9 @@ description: >
 | `${SKILL_DIR}/scripts/finalize_svg.py` | SVG post-processing (unified entry) |
 | `${SKILL_DIR}/scripts/svg_to_pptx.py` | Export to PPTX |
 | `${SKILL_DIR}/scripts/update_spec.py` | Propagate a `spec_lock.md` color / font_family change across all generated SVGs |
+| `${SKILL_DIR}/scripts/spec_lock_digest.py` | spec_lock integrity guard — generate/verify SHA-256 digest to detect unintended modifications |
+| `${SKILL_DIR}/scripts/e2e_validate.py` | End-to-end pipeline validation — page count, speaker notes, image completeness, PPTX integrity |
+| `${SKILL_DIR}/scripts/smoke_check.py` | Script smoke check — import + CLI --help validation for all scripts |
 | `${SKILL_DIR}/scripts/memory_manager.py` | User profile memory management (load/consolidate/show/reset) — cross-session preference persistence |
 | `${SKILL_DIR}/scripts/svg_snapshot.py` | SVG content hashing, structural diff, and editable element enumeration — revision pipeline support |
 | `${SKILL_DIR}/scripts/svg_patch.py` | SVG patch engine — apply localized edits to SVG pages without full regeneration |
@@ -436,6 +439,12 @@ python3 ${SKILL_DIR}/scripts/analyze_images.py <project_path>/images
 - [ ] **Next**: Auto-proceed to [Image_Generator / Executor] phase
 ```
 
+**spec_lock integrity seal** — immediately after the checkpoint above, run:
+```
+python3 ${SKILL_DIR}/scripts/spec_lock_digest.py generate <project_path>
+```
+This stores a SHA-256 digest of `spec_lock.md` so that Step 6 can verify the file has not been accidentally modified.
+
 ---
 
 ### Step 5: Image Acquisition Phase (Conditional)
@@ -502,6 +511,12 @@ Workflow:
 ### Step 6: Executor Phase
 
 🚧 **GATE**: Step 4 (and Step 5 if triggered) complete; all prerequisite deliverables are ready.
+
+**spec_lock integrity check** — before reading any references, verify the contract:
+```
+python3 ${SKILL_DIR}/scripts/spec_lock_digest.py verify <project_path>
+```
+Exit code 0 = integrity confirmed; exit code 2 = **MISMATCH** — the file was modified since Step 4. If mismatch, investigate before proceeding — re-run `generate` only if the change was intentional.
 
 Read the execution references for this deck's locked `mode` + `visual_style` (from `spec_lock.md`):
 ```
@@ -640,7 +655,13 @@ Full effect list, anchor logic, and limits: [`references/animations.md`](referen
 
 > **Preview not running?** Any time the user mentions "live preview", "preview", "看效果", or wants to select/click a slide element and the service is not running, run [`live-preview`](workflows/live-preview.md) Step 1 to start it. If the service is already running, just point them at the URL — do not restart.
 
-**Step 7.4** — Memory consolidation (automatic, no user action needed):
+**Step 7.4** — Post-export validation (recommended):
+```bash
+python3 ${SKILL_DIR}/scripts/e2e_validate.py <project_path> --pptx exports/<exported_file>.pptx
+```
+Validates page count consistency, speaker notes completeness, image file presence, and PPTX structural integrity. Reports PASS/WARN/FAIL per check. Non-blocking — warnings and failures are informational, not gating.
+
+**Step 7.5** — Memory consolidation (automatic, no user action needed):
 ```bash
 python3 ${SKILL_DIR}/scripts/memory_manager.py consolidate <project_path>
 ```
