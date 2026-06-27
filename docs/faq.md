@@ -10,7 +10,7 @@ Almost anything: **PDF**, **DOCX**, **PPTX**, **EPUB**, **HTML**, **LaTeX**, **R
 
 ## Q: Can I generate a deck with just a topic, no source materials?
 
-Yes. Tell the AI your topic or scenario (e.g. "make a PPT about Hayao Miyazaki", "introduce our new product"). The AI will trigger the **topic-research workflow** — gathering authoritative sources via web search (Wikipedia / official sites / institutional releases), assembling them into a Markdown research document + image folder, then feeding both into the main pipeline.
+Yes. Tell the AI your topic or scenario (e.g. "make a PPT about Hayao Miyazaki", "introduce our new product"). The AI will trigger the **deep-research workflow** — a 7-step research flow (outline → search plan → per-page search via multi-AI browser automation → consolidation → analysis → narrative → visual strategy), producing structured research artifacts that feed into the main pipeline.
 
 Quality depends on what's on the open web. If you already have specialized material (papers, internal docs), giving those files to the AI directly produces better results than web research alone.
 
@@ -144,7 +144,7 @@ If generation feels slow, check your model's token throughput. The bottleneck is
 
 Default recommendation: **continuous one-shot generation**. 10–15 page decks fit comfortably in a 200K window, and cross-page visual consistency is best when the Executor can see prior pages in the same session (it actively aligns style, font sizes, and rhythm).
 
-Only when signals are heavy (≥ 18 pages, thick source material, or `topic-research` ran with substantial web-fetch accumulation) does the AI surface an optional **two-stage (split mode)** hint at the Strategist phase: Phase A (eight confirmations + image acquisition) ends in the current chat; you open a fresh chat window and type `继续生成 projects/<project_name>` (or "resume execution projects/<project_name>") to enter Phase B (SVG generation + export). The new session reloads `design_spec` / `spec_lock` / `sources` / `images` from disk and continues from there.
+Only when signals are heavy (≥ 18 pages, thick source material, or `deep-research` ran with substantial web-search accumulation) does the AI surface an optional **two-stage (split mode)** hint at the Strategist phase: Phase A (eight confirmations + image acquisition) ends in the current chat; you open a fresh chat window and type `继续生成 projects/<project_name>` (or "resume execution projects/<project_name>") to enter Phase B (SVG generation + export). The new session reloads `design_spec` / `spec_lock` / `sources` / `images` from disk and continues from there.
 
 Split mode is a **compromise** — it pays ~6K tokens (re-reading SKILL.md) to drop 60–200K of Phase A noise, then reuses the freed budget in Phase B to re-read `sources/` for richer slide content. **Not needed when signals are normal**; the hint won't appear, and you can always ignore it and stay in continuous mode.
 

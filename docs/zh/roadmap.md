@@ -21,7 +21,7 @@
 
 ### 2026-04（管线规模化）
 
-- **无源生成**：`topic-research` 工作流支持「只给主题、不给源文件」
+- **无源生成**：`deep-research` 编排器支持「只给主题、不给源文件」，7 步独立调研流程
 - **PPTX 导出质变**：SVG clipPath → DrawingML picture geometry、marker → 原生箭头、输出归集到 `exports/`
 - **图表库 70 个 + 图标三库**（simple-icons / phosphor-duotone / brand-logo）
 - **`spec_lock.md` 机器可读契约**：Strategist 锁定后 Executor 每页强制重读，跨页一致性有了保证
@@ -60,7 +60,7 @@
 
 - **PPTX intake 多 deck 支持 + `analysis/` 源名前缀** — 主管线项目现在可把多份源 deck 合并进来：每份写 `<stem>.identity.json` / `<stem>.slide_library.json`，各自 digest 内联进单一索引 `source_profile.json` 的 `decks[]`（保住"Strategist 必读 `source_profile.json`"单入口契约，单 deck 即一条、多 deck 列多条；同 stem 重导覆盖该条）。`beautify` / `template-fill` 仍是 1:1 单 deck，按 stem 读自己那份 `<stem>.*`
 
-- **材料发散度（§c 受众下的自由文字项）** — 主管线在 §c 受众文本框下加一个**纯文字**小问：用户用自己的话写要多贴源、还是多放开重塑（留空＝平衡默认）。刻意不做固定档位、不按源信号替用户推荐、不联动页数——就是问用户本人意图。无论写得多放开都**事实守源**：只对源内内容重组 / 重框 / 展开 / 连结，绝不引入源外事实（那是 `topic-research` 的活）。Strategist 写 §IX 大纲时读这段 prose 消费、记 `design_spec §I`，**不进 spec_lock**（Executor 不读）；`mode` 与发散度正交。beautify / template-fill 内容冻结，不暴露此项
+- **材料发散度（§c 受众下的自由文字项）** — 主管线在 §c 受众文本框下加一个**纯文字**小问：用户用自己的话写要多贴源、还是多放开重塑（留空＝平衡默认）。刻意不做固定档位、不按源信号替用户推荐、不联动页数——就是问用户本人意图。无论写得多放开都**事实守源**：只对源内内容重组 / 重框 / 展开 / 连结，绝不引入源外事实（那是 `deep-research` 的活）。Strategist 写 §IX 大纲时读这段 prose 消费、记 `design_spec §I`，**不进 spec_lock**（Executor 不读）；`mode` 与发散度正交。beautify / template-fill 内容冻结，不暴露此项
 
 - **一批默认行为与入口标准化** — 逐元素入场动画默认关（只留转场 `fade`；元素动画改 opt-in `-a auto` / `animations.json`），消除"自动级联入场"的 AI 味；per-project `icons/` 在选择时把选中图标复制进项目、嵌入优先本地；`analysis/` 确立为机器抽取事实的 canonical 必读层（PPTX intake bundle + `image_analysis.csv`）；主管线把源 deck 的身份（配色 / 字体 / 版式）当**参考而非约束**（可继承可重设，由策略师判断，默认从零设计）；confirm 页支持自定义配色输入
 

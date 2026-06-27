@@ -10,7 +10,7 @@ PPT Master is an AI-driven presentation generation system. Multi-role collaborat
 
 **Core Pipeline**: `Source Document → Create Project → [Template] → Strategist Eight Confirmations → [Image_Generator] → Executor Live Preview → Quality Check → Post-processing → Export PPTX`
 
-> Topic-only requests with no source material: run the standalone [`topic-research`](skills/ppt-master/workflows/topic-research.md) workflow before SKILL.md Step 1 to gather web materials.
+> Topic-only requests with no source material: run the [`deep-research`](skills/ppt-master/workflows/deep-research.md) orchestrator before SKILL.md Step 1 to gather web materials (7-step research flow with multi-AI browser automation).
 >
 > Template fill: when the user provides an existing `.pptx` template plus text materials or a topic and asks to reuse the original PPT design or fill content back into it (for example, "fill this deck with the new content", "fill this back into the template", or "reuse this deck's design"), run the standalone [`template-fill-pptx`](skills/ppt-master/workflows/template-fill-pptx.md) workflow. This route edits PPTX directly and must not enter the SVG generation pipeline.
 >

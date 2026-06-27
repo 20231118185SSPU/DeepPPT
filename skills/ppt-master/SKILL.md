@@ -91,7 +91,7 @@ For complete tool documentation, see `${SKILL_DIR}/scripts/README.md`.
 
 | Workflow | Path | Purpose |
 |----------|------|---------|
-| `topic-research` | `workflows/topic-research.md` | Pre-pipeline — gather web sources when the user supplies only a topic with no source files |
+| `deep-research` | `workflows/deep-research.md` | Pre-pipeline orchestrator — 7-step research flow (outline → search plan → per-page search → consolidation → analysis → narrative → visual strategy). All topic-only inputs route here. |
 | `template-fill` | `workflows/template-fill-pptx.md` | Give a native PPTX template deck plus source material; select fitting pages (a page may be reused for several output slides) and fill text back without SVG conversion |
 | `beautify` | `workflows/beautify-pptx.md` | Re-layout an existing PPTX through the SVG pipeline — preserve its text verbatim, inherit its palette/fonts as truth, redo only layout; mirror of `template-fill` |
 | `create-template` | `workflows/create-template.md` | Standalone layout template creation workflow |
@@ -129,7 +129,7 @@ Ambiguous requests such as "make this PPT more professional" or "optimize this d
 
 🚧 **GATE**: User has provided source material (PDF / DOCX / EPUB / URL / Markdown file / text description / conversation content — any form is acceptable).
 
-> **No source content?** When the user supplies only a topic name or requirements without any file or substantive description, run the [`topic-research`](workflows/topic-research.md) workflow first, then return here with its products as input.
+> **No source content?** When the user supplies only a topic name or requirements without any file or substantive description, run the [`deep-research`](workflows/deep-research.md) orchestrator first (7-step research flow), then return here with its products as input. Source files (PDF/DOCX/URL) also go through deep-research — the search steps are skipped but analysis/narrative/visual strategy still run.
 
 When the user provides non-Markdown content, convert immediately:
 
@@ -194,7 +194,7 @@ Multi-deck: several PPTX files may be imported into one main-pipeline project �
 
 **✅ Checkpoint — Confirm project structure created successfully, `sources/` contains all source files, converted materials are ready.**
 
-> **Content Selection Phase (Conditional)**: if `research_report.md` exists in the project (produced by `topic-research` or `deep-research` workflow) and `content_selection.json` does NOT yet exist, run the [`content-selection`](workflows/content-selection.md) workflow before proceeding. This interactive step parses the research report into dimensions and lets the user pick which content to include in the PPT. Skip if the user provided source files directly (PDF/DOCX/URL) — content selection applies to research-generated reports only. After content selection completes (outputs `content_selection.json`), proceed to Step 3.
+> **Content Selection Phase (Conditional)**: if `research_report.md` exists in the project (produced by `deep-research` workflow) and `content_selection.json` does NOT yet exist, run the [`content-selection`](workflows/content-selection.md) workflow before proceeding. This interactive step parses the research report into dimensions and lets the user pick which content to include in the PPT. Skip if the user provided source files directly and skipped research — content selection applies to research-generated reports only. After content selection completes (outputs `content_selection.json`), proceed to Step 3.
 
 ---
 
@@ -385,7 +385,7 @@ When the confirmed `image_usage` is not `ai` (and the plan has no AI part), do *
 
 The page is a **confirmation surface only** — Strategist still authors every recommendation; the page never generates content.
 
-**Mandatory — split-mode note** (not a ninth confirmation): after listing the eight confirmation details, you MUST append exactly one short line (rendered in the user's language, prefixed with 💡) about generation mode. Pick the variant by qualitative read of Phase A signals — recommended page count, source-material bulk, whether `topic-research` ran with substantial web-fetch accumulation:
+**Mandatory — split-mode note** (not a ninth confirmation): after listing the eight confirmation details, you MUST append exactly one short line (rendered in the user's language, prefixed with 💡) about generation mode. Pick the variant by qualitative read of Phase A signals — recommended page count, source-material bulk, whether `deep-research` ran with substantial web-search accumulation:
 
 | Signal read | Line content |
 |---|---|

@@ -6,15 +6,11 @@
 
 **Core Pipeline**: `Source Document → Create Project → [Template] → [Content Selection] → [Detailed Outline] → Strategist Eight Confirmations → [Image_Generator + Image-Text Linking] → Executor Live Preview → Quality Check → Post-processing → Export PPTX`
 
-Content Selection, Detailed Outline, and Image-Text Linking are conditional phases activated when `research_report.md` exists (from topic-research or deep-research). See SKILL.md Step 2 checkpoint, Step 4, and Step 5 for trigger conditions.
+Content Selection, Detailed Outline, and Image-Text Linking are conditional phases activated when `research_report.md` exists (from deep-research). See SKILL.md Step 2 checkpoint, Step 4, and Step 5 for trigger conditions.
 
-Topic-only requests with no source material: run one of the two research workflows before SKILL.md Step 1:
-- [`topic-research`](skills/ppt-master/workflows/topic-research.md) — quick research (3-round web search → fact-list Markdown)
-- [`deep-research`](skills/ppt-master/workflows/deep-research.md) — deep research (multi-source discovery → structured analysis → narrative construction → visual strategy)
+Topic-only requests with no source material: run the [`deep-research`](skills/ppt-master/workflows/deep-research.md) orchestrator before SKILL.md Step 1. It coordinates 7 independent research steps (outline → search plan → per-page search → consolidation → analysis → narrative → visual strategy).
 
-Choose deep-research when the user says "深度调研" / "deep research" or when content quality is the priority.
-
-**deep-research creates the project directory at its own Step 1** (via `project_manager.py init`). All research artifacts write directly into `<project>/` — no staging directories, no scatter across `projects/`.
+deep-research creates the project directory at its own Step 0 (via `project_manager.py init`). All research artifacts write directly into `<project>/_research/` — no staging directories, no scatter across `projects/`.
 
 ## Detailed Workflow Routing
 
@@ -94,7 +90,7 @@ projects/<name>/
 └── <name>.pptx             # Final exported presentation
 ```
 
-Format is set at init time (`--format ppt169` for 16:9, `--format ppt43` for 4:3). The `research_report.md` file (produced by topic-research or deep-research) activates conditional pipeline phases (Content Selection, Detailed Outline, Image-Text Linking).
+Format is set at init time (`--format ppt169` for 16:9, `--format ppt43` for 4:3). The `research_report.md` file (produced by deep-research) activates conditional pipeline phases (Content Selection, Detailed Outline, Image-Text Linking).
 
 ## Execution Requirements
 

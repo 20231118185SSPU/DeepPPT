@@ -5,7 +5,7 @@
 | User Intent | Workflow | Trigger |
 |-------------|----------|---------|
 | Generate PPT from source/topic | SKILL.md main pipeline | default |
-| Deep research before generation | [`deep-research`](../skills/ppt-master/workflows/deep-research.md) | "深度调研" / "deep research" |
+| Deep research before generation | [`deep-research`](../skills/ppt-master/workflows/deep-research.md) | All topic-only inputs; "深度调研" / "deep research" |
 | Fill existing template with new content | [`template-fill-pptx`](../skills/ppt-master/workflows/template-fill-pptx.md) | "fill this deck", "reuse this design" |
 | Beautify / re-layout existing PPT | [`beautify-pptx`](../skills/ppt-master/workflows/beautify-pptx.md) | "美化", "re-layout", "内容别动" |
 | Resume generation in new chat | [`resume-execute`](../skills/ppt-master/workflows/resume-execute.md) | "继续生成 projects/…" |
@@ -18,4 +18,4 @@
 | Customize animations | [`customize-animations`](../skills/ppt-master/workflows/customize-animations.md) | "change animation order/effect" |
 | Standalone template design | [`create-template`](../skills/ppt-master/workflows/create-template.md) | no source deck |
 
-> **Routing boundaries**: beautify preserves page count/order 1:1; any change to page structure = main pipeline. Template fill edits PPTX directly; beautify regenerates through SVG pipeline. deep-research creates the project directory at its own Step 1. For topic-only requests with no source, run topic-research or deep-research before SKILL.md Step 1.
+> **Routing boundaries**: beautify preserves page count/order 1:1; any change to page structure = main pipeline. Template fill edits PPTX directly; beautify regenerates through SVG pipeline. deep-research creates the project directory at its own Step 0. For all topic-only requests with no source, deep-research is the single entry point (topic-research has been removed). Source files (PDF/DOCX/URL) also route through deep-research with search steps skipped.
