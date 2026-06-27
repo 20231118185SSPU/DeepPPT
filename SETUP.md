@@ -125,6 +125,66 @@ DeepPPT 为以下 12 个主流 AI Agent 平台提供了项目级配置：
 1. 发送：`继续生成 projects/<project_name>`
 2. Agent 进入 Phase B（SVG 生成 + 导出）
 
+## 浏览器自动化设置（深度调研多 AI 搜索）
+
+深度调研工作流支持通过浏览器自动化调用 ChatGPT / Grok / Perplexity 进行搜索。需要先启动 CDP Chrome。
+
+### 1. 配置 Chrome 路径
+
+```bash
+cp scripts/.hermes-chrome.env.example scripts/.hermes-chrome.env
+```
+
+编辑 `scripts/.hermes-chrome.env`：
+
+```ini
+# Windows
+CHROME_EXE=C:\Program Files\Google\Chrome\Application\chrome.exe
+HERMES_CHROME_PROFILE=C:\chrome-hermes-profile
+
+# macOS
+CHROME_EXE=/Applications/Google Chrome.app/Contents/MacOS/Google Chrome
+HERMES_CHROME_PROFILE=~/chrome-hermes-profile
+
+HERMES_CHROME_PORT=9222
+```
+
+> **注意**: `HERMES_CHROME_PROFILE` 不能是 Chrome 默认配置目录。Chrome 安全策略禁止在默认配置上启用 CDP。
+
+### 2. 启动 CDP Chrome
+
+```bash
+# Windows
+scripts\start-hermes-chrome.bat
+
+# macOS / Linux
+bash scripts/start-hermes-chrome.sh
+```
+
+### 3. 登录 AI 服务
+
+在 CDP Chrome 中登录 ChatGPT / Grok / Perplexity。登录状态会持久保存，重启后无需重新登录。
+
+### 4. 验证连接
+
+```bash
+# 检查 CDP 端口
+curl http://localhost:9222/json/version
+
+# 测试 browse_ai.py
+python skills/ppt-master/scripts/research/browse_ai.py --list
+```
+
+### AI 搜索分工
+
+| 内容类型 | AI 工具 | 说明 |
+|---------|---------|------|
+| 技术/数据 | ChatGPT | 统计数据、技术参数、对比表 |
+| 新闻/趋势 | Grok | 最新动态、市场趋势 |
+| 学术/深度 | Perplexity | 学术观点、深度分析 |
+
+详见 [`docs/ai-browser-setup.md`](docs/ai-browser-setup.md)。
+
 ## 常见问题
 
 **Q: `python3` 命令找不到怎么办？**

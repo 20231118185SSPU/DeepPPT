@@ -80,14 +80,36 @@ def list_services():
         print(f"  {key:12s}  {svc['name']}")
 
 
-def connect_browser(chrome_profile: str | None = None):
-    """Launch or connect to a Chromium browser.
+def connect_browser(chrome_profile: str | None = None, cdp_port: int | None = None):
+    """Connect to or launch a Chromium browser.
 
-    If chrome_profile is provided, launches Chrome with that user data dir
-    to preserve login sessions. Otherwise launches a fresh Chromium.
+    Connection priority:
+    1. CDP (Chrome DevTools Protocol) — connect to an already-running Chrome
+       at localhost:<cdp_port>. This is the recommended mode: launch Chrome
+       with --remote-debugging-port first (see scripts/start-hermes-chrome.bat),
+       then connect. Preserves all login sessions.
+    2. Persistent context — launch Chrome with the given chrome_profile dir.
+       Preserves login sessions but launches a new Chrome instance.
+    3. Fresh Chromium — no profile, no persistence. Fallback only.
     """
     pw = sync_playwright().start()
 
+    # Mode 1: CDP connection to already-running Chrome
+    if cdp_port:
+        cdp_url = f"http://localhost:{cdp_port}"
+        try:
+            browser = pw.chromium.connect_over_cdp(cdp_url)
+            print(f"  Connected to Chrome via CDP at {cdp_url}")
+            # connect_over_cdp returns a Browser; get or create a context
+            if browser.contexts:
+                context = browser.contexts[0]
+            else:
+                context = browser.new_context(viewport={"width": 1280, "height": 900})
+            return pw, context, True
+        except Exception as e:
+            print(f"  CDP connection failed ({e}), falling back to launch mode")
+
+    # Mode 2: Persistent context with chrome_profile
     if chrome_profile:
         browser = pw.chromium.launch_persistent_context(
             user_data_dir=chrome_profile,
@@ -97,10 +119,11 @@ def connect_browser(chrome_profile: str | None = None):
             viewport={"width": 1280, "height": 900},
         )
         return pw, browser, True  # True = persistent context
-    else:
-        browser = pw.chromium.launch(headless=False)
-        context = browser.new_context(viewport={"width": 1280, "height": 900})
-        return pw, context, False
+
+    # Mode 3: Fresh Chromium (no persistence)
+    browser = pw.chromium.launch(headless=False)
+    context = browser.new_context(viewport={"width": 1280, "height": 900})
+    return pw, context, False
 
 
 def wait_for_input(page, svc: dict, timeout: int = 30000) -> bool:
@@ -188,7 +211,7 @@ def wait_for_response(page, svc: dict, timeout: int = 120000) -> str | None:
     return None
 
 
-def search_single(ai: str, prompt: str, output: str | None, chrome_profile: str | None, timeout: int) -> str:
+def search_single(ai: str, prompt: str, output: str | None, chrome_profile: str | None, timeout: int, cdp_port: int | None = None) -> str:
     """Perform a single AI search and return the result text."""
     if ai not in AI_SERVICES:
         print(f"ERROR: Unknown AI service '{ai}'. Use --list to see options.")
@@ -198,7 +221,7 @@ def search_single(ai: str, prompt: str, output: str | None, chrome_profile: str 
     print(f"Searching with {svc['name']}...")
     print(f"  Prompt: {prompt[:80]}...")
 
-    pw, ctx, is_persistent = connect_browser(chrome_profile)
+    pw, ctx, is_persistent = connect_browser(chrome_profile, cdp_port)
     try:
         page = ctx.new_page() if is_persistent else ctx.new_page()
 
@@ -217,7 +240,7 @@ def search_single(ai: str, prompt: str, output: str | None, chrome_profile: str 
             for fallback_ai in FALLBACK_ORDER.get(ai, []):
                 print(f"  Trying fallback: {AI_SERVICES[fallback_ai]['name']}...")
                 page.close()
-                return search_single(fallback_ai, prompt, output, chrome_profile, timeout)
+                return search_single(fallback_ai, prompt, output, chrome_profile, timeout, cdp_port)
             return ""
 
         # Send the prompt
@@ -253,7 +276,7 @@ def search_single(ai: str, prompt: str, output: str | None, chrome_profile: str 
             pass
 
 
-def search_batch(batch_file: str, output_dir: str, chrome_profile: str | None, timeout: int):
+def search_batch(batch_file: str, output_dir: str, chrome_profile: str | None, timeout: int, cdp_port: int | None = None):
     """Batch search: read search_plan.json and execute each item."""
     plan_path = Path(batch_file)
     if not plan_path.exists():
@@ -290,7 +313,7 @@ def search_batch(batch_file: str, output_dir: str, chrome_profile: str | None, t
         output_path = str(out_dir / filename)
 
         print(f"\n[{i+1}/{total}] {page_id}: {topic}")
-        result = search_single(ai_target, prompt, output_path, chrome_profile, timeout)
+        result = search_single(ai_target, prompt, output_path, chrome_profile, timeout, cdp_port)
 
         manifest.append({
             "page_id": page_id,
@@ -314,7 +337,34 @@ def search_batch(batch_file: str, output_dir: str, chrome_profile: str | None, t
     print(f"Done: {success}/{total} successful searches")
 
 
+def _load_hermes_env() -> dict:
+    """Load Hermes Chrome config from scripts/.hermes-chrome.env if available."""
+    env = {}
+    # Walk up from this script to find the project root's scripts/.hermes-chrome.env
+    # This script: <skill>/scripts/research/browse_ai.py
+    # Target:      <project>/scripts/.hermes-chrome.env
+    candidates = [
+        Path(__file__).resolve().parent.parent.parent.parent.parent / "scripts" / ".hermes-chrome.env",
+        Path(__file__).resolve().parent.parent / ".hermes-chrome.env",
+    ]
+    for env_file in candidates:
+        if env_file.exists():
+            with open(env_file, "r", encoding="utf-8") as f:
+                for line in f:
+                    line = line.strip()
+                    if not line or line.startswith("#"):
+                        continue
+                    if "=" in line:
+                        k, v = line.split("=", 1)
+                        env[k.strip()] = v.strip()
+            break
+    return env
+
+
 def main():
+    # Pre-load Hermes Chrome config
+    hermes_env = _load_hermes_env()
+
     parser = argparse.ArgumentParser(description="AI Browser Search — Playwright automation")
     parser.add_argument("--list", action="store_true", help="List supported AI services")
     parser.add_argument("--ai", choices=list(AI_SERVICES.keys()), help="AI service to use")
@@ -322,7 +372,12 @@ def main():
     parser.add_argument("--output", "-o", help="Output file path")
     parser.add_argument("--batch", help="Batch search plan JSON file")
     parser.add_argument("--output-dir", help="Output directory for batch mode")
-    parser.add_argument("--chrome-profile", help="Chrome user data dir (preserves login)")
+    parser.add_argument("--cdp-port", type=int,
+                        default=int(hermes_env.get("HERMES_CHROME_PORT", "0")) or None,
+                        help="CDP port to connect to running Chrome (default: from .hermes-chrome.env or none)")
+    parser.add_argument("--chrome-profile",
+                        default=hermes_env.get("HERMES_CHROME_PROFILE"),
+                        help="Chrome user data dir (preserves login; default: from .hermes-chrome.env)")
     parser.add_argument("--timeout", type=int, default=120000, help="Response timeout in ms")
     args = parser.parse_args()
 
@@ -333,7 +388,7 @@ def main():
     if args.batch:
         if not args.output_dir:
             args.output_dir = str(Path(args.batch).parent / "results")
-        search_batch(args.batch, args.output_dir, args.chrome_profile, args.timeout)
+        search_batch(args.batch, args.output_dir, args.chrome_profile, args.timeout, args.cdp_port)
         return
 
     if not args.ai or not args.prompt:
@@ -341,7 +396,7 @@ def main():
         print("\nERROR: --ai and --prompt are required for single search mode")
         sys.exit(1)
 
-    result = search_single(args.ai, args.prompt, args.output, args.chrome_profile, args.timeout)
+    result = search_single(args.ai, args.prompt, args.output, args.chrome_profile, args.timeout, args.cdp_port)
     if not args.output and result:
         print("\n--- Result ---")
         print(result[:2000])
