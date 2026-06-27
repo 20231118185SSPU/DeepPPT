@@ -527,6 +527,20 @@ python3 scripts/svg_to_pptx.py <project_path>
 | Takeaway line | `text-anchor="middle"` | Span full content width |
 | Hero numbers | `text-anchor="middle"` | Centered in their container |
 
+**Split-layout centering (分栏布局居中公式)**: for layouts dividing the canvas into image and text regions (e.g., left-image/right-text or right-image/left-text), text MUST be centered **within its own panel**, not against the full canvas:
+
+| Layout type | Text panel x-range (1280-wide) | Center x for `text-anchor="middle"` |
+|---|---|---|
+| Left-image / Right-text (3:7) | x=384 to x=1230 | x = (384 + 1230) / 2 = **807** |
+| Left-image / Right-text (4:6) | x=512 to x=1230 | x = (512 + 1230) / 2 = **871** |
+| Right-image / Left-text (7:3) | x=50 to x=896 | x = (50 + 896) / 2 = **473** |
+| Right-image / Left-text (6:4) | x=50 to x=768 | x = (50 + 768) / 2 = **409** |
+| Custom split | x=left_edge to x=right_edge | x = **(left_edge + right_edge) / 2** |
+
+**Formula**: `text_x = (panel_left + panel_right) / 2` with `text-anchor="middle"`. For multi-line text blocks, all `<tspan>` elements use the same `x` value (the panel center), and lines wrap within the panel width minus 20-30px inner padding on each side.
+
+**Forbidden**: using `x=640` (canvas center) for text in a split layout where the text panel does not span the full canvas — this misaligns text to one side of the panel.
+
 **Text spacing**: text blocks within a card/area MUST use the full available width. Do NOT cluster text in a narrow column when the card is wide. Use `x` positioning to center text within each container, and use `font-size` and `dy` spacing to fill the vertical space appropriately.
 
 **Forbidden**: text aligned to the left margin (`text-anchor="start"`) when the content area is wide and the text is short — this creates an ugly left-heavy layout. Center everything unless the layout specifically requires left alignment (e.g., timeline nodes).
@@ -611,9 +625,14 @@ Used for: deep-dive side images, data page illustrations, comparison page visual
 - Empty corners or dead zones are forbidden — fill with content, decorative elements, or background images
 
 ### 14.2 Font size minimums
+- **Global absolute minimum**: all visible text ≥ **14px** (body, labels, data, cards — everything except footnotes)
+- **Footnotes / source annotations / page numbers**: ≥ **12px** (only exception to the 14px floor)
 - Deep-dive page body text: **≥ 22px** (never use 15-16px for body)
 - Deep-dive page titles: **≥ 32px**
 - Content page body text: **≥ 20px**
+- Data page / KPI dashboard body text: **≥ 16px**
+- Data page card labels: **≥ 14px**
+- Explanation page (讲解页) body text: **≥ 18px**
 - Line height: **1.5x–1.6x** (not default tight spacing)
 - Text-to-image visual weight ratio: 1:3 to 1:4 (text must not look tiny next to a large image)
 
@@ -627,6 +646,23 @@ Used for: deep-dive side images, data page illustrations, comparison page visual
 - Relationship networks, data dashboards, complex comparison layouts: do NOT hand-draw in SVG
 - Instead: generate one AI image that contains the full visual, then overlay only title + minimal annotations in SVG
 - The AI image must use a character reference when depicting characters (see Rule 15)
+
+### 14.5 Vertical Distribution Rule (垂直分布规则)
+
+**Hard rule**: content MUST be evenly distributed across the full vertical safe area. Concentrating all content in the upper 50% while leaving the lower half empty is a layout failure.
+
+| Canvas | Safe area (y-range) | Minimum content coverage |
+|---|---|---|
+| 1280×720 (PPT 16:9) | y=50 to y=680 (630px usable) | Content spans ≥ 80% of safe area height |
+| 960×720 (PPT 4:3) | y=50 to y=680 | Same |
+
+**Distribution rules**:
+- Divide the safe area into **3 vertical zones**: top (y=50–260), middle (y=260–470), bottom (y=470–680)
+- Each zone MUST contain ≥ **20%** of the page's total content weight (text blocks, images, cards, or decorative elements)
+- A page where the bottom 40% is entirely empty background = **vertical distribution violation**
+- Exception: `breathing` pages with intentional negative space (hero number, full-bleed image with floating caption) — the dominant visual element must still touch ≥ 2 zones
+
+**Forbidden**: stacking all cards, text, and data in the top half of the canvas. If content does not fill the full height, enlarge elements, increase spacing, or add decorative fills in the lower region.
 
 ## 15. Character Consistency Rule (角色一致性规则)
 
@@ -667,3 +703,122 @@ After downloading a web image, verify:
 Use a sub-agent or visual model to evaluate each downloaded image against the page description:
 - Prompt: "Does this image directly relate to '{page topic}'? Is the content from the correct game/property? Answer YES/NO with reasoning."
 - Any NO → re-search or mark Needs-Manual
+
+## 17. Visual Enrichment & Overlay Rules (视觉增强与遮罩规则)
+
+### 17.1 Visual Enrichment Rule (P2)
+
+**Hard rule**: data pages, explanation pages (讲解页), and timeline pages MUST NOT use flat solid-color backgrounds without decorative elements. Every such page needs at least **2 of the following 3** visual enrichment layers:
+
+| Layer | Implementation | Examples |
+|---|---|---|
+| **Gradient background** | `<linearGradient>` or `<radialGradient>` on the page background `<rect>`, using project colors with subtle opacity variation | Primary→secondary_accent at 5-15% opacity shift; radial glow at 10% opacity in one corner |
+| **Card shadow / depth** | Drop shadow or layered card effect on content containers | `<filter>` with `feDropShadow` (dx=0, dy=4, stdDeviation=8, opacity=0.15-0.25); or layered rects with slight offset |
+| **Decorative elements** | Geometric shapes, lines, dots, or accent bars that reinforce the page's visual theme | Accent bar at card top (3-4px, primary color); corner decorative shapes; subtle dot grid pattern; divider lines between sections |
+
+**Minimum requirements by page type**:
+
+| Page type | Required enrichment | Forbidden |
+|---|---|---|
+| Data / KPI dashboard | Gradient bg + card shadow | Pure `#FFFFFF` or `#0A0E1A` flat fill with no decoration |
+| Explanation / timeline | Gradient bg OR decorative shapes + card shadow | Flat solid background with plain text blocks |
+| Comparison / side-by-side | Accent bar or divider between sections + card shadow | Two flat cards with no visual separation |
+| Content (hero image) | Image itself is the enrichment; overlay scrim sufficient | — (image pages exempt) |
+| Breathing / quote | Single decorative element (accent bar, dot, line) | — (minimal enrichment ok) |
+
+### 17.2 Card & Container Depth Rules
+
+**Hard rule**: cards and content containers MUST have visual depth cues. Flat cards on flat backgrounds create the "Word document" look.
+
+| Depth technique | When to use | Specification |
+|---|---|---|
+| Subtle shadow | Cards that float above the background | `<filter id="cardShadow"><feDropShadow dx="0" dy="4" stdDeviation="8" flood-opacity="0.18"/></filter>` — apply via `filter="url(#cardShadow)"` |
+| Accent top-bar | Cards with section labels | `<rect>` at card top, 3-4px height, width = card width, fill = `primary` color |
+| Border stroke | Cards that need separation from similar-bg parent | `stroke` = `border/divider` color from spec_lock, `stroke-width="1"` |
+| Tinted background | Cards on light themes | `fill` = `secondary_bg` (slightly different from page background) |
+
+**Shadow usage discipline** (complements shared-standards.md §6): shadow suits 2-3 genuinely floating elements per page. Peer-grid cards in a 3×2 layout should stay flat with border stroke or tint instead — shadow on every card in a grid reads as over-design.
+
+### 17.3 Overlay / Mask Opacity Rule (P3)
+
+**Hard rule**: when text overlays an image (content pages, cover, transitions), the overlay scrim MUST be opaque enough to guarantee text readability. The overlay is a `<rect>` covering the image area with the page's background color and an opacity value.
+
+| Background darkness | Minimum overlay opacity | Recommended range |
+|---|---|---|
+| Dark image on dark theme (bg lightness < 30%) | ≥ **0.92** | 0.92–0.96 |
+| Medium-contrast (mixed image, any theme) | ≥ **0.85** | 0.85–0.92 |
+| Light image on light theme (bg lightness > 70%) | ≥ **0.55** | 0.55–0.70 |
+
+**Split-layout transition zone rule**: for layouts where one half is image and the other is text (left-image/right-text etc.), the transition zone between image and text panels is where conflicts occur. The image-side scrim MUST extend **at least 60px past the panel boundary** into the text panel to prevent edge bleed. Alternatively, use a gradient scrim that fades from full opacity at the panel boundary to zero over 80-120px.
+
+**Forbidden**: overlay opacity < 0.80 on any page where body text sits on top of the image. Opacity 0.88 was found insufficient in practice — 0.92+ is required for reliable readability across varied image content.
+
+## §18 Animation Rhythm Enforcement
+
+The Executor MUST produce animations that match content rhythm. The guiding principle: *shorter timing for repeated scan content, longer timing for conceptual pivots, section transitions, hero diagrams, and final takeaways*.
+
+### §18.1 Per-Page-Type Animation Defaults
+
+| Page type | Transition | Object animation | Notes |
+|-----------|-----------|-----------------|-------|
+| Cover (P01) | `fade` 0.5s | `fade` 0.6s, `after-previous` cascade | Dramatic reveal |
+| TOC (P02) | `none` | `fly` 0.4s, `after-previous` stagger 0.15s | Sequential entry |
+| Hook / Opening | `fade` 0.35s | `fade` 0.5s | Let content breathe |
+| Content (dense) | `fade` 0.25s | `auto` 0.35s, stagger 0.12s | Fast scan rhythm |
+| Content (breathing) | `fade` 0.35s | `fade` 0.5s, stagger 0.20s | Slower, conceptual |
+| Deep-dive: data dashboard | `fade` 0.3s | `wipe` 0.5s, `after-previous` | Data group by group |
+| Deep-dive: comparison | `fade` 0.3s | `fly` 0.4s, left+right `with-previous` | Panels enter from sides |
+| Deep-dive: timeline | `fade` 0.3s | `fly` 0.35s, `after-previous` stagger 0.15s | Nodes appear sequentially |
+| Deep-dive: quote | `fade` 0.4s | `fade` 0.6s | Slow, contemplative |
+| Transition | `fade` 0.4s | `fade` 0.5s | Bridge moment |
+| Synthesis / Summary | `fade` 0.35s | `fade` 0.5s, stagger 0.15s | Building to close |
+| Ending | `fade` 0.5s | `fade` 0.6s | Final impression |
+
+### §18.2 Forbidden Animation Patterns
+
+- **Same animation for every page** — "animation for animation's sake". Vary by page type per §18.1.
+- **Zoom / swivel / blinds / checkerboard** on content pages — these are distracting. Reserve for hero images only.
+- **Duration < 0.15s** — invisible to the viewer.
+- **Duration > 1.0s** — feels sluggish, wastes audience time.
+- **All groups `with-previous`** — everything appearing at once has no rhythm. Use `after-previous` cascade for sequential entry.
+- **No animation at all** (transition: none + animation: none on content pages) — static decks feel like documents, not presentations.
+
+### §18.3 Key Data Emphasis Rules
+
+| Content type | Recommended animation | Duration |
+|-------------|----------------------|----------|
+| KPI / single big number | `appear` or `fade` | 0.3–0.4s |
+| Chart / graph | `wipe` left-to-right | 0.4–0.5s |
+| Comparison table columns | `fly` from left/right | 0.35–0.45s |
+| Bullet list items | `fly` top-down, stagger 0.10s | 0.30s each |
+| Hero image / product shot | `zoom` or `dissolve` | 0.5–0.6s |
+
+## §19 Visual Priority Page Rules
+
+Pages are classified by visual impact priority. The Executor MUST adapt rendering strategy per priority level.
+
+### §19.1 Priority Classification
+
+| Priority | Typical pages | Rendering strategy |
+|----------|--------------|-------------------|
+| **HIGH** | Cover, product showcase, hero section, key data reveal | Full-bleed AI background image + semi-transparent overlay + minimal text |
+| **normal** | Standard content, evidence blocks, analysis | Standard layout per template |
+| **LOW** | TOC, transition, footnotes, sources | Clean and minimal; solid background acceptable |
+
+### §19.2 HIGH Priority Page Rules
+
+When `visual_priority: HIGH` in `spec_lock.md` page roster:
+
+1. **Background**: MUST use an AI-generated full-bleed background image (via `image_gen.py`). The image fills the entire canvas (0,0 → canvas_width × canvas_height).
+2. **Overlay**: Semi-transparent dark overlay, opacity ≥ 0.85 (per §17.3 dark-theme rules). Ensures WCAG 4.5:1 contrast for overlaid text.
+3. **Text**: Maximum 60 Chinese characters (or 80 Latin words). Title ≥ 48px. No bullet lists — use a single powerful statement or number.
+4. **Animation**: `fade` 0.6s for the entire page. No per-element cascade — the page is a single visual moment.
+5. **Layout**: Center-aligned text on the overlay. Use the full canvas width. No split layouts, no cards, no borders.
+
+### §19.3 LOW Priority Page Rules
+
+When `visual_priority: LOW`:
+
+1. **Background**: Solid color from `spec_lock.md` palette. No background image required.
+2. **Text**: Standard font sizes per §14.2. Can be information-dense.
+3. **Animation**: `fade` 0.25s transition, `auto` 0.30s objects. Keep it quick — these are functional pages, not showpieces.

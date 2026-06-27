@@ -31,6 +31,7 @@ Processing options:
                     merged step, so existing --only invocations keep working.
     flatten-text  - Convert <tspan> to independent <text> (for special renderers)
     fix-rounded   - Convert <rect rx="..."/> to <path> (for PPT shape conversion)
+    fix-layout    - Auto-fix text overflow by reducing font-size (up to 2 passes)
 """
 
 import os
@@ -109,6 +110,99 @@ def process_rounded_rect(svg_file: Path, verbose: bool = False) -> int:
         return 0
 
 
+# -- Layout auto-fix constants (mirror svg_quality_checker.py) --
+_LAYOUT_MARGIN_LR = 50
+_LAYOUT_MARGIN_TB = 40
+_LAYOUT_MAX_SHRINK = 2   # max font-size reduction passes
+_LAYOUT_SHRINK_FACTOR = 0.9  # shrink by 10% per pass
+
+
+def process_layout_fix(svg_file: Path, verbose: bool = False) -> int:
+    """Auto-fix text overflow in a single SVG file (in-place).
+
+    For each <text> element whose estimated right edge exceeds the viewBox
+    safe area, reduce font-size by 10% (up to 2 passes).  Returns the
+    number of elements adjusted.
+    """
+    import re
+
+    try:
+        with open(svg_file, 'r', encoding='utf-8') as f:
+            content = f.read()
+    except Exception:
+        return 0
+
+    vb_match = re.search(r'viewBox="([^"]+)"', content)
+    if not vb_match:
+        return 0
+    parts = vb_match.group(1).split()
+    if len(parts) != 4:
+        return 0
+    try:
+        vb_w = float(parts[2])
+    except ValueError:
+        return 0
+
+    right_bound = vb_w - _LAYOUT_MARGIN_LR
+
+    # Find all text elements with font-size and x attributes
+    text_pat = re.compile(
+        r'(<text\b[^>]*?\bfont-size=")([^"]+)("[^>]*?\bx=")([^"]+)("[^>]*?>)'
+        r'([^<]+)(</text>)',
+        re.DOTALL,
+    )
+
+    fix_count = 0
+    modified = content
+
+    def _is_cjk_local(t):
+        cjk = sum(1 for c in t if '一' <= c <= '鿿' or '　' <= c <= '〿')
+        return cjk / max(len(t), 1) > 0.3
+
+    for m in text_pat.finditer(content):
+        prefix, fs_str, mid, x_str, mid2, text, suffix = (
+            m.group(1), m.group(2), m.group(3), m.group(4),
+            m.group(5), m.group(6), m.group(7),
+        )
+        try:
+            fs = float(fs_str.replace('px', '').strip())
+            x = float(x_str)
+        except ValueError:
+            continue
+
+        char_w = fs * 1.0 if _is_cjk_local(text) else fs * 0.55
+        est_right = x + len(text.strip()) * char_w / 2  # assume middle anchor
+
+        if est_right <= right_bound:
+            continue
+
+        # Shrink font-size
+        new_fs = fs
+        for _ in range(_LAYOUT_MAX_SHRINK):
+            new_fs *= _LAYOUT_SHRINK_FACTOR
+            new_right = x + len(text.strip()) * (new_fs * (1.0 if _is_cjk_local(text) else 0.55)) / 2
+            if new_right <= right_bound:
+                break
+
+        if new_fs < fs:
+            new_fs_str = f"{new_fs:.1f}px"
+            old_tag = m.group(0)
+            new_tag = old_tag.replace(f'font-size="{fs_str}"', f'font-size="{new_fs_str}"', 1)
+            modified = modified.replace(old_tag, new_tag, 1)
+            fix_count += 1
+
+    if fix_count > 0:
+        try:
+            with open(svg_file, 'w', encoding='utf-8') as f:
+                f.write(modified)
+            if verbose:
+                safe_print(f"   [OK] {svg_file.name}: {fix_count} text element(s) font-size adjusted")
+        except Exception:
+            return 0
+
+    return fix_count
+
+
 def finalize_project(
     project_dir: Path,
     options: dict[str, bool],
@@ -177,7 +271,7 @@ def finalize_project(
     # Step 2: Embed icons
     if options.get('embed_icons'):
         if not quiet:
-            safe_print("[1/4] Embedding icons...")
+            safe_print("[1/5] Embedding icons...")
         icons_count = 0
         for svg_file in svg_final.glob('*.svg'):
             count = embed_icons_in_file(svg_file, icons_dir, dry_run=False, verbose=False, fallback_dir=icons_fallback_dir)
@@ -196,7 +290,7 @@ def finalize_project(
     # from disk once.
     if options.get('align_images'):
         if not quiet:
-            safe_print("[2/4] Aligning + embedding images...")
+            safe_print("[2/5] Aligning + embedding images...")
         img_count = 0
         img_errors = 0
         office_vector_count = 0
@@ -233,7 +327,7 @@ def finalize_project(
     # Step 4: Flatten text
     if options.get('flatten_text'):
         if not quiet:
-            safe_print("[3/4] Flattening text...")
+            safe_print("[3/5] Flattening text...")
         flatten_count = 0
         for svg_file in svg_final.glob('*.svg'):
             if process_flatten_text(svg_file, verbose=False):
@@ -247,7 +341,7 @@ def finalize_project(
     # Step 5: Convert rounded rects to Path
     if options.get('fix_rounded'):
         if not quiet:
-            safe_print("[4/4] Converting rounded rects to Path...")
+            safe_print("[4/5] Converting rounded rects to Path...")
         rounded_count = 0
         for svg_file in svg_final.glob('*.svg'):
             count = process_rounded_rect(svg_file, verbose=False)
@@ -257,6 +351,20 @@ def finalize_project(
                 safe_print(f"      {rounded_count} rounded rectangle(s) converted")
             else:
                 safe_print("      No rounded rectangles")
+
+    # Step 6: Layout auto-fix (text overflow → font-size shrink)
+    if options.get('fix_layout'):
+        if not quiet:
+            safe_print("[5/5] Auto-fixing layout overflow...")
+        layout_fix_count = 0
+        for svg_file in svg_final.glob('*.svg'):
+            count = process_layout_fix(svg_file, verbose=False)
+            layout_fix_count += count
+        if not quiet:
+            if layout_fix_count > 0:
+                safe_print(f"      {layout_fix_count} text element(s) adjusted")
+            else:
+                safe_print("      No overflow detected")
 
     # Done
     if not quiet:
@@ -285,6 +393,7 @@ Processing options (for --only):
   align-images  Align (slice/meet) + Base64-embed all <image> (single pass)
   flatten-text  Flatten text
   fix-rounded   Convert rounded rects to Path
+  fix-layout    Auto-fix text overflow (font-size shrink)
 
 Aliases (still accepted):
   crop-images, fix-aspect, embed-images  → all map to align-images
@@ -299,7 +408,7 @@ Aliases (still accepted):
             'align-images',
             # Backwards-compatible aliases — all three map to align-images now.
             'crop-images', 'fix-aspect', 'embed-images',
-            'flatten-text', 'fix-rounded',
+            'flatten-text', 'fix-rounded', 'fix-layout',
         ],
         help=('Execute only specified processing steps (default: all). '
               'crop-images / fix-aspect / embed-images are accepted as '
@@ -332,6 +441,7 @@ Aliases (still accepted):
             'align_images': bool(only & _ALIGN_ALIASES),
             'flatten_text': 'flatten-text' in only,
             'fix_rounded': 'fix-rounded' in only,
+            'fix_layout': 'fix-layout' in only,
         }
     else:
         # Execute all by default
@@ -340,6 +450,7 @@ Aliases (still accepted):
             'align_images': True,
             'flatten_text': True,
             'fix_rounded': True,
+            'fix_layout': True,
         }
 
     success = finalize_project(args.project_dir, options, args.dry_run, args.quiet,

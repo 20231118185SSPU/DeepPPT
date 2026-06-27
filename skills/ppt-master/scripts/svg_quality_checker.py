@@ -302,6 +302,15 @@ class SVGQualityChecker:
                 if not self.template_mode:
                     self._check_narrative_consistency(content, svg_path, result)
 
+                # 12. Layout boundary check: text/element overflow vs viewBox.
+                self._check_layout_bounds(content, result)
+
+                # 13. Element spacing check: minimum gaps between elements.
+                self._check_element_spacing(content, result)
+
+                # 14. Vertical distribution check: content spread across zones.
+                self._check_vertical_distribution(content, result)
+
             # Determine pass/fail
             result['passed'] = len(result['errors']) == 0
 
@@ -1027,6 +1036,294 @@ class SVGQualityChecker:
                 f"keywords) with detailed_outline core_argument for P{page_num:02d}. "
                 f"Argument: '{core_argument[:80]}...'")
 
+    # ------------------------------------------------------------------
+    # Check 12: Layout boundary — element overflow vs viewBox
+    # ------------------------------------------------------------------
+
+    # Safe margins from executor-base.md §14.1
+    SAFE_MARGIN_LR = 50   # left/right
+    SAFE_MARGIN_TB = 40   # top/bottom
+    OVERFLOW_TOLERANCE = 10  # px grace to avoid false positives
+
+    def _check_layout_bounds(self, content: str, result: Dict):
+        """Check whether visible elements exceed the viewBox safe area.
+
+        Uses regex-based heuristics (not a full SVG renderer) to detect
+        text overflow, image overflow, and out-of-bounds positioning.
+        """
+        vb_match = re.search(r'viewBox="([^"]+)"', content)
+        if not vb_match:
+            return  # no viewBox — already caught by check 1
+        parts = vb_match.group(1).split()
+        if len(parts) != 4:
+            return
+        try:
+            vb_w = float(parts[2])
+            vb_h = float(parts[3])
+        except ValueError:
+            return
+
+        right_bound = vb_w - self.SAFE_MARGIN_LR + self.OVERFLOW_TOLERANCE
+        bottom_bound = vb_h - self.SAFE_MARGIN_TB + self.OVERFLOW_TOLERANCE
+        left_bound = self.SAFE_MARGIN_LR - self.OVERFLOW_TOLERANCE
+        top_bound = self.SAFE_MARGIN_TB - self.OVERFLOW_TOLERANCE
+
+        # --- Text element overflow ---
+        # Match <text ... x="N" y="N" ...>content</text>
+        text_pat = re.compile(
+            r'<text\b[^>]*\bx="([^"]+)"[^>]*\by="([^"]+)"[^>]*>([^<]+)</text>',
+            re.DOTALL,
+        )
+        # Also match <text ...><tspan x="N" y="N">content</tspan></text>
+        tspan_pat = re.compile(
+            r'<tspan\b[^>]*\bx="([^"]+)"[^>]*\by="([^"]+)"[^>]*>([^<]+)</tspan>',
+            re.DOTALL,
+        )
+
+        # Gather font-size context (global or per-element)
+        global_fs = self._extract_global_font_size(content)
+
+        overflow_count = 0
+        for m in text_pat.finditer(content):
+            x, y, text = m.group(1), m.group(2), m.group(3)
+            overflow_count += self._check_single_text_bounds(
+                x, y, text, global_fs, right_bound, bottom_bound,
+                left_bound, top_bound, vb_w, result, m.group(0)[:60],
+            )
+        for m in tspan_pat.finditer(content):
+            x, y, text = m.group(1), m.group(2), m.group(3)
+            overflow_count += self._check_single_text_bounds(
+                x, y, text, global_fs, right_bound, bottom_bound,
+                left_bound, top_bound, vb_w, result, m.group(0)[:60],
+            )
+
+        if overflow_count > 0:
+            result['info']['layout_overflow_count'] = overflow_count
+
+        # --- Image element overflow ---
+        img_pat = re.compile(
+            r'<image\b[^>]*\bx="([^"]+)"[^>]*\by="([^"]+)"'
+            r'[^>]*\bwidth="([^"]+)"[^>]*\bheight="([^"]+)"',
+            re.IGNORECASE,
+        )
+        for m in img_pat.finditer(content):
+            try:
+                ix, iy = float(m.group(1)), float(m.group(2))
+                iw, ih = float(m.group(3)), float(m.group(4))
+            except ValueError:
+                continue
+            if ix + iw > vb_w + self.OVERFLOW_TOLERANCE:
+                result['warnings'].append(
+                    f"Layout: image at x={ix} width={iw} exceeds viewBox width {vb_w}")
+            if iy + ih > vb_h + self.OVERFLOW_TOLERANCE:
+                result['warnings'].append(
+                    f"Layout: image at y={iy} height={ih} exceeds viewBox height {vb_h}")
+
+    def _check_single_text_bounds(self, x_str, y_str, text, global_fs,
+                                   right_bound, bottom_bound, left_bound,
+                                   top_bound, vb_w, result, snippet):
+        """Check one text element against layout bounds. Returns 1 if overflow."""
+        try:
+            x = float(x_str)
+            y = float(y_str)
+        except ValueError:
+            return 0
+
+        # Estimate text width
+        fs = global_fs if global_fs else 20  # fallback
+        char_width = fs * 1.0 if self._is_cjk(text) else fs * 0.55
+        est_width = len(text.strip()) * char_width
+        anchor = 'middle'  # default
+        if 'text-anchor="start"' in snippet:
+            anchor = 'start'
+        elif 'text-anchor="end"' in snippet:
+            anchor = 'end'
+
+        if anchor == 'middle':
+            right_edge = x + est_width / 2
+            left_edge = x - est_width / 2
+        elif anchor == 'end':
+            right_edge = x
+            left_edge = x - est_width
+        else:  # start
+            right_edge = x + est_width
+            left_edge = x
+
+        if right_edge > right_bound:
+            result['warnings'].append(
+                f"Layout overflow: text '{text[:30]}...' right edge ~{right_edge:.0f} "
+                f"exceeds safe area bound {right_bound:.0f}")
+            return 1
+        if left_edge < left_bound:
+            result['warnings'].append(
+                f"Layout overflow: text '{text[:30]}...' left edge ~{left_edge:.0f} "
+                f"below safe area bound {left_bound:.0f}")
+            return 1
+        if y > bottom_bound:
+            result['warnings'].append(
+                f"Layout overflow: text '{text[:30]}...' y={y} "
+                f"exceeds safe area bottom {bottom_bound:.0f}")
+            return 1
+        if y < top_bound:
+            result['warnings'].append(
+                f"Layout overflow: text '{text[:30]}...' y={y} "
+                "above safe area top")
+            return 1
+        return 0
+
+    @staticmethod
+    def _extract_global_font_size(content: str) -> float | None:
+        """Extract the dominant font-size from the SVG (first text element)."""
+        m = re.search(r'font-size="([^"]+)"', content)
+        if m:
+            try:
+                return float(m.group(1).replace('px', '').strip())
+            except ValueError:
+                pass
+        return None
+
+    @staticmethod
+    def _is_cjk(text: str) -> bool:
+        """Heuristic: if >30% of characters are CJK, treat as CJK text."""
+        if not text:
+            return False
+        cjk = sum(1 for c in text if '一' <= c <= '鿿'
+                   or '　' <= c <= '〿'
+                   or '＀' <= c <= '￯')
+        return cjk / max(len(text), 1) > 0.3
+
+    # ------------------------------------------------------------------
+    # Check 13: Element spacing — minimum gaps between text elements
+    # ------------------------------------------------------------------
+
+    MIN_H_GAP = 15   # px between same-row text elements
+    MIN_V_GAP_RATIO = 0.3  # fraction of font-size for vertical gap
+
+    def _check_element_spacing(self, content: str, result: Dict):
+        """Warn when text elements are too close together."""
+        vb_match = re.search(r'viewBox="([^"]+)"', content)
+        if not vb_match:
+            return
+        parts = vb_match.group(1).split()
+        if len(parts) != 4:
+            return
+        try:
+            vb_w = float(parts[2])
+        except ValueError:
+            return
+
+        # Collect all text positions (from <text> and <tspan>)
+        positions = []
+        for m in re.finditer(
+            r'<(?:text|tspan)\b[^>]*\bx="([^"]+)"[^>]*\by="([^"]+)"', content
+        ):
+            try:
+                positions.append((float(m.group(1)), float(m.group(2))))
+            except ValueError:
+                continue
+
+        if len(positions) < 2:
+            return
+
+        global_fs = self._extract_global_font_size(content) or 20
+        overlap_count = 0
+
+        for i in range(len(positions)):
+            for j in range(i + 1, len(positions)):
+                x1, y1 = positions[i]
+                x2, y2 = positions[j]
+                dy = abs(y1 - y2)
+
+                if dy < global_fs * 0.5:
+                    # Same row — check horizontal gap
+                    dx = abs(x1 - x2)
+                    if dx < self.MIN_H_GAP:
+                        overlap_count += 1
+                        if overlap_count <= 3:
+                            result['warnings'].append(
+                                f"Spacing: text elements at ({x1:.0f},{y1:.0f}) and "
+                                f"({x2:.0f},{y2:.0f}) are only {dx:.0f}px apart "
+                                f"(min {self.MIN_H_GAP}px)")
+                elif dy < global_fs * 2:
+                    # Close rows — check vertical gap
+                    min_v_gap = global_fs * self.MIN_V_GAP_RATIO
+                    if dy < min_v_gap:
+                        overlap_count += 1
+                        if overlap_count <= 3:
+                            result['warnings'].append(
+                                f"Spacing: text elements vertically {dy:.0f}px apart "
+                                f"(min {min_v_gap:.0f}px for {global_fs}px font)")
+
+        if overlap_count > 3:
+            result['warnings'].append(
+                f"Spacing: {overlap_count - 3} more spacing violations (showing first 3)")
+        if overlap_count > 0:
+            result['info']['spacing_violations'] = overlap_count
+
+    # ------------------------------------------------------------------
+    # Check 14: Vertical distribution — content spread across zones
+    # ------------------------------------------------------------------
+
+    def _check_vertical_distribution(self, content: str, result: Dict):
+        """Check that content spans the safe area vertically (executor-base §14.5).
+
+        Divides the viewBox into 3 equal zones and checks that each has
+        at least some visible content.  Warns if the bottom 40% is empty.
+        """
+        vb_match = re.search(r'viewBox="([^"]+)"', content)
+        if not vb_match:
+            return
+        parts = vb_match.group(1).split()
+        if len(parts) != 4:
+            return
+        try:
+            vb_h = float(parts[3])
+        except ValueError:
+            return
+
+        # Collect all visible element y-positions
+        # Match text, image, rect, and circle elements with y/cy attributes
+        y_positions = []
+        for m in re.finditer(
+            r'<(?:text|tspan|image|rect|circle|ellipse)\b[^>]*'
+            r'\b(?:y|cy)="([^"]+)"', content
+        ):
+            try:
+                y_positions.append(float(m.group(1)))
+            except ValueError:
+                continue
+
+        if len(y_positions) < 2:
+            return  # too few elements to assess
+
+        zone_h = vb_h / 3
+        zone_counts = [0, 0, 0]  # top, middle, bottom
+        for y in y_positions:
+            zone_idx = min(int(y / zone_h), 2)
+            zone_counts[zone_idx] += 1
+
+        total = sum(zone_counts)
+        if total == 0:
+            return
+
+        # Check: bottom 40% completely empty
+        bottom_threshold = vb_h * 0.6
+        has_bottom_content = any(y >= bottom_threshold for y in y_positions)
+        if not has_bottom_content:
+            result['warnings'].append(
+                f"Vertical distribution: bottom 40% of canvas has no content "
+                f"(all {total} elements above y={bottom_threshold:.0f})")
+
+        # Check: any zone < 15% of content weight
+        for idx, (label, count) in enumerate(
+            zip(["top", "middle", "bottom"], zone_counts)
+        ):
+            ratio = count / total
+            if ratio < 0.15 and count == 0:
+                result['warnings'].append(
+                    f"Vertical distribution: {label} zone (y={idx*zone_h:.0f}-"
+                    f"{(idx+1)*zone_h:.0f}) has no content")
+
     @staticmethod
     def _normalize_size(value: str) -> str:
         """Normalize a font-size value for comparison: lowercase, strip spaces,
@@ -1056,6 +1353,12 @@ class SVGQualityChecker:
             return 'foreignObject'
         elif 'font' in error_msg.lower():
             return 'Font issues'
+        elif 'Layout overflow' in error_msg or 'Layout:' in error_msg:
+            return 'Layout overflow'
+        elif 'Spacing:' in error_msg:
+            return 'Element spacing'
+        elif 'Vertical distribution' in error_msg:
+            return 'Vertical distribution'
         else:
             return 'Other'
 

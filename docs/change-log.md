@@ -86,3 +86,18 @@
 - **Smoke check**: 78 passed, 0 failed, 4 skipped / 82 checks（修改前后一致，无回归）
 - **Risk**: medium（架构重构，但仅涉及工作流 markdown 文件和新增脚本，未修改现有 Python 脚本逻辑）
 - **Human reviewed**: pending
+
+### 2026-06-28 — 视频建议实施：排版稳定性检测 + 布局自动修正 + 动画节奏规则 + 发布会品牌预设
+
+- **Files**:
+  - **修改**: `scripts/svg_quality_checker.py`（新增 3 个检查：layout_bounds, element_spacing, vertical_distribution）
+  - **修改**: `scripts/finalize_svg.py`（新增 Step 5: fix-layout 自动修正文字溢出）
+  - **修改**: `references/executor-base.md`（新增 §18 动画节奏强制规则, §19 视觉优先页规则）
+  - **新增**: `templates/brands/event_presentation/design_spec.md`（发布会品牌预设）
+  - **修改**: `templates/brands/brands_index.json`（新增 event_presentation 条目）
+- **Reason**: B站视频横评中 PPT Master 排版评分 ★★☆、动画评分 ★★☆。分析发现 svg_quality_checker.py 完全没有布局边界/溢出/间距检测；executor-base.md 有生成规则但无自动化验证；动画节奏缺乏强制执行
+- **Before**: 质量检查器无布局验证；finalize_svg.py 无自动修正能力；动画规则散落在 customize-animations.md 但 Executor 不强制参照；无发布会专用品牌预设
+- **After**: svg_quality_checker.py 新增 check 12/13/14（文字溢出检测、元素间距检测、垂直分布检测）；finalize_svg.py 新增 fix-layout 步骤（文字溢出自动缩减字号）；executor-base.md 新增 §18（动画节奏按页面类型强制）和 §19（视觉优先页渲染策略）；event_presentation 品牌预设（暗色调、Apple keynote 风格）
+- **Smoke check**: 78 passed, 0 failed, 4 skipped / 82 checks（修改前后一致，无回归）
+- **Risk**: low（新增检查和规则，不修改现有脚本核心逻辑）
+- **Human reviewed**: pending

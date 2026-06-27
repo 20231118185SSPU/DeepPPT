@@ -3,6 +3,10 @@
     "summary": "Anthropic brand identity — AI/LLM tech talks, developer conferences, technical training, product launches",
     "primary_color": "#D97757"
   },
+  "event_presentation": {
+    "summary": "Event / launch presentation — dark dramatic keynote style. Product launches, press events, stage presentations, demo days. Apple WWDC / Google I/O inspired.",
+    "primary_color": "#58A6FF"
+  },
   "google": {
     "summary": "Google brand identity — multi-product corporate decks, developer events (Google I/O style), education and training in the Google ecosystem",
     "primary_color": "#4285F4"
