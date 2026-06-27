@@ -297,6 +297,11 @@ class SVGQualityChecker:
                 if not self.template_mode:
                     self._check_contrast(content, svg_path, result)
 
+                # 11. Narrative consistency check: verify SVG content
+                #     matches core_argument from detailed_outline.json.
+                if not self.template_mode:
+                    self._check_narrative_consistency(content, svg_path, result)
+
             # Determine pass/fail
             result['passed'] = len(result['errors']) == 0
 
@@ -960,6 +965,67 @@ class SVGQualityChecker:
                 result['warnings'].append(
                     f"Text fill {fill} vs bg {bg_color}: "
                     f"WCAG contrast {contrast:.1f}:1 (below 4.5:1 standard)")
+
+    def _check_narrative_consistency(self, content: str, svg_path: Path, result: Dict):
+        """Check that SVG text content aligns with the page's core_argument
+        from detailed_outline.json (narrative restatement mechanism —
+        executor-base.md §2.1a)."""
+        project_path = svg_path.parent.parent  # svg_output/ → project root
+        outline_path = project_path / "detailed_outline.json"
+        if not outline_path.exists():
+            return  # no detailed outline — skip silently
+
+        try:
+            with open(outline_path, 'r', encoding='utf-8') as f:
+                outline = json.load(f)
+        except (json.JSONDecodeError, OSError):
+            return  # malformed outline — skip silently
+
+        # Determine which page this SVG corresponds to
+        svg_name = svg_path.stem  # e.g. "03_核心优势"
+        page_match = re.match(r'^(\d+)', svg_name)
+        if not page_match:
+            return
+        page_num = int(page_match.group(1))
+
+        # Find matching outline entry (pages are 1-indexed in outline)
+        pages = outline if isinstance(outline, list) else outline.get('pages', [])
+        if page_num < 1 or page_num > len(pages):
+            return
+        page_entry = pages[page_num - 1]
+        core_argument = page_entry.get('core_argument', '')
+        if not core_argument or len(core_argument) < 10:
+            return  # no meaningful argument to check against
+
+        # Extract text content from SVG
+        text_elements = re.findall(r'>([^<]+)<', content)
+        svg_text = ' '.join(t.strip() for t in text_elements if t.strip())
+
+        # Keyword overlap check: extract significant words from core_argument
+        # and check if at least some appear in the SVG text
+        stop_words = {
+            'the', 'a', 'an', 'is', 'are', 'was', 'were', 'be', 'been',
+            'being', 'have', 'has', 'had', 'do', 'does', 'did', 'will',
+            'would', 'could', 'should', 'may', 'might', 'can', 'shall',
+            'of', 'in', 'to', 'for', 'with', 'on', 'at', 'from', 'by',
+            'and', 'or', 'but', 'not', 'this', 'that', 'these', 'those',
+            '的', '是', '在', '了', '和', '与', '对', '为', '将', '把',
+            '被', '从', '到', '也', '就', '都', '而', '及', '等',
+        }
+        arg_words = set(re.findall(r'[一-鿿]+|[a-zA-Z]{3,}', core_argument.lower()))
+        arg_words -= stop_words
+        if len(arg_words) < 2:
+            return  # not enough keywords to check
+
+        svg_lower = svg_text.lower()
+        matched = sum(1 for w in arg_words if w in svg_lower)
+        match_ratio = matched / len(arg_words) if arg_words else 0
+
+        if match_ratio < 0.15:
+            result['warnings'].append(
+                f"Narrative consistency: SVG text has low overlap ({matched}/{len(arg_words)} "
+                f"keywords) with detailed_outline core_argument for P{page_num:02d}. "
+                f"Argument: '{core_argument[:80]}...'")
 
     @staticmethod
     def _normalize_size(value: str) -> str:

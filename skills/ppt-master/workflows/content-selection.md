@@ -52,20 +52,24 @@ For each dimension, extract:
 
 **2.1 Display format**
 
-Present up to **4 dimensions per round**, sorted by density descending. Each dimension is formatted as:
+Present **2 dimensions per round**（not 4 — 因为 AskUserQuestion 工具限制最多 4 个选项，其中 2 个必须留给快捷选项），sorted by density descending. Each dimension is formatted as:
 
 ```
 [维度标题] — {摘要}（信息密度：{X}/10）
 ```
 
-**2.2 Quick options**
+**2.2 Quick options（MANDATORY — 每轮必须包含，不允许省略）**
 
-Each round includes two quick-action options at the end:
+Each round's AskUserQuestion call must use exactly 4 options: **2 content dimensions + 2 quick-action options**.
 
-| Option | Behavior |
-|---|---|
-| "以上都选" | Select all dimensions in this round, continue to next round |
-| "跳过本轮" | Skip all dimensions in this round, continue to next round |
+| Option slot | Content | Behavior |
+|---|---|---|
+| Option 1 | 维度 A | Select this dimension |
+| Option 2 | 维度 B | Select this dimension |
+| Option 3 | **"以上都选"** | Select both dimensions in this round, continue to next round |
+| Option 4 | **"跳过本轮"** | Skip both dimensions in this round, continue to next round |
+
+> **Why 2 dimensions per round, not 4**: The `AskUserQuestion` tool hard-limits to 4 options max. Reserving 2 slots for quick-action shortcuts is mandatory per this workflow. This means more rounds for 6+ dimensions, but each round is faster and the user always has a "select all" escape hatch.
 
 The user may also select individual dimensions by name or number.
 

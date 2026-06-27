@@ -147,6 +147,31 @@
 >
 > **Strategist source**: copy from `design_spec.md §VII Visualization Reference List` — only the rows whose `reference template path` points to a `templates/charts/` file. Pages marked `no-template-match` in §VII MUST NOT appear here.
 
+## decisions
+- color_scheme: "Medical decks use cool blues (#1A5276) and warm whites (#F8F9FA) to evoke clinical trust. WHY: audience is hospital administrators who associate blue with professionalism and sterile environments."
+- font_choice: "Microsoft YaHei as body font ensures CJK readability at 22px on projected slides. WHY: target audience includes 50+ year-old hospital directors with lower visual acuity; YaHei's open counters improve legibility vs SimSun at small sizes."
+- no_animations: "No per-element entrance animations. WHY: deck is projected in bright conference rooms where motion distracts; user confirmed static-only in Step 4 confirmation 'g'."
+
+> **Optional but recommended.** Records high-stakes design decisions with their causal chain (WHY). Each entry is a single line: `- topic: "decision summary. WHY: rationale."` The WHY suffix is the key differentiator from `design_spec.md` narrative — it captures the **reasoning** that survives context compression.
+>
+> **What belongs here**: decisions that a new AI conversation would re-debate without this context. Typical entries: color psychology rationale, font legibility trade-offs, animation/no-animation choices, audience-specific layout decisions, "why not X" counter-arguments.
+>
+> **What does NOT belong here**: operational specs already covered by other sections (colors, fonts, layouts). Do not duplicate.
+>
+> **Strategist source**: extract from `design_spec.md` §VIII Eight Confirmations and §IV Font Plan — only decisions where omitting the WHY would cause a future AI to question or reverse the choice. Aim for 2-5 entries per deck; more suggests over-documentation.
+>
+> **How AI uses this**: when a new conversation opens and the Executor reads spec_lock.md, the decisions section provides immediate causal context. This prevents the "probability model re-debating settled decisions" failure mode described in the spec/harness methodology. No need to read `design_spec.md` for these specific points.
+
+> **Partition note for Executors and compliance checkers.**
+> The sections above split into two functional categories:
+>
+> | Category | Sections | Purpose |
+> |---|---|---|
+> | **Decision specs** (AI reads to understand *intent*) | `mode`, `visual_style`, `colors`, `typography`, `decisions` | Natural-language design choices; AI interprets probabilistically |
+> | **Harness constraints** (scripts verify *compliance*) | `canvas`, `icons`, `images`, `page_rhythm`, `page_layouts`, `page_charts`, `forbidden` | Machine-checkable rules; violations are deterministic errors |
+>
+> Both categories live in this single file for atomicity — Executor reads one file per page. The partition is a **thinking aid** for the Strategist: decisions that matter for *understanding* go in the upper sections (and `decisions`); constraints that matter for *enforcement* go in the lower sections and `forbidden`.
+
 ## forbidden
 - Mixing icon libraries
 - rgba()

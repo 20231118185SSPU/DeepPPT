@@ -147,11 +147,34 @@ Screenshots MUST be the same dimensions within each column. Grid layout MUST be 
 
 Before the first SVG page, output a confirmation listing: canvas dimensions, body font size, color scheme (primary/secondary/accent HEX), font plan. Prevents spec/execution drift.
 
+### 2.1a Narrative Restatement (Mandatory)
+
+> Long decks lose narrative coherence when later pages drift from the outline's intent. This restatement mechanism pushes each page's narrative function into the highest-attention position — right before generation begins.
+
+**Hard rule**: Before generating each SVG page, Executor MUST restate (internally or in output):
+
+1. **Current page's narrative function** — from `detailed_outline.json` → `narrative_function` (or inferred from `design_spec.md §IX` if no detailed outline exists)
+2. **Current page's core argument** — from `detailed_outline.json` → `core_argument` (or the page's key takeaway from `§IX`)
+3. **Narrative bridge** — how this page connects to the previous page's ending point (one sentence)
+
+This restatement ensures long-deck pages maintain narrative coherence even when context compression erodes earlier pages' intent. For pages without `detailed_outline.json` context, derive the restatement from `design_spec.md §IX Content` and the page's `page_rhythm` tag.
+
+> This mechanism complements §2.1's spec_lock re-read: §2.1 ensures **visual consistency** (colors, fonts, icons), §2.1a ensures **narrative consistency** (argument flow, content coherence).
+
 ### 2.1 Per-page spec_lock re-read (Mandatory)
 
 > Long decks drift off the declared palette/icons mid-deck due to context compression. `spec_lock.md` is the canonical execution reference — re-read it per page to bypass model memory.
 
 **Hard rule**: Before generating **each** SVG page, `read_file <project_path>/spec_lock.md`. Use only values from this file, not from memory. If context was auto-compacted, also `read_file <project_path>/design_spec.md` for the current page's §IX brief.
+
+**spec_lock.md has two functional layers** — read both, but treat them differently:
+
+| Layer | Sections | How to use |
+|-------|----------|------------|
+| **Decision specs** (intent) | `mode`, `visual_style`, `colors`, `typography`, `decisions` | Interpret with understanding — these express *why* the design looks the way it does. The `## decisions` section contains causal chains (WHY) that explain the reasoning. When your creative judgment conflicts with a decision, follow the decision — it was locked by the human. |
+| **Harness constraints** (compliance) | `canvas`, `icons`, `images`, `page_rhythm`, `page_layouts`, `page_charts`, `forbidden` | Follow mechanically — these are machine-checkable rules. Violations are deterministic errors caught by `svg_quality_checker.py` and `spec_compliance_check.py`. Do not interpret or override. |
+
+The partition is a thinking aid, not a structural split — both live in one file for atomicity.
 
 **Per-block expression**: render each `design_spec.md §IX Content` block in its written texture — a full-sentence block as wrapped prose, a fragment/label block as bullets/keywords. **Never split a full-sentence block into a bullet list** — splitting loses the information that the block was continuous reasoning, not a set of parallel points; not because a bullet lays out easier, and not because an inherited template slot is shaped as a list. If a block carries no clear texture, infer the mode from its wording and the page layout.
 

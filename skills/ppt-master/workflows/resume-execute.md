@@ -37,6 +37,23 @@ If any required artifact is missing → report which one(s) and stop. Do NOT aut
 
 ---
 
+## Minimum Context for Resume
+
+> Each resume is a fresh conversation — `spec_lock.md` is the AI's onboarding handbook.
+> Load only what is needed to execute; do not reload full history.
+
+| File | Purpose | Load always? |
+|------|---------|:---:|
+| `spec_lock.md` | Design decisions & execution contract | ✅ |
+| `design_spec.md §IX` | Page structure & content outline | ✅ |
+| Current page's SVG (if resuming mid-generation) | Visual continuity reference | Only if resuming mid-page |
+| `sources/<file>.md` | Source material facts & texture | ✅ (read relevant sections on demand) |
+| User's last confirmed outline decisions | Content direction | ✅ |
+
+**DO NOT reload**: full conversation history, intermediate drafts, debug logs, Phase A dialogue, image search/fetch results, Strategist references already consumed.
+
+---
+
 ## Step 2: Load SKILL.md, proceed from Step 6
 
 ```

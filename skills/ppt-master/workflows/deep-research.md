@@ -347,11 +347,15 @@ For each core claim identified in 3.4, plan how deep the presenter needs to go:
 - `quote` — key quotes the presenter reads and interprets
 - `story` — narrative scene the presenter tells in detail
 
-### 3.7 Write analysis artifact
+### 3.7 Write analysis artifact（incremental — anti-timeout）
 
 🚧 **GATE**: analysis artifact must be written before proceeding to narrative construction.
 
-Save `<project>/analysis/research_analysis.json`:
+> **Anti-timeout rule**: do NOT attempt to generate the entire JSON in one shot. Write it in 3 incremental rounds — each round generates a subset and saves immediately. This prevents the Claude API from timing out on large single-generation requests.
+
+**Round 3.7a — Sources & dimensions** (write → save immediately):
+
+Write `<project>/analysis/research_analysis.json` with the `topic`, `slug`, `search_dimensions`, and `sources` fields only. Leave `cross_references`, `structured_data`, `narrative_nodes`, and `speaking_depth` as empty arrays/objects.
 
 ```json
 {
@@ -371,6 +375,20 @@ Save `<project>/analysis/research_analysis.json`:
       "key_facts": ["fact 1", "fact 2"]
     }
   ],
+  "cross_references": [],
+  "structured_data": {},
+  "narrative_nodes": [],
+  "speaking_depth": []
+}
+```
+
+✅ Save and proceed.
+
+**Round 3.7b — Cross-verification & structured data** (read → merge → save):
+
+Read the existing `research_analysis.json`, then fill in `cross_references` and `structured_data`:
+
+```json
   "cross_references": [
     {
       "claim": "...",
@@ -384,7 +402,16 @@ Save `<project>/analysis/research_analysis.json`:
     "comparisons": [],
     "entities": [],
     "quotes": []
-  },
+  }
+```
+
+✅ Merge with existing file and save.
+
+**Round 3.7c — Narrative nodes & speaking depth** (read → merge → save):
+
+Read the existing `research_analysis.json`, then fill in `narrative_nodes` and `speaking_depth`:
+
+```json
   "narrative_nodes": [
     {
       "id": "hook",
@@ -401,8 +428,9 @@ Save `<project>/analysis/research_analysis.json`:
       "detail": "What the deep-dive page should cover"
     }
   ]
-}
 ```
+
+✅ Merge with existing file and save. The complete `research_analysis.json` is now ready.
 
 ---
 
@@ -582,9 +610,75 @@ This plan drives SVG generation — each line becomes one SVG page.
 
 Place one marker between §1→§2, §2→§3, §3→§4, §4→§5, §5→§6. The Strategist reads these to populate transition page text.
 
-### 4.6 Write the narrative document
+### 4.6 Write the narrative document（incremental — anti-timeout）
 
-Save to `<project>/sources/research_report.md`. The document MUST end with a `## Sources` section listing all URLs grouped by tier.
+> **Anti-timeout rule**: do NOT attempt to generate the entire narrative report (≥3000 words) in one shot. Write it in 3 incremental rounds — each round generates 2-3 chapters and saves immediately via `Write`. This prevents the Claude API from timing out on large single-generation requests.
+
+**Round 4.6a — §1 Opening + §2 Background + §1→§2 transition**:
+
+Write the first two chapters plus transition marker. Save immediately to `<project>/sources/research_report.md`:
+
+```markdown
+# <topic>
+
+## §1 <Opening title>
+
+[≥200 words — hook with surprising fact or vivid case]
+
+<!-- TRANSITION: prev_summary="..." next_hook="..." -->
+
+## §2 <Background title>
+
+[≥400 words — history, timeline, context]
+```
+
+✅ Save and proceed.
+
+**Round 4.6b — §3 Core argument + §4 Turning point + transitions**:
+
+Read the existing file, then **append** §3 and §4 (do NOT overwrite §1-§2):
+
+```markdown
+
+<!-- TRANSITION: prev_summary="..." next_hook="..." -->
+
+## §3 <Core argument title>
+
+[2-4 evidence blocks, each ≥200 words, with DEEP_DIVE markers]
+
+<!-- TRANSITION: prev_summary="..." next_hook="..." -->
+
+## §4 <Turning point title>
+
+[≥300 words — counter-evidence, surprising finding]
+```
+
+✅ Append and save.
+
+**Round 4.6c — §5 Implications + §6 Conclusion + §7 Sources + PAGE_PLAN + remaining transitions**:
+
+Read the existing file, then **append** the final sections:
+
+```markdown
+
+<!-- TRANSITION: prev_summary="..." next_hook="..." -->
+
+## §5 <Implications title>
+
+[≥300 words — why this matters to the audience]
+
+<!-- TRANSITION: prev_summary="..." next_hook="..." -->
+
+## §6 <Conclusion title>
+
+[≥200 words — forward look, action items]
+
+## §7 Sources
+
+[All URLs grouped by tier]
+```
+
+Then append the `PAGE_PLAN` block at the very end of the file. ✅ Append and save. The complete `research_report.md` is now ready.
 
 **Content density**: concrete facts (dates, names, numbers, quotes) with inline sources. The Strategist composes final slide copy from this material.
 

@@ -6,6 +6,8 @@ Usage:
     python3 scripts/project_manager.py import-sources <project_path> <source1> [<source2> ...] [--move | --copy]
     python3 scripts/project_manager.py validate <project_path>
     python3 scripts/project_manager.py info <project_path>
+    python3 scripts/project_manager.py checkpoint save <project_path> [--notes "..."]
+    python3 scripts/project_manager.py checkpoint load <project_path>
 """
 
 from __future__ import annotations
@@ -107,6 +109,31 @@ def is_within_path(path: Path, parent: Path) -> bool:
         return True
     except ValueError:
         return False
+
+
+def trace_event(project_path: str | Path, event_type: str, detail: str, **extra) -> None:
+    """Append a trace event to ``<project_path>/trace.jsonl``.
+
+    Event types: step_start, step_complete, user_confirm, auto_check,
+    error, spec_change.
+
+    Each line is a JSON object with ``ts``, ``type``, ``detail``, and
+    any additional keyword arguments.
+    """
+    import json as _json
+
+    trace_file = Path(project_path) / "trace.jsonl"
+    entry = {
+        "ts": datetime.now().isoformat(timespec="seconds"),
+        "type": event_type,
+        "detail": detail,
+        **extra,
+    }
+    try:
+        with open(trace_file, "a", encoding="utf-8") as f:
+            f.write(_json.dumps(entry, ensure_ascii=False) + "\n")
+    except OSError:
+        pass  # non-fatal — trace is best-effort
 
 
 class ProjectManager:
@@ -868,6 +895,133 @@ class ProjectManager:
             "create_date": shared.get("date_formatted", "Unknown"),
         }
 
+    def checkpoint_save(self, project_path: str, *, notes: str = "") -> dict[str, object]:
+        """Inspect the project and save a checkpoint recording current pipeline state."""
+        p = Path(project_path)
+        if not p.is_dir():
+            raise FileNotFoundError(f"Project directory not found: {p}")
+
+        # Detect pipeline step by inspecting produced artifacts
+        artifacts: list[str] = []
+        step = "unknown"
+        next_step = ""
+
+        has_sources = any((p / "sources").iterdir()) if (p / "sources").is_dir() else False
+        has_spec_lock = (p / "spec_lock.md").exists()
+        has_design_spec = (p / "design_spec.md").exists()
+        has_notes = any((p / "notes").glob("*.md")) if (p / "notes").is_dir() else False
+        has_images = any(
+            f.suffix.lower() in {".png", ".jpg", ".jpeg", ".webp", ".gif"}
+            for f in (p / "images").iterdir()
+        ) if (p / "images").is_dir() else False
+        svg_dir = p / "svg_output"
+        has_svgs = any(svg_dir.glob("P*.svg")) if svg_dir.is_dir() else False
+        svg_final_dir = p / "svg_final"
+        has_final_svgs = any(svg_final_dir.glob("P*.svg")) if svg_final_dir.is_dir() else False
+        has_pptx = any(p.glob("*.pptx"))
+        has_total_md = (p / "notes" / "total.md").exists()
+        has_content_sel = (p / "content_selection.md").exists()
+        has_detailed_outline = (p / "detailed_outline.md").exists()
+        has_research = (p / "research_report.md").exists()
+
+        # Build artifact list
+        if has_sources:
+            artifacts.append("sources/")
+        if has_research:
+            artifacts.append("research_report.md")
+        if has_content_sel:
+            artifacts.append("content_selection.md")
+        if has_detailed_outline:
+            artifacts.append("detailed_outline.md")
+        if has_design_spec:
+            artifacts.append("design_spec.md")
+        if has_spec_lock:
+            artifacts.append("spec_lock.md")
+        if has_images:
+            artifacts.append("images/")
+        if has_svgs:
+            artifacts.append("svg_output/")
+        if has_total_md:
+            artifacts.append("notes/total.md")
+        if has_final_svgs:
+            artifacts.append("svg_final/")
+        if has_pptx:
+            artifacts.append("*.pptx")
+
+        # Determine pipeline step
+        if has_pptx:
+            step = "8-export"
+            next_step = "Done. Validate with e2e_validate.py or present."
+        elif has_final_svgs:
+            step = "7c-export"
+            next_step = "Run svg_to_pptx.py to export PPTX."
+        elif has_svgs and has_total_md:
+            step = "7b-postprocess"
+            next_step = "Run total_md_split.py, then finalize_svg.py, then svg_to_pptx.py."
+        elif has_svgs:
+            step = "7a-svg-gen"
+            next_step = "Complete SVG generation, run quality check, generate speaker notes."
+        elif has_images:
+            step = "6-images"
+            next_step = "Generate SVG pages (Step 6 in SKILL.md)."
+        elif has_spec_lock:
+            step = "5-spec-lock"
+            next_step = "Run Image_Generator for images, then begin Executor SVG generation."
+        elif has_design_spec:
+            step = "4-design-spec"
+            next_step = "Complete Eight Confirmations, seal spec_lock.md."
+        elif has_detailed_outline:
+            step = "3-outline"
+            next_step = "Run Strategist Eight Confirmations."
+        elif has_content_sel:
+            step = "3-content-selection"
+            next_step = "Generate detailed outline."
+        elif has_sources or has_research:
+            step = "2-sources"
+            next_step = "Read SKILL.md Step 1-2. Select template, run Content Selection if research exists."
+        else:
+            step = "1-init"
+            next_step = "Import source materials or run research workflow."
+
+        checkpoint = {
+            "saved_at": datetime.now().isoformat(timespec="seconds"),
+            "project": str(p),
+            "step": step,
+            "artifacts": artifacts,
+            "next_step": next_step,
+        }
+        if notes:
+            checkpoint["notes"] = notes
+
+        # Write checkpoint file
+        ck_path = p / ".checkpoint.json"
+        ck_path.write_text(
+            json.dumps(checkpoint, ensure_ascii=False, indent=2) + "\n",
+            encoding="utf-8",
+        )
+        return checkpoint
+
+    def checkpoint_load(self, project_path: str) -> dict[str, object]:
+        """Load and return the saved checkpoint, or generate a fresh one if none exists."""
+        p = Path(project_path)
+        ck_path = p / ".checkpoint.json"
+        if ck_path.exists():
+            return json.loads(ck_path.read_text(encoding="utf-8"))
+        # No saved checkpoint — generate on the fly
+        return self.checkpoint_save(project_path)
+        shared = get_project_info_common(project_path)
+        return {
+            "name": shared.get("name", Path(project_path).name),
+            "path": shared.get("path", str(project_path)),
+            "exists": shared.get("exists", False),
+            "svg_count": shared.get("svg_count", 0),
+            "has_spec": shared.get("has_spec", False),
+            "has_source": shared.get("has_source", False),
+            "source_count": shared.get("source_count", 0),
+            "canvas_format": shared.get("format_name", "Unknown"),
+            "create_date": shared.get("date_formatted", "Unknown"),
+        }
+
 
 def build_parser() -> argparse.ArgumentParser:
     """Build the command-line parser."""
@@ -903,6 +1057,14 @@ def build_parser() -> argparse.ArgumentParser:
 
     info = subparsers.add_parser("info", help="Print project metadata")
     info.add_argument("project_path", help="Project directory")
+
+    ck = subparsers.add_parser(
+        "checkpoint",
+        help="Save or load a pipeline checkpoint (supports cross-session resume)",
+    )
+    ck.add_argument("action", choices=["save", "load"], help="save or load checkpoint")
+    ck.add_argument("project_path", help="Project directory")
+    ck.add_argument("--notes", default="", help="Optional notes to attach to checkpoint")
     return parser
 
 
@@ -1001,6 +1163,28 @@ def main(argv: list[str] | None = None) -> int:
             print(f"Canvas format: {info['canvas_format']}")
             print(f"Created: {info['create_date']}")
             return 0
+
+        if args.command == "checkpoint":
+            project_path = args.project_path
+            if args.action == "save":
+                ck = manager.checkpoint_save(project_path, notes=args.notes)
+                print(f"[OK] Checkpoint saved: {ck['step']}")
+                print(f"  Artifacts: {', '.join(ck['artifacts']) or '(none)'}")
+                print(f"  Next: {ck['next_step']}")
+                if ck.get("notes"):
+                    print(f"  Notes: {ck['notes']}")
+                return 0
+            if args.action == "load":
+                ck = manager.checkpoint_load(project_path)
+                print(f"\nCheckpoint: {ck.get('project', project_path)}")
+                print("=" * 60)
+                print(f"Step: {ck['step']}")
+                print(f"Saved: {ck.get('saved_at', 'on-the-fly')}")
+                print(f"Artifacts: {', '.join(ck['artifacts']) or '(none)'}")
+                print(f"Next: {ck['next_step']}")
+                if ck.get("notes"):
+                    print(f"Notes: {ck['notes']}")
+                return 0
 
         parser.error(f"Unknown command: {args.command}")
     except Exception as exc:

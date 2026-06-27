@@ -25,7 +25,7 @@ description: >
 > 5. **NO SPECULATIVE EXECUTION** — "Pre-preparing" content for subsequent Steps is FORBIDDEN (e.g., writing SVG code during the Strategist phase)
 > 6. **NO SUB-AGENT SVG GENERATION** — Executor Step 6 SVG generation is context-dependent and MUST be completed by the current main agent end-to-end. Delegating page SVG generation to sub-agents is FORBIDDEN
 > 7. **SEQUENTIAL PAGE GENERATION ONLY** — In Executor Step 6, after the global design context is confirmed, SVG pages MUST be generated sequentially page by page in one continuous pass. Grouped page batches (for example, 5 pages at a time) are FORBIDDEN
-> 8. **SPEC_LOCK RE-READ PER PAGE** — Before generating each SVG page, Executor MUST `read_file <project_path>/spec_lock.md`. All colors / fonts / icons / images MUST come from this file — no values from memory or invented on the fly. Executor MUST also look up the current page's `page_rhythm` (`anchor` / `dense` / `breathing`), `page_layouts` (which template SVG to inherit, if any), and `page_charts` (which chart template to adapt, if any). Empty / absent entries are intentional Strategist signals — see executor-base.md §2.1. This rule exists to resist context-compression drift on long decks and to break the uniform "every page is a card grid" default
+> 8. **SPEC_LOCK RE-READ PER PAGE** — Before generating each SVG page, Executor MUST `read_file <project_path>/spec_lock.md`. All colors / fonts / icons / images MUST come from this file — no values from memory or invented on the fly. Executor MUST also look up the current page's `page_rhythm` (`anchor` / `dense` / `breathing`), `page_layouts` (which template SVG to inherit, if any), and `page_charts` (which chart template to adapt, if any). Empty / absent entries are intentional Strategist signals — see executor-base.md §2.1. Also see executor-base.md §2.1a for narrative restatement. This rule exists to resist context-compression drift on long decks and to break the uniform "every page is a card grid" default
 > 9. **SVG MUST BE HAND-WRITTEN, NOT SCRIPT-GENERATED** — Every SVG page is written by the main agent directly, one page at a time (see rules 6 and 7). Writing or running a Python / Node / shell script that produces the SVG files in batch — looping over pages, templating from data, or emitting them via a generator — is FORBIDDEN, including under "save tokens", "quick draft", or "user is in a hurry" pretexts. The script-generation path was tried on a feature branch and abandoned: cross-page visual consistency depends on per-page authoring with full upstream context, which a generator script cannot reproduce
 
 > [!IMPORTANT]
@@ -59,7 +59,8 @@ description: >
 | `${SKILL_DIR}/scripts/image_gen.py` | AI image generation (multi-provider) |
 | `${SKILL_DIR}/scripts/image_search.py` | Web image search (batch mode for deep-dive page assets) |
 | `${SKILL_DIR}/scripts/confirm_ui/server.py` | Step 4 Eight Confirmations — interactive visual confirmation page |
-| `${SKILL_DIR}/scripts/svg_quality_checker.py` | SVG quality check |
+| `${SKILL_DIR}/scripts/svg_quality_checker.py` | SVG quality check (XML structure, banned features, spec_lock drift) |
+| `${SKILL_DIR}/scripts/spec_compliance_check.py` | spec_lock semantic compliance (unused colors, missing templates, icon inventory, image usage) |
 | `${SKILL_DIR}/scripts/total_md_split.py` | Speaker notes splitting |
 | `${SKILL_DIR}/scripts/finalize_svg.py` | SVG post-processing (unified entry) |
 | `${SKILL_DIR}/scripts/svg_to_pptx.py` | Export to PPTX |
@@ -67,6 +68,7 @@ description: >
 | `${SKILL_DIR}/scripts/spec_lock_digest.py` | spec_lock integrity guard — generate/verify SHA-256 digest to detect unintended modifications |
 | `${SKILL_DIR}/scripts/e2e_validate.py` | End-to-end pipeline validation — page count, speaker notes, image completeness, PPTX integrity |
 | `${SKILL_DIR}/scripts/smoke_check.py` | Script smoke check — import + CLI --help validation for all scripts |
+| `${SKILL_DIR}/scripts/harness_gate.py` | Aggregated quality gate — runs spec_compliance + svg_quality + e2e in one PASS/FAIL report |
 | `${SKILL_DIR}/scripts/memory_manager.py` | User profile memory management (load/consolidate/show/reset) — cross-session preference persistence |
 | `${SKILL_DIR}/scripts/svg_snapshot.py` | SVG content hashing, structural diff, and editable element enumeration — revision pipeline support |
 | `${SKILL_DIR}/scripts/svg_patch.py` | SVG patch engine — apply localized edits to SVG pages without full regeneration |
@@ -552,11 +554,21 @@ python3 ${SKILL_DIR}/scripts/svg_editor/server.py <project_path> --live
 **Visual Construction Phase**: generate SVG pages sequentially, one at a time, in one continuous pass → `<project_path>/svg_output/`
 
 **Quality Check Gate (Mandatory)** — after all SVGs, BEFORE annotation handling and speaker notes:
+
+> **Auto-gates (run before presenting to user)**: All three checks MUST pass before proceeding.
+> If any fails, fix before presenting to user.
+> 1. `python3 ${SKILL_DIR}/scripts/spec_compliance_check.py <project_path>`
+> 2. `python3 ${SKILL_DIR}/scripts/svg_quality_checker.py <project_path>`
+> 3. `python3 ${SKILL_DIR}/scripts/harness_gate.py <project_path> --quick`
+
 ```bash
 python3 ${SKILL_DIR}/scripts/svg_quality_checker.py <project_path>
+python3 ${SKILL_DIR}/scripts/spec_compliance_check.py <project_path>
 ```
-- Any `error` (banned SVG features, viewBox mismatch, spec_lock drift, etc.) MUST be fixed before proceeding — return to Visual Construction, regenerate that page, re-run check.
-- `warning` entries (low-res image, non-PPT-safe font tail, etc.): fix when straightforward, otherwise acknowledge and release.
+- **svg_quality_checker**: XML structure, banned features, viewBox, spec_lock drift (undeclared colors/fonts/sizes).
+- **spec_compliance_check**: semantic compliance — unused declared colors, missing templates, icon inventory, image usage. Complements the structural checker with inverse-direction validation.
+- Any `error` (banned SVG features, viewBox mismatch, spec_lock drift, missing templates, etc.) MUST be fixed before proceeding — return to Visual Construction, regenerate that page, re-run check.
+- `warning` entries (low-res image, non-PPT-safe font tail, unused declared color, etc.): fix when straightforward, otherwise acknowledge and release.
 - Run against `svg_output/` (not after `finalize_svg.py` — finalize rewrites SVG and masks violations).
 
 **Logic Construction Phase**: generate speaker notes → `<project_path>/notes/total.md`
@@ -567,6 +579,7 @@ python3 ${SKILL_DIR}/scripts/svg_quality_checker.py <project_path>
 - [x] Live preview started and kept available at the reported URL
 - [x] All SVGs generated to svg_output/
 - [x] svg_quality_checker.py passed (0 errors)
+- [x] spec_compliance_check.py passed (0 errors)
 - [x] Speaker notes generated at notes/total.md
 ```
 
@@ -666,6 +679,31 @@ Validates page count consistency, speaker notes completeness, image file presenc
 python3 ${SKILL_DIR}/scripts/memory_manager.py consolidate <project_path>
 ```
 This reads the Eight Confirmations choices from `confirm_ui/result.json` and updates the user profile memory with stability-weighted preferences. Stable signals (confirmed across multiple jobs) are written back to `memory/user_profiles.json`; transient one-off choices are filtered out. The next PPT generation for the same intent will automatically pick up these preferences.
+
+---
+
+### Step 8a: Spec Review (Recommended)
+
+> After delivery, review which decisions should be permanently locked into spec or workflow rules. Guiding principle: "Will this recur in future generations?" If yes → update spec/workflow. If one-off → skip. Spec thickness = your refusal to repeat decisions.
+
+**Recommended — not BLOCKING**: this step is advisory. Run it when the user asks for a post-generation review, or when you notice a pattern of repeated corrections.
+
+Steps:
+1. Which user corrections were principle-level (not one-off)?
+2. Which design decisions should be locked into spec_lock?
+3. Which workflow rules need updating?
+
+Use [`docs/spec-review-template.md`](../docs/spec-review-template.md) as the structured template. For each decision, ask: "Will this recur in future generations?" If yes → update spec/workflow. If one-off → skip.
+
+> Also see [`docs/change-log.md`](../docs/change-log.md) for tracking all workflow/script modifications.
+
+---
+
+## Context Loading Strategy
+
+- **ALWAYS LOAD**: Global Execution Discipline (this section), Language & Communication Rule, Compatibility section
+- **LOAD ON DEMAND**: Main Pipeline Scripts table (when executing scripts), Template Index (when selecting templates), Standalone Workflows table (when routing)
+- **DO NOT PRE-LOAD**: Individual workflow files, reference files, script READMEs
 
 ---
 
