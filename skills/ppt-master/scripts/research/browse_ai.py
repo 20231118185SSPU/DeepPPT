@@ -46,12 +46,12 @@ AI_SERVICES = {
     "grok": {
         "name": "Grok",
         "urls": ["https://grok.com/", "https://x.com/i/grok"],
-        "input_selector": "textarea, div[contenteditable='true'], [role='textbox']",
-        "submit_selector": "button[aria-label='Send'], button[type='submit']",
-        "response_selector": "div.message-content, div[class*='response'], article",
-        "stop_selector": "button[aria-label='Stop']",
+        "input_selector": "[contenteditable='true'], textarea",
+        "submit_selector": "button[aria-label='提交'], button[aria-label='Send'], button[aria-label='Submit']",
+        "response_selector": "article, div[class*='message'], div[class*='response']",
+        "stop_selector": "button[aria-label='停止'], button[aria-label='Stop']",
         "new_chat_selector": "a[href='/'], button:has-text('New')",
-        "wait_ready_selector": "textarea, div[contenteditable='true']",
+        "wait_ready_selector": "[contenteditable='true'], textarea",
     },
     "perplexity": {
         "name": "Perplexity",
@@ -138,7 +138,7 @@ def wait_for_input(page, svc: dict, timeout: int = 30000) -> bool:
 def send_prompt(page, svc: dict, prompt: str) -> bool:
     """Type prompt into the AI input and submit."""
     try:
-        # Try to find and fill the input
+        # Try to find the input element
         input_el = page.wait_for_selector(svc["input_selector"], timeout=10000)
         if not input_el:
             return False
@@ -147,8 +147,13 @@ def send_prompt(page, svc: dict, prompt: str) -> bool:
         input_el.click()
         time.sleep(0.5)
 
-        # Fill the prompt
-        input_el.fill(prompt)
+        # Contenteditable elements need keyboard.type() instead of fill()
+        tag = input_el.evaluate("el => el.tagName.toLowerCase()")
+        is_editable = input_el.evaluate("el => el.contentEditable === 'true'")
+        if is_editable or tag == "div":
+            page.keyboard.type(prompt, delay=20)
+        else:
+            input_el.fill(prompt)
         time.sleep(0.3)
 
         # Try to submit via button first, then Enter key
@@ -157,9 +162,9 @@ def send_prompt(page, svc: dict, prompt: str) -> bool:
             if submit_btn and submit_btn.is_visible():
                 submit_btn.click()
             else:
-                input_el.press("Enter")
+                page.keyboard.press("Enter")
         except Exception:
-            input_el.press("Enter")
+            page.keyboard.press("Enter")
 
         return True
     except Exception as e:
