@@ -145,10 +145,9 @@ def process_layout_fix(svg_file: Path, verbose: bool = False) -> int:
 
     right_bound = vb_w - _LAYOUT_MARGIN_LR
 
-    # Find all text elements with font-size and x attributes
+    # Find all text elements with font-size and x attributes (any order)
     text_pat = re.compile(
-        r'(<text\b[^>]*?\bfont-size=")([^"]+)("[^>]*?\bx=")([^"]+)("[^>]*?>)'
-        r'([^<]+)(</text>)',
+        r'(<text\b[^>]*?>)([^<]+)(</text>)',
         re.DOTALL,
     )
 
@@ -160,18 +159,35 @@ def process_layout_fix(svg_file: Path, verbose: bool = False) -> int:
         return cjk / max(len(t), 1) > 0.3
 
     for m in text_pat.finditer(content):
-        prefix, fs_str, mid, x_str, mid2, text, suffix = (
-            m.group(1), m.group(2), m.group(3), m.group(4),
-            m.group(5), m.group(6), m.group(7),
-        )
+        open_tag, text, close_tag = m.group(1), m.group(2), m.group(3)
+        text = text.strip()
+        if not text:
+            continue
+
+        # Extract x and font-size from the open tag
+        x_match = re.search(r'\bx="([^"]+)"', open_tag)
+        fs_match = re.search(r'\bfont-size="([^"]+)"', open_tag)
+        if not x_match or not fs_match:
+            continue
+
+        # Extract text-anchor (default: start per SVG spec)
+        anchor_match = re.search(r'text-anchor="(\w+)"', open_tag)
+        anchor = anchor_match.group(1) if anchor_match else 'start'
+
         try:
-            fs = float(fs_str.replace('px', '').strip())
-            x = float(x_str)
+            fs = float(fs_match.group(1).replace('px', '').strip())
+            x = float(x_match.group(1))
         except ValueError:
             continue
 
         char_w = fs * 1.0 if _is_cjk_local(text) else fs * 0.55
-        est_right = x + len(text.strip()) * char_w / 2  # assume middle anchor
+        est_width = len(text.strip()) * char_w
+        if anchor == 'middle':
+            est_right = x + est_width / 2
+        elif anchor == 'end':
+            est_right = x
+        else:  # start
+            est_right = x + est_width
 
         if est_right <= right_bound:
             continue
@@ -180,14 +196,20 @@ def process_layout_fix(svg_file: Path, verbose: bool = False) -> int:
         new_fs = fs
         for _ in range(_LAYOUT_MAX_SHRINK):
             new_fs *= _LAYOUT_SHRINK_FACTOR
-            new_right = x + len(text.strip()) * (new_fs * (1.0 if _is_cjk_local(text) else 0.55)) / 2
+            new_w = len(text.strip()) * (new_fs * (1.0 if _is_cjk_local(text) else 0.55))
+            if anchor == 'middle':
+                new_right = x + new_w / 2
+            elif anchor == 'end':
+                new_right = x
+            else:
+                new_right = x + new_w
             if new_right <= right_bound:
                 break
 
         if new_fs < fs:
             new_fs_str = f"{new_fs:.1f}px"
             old_tag = m.group(0)
-            new_tag = old_tag.replace(f'font-size="{fs_str}"', f'font-size="{new_fs_str}"', 1)
+            new_tag = old_tag.replace(f'font-size="{fs_match.group(1)}"', f'font-size="{new_fs_str}"', 1)
             modified = modified.replace(old_tag, new_tag, 1)
             fix_count += 1
 

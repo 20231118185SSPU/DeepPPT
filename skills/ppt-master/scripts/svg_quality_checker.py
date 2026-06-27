@@ -1133,9 +1133,10 @@ class SVGQualityChecker:
         fs = global_fs if global_fs else 20  # fallback
         char_width = fs * 1.0 if self._is_cjk(text) else fs * 0.55
         est_width = len(text.strip()) * char_width
-        anchor = 'middle'  # default
-        if 'text-anchor="start"' in snippet:
-            anchor = 'start'
+        # SVG spec default for text-anchor is "start"
+        anchor = 'start'
+        if 'text-anchor="middle"' in snippet:
+            anchor = 'middle'
         elif 'text-anchor="end"' in snippet:
             anchor = 'end'
 
@@ -1748,10 +1749,11 @@ class SVGQualityChecker:
         # Fix suggestions
         if self.summary['errors'] > 0 or self.summary['warnings'] > 0:
             print(f"\n[TIP] Common fixes:")
-            print(f"  1. XML well-formedness: write typography as raw Unicode (—, ©, →, NBSP); escape XML reserved chars as &amp; &lt; &gt; &quot; &apos; — never use HTML named entities like &nbsp; &mdash; &copy;")
+            print(f"  1. XML well-formedness: write typography as raw Unicode; escape XML reserved chars as &amp; &lt; &gt; &quot; &apos; -- never use HTML named entities like &nbsp; &mdash; &copy;")
             print(f"  2. viewBox issues: Ensure consistency with canvas format (see references/canvas-formats.md)")
             print(f"  3. foreignObject: Use <text> + <tspan> for manual line breaks")
             print(f"  4. Font issues: end every font-family stack with a PPT-safe family (e.g. Microsoft YaHei / Arial / Consolas)")
+            print(f"  5. Layout overflow: text exceeds safe margins -- fix-layout in finalize_svg.py can auto-shrink font-size")
 
     def _print_animation_summary(self):
         """Print animations.json validation issues if present."""
