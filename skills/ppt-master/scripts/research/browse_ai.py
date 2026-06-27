@@ -281,6 +281,75 @@ def search_single(ai: str, prompt: str, output: str | None, chrome_profile: str 
             pass
 
 
+# --- Role-aware prompt templates ---
+
+_ROLE_PROMPTS = {
+    "hook": (
+        "我需要一个引人注目的开场素材来展示「{topic}」这个主题。\n\n"
+        "请帮我找到:\n"
+        "1. 一个令人惊讶的事实或统计数据（必须有具体数字和来源）\n"
+        "2. 一个相关的名人引述或行业观点（注明出处）\n"
+        "3. 当前最热门的讨论话题或争议点\n\n"
+        "要求: 信息新鲜（优先2024-2025年），有明确来源URL。"
+    ),
+    "evidence": (
+        "我正在为PPT制作一个核心论点页面，主题是「{topic}」。\n"
+        "论点: {data_hint}\n\n"
+        "请帮我搜集支撑这个论点的证据:\n"
+        "1. 至少2个具体数据点（含数字、百分比、金额、年份）\n"
+        "2. 至少1个真实案例或行业标杆\n"
+        "3. 至少1个权威来源的引述\n"
+        "4. 来源URL（优先: 官方报告 > 权威媒体 > 行业博客）\n\n"
+        "输出格式: 每条证据后标注 [来源: URL]"
+    ),
+    "deep_dive": (
+        "我需要深度分析材料来支撑「{topic}」的详细讲解页面。\n"
+        "分析角度: {data_hint}\n\n"
+        "请深入研究并提供:\n"
+        "1. 发展历程/时间线（关键节点 + 时间 + 事件）\n"
+        "2. 多角度对比数据（至少2个维度的对比）\n"
+        "3. 专家/机构观点（直接引述 + 出处）\n"
+        "4. 未来趋势预测（含具体预测数字和来源）\n"
+        "5. 反面观点或风险因素\n\n"
+        "要求: 每条信息必须有来源URL，数据必须可验证，优先学术论文和官方报告。"
+    ),
+    "transition": (
+        "我需要总结性材料来制作PPT的过渡页面，主题是「{topic}」。\n\n"
+        "请帮我找到:\n"
+        "1. 对主题的精炼总结（1-2句话概括核心观点）\n"
+        "2. 适合放在PPT上的金句（不超过30字）\n"
+        "3. 承上启下的过渡语\n\n"
+        "要求: 简洁有力，适合PPT展示。"
+    ),
+    "synthesis": (
+        "我需要总结性材料来制作PPT的总结页面，主题是「{topic}」。\n\n"
+        "请帮我找到:\n"
+        "1. 核心发现的精炼总结\n"
+        "2. 行动建议或未来展望（具体、可执行）\n"
+        "3. 令人印象深刻的收尾金句\n\n"
+        "要求: 简洁有力，每条不超过30字。"
+    ),
+}
+
+# Fallback for unknown roles
+_DEFAULT_PROMPT = (
+    "请帮我搜索并整理以下主题的详细信息。\n\n"
+    "主题: {topic}\n关键词: {keywords}\n"
+    "重点关注: {data_hint}\n\n"
+    "请提供:\n"
+    "1. 核心事实和数据（含具体数字和年份）\n"
+    "2. 来源链接（URL）\n"
+    "3. 关键引述\n\n"
+    "要求: 信息必须有明确来源，数据必须包含具体数字。"
+)
+
+
+def _build_role_prompt(role: str, topic: str, keywords: str, data_hint: str) -> str:
+    """Build a search prompt tailored to the page's narrative role."""
+    template = _ROLE_PROMPTS.get(role, _DEFAULT_PROMPT)
+    return template.format(topic=topic, keywords=keywords, data_hint=data_hint)
+
+
 def search_batch(batch_file: str, output_dir: str, chrome_profile: str | None, timeout: int, cdp_port: int | None = None):
     """Batch search: read search_plan.json and execute each item."""
     plan_path = Path(batch_file)
@@ -310,9 +379,12 @@ def search_batch(batch_file: str, output_dir: str, chrome_profile: str | None, t
             manifest.append({"page_id": page_id, "status": "skipped"})
             continue
 
-        # Build search prompt
+        # Build search prompt based on narrative role
         kw_str = ", ".join(keywords) if isinstance(keywords, list) else str(keywords)
-        prompt = f"请帮我搜索并整理以下主题的详细信息，包括具体数据、事实、来源URL：\n\n主题：{topic}\n关键词：{kw_str}\n\n请提供：\n1. 核心事实和数据（含具体数字）\n2. 来源链接\n3. 关键引述\n4. 相关图片建议（关键词）"
+        role = item.get("narrative_role", item.get("content_type", "evidence"))
+        data_hint = item.get("data_hint", topic)
+
+        prompt = _build_role_prompt(role, topic, kw_str, data_hint)
 
         filename = f"{page_id}_{topic[:30].replace(' ', '_').replace('/', '_')}.md"
         output_path = str(out_dir / filename)
@@ -340,6 +412,110 @@ def search_batch(batch_file: str, output_dir: str, chrome_profile: str | None, t
 
     success = sum(1 for m in manifest if m.get("status") == "success")
     print(f"Done: {success}/{total} successful searches")
+
+
+def validate_selectors(cdp_port: int | None = None, chrome_profile: str | None = None):
+    """Test if CSS selectors for each AI service still work.
+
+    Opens each AI service page and checks:
+    1. Input element (textarea / contenteditable) is found and visible
+    2. Submit button is found
+    3. Page loads without errors
+
+    Returns a dict of {service: {input: bool, submit: bool, error: str|None}}.
+    """
+    pw, ctx, is_persistent = connect_browser(chrome_profile, cdp_port)
+    results = {}
+
+    for key, svc in AI_SERVICES.items():
+        print(f"\nValidating {svc['name']}...")
+        result = {"input": False, "submit": False, "error": None}
+
+        try:
+            page = ctx.new_page()
+            # Try each URL
+            loaded = False
+            for url in svc["urls"]:
+                try:
+                    page.goto(url, wait_until="domcontentloaded", timeout=20000)
+                    loaded = True
+                    break
+                except Exception:
+                    continue
+
+            if not loaded:
+                result["error"] = "Failed to load any URL"
+                page.close()
+                results[key] = result
+                print(f"  [FAIL] {result['error']}")
+                continue
+
+            # Wait for page to settle
+            time.sleep(3)
+
+            # Check input element
+            input_el = page.query_selector(svc["input_selector"])
+            if input_el and input_el.is_visible():
+                result["input"] = True
+                print(f"  [OK] Input element found")
+            else:
+                # Try fallback selectors
+                for fallback_sel in ["textarea", "[contenteditable='true']", "[role='textbox']"]:
+                    el = page.query_selector(fallback_sel)
+                    if el and el.is_visible():
+                        result["input"] = True
+                        print(f"  [WARN] Input found via fallback: {fallback_sel}")
+                        break
+                if not result["input"]:
+                    print(f"  [FAIL] No visible input element")
+
+            # Check submit button
+            submit_btn = page.query_selector(svc["submit_selector"])
+            if submit_btn and submit_btn.is_visible():
+                result["submit"] = True
+                print(f"  [OK] Submit button found")
+            else:
+                # Submit buttons often appear after typing, so this is a soft check
+                print(f"  [WARN] Submit button not immediately visible (may appear after typing)")
+
+            page.close()
+
+        except Exception as e:
+            result["error"] = str(e)[:100]
+            print(f"  [FAIL] {result['error']}")
+
+        results[key] = result
+
+    # Cleanup
+    try:
+        if is_persistent:
+            ctx.close()
+        else:
+            ctx.close()
+            pw.stop()
+    except Exception:
+        pass
+
+    # Summary
+    print("\n" + "=" * 50)
+    print("Selector Validation Summary")
+    print("=" * 50)
+    all_ok = True
+    for key, r in results.items():
+        status = "OK" if r["input"] else "NEEDS UPDATE"
+        if not r["input"]:
+            all_ok = False
+        print(f"  {AI_SERVICES[key]['name']:12s}: input={'OK' if r['input'] else 'FAIL'}  "
+              f"submit={'OK' if r['submit'] else 'WARN'}  "
+              f"error={r['error'] or 'none'}")
+
+    if all_ok:
+        print("\nAll selectors working.")
+    else:
+        print("\nSome selectors need updating. Check the AI service pages for DOM changes.")
+        print("Update AI_SERVICES in browse_ai.py with new CSS selectors.")
+
+    return results
 
 
 def _load_hermes_env() -> dict:
@@ -372,6 +548,7 @@ def main():
 
     parser = argparse.ArgumentParser(description="AI Browser Search — Playwright automation")
     parser.add_argument("--list", action="store_true", help="List supported AI services")
+    parser.add_argument("--validate", action="store_true", help="Test if AI service selectors still work")
     parser.add_argument("--ai", choices=list(AI_SERVICES.keys()), help="AI service to use")
     parser.add_argument("--prompt", help="Search prompt")
     parser.add_argument("--output", "-o", help="Output file path")
@@ -388,6 +565,10 @@ def main():
 
     if args.list:
         list_services()
+        return
+
+    if args.validate:
+        validate_selectors(args.cdp_port, args.chrome_profile)
         return
 
     if args.batch:
