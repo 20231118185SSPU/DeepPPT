@@ -117,7 +117,7 @@ python3 ${SKILL_DIR}/scripts/research/browse_ai.py \
   --output-dir <project>/_research/step3_search/
 ```
 
-**Fallback** when Playwright is unavailable: use built-in WebSearch + WebFetch + `web_to_md.py`.
+**Fallback** when Playwright is unavailable or all browser AIs fail: `browse_ai.py` writes `needs_manual_websearch` and a copyable prompt into `search_manifest.json`; the Agent then manually uses built-in WebSearch + WebFetch + `web_to_md.py`. Local Python cannot call the Agent's built-in WebSearch by itself.
 
 **Skip condition**: When user provided source files and all pages have sufficient material, mark all pages as `skip_search: true` in search_plan and skip this step.
 
@@ -186,12 +186,7 @@ Incremental write (3 rounds). Quality gate enforces narrative depth contract.
 After all 7 steps complete, sync artifacts to the main pipeline directories:
 
 ```bash
-# Sync research outputs to main pipeline locations
-cp <project>/_research/step6_narrative/research_report.md <project>/sources/
-cp <project>/_research/step5_analysis/research_analysis.json <project>/analysis/
-cp <project>/_research/step7_visual/visual_strategy.json <project>/analysis/
-cp -r <project>/_research/step7_visual/ref/* <project>/images/ref/
-cp -r <project>/_research/step3_search/images/* <project>/images/web_assets/
+python3 ${SKILL_DIR}/scripts/research/sync_research_outputs.py <project>
 ```
 
 **Checkpoint output**:
@@ -220,7 +215,7 @@ next_step: content-selection (if research_report.md exists)
 
 | Scenario | Action |
 |----------|--------|
-| Step 3 search fails for all AIs | Fallback to built-in WebSearch; user may provide URLs manually |
+| Step 3 search fails for all browser AIs | `browse_ai.py` marks `needs_manual_websearch`; Agent manually runs built-in WebSearch/WebFetch or asks user for URLs |
 | Step 6 quality gate fails | Auto-return to Step 3 for gap pages, then re-run Steps 4-6 |
 | Context window exhaustion | Use split mode: Steps 1-3 in one session, Steps 4-7 in another |
-| Playwright unavailable | Use `browse_ai.py` fallback chain or built-in WebSearch |
+| Playwright unavailable | `browse_ai.py` cannot browse locally; use the emitted manual WebSearch prompt |

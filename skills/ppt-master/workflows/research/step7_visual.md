@@ -191,12 +191,7 @@ _research/
 **下一步**: 将产物同步到主流程目录，进入 SKILL.md 主管线：
 
 ```bash
-# 同步到主流程目录
-cp _research/step6_narrative/research_report.md sources/
-cp _research/step5_analysis/research_analysis.json analysis/
-cp _research/step7_visual/visual_strategy.json analysis/
-cp -r _research/step7_visual/ref/* images/ref/
-cp -r _research/step3_search/images/* images/web_assets/
+python3 ${SKILL_DIR}/scripts/research/sync_research_outputs.py <project>
 ```
 
 然后进入 Content Selection → Detailed Outline → Eight Confirmations → Executor。

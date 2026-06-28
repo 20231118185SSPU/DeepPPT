@@ -17,7 +17,7 @@ description: 深度调研 Step 3 — 逐页搜索。按搜索计划通过 Playwr
 |--------|------|
 | `search_plan.json` 存在且合法 | 继续 |
 | Playwright 可用（`python3 -c "from playwright.sync_api import sync_playwright"`） | 继续 |
-| Playwright 不可用 | 降级到内置 WebSearch + WebFetch |
+| Playwright 不可用 | `browse_ai.py` 输出 `needs_manual_websearch` 和可复制提示词；Agent 手动使用内置 WebSearch + WebFetch |
 
 创建输出目录：
 ```bash
@@ -54,14 +54,17 @@ python3 ${SKILL_DIR}/scripts/research/browse_ai.py \
   8. 如果回复质量不足（<200字或无具体数据），重试一次
 ```
 
-### 方式 B: 降级搜索（当浏览器自动化不可用时）
+### 方式 B: Agent 手动降级（当浏览器自动化不可用时）
+
+`browse_ai.py` 是本地 Python 脚本，不能直接调用 Agent 内置 WebSearch。若 Playwright 缺失、三家网页 AI 都失败，或结果低质量，脚本只负责在 `search_manifest.json` 中标记 `needs_manual_websearch: true`，并写出可复制的 `*_manual_websearch_prompt.md`。
 
 ```
-对每个需要搜索的页面:
-  1. 使用内置 WebSearch 工具搜索关键词
-  2. 使用 WebFetch 获取排名前 3 的结果全文
-  3. 使用 web_to_md.py 提取结构化内容
-  4. 合并搜索结果保存到 p{NN}_{topic}.md
+对每个 needs_manual_websearch=true 的页面:
+  1. Agent 读取 manual WebSearch prompt
+  2. 使用内置 WebSearch 工具搜索关键词
+  3. 使用 WebFetch 获取排名前 3 的结果全文
+  4. 使用 web_to_md.py 提取结构化内容
+  5. 合并搜索结果保存到 p{NN}_{topic}.md
 ```
 
 ---
@@ -154,10 +157,9 @@ python3 ${SKILL_DIR}/scripts/research/browse_ai.py \
 
 ## 3.3 图片素材收集
 
-在搜索每页内容的同时，收集相关图片：
+`browse_ai.py` 不直接下载图片。它只从 AI 回复中提取图片 URL / 图片关键词，写入 `search_manifest.json` 的 `image_suggestions`，作为后续独立图片搜索动作的输入。
 
-1. 记录 AI 回复中提到的图片关键词
-2. 使用 `image_search.py` 搜索对应图片：
+搜索内容完成后，再使用 `image_search.py` 收集对应图片：
 
 ```bash
 python3 ${SKILL_DIR}/scripts/image_search.py \
@@ -207,21 +209,21 @@ python3 ${SKILL_DIR}/scripts/image_search.py \
 
 ## 3.5 降级策略
 
-当某个 AI 服务不可用时的自动降级链：
+当某个 AI 服务不可用或低质量（空回复、少于 200 字、缺少来源 URL）时，先对同一 AI 自动重试一次，再进入自动降级链：
 
 ```
-chatgpt 不可用 → grok → perplexity → 内置 WebSearch
-grok 不可用 → chatgpt → perplexity → 内置 WebSearch
-perplexity 不可用 → chatgpt → grok → 内置 WebSearch
+chatgpt 不可用/低质量 → chatgpt 重试 → grok → perplexity → needs_manual_websearch
+grok 不可用/低质量 → grok 重试 → chatgpt → perplexity → needs_manual_websearch
+perplexity 不可用/低质量 → perplexity 重试 → chatgpt → grok → needs_manual_websearch
 ```
 
 **降级触发条件**:
 - 页面加载超时（30s）
 - 需要登录但未登录
-- 回复为空或过短（<100字）
+- 回复为空、少于 200 字、或缺少来源 URL
 - API 限流/错误
 
-**降级记录**: 在 `search_manifest.json` 中记录每个页面实际使用的 AI 工具。
+**降级记录**: 在 `search_manifest.json` 中记录 `ai_target`、`ai_used`、`fallback`、`fallback_chain`、`status`、`char_count`、`quality`、`output_file`、`image_suggestions`、`needs_manual_websearch`。
 
 ---
 

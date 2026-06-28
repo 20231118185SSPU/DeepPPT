@@ -33,7 +33,7 @@
 
 - **Files**: `references/executor-base.md`, `workflows/deep-research.md`
 - **Reason**: plants_vs_zombies 项目经 7 轮迭代发现的 8 个系统性问题（P1-P8），属于 deep-research 工作流和 Executor SVG 生成流程的结构性缺陷，需固化到工作流文件使未来所有 PPT 项目自动遵守
-- **Smoke check**: 78 passed, 0 failed, 4 skipped / 82 checks（修改前后一致，无回归）
+- **Smoke check**: 38 passed, 0 failed, 3 skipped / 41 checks（修改前后一致，无回归）
 
 **P1 — SVG 文字居中规则增强** (`executor-base.md` §10)
 - **Before**: 仅规定 `text-anchor="middle"` + canvas center，无分栏布局特殊处理
@@ -83,7 +83,7 @@
 - **Reason**: 用户反馈深度调研流程耦合度高、各步骤不独立。参考 B 站视频"横评6大PPT开发Skill"的发布会准备流程，将研究拆为 7 个独立步骤，每步输出到独立文件夹，支持通过 Playwright 浏览器自动化调用不同 AI（ChatGPT/Grok/Perplexity）分工搜索
 - **Before**: `deep-research.md` 为 824 行单体工作流（5 步耦合）；`topic-research.md` 为独立快速模式；搜索仅用内置 WebSearch
 - **After**: `deep-research.md` 为编排器，协调 7 个独立步骤文件（`research/step1-7`）；每步输出到 `_research/stepN_name/`；`browse_ai.py` 支持通过 Playwright 自动化 ChatGPT/Grok/Perplexity 网页搜索；按内容类型分配 AI（技术→GPT，趋势→Grok，学术→Perplexity）；所有输入统一走深度调研
-- **Smoke check**: 78 passed, 0 failed, 4 skipped / 82 checks（修改前后一致，无回归）
+- **Smoke check**: 38 passed, 0 failed, 3 skipped / 41 checks（修改前后一致，无回归）
 - **Risk**: medium（架构重构，但仅涉及工作流 markdown 文件和新增脚本，未修改现有 Python 脚本逻辑）
 - **Human reviewed**: pending
 
@@ -98,6 +98,20 @@
 - **Reason**: B站视频横评中 PPT Master 排版评分 ★★☆、动画评分 ★★☆。分析发现 svg_quality_checker.py 完全没有布局边界/溢出/间距检测；executor-base.md 有生成规则但无自动化验证；动画节奏缺乏强制执行
 - **Before**: 质量检查器无布局验证；finalize_svg.py 无自动修正能力；动画规则散落在 customize-animations.md 但 Executor 不强制参照；无发布会专用品牌预设
 - **After**: svg_quality_checker.py 新增 check 12/13/14（文字溢出检测、元素间距检测、垂直分布检测）；finalize_svg.py 新增 fix-layout 步骤（文字溢出自动缩减字号）；executor-base.md 新增 §18（动画节奏按页面类型强制）和 §19（视觉优先页渲染策略）；event_presentation 品牌预设（暗色调、Apple keynote 风格）
-- **Smoke check**: 78 passed, 0 failed, 4 skipped / 82 checks（修改前后一致，无回归）
+- **Smoke check**: 38 passed, 0 failed, 3 skipped / 41 checks（修改前后一致，无回归）
 - **Risk**: low（新增检查和规则，不修改现有脚本核心逻辑）
+- **Human reviewed**: pending
+
+### 2026-06-28 — 深度调研执行闭环补齐：浏览器搜索降级 + 研究产物同步
+
+- **Files**:
+  - **修改**: `scripts/research/browse_ai.py`
+  - **新增**: `scripts/research/sync_research_outputs.py`
+  - **修改**: `workflows/deep-research.md`, `workflows/research/step3_search.md`, `workflows/research/step7_visual.md`
+  - **修改**: `docs/change-log.md`
+- **Reason**: 昨日 7 步深度调研重构已落地架构和文档，但浏览器搜索脚本缺少低质量重试、真实 fallback 记录、全部失败后的人工 WebSearch 交接；研究产物同步仍使用裸 `cp`，在 Windows 和目录缺失时不稳定
+- **Before**: `browse_ai.py` 递归 fallback 但 manifest 只写目标 AI，低质量结果不会明确重试；三家浏览器 AI 全失败时文档暗示脚本可调用内置 WebSearch；hand-off 需要手写 `cp` / `cp -r`
+- **After**: `browse_ai.py` 对空回复、少于 200 字、缺少来源 URL 的结果重试一次，manifest 记录 `ai_target` / `ai_used` / `fallback` / `fallback_chain` / `status` / `char_count` / `quality` / `output_file` / `image_suggestions` / `needs_manual_websearch`；全部失败时写出可复制人工 WebSearch prompt；新增同步脚本创建 `sources/`、`analysis/`、`images/ref/`、`images/web_assets/` 并复制研究产物；文档改为调用同步脚本并说明 WebSearch 是 Agent 手动降级能力
+- **Smoke check**: 38 passed, 0 failed, 3 skipped / 41 checks；专项 `py_compile` 覆盖 `scripts/research/browse_ai.py` 和 `scripts/research/sync_research_outputs.py`
+- **Risk**: medium（修改新研究流程脚本和 manifest 结构；主 PPT 生成流程未改）
 - **Human reviewed**: pending

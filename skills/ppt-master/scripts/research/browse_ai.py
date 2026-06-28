@@ -17,15 +17,18 @@ Usage:
 
 import argparse
 import json
+import re
 import sys
 import time
+from dataclasses import dataclass, field
+from datetime import datetime
 from pathlib import Path
 
 try:
     from playwright.sync_api import sync_playwright, TimeoutError as PwTimeout
 except ImportError:
-    print("ERROR: playwright is not installed. Run: pip install playwright && playwright install chromium")
-    sys.exit(1)
+    sync_playwright = None
+    PwTimeout = TimeoutError
 
 
 # ---------------------------------------------------------------------------
@@ -72,6 +75,49 @@ FALLBACK_ORDER = {
     "perplexity": ["chatgpt", "grok"],
 }
 
+MIN_QUALITY_CHARS = 200
+URL_RE = re.compile(r"https?://[^\s\]\)\}\"'<>]+", re.IGNORECASE)
+IMAGE_URL_RE = re.compile(
+    r"https?://[^\s\]\)\}\"'<>]+\.(?:png|jpe?g|webp|gif|svg)(?:\?[^\s\]\)\}\"'<>]+)?",
+    re.IGNORECASE,
+)
+IMAGE_HINT_RE = re.compile(
+    r"(?:图片|图像|配图|素材|截图|image|visual|photo|picture|screenshot|diagram)[:：]?\s*([^\n。；;]{3,80})",
+    re.IGNORECASE,
+)
+
+
+@dataclass
+class SearchAttempt:
+    """Record one browser search attempt."""
+
+    ai: str
+    status: str
+    char_count: int = 0
+    quality: str = "failed"
+    reason: str = ""
+    text: str = ""
+
+
+@dataclass
+class SearchResult:
+    """Carry search text plus execution metadata."""
+
+    text: str = ""
+    ai_target: str = ""
+    ai_used: str = ""
+    status: str = "failed"
+    quality: str = "failed"
+    char_count: int = 0
+    output_file: str = ""
+    fallback: bool = False
+    fallback_chain: list[str] = field(default_factory=list)
+    attempts: list[SearchAttempt] = field(default_factory=list)
+    image_suggestions: list[dict[str, str]] = field(default_factory=list)
+    needs_manual_websearch: bool = False
+    manual_websearch_prompt: str = ""
+    error: str = ""
+
 
 def list_services():
     """Print supported AI services."""
@@ -92,6 +138,9 @@ def connect_browser(chrome_profile: str | None = None, cdp_port: int | None = No
        Preserves login sessions but launches a new Chrome instance.
     3. Fresh Chromium — no profile, no persistence. Fallback only.
     """
+    if sync_playwright is None:
+        raise RuntimeError("playwright is not installed. Run: pip install playwright && playwright install chromium")
+
     pw = sync_playwright().start()
 
     # Mode 1: CDP connection to already-running Chrome
@@ -216,69 +265,257 @@ def wait_for_response(page, svc: dict, timeout: int = 120000) -> str | None:
     return None
 
 
-def search_single(ai: str, prompt: str, output: str | None, chrome_profile: str | None, timeout: int, cdp_port: int | None = None) -> str:
-    """Perform a single AI search and return the result text."""
-    if ai not in AI_SERVICES:
-        print(f"ERROR: Unknown AI service '{ai}'. Use --list to see options.")
-        sys.exit(1)
+def _quality_for_text(text: str | None) -> tuple[str, str]:
+    """Classify response quality and return quality plus reason."""
+    if not text or not text.strip():
+        return "empty", "empty response"
+    stripped = text.strip()
+    if len(stripped) < MIN_QUALITY_CHARS:
+        return "low", f"response shorter than {MIN_QUALITY_CHARS} chars"
+    if not URL_RE.search(stripped):
+        return "low", "missing source URL"
+    return "high", "ok"
 
+
+def _extract_image_suggestions(text: str) -> list[dict[str, str]]:
+    """Extract image URLs and search keyword hints from AI text."""
+    suggestions: list[dict[str, str]] = []
+    seen: set[tuple[str, str]] = set()
+
+    for url in IMAGE_URL_RE.findall(text or ""):
+        key = ("url", url.rstrip(".,，。"))
+        if key in seen:
+            continue
+        seen.add(key)
+        suggestions.append({"type": "url", "value": key[1]})
+
+    for match in IMAGE_HINT_RE.finditer(text or ""):
+        value = match.group(1).strip(" -:：[]（）()，,。.")
+        if not value or URL_RE.search(value):
+            continue
+        key = ("keyword", value)
+        if key in seen:
+            continue
+        seen.add(key)
+        suggestions.append({"type": "keyword", "value": value})
+
+    return suggestions[:10]
+
+
+def _manual_websearch_prompt(prompt: str) -> str:
+    """Build a copyable prompt for the agent's manual WebSearch fallback."""
+    return (
+        "浏览器自动化未获得可用结果。请在当前 Agent 环境中手动执行 WebSearch/WebFetch：\n\n"
+        f"{prompt}\n\n"
+        "要求：优先检索官方报告、权威媒体和一手来源；输出包含来源 URL、关键数据、"
+        "可引用原文摘要，并保留图片关键词或图片 URL。"
+    )
+
+
+def _write_search_output(
+    output: str | None,
+    *,
+    ai_target: str,
+    ai_used: str,
+    prompt: str,
+    result: str,
+    quality: str,
+    image_suggestions: list[dict[str, str]],
+) -> str:
+    """Write one search result markdown file and return its filename."""
+    if not output:
+        return ""
+
+    out_path = Path(output)
+    out_path.parent.mkdir(parents=True, exist_ok=True)
+    lines = [
+        "## 搜索来源",
+        f"- AI 目标: {ai_target}",
+        f"- AI 实际使用: {ai_used}",
+        f"- 搜索时间: {datetime.now().isoformat(timespec='seconds')}",
+        f"- 回复质量: {quality}",
+        "",
+        "## 搜索提示词",
+        "",
+        prompt,
+        "",
+        "## 搜索结果",
+        "",
+        result.strip(),
+        "",
+        "## 图片素材建议",
+    ]
+    if image_suggestions:
+        for suggestion in image_suggestions:
+            lines.append(f"- {suggestion['type']}: {suggestion['value']}")
+    else:
+        lines.append("- 无")
+    lines.append("")
+    out_path.write_text("\n".join(lines), encoding="utf-8")
+    print(f"  Saved to {output}")
+    return out_path.name
+
+
+def _try_ai_once(ai: str, prompt: str, chrome_profile: str | None, timeout: int, cdp_port: int | None) -> SearchAttempt:
+    """Try one AI service once and return attempt metadata."""
     svc = AI_SERVICES[ai]
     print(f"Searching with {svc['name']}...")
     print(f"  Prompt: {prompt[:80]}...")
 
-    pw, ctx, is_persistent = connect_browser(chrome_profile, cdp_port)
+    pw = None
+    ctx = None
+    is_persistent = False
     try:
-        page = ctx.new_page() if is_persistent else ctx.new_page()
+        pw, ctx, is_persistent = connect_browser(chrome_profile, cdp_port)
+        page = ctx.new_page()
 
-        # Navigate to AI service
+        loaded = False
         for url in svc["urls"]:
             try:
                 page.goto(url, wait_until="domcontentloaded", timeout=30000)
+                loaded = True
                 break
             except Exception:
                 continue
 
-        # Wait for page to be ready
+        if not loaded:
+            return SearchAttempt(ai=ai, status="failed", reason="page load failed")
+
         if not wait_for_input(page, svc, timeout=30000):
-            print(f"  ERROR: {svc['name']} page did not load properly")
-            # Try fallback
-            for fallback_ai in FALLBACK_ORDER.get(ai, []):
-                print(f"  Trying fallback: {AI_SERVICES[fallback_ai]['name']}...")
-                page.close()
-                return search_single(fallback_ai, prompt, output, chrome_profile, timeout, cdp_port)
-            return ""
+            return SearchAttempt(ai=ai, status="failed", reason="page input not ready")
 
-        # Send the prompt
         if not send_prompt(page, svc, prompt):
-            print(f"  ERROR: Could not send prompt to {svc['name']}")
-            return ""
+            return SearchAttempt(ai=ai, status="failed", reason="prompt send failed")
 
-        # Wait for response
-        result = wait_for_response(page, svc, timeout=timeout)
-        if not result:
-            print(f"  WARNING: No response from {svc['name']}")
-            return ""
+        result = wait_for_response(page, svc, timeout=timeout) or ""
+        quality, reason = _quality_for_text(result)
+        status = "success" if quality == "high" else "low_quality"
+        print(f"  Got {len(result)} chars from {svc['name']} ({quality})")
+        return SearchAttempt(
+            ai=ai,
+            status=status,
+            char_count=len(result),
+            quality=quality,
+            reason=reason,
+            text=result,
+        )
 
-        print(f"  Got {len(result)} chars from {svc['name']}")
-
-        # Save to file if output specified
-        if output:
-            out_path = Path(output)
-            out_path.parent.mkdir(parents=True, exist_ok=True)
-            out_path.write_text(result, encoding="utf-8")
-            print(f"  Saved to {output}")
-
-        return result
-
+    except Exception as e:
+        return SearchAttempt(ai=ai, status="failed", reason=str(e)[:200])
     finally:
         try:
-            if is_persistent:
+            if ctx is not None:
                 ctx.close()
-            else:
-                ctx.close()
+            if pw is not None and not is_persistent:
                 pw.stop()
         except Exception:
             pass
+
+
+def search_single_result(
+    ai: str,
+    prompt: str,
+    output: str | None,
+    chrome_profile: str | None,
+    timeout: int,
+    cdp_port: int | None = None,
+) -> SearchResult:
+    """Perform a browser search with retry and fallback metadata."""
+    if ai not in AI_SERVICES:
+        print(f"ERROR: Unknown AI service '{ai}'. Use --list to see options.")
+        sys.exit(1)
+
+    chain = [ai] + [candidate for candidate in FALLBACK_ORDER.get(ai, []) if candidate != ai]
+
+    if sync_playwright is None:
+        manual_prompt = _manual_websearch_prompt(prompt)
+        manual_file = ""
+        if output:
+            out_path = Path(output).with_name(f"{Path(output).stem}_manual_websearch_prompt.md")
+            out_path.parent.mkdir(parents=True, exist_ok=True)
+            out_path.write_text(manual_prompt, encoding="utf-8")
+            manual_file = out_path.name
+        return SearchResult(
+            ai_target=ai,
+            status="needs_manual_websearch",
+            quality="failed",
+            output_file=manual_file,
+            fallback=True,
+            fallback_chain=chain,
+            needs_manual_websearch=True,
+            manual_websearch_prompt=manual_prompt,
+            error="playwright is not installed; run: pip install playwright && playwright install chromium",
+        )
+
+    result = SearchResult(ai_target=ai, fallback_chain=chain)
+
+    for candidate in chain:
+        max_attempts = 2
+        for attempt_index in range(max_attempts):
+            if attempt_index == 1:
+                print(f"  Retrying {AI_SERVICES[candidate]['name']} after low-quality result...")
+            attempt = _try_ai_once(candidate, prompt, chrome_profile, timeout, cdp_port)
+            text = attempt.text
+            attempt.text = ""
+            result.attempts.append(attempt)
+
+            if attempt.status == "success":
+                image_suggestions = _extract_image_suggestions(text)
+                filename = _write_search_output(
+                    output,
+                    ai_target=ai,
+                    ai_used=candidate,
+                    prompt=prompt,
+                    result=text,
+                    quality=attempt.quality,
+                    image_suggestions=image_suggestions,
+                )
+                result.text = text
+                result.ai_used = candidate
+                result.status = "success"
+                result.quality = attempt.quality
+                result.char_count = len(text)
+                result.output_file = filename
+                result.fallback = candidate != ai
+                result.image_suggestions = image_suggestions
+                return result
+
+            if attempt.status == "low_quality" and attempt_index == 0:
+                continue
+            break
+
+        if candidate != chain[-1]:
+            print(f"  Trying fallback: {AI_SERVICES[chain[chain.index(candidate) + 1]]['name']}...")
+
+    manual_prompt = _manual_websearch_prompt(prompt)
+    manual_file = ""
+    if output:
+        manual_path = Path(output).with_name(f"{Path(output).stem}_manual_websearch_prompt.md")
+        manual_path.parent.mkdir(parents=True, exist_ok=True)
+        manual_path.write_text(manual_prompt, encoding="utf-8")
+        manual_file = manual_path.name
+        print(f"  Manual WebSearch prompt saved to {manual_path}")
+
+    result.status = "needs_manual_websearch"
+    result.quality = "failed"
+    result.needs_manual_websearch = True
+    result.manual_websearch_prompt = manual_prompt
+    result.output_file = manual_file
+    result.fallback = True
+    result.error = "all browser AI services failed or returned low-quality results"
+    return result
+
+
+def search_single(
+    ai: str,
+    prompt: str,
+    output: str | None,
+    chrome_profile: str | None,
+    timeout: int,
+    cdp_port: int | None = None,
+) -> str:
+    """Perform a single AI search and return result text for CLI compatibility."""
+    return search_single_result(ai, prompt, output, chrome_profile, timeout, cdp_port).text
 
 
 # --- Role-aware prompt templates ---
@@ -350,6 +587,27 @@ def _build_role_prompt(role: str, topic: str, keywords: str, data_hint: str) -> 
     return template.format(topic=topic, keywords=keywords, data_hint=data_hint)
 
 
+def _safe_filename(value: str, fallback: str) -> str:
+    """Return a filesystem-safe short filename stem."""
+    stem = re.sub(r"[^0-9A-Za-z\u4e00-\u9fff_-]+", "_", value or fallback)
+    stem = re.sub(r"_+", "_", stem).strip("_")
+    return (stem or fallback)[:40]
+
+
+def _attempts_for_manifest(attempts: list[SearchAttempt]) -> list[dict[str, object]]:
+    """Convert attempts to JSON-safe manifest entries."""
+    return [
+        {
+            "ai": attempt.ai,
+            "status": attempt.status,
+            "char_count": attempt.char_count,
+            "quality": attempt.quality,
+            "reason": attempt.reason,
+        }
+        for attempt in attempts
+    ]
+
+
 def search_batch(batch_file: str, output_dir: str, chrome_profile: str | None, timeout: int, cdp_port: int | None = None):
     """Batch search: read search_plan.json and execute each item."""
     plan_path = Path(batch_file)
@@ -364,7 +622,7 @@ def search_batch(batch_file: str, output_dir: str, chrome_profile: str | None, t
     # plan is a list of {page_id, topic, keywords, ai_target, ...}
     items = plan if isinstance(plan, list) else plan.get("pages", plan.get("items", []))
 
-    manifest = []
+    results: list[dict[str, object]] = []
     total = len(items)
 
     for i, item in enumerate(items):
@@ -374,44 +632,83 @@ def search_batch(batch_file: str, output_dir: str, chrome_profile: str | None, t
         ai_target = item.get("ai_target", "chatgpt")
         skip = item.get("skip_search", False)
 
-        if skip:
-            print(f"[{i+1}/{total}] Skipping {page_id} (skip_search=true)")
-            manifest.append({"page_id": page_id, "status": "skipped"})
-            continue
-
-        # Build search prompt based on narrative role
         kw_str = ", ".join(keywords) if isinstance(keywords, list) else str(keywords)
         role = item.get("narrative_role", item.get("content_type", "evidence"))
         data_hint = item.get("data_hint", topic)
-
         prompt = _build_role_prompt(role, topic, kw_str, data_hint)
 
-        filename = f"{page_id}_{topic[:30].replace(' ', '_').replace('/', '_')}.md"
+        if skip:
+            print(f"[{i+1}/{total}] Skipping {page_id} (skip_search=true)")
+            results.append({
+                "page_id": page_id,
+                "topic": topic,
+                "ai_target": ai_target,
+                "ai_used": None,
+                "fallback": False,
+                "fallback_chain": [],
+                "status": "skipped",
+                "quality": "skipped",
+                "char_count": 0,
+                "output_file": "",
+                "image_suggestions": [],
+                "needs_manual_websearch": False,
+                "manual_websearch_prompt_file": "",
+                "attempts": [],
+            })
+            continue
+
+        filename = f"{_safe_filename(str(page_id), f'p{i+1:02d}')}_{_safe_filename(str(topic), 'topic')}.md"
         output_path = str(out_dir / filename)
 
         print(f"\n[{i+1}/{total}] {page_id}: {topic}")
-        result = search_single(ai_target, prompt, output_path, chrome_profile, timeout, cdp_port)
+        result = search_single_result(ai_target, prompt, output_path, chrome_profile, timeout, cdp_port)
 
-        manifest.append({
+        results.append({
             "page_id": page_id,
             "topic": topic,
-            "ai_used": ai_target,
-            "output_file": filename,
-            "char_count": len(result),
-            "status": "success" if len(result) > 200 else "low_quality",
+            "ai_target": result.ai_target,
+            "ai_used": result.ai_used or None,
+            "fallback": result.fallback,
+            "fallback_chain": result.fallback_chain,
+            "status": result.status,
+            "quality": result.quality,
+            "char_count": result.char_count,
+            "output_file": result.output_file,
+            "image_suggestions": result.image_suggestions,
+            "needs_manual_websearch": result.needs_manual_websearch,
+            "manual_websearch_prompt_file": result.output_file if result.needs_manual_websearch else "",
+            "error": result.error,
+            "attempts": _attempts_for_manifest(result.attempts),
         })
 
         # Brief pause between searches to avoid rate limiting
         if i < total - 1:
             time.sleep(3)
 
-    # Save manifest
+    success = sum(1 for item in results if item.get("status") == "success")
+    skipped = sum(1 for item in results if item.get("status") == "skipped")
+    manual = sum(1 for item in results if item.get("needs_manual_websearch"))
+    fallback_used = sum(1 for item in results if item.get("fallback") and item.get("status") == "success")
+    manifest = {
+        "completed_at": datetime.now().isoformat(timespec="seconds"),
+        "total_pages": total,
+        "total_searched": total - skipped,
+        "total_skipped": skipped,
+        "successful": success,
+        "fallback_used": fallback_used,
+        "needs_manual_websearch": manual,
+        "quality_rule": {
+            "min_chars": MIN_QUALITY_CHARS,
+            "requires_source_url": True,
+            "retry_once_on_low_quality": True,
+        },
+        "results": results,
+    }
+
     manifest_path = out_dir / "search_manifest.json"
     manifest_path.write_text(json.dumps(manifest, ensure_ascii=False, indent=2), encoding="utf-8")
     print(f"\nManifest saved to {manifest_path}")
-
-    success = sum(1 for m in manifest if m.get("status") == "success")
-    print(f"Done: {success}/{total} successful searches")
+    print(f"Done: {success}/{total - skipped} successful searches; {manual} need manual WebSearch")
 
 
 def validate_selectors(cdp_port: int | None = None, chrome_profile: str | None = None):
