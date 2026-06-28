@@ -104,8 +104,8 @@ Another process is using port 9222. Either stop it or change `HERMES_CHROME_PORT
 |---|---|---|
 | `scripts/.hermes-chrome.env.example` | Yes | Config template — copy to `.hermes-chrome.env` |
 | `scripts/.hermes-chrome.env` | **No** (gitignored) | Your local config with personal paths |
-| `scripts/start-hermes-chrome.bat` | No (gitignored) | Windows startup script |
-| `scripts/start-hermes-chrome.sh` | No (gitignored) | macOS/Linux startup script |
+| `scripts/start-hermes-chrome.bat` | Yes | Windows startup script |
+| `scripts/start-hermes-chrome.sh` | Yes | macOS/Linux startup script |
 
 ## Integration with Deep Research (browse_ai.py)
 

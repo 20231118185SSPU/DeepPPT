@@ -28,6 +28,8 @@ def _run_check(cmd: list[str], label: str) -> dict:
             cmd,
             capture_output=True,
             text=True,
+            encoding="utf-8",
+            errors="replace",
             timeout=120,
         )
         return {
@@ -151,7 +153,7 @@ def main(argv: list[str] | None = None) -> int:
     if args.json:
         # Strip details for clean JSON output
         compact = {k: v for k, v in report.items() if k != "details"}
-        print(json.dumps(compact, indent=2))
+        print(json.dumps(compact, indent=2, ensure_ascii=False))
     else:
         print_report(report)
 
@@ -159,4 +161,9 @@ def main(argv: list[str] | None = None) -> int:
 
 
 if __name__ == "__main__":
+    if sys.platform == "win32":
+        import io
+
+        sys.stdout = io.TextIOWrapper(sys.stdout.buffer, encoding="utf-8", errors="replace")
+        sys.stderr = io.TextIOWrapper(sys.stderr.buffer, encoding="utf-8", errors="replace")
     sys.exit(main())

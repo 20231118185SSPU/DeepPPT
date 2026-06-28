@@ -33,13 +33,13 @@ powershell -ExecutionPolicy Bypass -File scripts/setup/install_deps.ps1
 **手动安装**：
 
 ```bash
-# 必需
-pip install python-pptx Pillow requests beautifulsoup4 lxml
+# 必需：安装主管线依赖
+pip install -r requirements.txt
 
-# 可选：SVG 预览 + RSS 采集
+# 可选：高质量 SVG PNG 后备 + RSS 采集
 pip install cairosvg feedparser
 
-# 可选：浏览器截图（网络图片采集）
+# 可选：浏览器截图 / AI 浏览器自动化
 pip install playwright
 python -m playwright install chromium
 ```
@@ -184,6 +184,19 @@ python skills/ppt-master/scripts/research/browse_ai.py --list
 | 学术/深度 | Perplexity | 学术观点、深度分析 |
 
 详见 [`docs/ai-browser-setup.md`](docs/ai-browser-setup.md)。
+
+## 发布前人工检查清单
+
+发布前不要新增 `tests/`、pytest 或 CI。按项目约定使用人工 smoke / harness gate：
+
+```bash
+python scripts/setup/check_deps.py --quiet
+python skills/ppt-master/scripts/smoke_check.py --skip-help
+python skills/ppt-master/scripts/harness_gate.py projects/<example_project> --quick
+python skills/ppt-master/scripts/e2e_validate.py projects/<example_project> --pptx projects/<example_project>/exports/<file>.pptx
+```
+
+同时确认 `.env` 与 `scripts/.hermes-chrome.env` 未提交，根目录没有临时安装器或一次性下载文件。
 
 ## 常见问题
 

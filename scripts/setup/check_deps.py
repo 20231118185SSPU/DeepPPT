@@ -36,13 +36,21 @@ REQUIRED_PACKAGES: dict[str, tuple[str, str]] = {
     "requests": ("requests", "requests"),
     "bs4": ("beautifulsoup4", "beautifulsoup4"),
     "lxml": ("lxml", "lxml"),
+    "flask": ("flask", "flask"),
+    "fitz": ("PyMuPDF", "PyMuPDF"),
+    "mammoth": ("mammoth", "mammoth"),
+    "openpyxl": ("openpyxl", "openpyxl"),
+    "svglib": ("svglib", "svglib"),
+    "reportlab": ("reportlab", "reportlab"),
+    "google.genai": ("google-genai", "google-genai"),
+    "edge_tts": ("edge-tts", "edge-tts"),
 }
 
 OPTIONAL_PACKAGES: dict[str, tuple[str, str, str]] = {
     # import-name -> (pip-name, display-name, purpose)
-    "cairosvg": ("cairosvg", "cairosvg", "SVG preview"),
-    "feedparser": ("feedparser", "feedparser", "RSS feed parsing"),
-    "playwright": ("playwright", "playwright", "browser screenshot"),
+    "cairosvg": ("cairosvg", "cairosvg", "higher-fidelity Office PNG fallback"),
+    "feedparser": ("feedparser", "feedparser", "RSS feed parsing in research workflows"),
+    "playwright": ("playwright", "playwright", "browser screenshots and AI browser automation"),
 }
 
 # Backend name -> env-var that holds the API key

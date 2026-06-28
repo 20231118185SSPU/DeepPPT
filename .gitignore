@@ -162,6 +162,9 @@ yarn.lock
 .env.local
 .env.*.local
 
+# Hermes Chrome - AI browser (local-only, see docs/ai-browser-setup.md)
+scripts/.hermes-chrome.env
+
 # Database files
 *.db
 *.sqlite
