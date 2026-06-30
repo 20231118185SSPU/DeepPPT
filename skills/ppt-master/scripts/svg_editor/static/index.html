@@ -31,16 +31,18 @@
         </div>
         <div id="panel-right">
             <button id="btn-lang-toggle" class="btn-lang-toggle" title="Switch language">中</button>
-            <div class="panel-header" data-i18n="panel_annotations">Annotations</div>
+            <div class="panel-header" data-i18n="panel_edit_annotate">Edit / Annotate</div>
+            <div id="pending-status" class="pending-status"></div>
             <div id="selection-info">
                 <div class="section-label" data-i18n="label_selected_element">Selected element</div>
                 <div id="selected-element" class="empty" data-i18n="empty_selected_element">Click an element on the slide to select it</div>
                 <div id="element-props" style="display:none;"></div>
             </div>
-            <div id="annotation-input" style="display:none;">
+            <div id="annotation-input" style="display:none;" role="region" aria-label="Annotation editor">
                 <div class="section-label" data-i18n="label_edit_instruction">Edit instruction</div>
-                <textarea id="annotation-text" data-i18n-placeholder="placeholder_annotation" placeholder="Describe how the AI should modify this element..."></textarea>
-                <button id="btn-add-annotation" data-i18n="btn_add_annotation">Add annotation</button>
+                <div id="annotation-quick-actions"></div>
+                <textarea id="annotation-text" data-i18n-placeholder="placeholder_annotation" placeholder="Describe how the AI should modify this element..." aria-label="Annotation text"></textarea>
+                <button id="btn-add-annotation" data-i18n="btn_add_annotation" aria-label="Add annotation for selected element">Add annotation</button>
             </div>
             <div id="annotation-list">
                 <div class="section-label" data-i18n="label_annotations_on_slide">Annotations on this slide</div>

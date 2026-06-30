@@ -102,7 +102,7 @@ def main(argv: list[str] | None = None) -> int:
     if args.command == 'validate':
         try:
             config = load_animation_config(project_path, args.config)
-        except Exception as exc:
+        except ValueError as exc:
             print(f'Error: {exc}', file=sys.stderr)
             return 1
         if not config:

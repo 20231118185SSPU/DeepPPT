@@ -14,10 +14,13 @@ import sys
 import re
 import json
 import html
+import logging
 from pathlib import Path
 from typing import List, Dict, Tuple
 from collections import defaultdict
 from xml.etree import ElementTree as ET
+
+logger = logging.getLogger(__name__)
 
 try:
     from project_utils import CANVAS_FORMATS
@@ -311,6 +314,18 @@ class SVGQualityChecker:
                 # 14. Vertical distribution check: content spread across zones.
                 self._check_vertical_distribution(content, result)
 
+                # 15. Emoji usage check: no emoji in SVG text (§4.0).
+                self._check_emoji_usage(content, result)
+
+                # 16. Element overlap detection.
+                self._check_element_overlap(content, result)
+
+                # 17. Image-text spacing validation (20-80px).
+                self._check_image_text_spacing(content, result)
+
+                # 18. Whitespace balance (left/right).
+                self._check_whitespace_balance(content, result)
+
             # Determine pass/fail
             result['passed'] = len(result['errors']) == 0
 
@@ -541,9 +556,15 @@ class SVGQualityChecker:
                 break
 
     def _check_dimensions(self, content: str, result: Dict):
-        """Check width/height presence and consistency with viewBox"""
-        width_match = re.search(r'width="(\d+)"', content)
-        height_match = re.search(r'height="(\d+)"', content)
+        """Check root SVG width/height presence and consistency with viewBox."""
+        root_match = re.search(r'<svg\b([^>]*)>', content, re.IGNORECASE)
+        if not root_match:
+            result['errors'].append("Missing root <svg> element")
+            return
+
+        root_attrs = root_match.group(1)
+        width_match = re.search(r'\bwidth="(\d+)"', root_attrs)
+        height_match = re.search(r'\bheight="(\d+)"', root_attrs)
 
         if width_match and height_match:
             width = width_match.group(1)
@@ -561,12 +582,12 @@ class SVGQualityChecker:
                             f"({vb_width}x{vb_height})"
                         )
         else:
-            # Missing width/height on root <svg> — preview engines may
-            # render at 0×0 or default to 300×150 (CSS intrinsic size).
-            result['warnings'].append(
-                "SVG root element missing width/height attributes — "
-                "preview may render incorrectly. Add width and height "
-                "matching the viewBox dimensions (e.g. width=\"1280\" height=\"720\")."
+            # Missing width/height on root <svg> breaks the live preview's
+            # intrinsic sizing and can export at the browser default 300x150.
+            result['errors'].append(
+                "SVG root element missing width/height attributes - "
+                "add width and height matching the viewBox dimensions "
+                "(e.g. width=1280 height=720)."
             )
 
     def _check_text_elements(self, content: str, result: Dict):
@@ -647,8 +668,8 @@ class SVGQualityChecker:
                         f"to reduce file size")
             except ImportError:
                 pass  # PIL not available, skip resolution check
-            except Exception:
-                pass  # Image unreadable, skip resolution check
+            except Exception as exc:
+                logger.debug("Image resolution check skipped for %s: %s", href, exc)
 
     def _check_animation_group_ids(self, content: str, result: Dict):
         """Warn when visible top-level groups cannot be customized."""
@@ -746,7 +767,8 @@ class SVGQualityChecker:
             if candidate.exists():
                 try:
                     data = _parse_spec_lock(candidate)
-                except Exception:
+                except Exception as exc:
+                    logger.debug("Failed to parse spec_lock %s: %s", candidate, exc)
                     data = None
                 self._lock_cache[candidate] = data
                 if data is not None:
@@ -888,7 +910,8 @@ class SVGQualityChecker:
             return self._source_manifest_cache[manifest_path]
         try:
             payload = json.loads(manifest_path.read_text(encoding='utf-8'))
-        except (OSError, json.JSONDecodeError):
+        except (OSError, json.JSONDecodeError) as exc:
+            logger.debug("Failed to load image_sources manifest %s: %s", manifest_path, exc)
             payload = {}
         self._source_manifest_cache[manifest_path] = payload
         return payload
@@ -987,8 +1010,9 @@ class SVGQualityChecker:
         try:
             with open(outline_path, 'r', encoding='utf-8') as f:
                 outline = json.load(f)
-        except (json.JSONDecodeError, OSError):
-            return  # malformed outline — skip silently
+        except (json.JSONDecodeError, OSError) as exc:
+            logger.debug("Failed to load detailed_outline.json: %s", exc)
+            return
 
         # Determine which page this SVG corresponds to
         svg_name = svg_path.stem  # e.g. "03_核心优势"
@@ -1325,6 +1349,146 @@ class SVGQualityChecker:
                     f"Vertical distribution: {label} zone (y={idx*zone_h:.0f}-"
                     f"{(idx+1)*zone_h:.0f}) has no content")
 
+    _EMOJI_RE = re.compile(
+        '['
+        '\U0001F600-\U0001F64F'  # emoticons
+        '\U0001F300-\U0001F5FF'  # misc symbols & pictographs
+        '\U0001F680-\U0001F6FF'  # transport & map
+        '\U0001F900-\U0001F9FF'  # supplemental symbols
+        '\U0001FA00-\U0001FA6F'  # chess symbols
+        '\U0001FA70-\U0001FAFF'  # symbols extended-A
+        '\U00002702-\U000027B0'  # dingbats
+        '\U00002600-\U000026FF'  # misc symbols
+        '\U00002700-\U000027BF'  # dingbats
+        '\U0000FE00-\U0000FE0F'  # variation selectors
+        ']'
+    )
+
+    def _check_emoji_usage(self, content: str, result: Dict):
+        """Check for emoji Unicode characters in SVG text content (§4.0 ban)."""
+        for m in re.finditer(r'<text[^>]*>([^<]*(?:<tspan[^>]*>[^<]*</tspan>[^<]*)*)</text>',
+                             content, re.DOTALL):
+            text_block = m.group(0)
+            emojis_found = self._EMOJI_RE.findall(text_block)
+            if emojis_found:
+                sample = ''.join(emojis_found[:5])
+                result['errors'].append(
+                    f"Emoji character(s) detected in SVG text: {sample}. "
+                    f"Use icons from the project icon library (data-icon placeholder) instead.")
+
+    def _check_element_overlap(self, content: str, result: Dict):
+        """Check for overlapping content elements (>20px overlap in both axes)."""
+        elements = []
+        for m in re.finditer(
+            r'<(rect|image|text|g)\b[^>]*'
+            r'\bx="([^"]+)"[^>]*\by="([^"]+)"[^>]*'
+            r'\bwidth="([^"]+)"[^>]*\bheight="([^"]+)"',
+            content,
+        ):
+            try:
+                x = float(m.group(2))
+                y = float(m.group(3))
+                w = float(m.group(4).rstrip('px'))
+                h = float(m.group(5).rstrip('px'))
+                elements.append((m.group(1), x, y, w, h))
+            except ValueError:
+                continue
+
+        overlap_threshold = 20
+        overlap_count = 0
+        for i in range(len(elements)):
+            for j in range(i + 1, len(elements)):
+                _, x1, y1, w1, h1 = elements[i]
+                _, x2, y2, w2, h2 = elements[j]
+                ox = max(0, min(x1 + w1, x2 + w2) - max(x1, x2))
+                oy = max(0, min(y1 + h1, y2 + h2) - max(y1, y2))
+                if ox > overlap_threshold and oy > overlap_threshold:
+                    overlap_count += 1
+        if overlap_count > 0:
+            result['warnings'].append(
+                f"Element overlap: {overlap_count} pair(s) of content elements "
+                f"overlap by >{overlap_threshold}px in both axes")
+
+    def _check_image_text_spacing(self, content: str, result: Dict):
+        """Check spacing between image and text elements (20-80px)."""
+        images = []
+        for m in re.finditer(
+            r'<image\b[^>]*\bx="([^"]+)"[^>]*\by="([^"]+)"[^>]*'
+            r'\bwidth="([^"]+)"[^>]*\bheight="([^"]+)"', content
+        ):
+            try:
+                images.append((
+                    float(m.group(1)), float(m.group(2)),
+                    float(m.group(3).rstrip('px')), float(m.group(4).rstrip('px'))
+                ))
+            except ValueError:
+                continue
+
+        texts = []
+        for m in re.finditer(r'<text\b[^>]*\bx="([^"]+)"[^>]*\by="([^"]+)"', content):
+            try:
+                texts.append((float(m.group(1)), float(m.group(2))))
+            except ValueError:
+                continue
+
+        if not images or not texts:
+            return
+
+        for ix, iy, iw, ih in images:
+            min_dist = float('inf')
+            for tx, ty in texts:
+                dx = max(0, max(ix - tx, tx - (ix + iw)))
+                dy = max(0, max(iy - ty, ty - (iy + ih)))
+                dist = (dx ** 2 + dy ** 2) ** 0.5
+                min_dist = min(min_dist, dist)
+            if min_dist < 20:
+                result['warnings'].append(
+                    f"Image-text spacing: image at ({ix:.0f},{iy:.0f}) has text "
+                    f"only {min_dist:.0f}px away (min 20px)")
+            elif min_dist > 80 and len(texts) > 1:
+                result['warnings'].append(
+                    f"Image-text spacing: image at ({ix:.0f},{iy:.0f}) is "
+                    f"{min_dist:.0f}px from nearest text (consider reducing gap)")
+
+    def _check_whitespace_balance(self, content: str, result: Dict):
+        """Check left/right balance — flag if one side has >70% of content."""
+        vb_match = re.search(r'viewBox="([^"]+)"', content)
+        if not vb_match:
+            return
+        parts = vb_match.group(1).split()
+        if len(parts) != 4:
+            return
+        try:
+            vb_w = float(parts[2])
+        except ValueError:
+            return
+
+        midpoint = vb_w / 2
+        left_count = 0
+        right_count = 0
+        for m in re.finditer(r'\bx="([^"]+)"', content):
+            try:
+                x = float(m.group(1))
+                if x < midpoint:
+                    left_count += 1
+                else:
+                    right_count += 1
+            except ValueError:
+                continue
+
+        total = left_count + right_count
+        if total < 4:
+            return
+        left_ratio = left_count / total
+        if left_ratio > 0.80:
+            result['warnings'].append(
+                f"Whitespace balance: {left_ratio:.0%} of elements on the left side — "
+                f"right side may have excessive whitespace")
+        elif left_ratio < 0.20:
+            result['warnings'].append(
+                f"Whitespace balance: {1-left_ratio:.0%} of elements on the right side — "
+                f"left side may have excessive whitespace")
+
     @staticmethod
     def _normalize_size(value: str) -> str:
         """Normalize a font-size value for comparison: lowercase, strip spaces,
@@ -1348,6 +1512,8 @@ class SVGQualityChecker:
         """Categorize issue type"""
         if 'Invalid XML' in error_msg:
             return 'XML well-formedness'
+        elif 'width/height' in error_msg or 'root <svg>' in error_msg:
+            return 'dimension issues'
         elif 'viewBox' in error_msg:
             return 'viewBox issues'
         elif 'foreignObject' in error_msg:
@@ -1360,6 +1526,14 @@ class SVGQualityChecker:
             return 'Element spacing'
         elif 'Vertical distribution' in error_msg:
             return 'Vertical distribution'
+        elif 'Emoji' in error_msg:
+            return 'Emoji usage'
+        elif 'Element overlap' in error_msg:
+            return 'Element overlap'
+        elif 'Image-text spacing' in error_msg:
+            return 'Image-text spacing'
+        elif 'Whitespace balance' in error_msg:
+            return 'Whitespace balance'
         else:
             return 'Other'
 
@@ -1750,10 +1924,11 @@ class SVGQualityChecker:
         if self.summary['errors'] > 0 or self.summary['warnings'] > 0:
             print(f"\n[TIP] Common fixes:")
             print(f"  1. XML well-formedness: write typography as raw Unicode; escape XML reserved chars as &amp; &lt; &gt; &quot; &apos; -- never use HTML named entities like &nbsp; &mdash; &copy;")
-            print(f"  2. viewBox issues: Ensure consistency with canvas format (see references/canvas-formats.md)")
-            print(f"  3. foreignObject: Use <text> + <tspan> for manual line breaks")
-            print(f"  4. Font issues: end every font-family stack with a PPT-safe family (e.g. Microsoft YaHei / Arial / Consolas)")
-            print(f"  5. Layout overflow: text exceeds safe margins -- fix-layout in finalize_svg.py can auto-shrink font-size")
+            print(f"  2. dimension issues: Add root SVG width/height matching the viewBox for live preview sizing")
+            print(f"  3. viewBox issues: Ensure consistency with canvas format (see references/canvas-formats.md)")
+            print(f"  4. foreignObject: Use <text> + <tspan> for manual line breaks")
+            print(f"  5. Font issues: end every font-family stack with a PPT-safe family (e.g. Microsoft YaHei / Arial / Consolas)")
+            print(f"  6. Layout overflow: text exceeds safe margins -- fix-layout in finalize_svg.py can auto-shrink font-size")
 
     def _print_animation_summary(self):
         """Print animations.json validation issues if present."""
@@ -1885,6 +2060,104 @@ class SVGQualityChecker:
         print(f"\n[REPORT] Check report exported: {output_file}")
 
 
+_MUST_FIX_KEYWORDS = (
+    'Invalid XML', 'viewBox', 'Forbidden element', 'Layout overflow',
+    'TEXT_OVERFLOW_MAJOR', 'FONT_TOO_SMALL', 'Emoji', 'missing xmlns',
+    'width/height mismatch', 'banned', 'not well-formed',
+)
+_SHOULD_FIX_KEYWORDS = (
+    'spec_lock drift', 'Font not PPT-safe', 'Element overlap', 'Spacing',
+    'WCAG contrast', 'font-family', 'vertical distribution', 'safe margin',
+)
+
+
+def _classify_issue(msg: str) -> str:
+    """Classify an error/warning message into must_fix/should_fix/accepted_risks."""
+    msg_lower = msg.lower()
+    for kw in _MUST_FIX_KEYWORDS:
+        if kw.lower() in msg_lower:
+            return 'must_fix'
+    for kw in _SHOULD_FIX_KEYWORDS:
+        if kw.lower() in msg_lower:
+            return 'should_fix'
+    return 'accepted_risks'
+
+
+def _export_integrated_review(checker, output_file: str) -> None:
+    """Export structured three-tier review JSON (must_fix/should_fix/accepted_risks)."""
+    import json as _json
+    from datetime import datetime as _dt, timezone as _tz
+
+    pages = {}
+    total_must = 0
+    total_should = 0
+    total_accepted = 0
+
+    for result in checker.results:
+        fname = result.get('file', 'unknown')
+        must_fix = []
+        should_fix = []
+        accepted_risks = []
+
+        for err in result.get('errors', []):
+            tier = _classify_issue(err)
+            if tier == 'must_fix':
+                must_fix.append(err)
+            elif tier == 'should_fix':
+                should_fix.append(err)
+            else:
+                accepted_risks.append(err)
+
+        for warn in result.get('warnings', []):
+            tier = _classify_issue(warn)
+            if tier == 'must_fix':
+                must_fix.append(warn)
+            elif tier == 'should_fix':
+                should_fix.append(warn)
+            else:
+                accepted_risks.append(warn)
+
+        if must_fix:
+            decision = 'needs_fix'
+        elif should_fix:
+            decision = 'acceptable_with_risks'
+        else:
+            decision = 'ready'
+
+        pages[fname] = {
+            'decision': decision,
+            'must_fix': must_fix,
+            'should_fix': should_fix,
+            'accepted_risks': accepted_risks,
+        }
+        total_must += len(must_fix)
+        total_should += len(should_fix)
+        total_accepted += len(accepted_risks)
+
+    if total_must > 0:
+        gate = 'BLOCKED'
+    elif total_should > 0:
+        gate = 'PASS_WITH_WARNINGS'
+    else:
+        gate = 'CLEAN'
+
+    report = {
+        'reviewed_at': _dt.now(_tz.utc).replace(microsecond=0).isoformat(),
+        'method': 'svg_quality_checker --integrated-review',
+        'pages': pages,
+        'summary': {
+            'total_must_fix': total_must,
+            'total_should_fix': total_should,
+            'total_accepted': total_accepted,
+            'gate_status': gate,
+        },
+    }
+
+    with open(output_file, 'w', encoding='utf-8') as f:
+        f.write(_json.dumps(report, ensure_ascii=False, indent=2))
+    print(f"\n[INTEGRATED-REVIEW] Structured review exported: {output_file} (gate: {gate})")
+
+
 def print_usage() -> None:
     """Print CLI usage information."""
     print("PPT Master - SVG Quality Check Tool\n")
@@ -1905,6 +2178,9 @@ def print_usage() -> None:
     print("                                  glob *.svg directly, skip spec_lock checks,")
     print("                                  enforce roster ↔ design_spec.md Page Roster consistency,")
     print("                                  and emit advisory placeholder-convention warnings.")
+    print("  --integrated-review           Output structured three-tier JSON")
+    print("                                  (must_fix/should_fix/accepted_risks)")
+    print("  --ir-output <path>            Path for integrated review JSON (default: integrated_review.json)")
 
 
 def main() -> None:
@@ -1951,6 +2227,15 @@ def main() -> None:
 
     # Print summary
     checker.print_summary()
+
+    # Integrated review output (structured must_fix/should_fix/accepted_risks)
+    if '--integrated-review' in sys.argv:
+        ir_output = 'integrated_review.json'
+        if '--ir-output' in sys.argv:
+            idx = sys.argv.index('--ir-output')
+            if idx + 1 < len(sys.argv):
+                ir_output = sys.argv[idx + 1]
+        _export_integrated_review(checker, ir_output)
 
     # Export report (if specified)
     if '--export' in sys.argv:

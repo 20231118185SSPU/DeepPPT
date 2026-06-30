@@ -82,7 +82,7 @@ def process_flatten_text(svg_file: Path, verbose: bool = False) -> bool:
             if verbose:
                 safe_print(f"   [OK] {svg_file.name}: text flattened")
         return changed
-    except Exception as e:
+    except (ET.ParseError, OSError, ValueError) as e:
         if verbose:
             safe_print(f"   [ERROR] {svg_file.name}: {e}")
         return False
@@ -104,7 +104,7 @@ def process_rounded_rect(svg_file: Path, verbose: bool = False) -> int:
             if verbose:
                 safe_print(f"   [OK] {svg_file.name}: {count} rounded rectangle(s)")
         return count
-    except Exception as e:
+    except (OSError, ValueError) as e:
         if verbose:
             safe_print(f"   [ERROR] {svg_file.name}: {e}")
         return 0
@@ -129,7 +129,9 @@ def process_layout_fix(svg_file: Path, verbose: bool = False) -> int:
     try:
         with open(svg_file, 'r', encoding='utf-8') as f:
             content = f.read()
-    except Exception:
+    except OSError as e:
+        if verbose:
+            safe_print(f"   [ERROR] {svg_file.name}: read failed: {e}")
         return 0
 
     vb_match = re.search(r'viewBox="([^"]+)"', content)
@@ -219,7 +221,9 @@ def process_layout_fix(svg_file: Path, verbose: bool = False) -> int:
                 f.write(modified)
             if verbose:
                 safe_print(f"   [OK] {svg_file.name}: {fix_count} text element(s) font-size adjusted")
-        except Exception:
+        except OSError as e:
+            if verbose:
+                safe_print(f"   [ERROR] {svg_file.name}: write failed: {e}")
             return 0
 
     return fix_count

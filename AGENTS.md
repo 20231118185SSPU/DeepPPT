@@ -49,6 +49,9 @@ PPT Master is an AI-driven presentation generation system. Multi-role collaborat
 - This repository is a workflow/skill package, not an app or service scaffold.
 - Do NOT assume generic-project conventions like `.worktrees/`, `tests/`, or mandatory branch setup unless the user explicitly requests them.
 - On conflict with a generic coding skill, prioritize [`skills/ppt-master/SKILL.md`](skills/ppt-master/SKILL.md) inside this repository.
+- For local Codex work, keep the project boundary at `C:/Users/FUTIAN/Desktop/DeepPPT`; do not write outside this repository unless the user explicitly approves it.
+- Treat `.env`, local browser/session files, credentials, and production deployment settings as sensitive; never print, modify, or move them unless the user explicitly asks.
+- Do not run publish, deploy, destructive cleanup, commit, or push commands without explicit user approval.
 
 ## Command Quick Reference
 

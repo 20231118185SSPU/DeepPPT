@@ -27,6 +27,7 @@ $RECYCLE.BIN/
 # VSCode
 .vscode/
 .claude/
+.codex/
 .spec-workflow/
 !.vscode/settings.json
 !.vscode/tasks.json
@@ -95,6 +96,12 @@ temp_files/
 # Visual-review renderer writes per-project preview PNGs and the render lock
 projects/*/.preview/
 projects/*/.review/
+# Dashboard / live preview runtime state
+examples/*/dashboard/
+examples/*/live_preview/
+examples/*/.dashboard.lock
+examples/*/dashboard_snapshot.html
+dashboard_server.*.log
 # Stray top-level screenshots created when MCP filename was a bare relative path
 # (the agreed convention is to always pass an absolute /tmp/... path)
 /probe-*.png

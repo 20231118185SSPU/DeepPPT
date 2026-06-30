@@ -1,9 +1,9 @@
 #!/usr/bin/env python3
-"""AI Browser Search — Playwright-based automation for ChatGPT / Grok / Perplexity.
+"""AI Browser Search — Playwright-based automation for Grok / Kimi / DeepSeek / Tongyi / Perplexity.
 
 Usage:
     # Single search
-    python browse_ai.py --ai chatgpt --prompt "What is X?" --output result.md
+    python browse_ai.py --ai grok --prompt "What is X?" --output result.md
 
     # Batch search (reads search_plan.json)
     python browse_ai.py --batch search_plan.json --output-dir _research/step3_search/
@@ -36,16 +36,6 @@ except ImportError:
 # ---------------------------------------------------------------------------
 
 AI_SERVICES = {
-    "chatgpt": {
-        "name": "ChatGPT",
-        "urls": ["https://chat.openai.com/", "https://chatgpt.com/"],
-        "input_selector": "#prompt-textarea, textarea[data-id='root'], div#prompt-textarea",
-        "submit_selector": "button[data-testid='send-button'], button[aria-label='Send prompt']",
-        "response_selector": "div.markdown.prose, div[data-message-author-role='assistant']",
-        "stop_selector": "button[aria-label='Stop generating'], button[data-testid='stop-button']",
-        "new_chat_selector": "a[href='/'], nav a:first-child",
-        "wait_ready_selector": "#prompt-textarea, textarea[data-id='root']",
-    },
     "grok": {
         "name": "Grok",
         "urls": ["https://grok.com/", "https://x.com/i/grok"],
@@ -55,6 +45,46 @@ AI_SERVICES = {
         "stop_selector": "button[aria-label='停止'], button[aria-label='Stop']",
         "new_chat_selector": "a[href='/'], button:has-text('New')",
         "wait_ready_selector": "[contenteditable='true'], textarea",
+    },
+    "kimi": {
+        "name": "Kimi",
+        "urls": ["https://www.kimi.com/", "https://kimi.com/", "https://kimi.moonshot.cn/"],
+        "input_selector": "div[contenteditable='true'], textarea, [role='textbox']",
+        "submit_selector": "button[data-testid='send-button'], button[aria-label='发送'], button[class*='send']",
+        "response_selector": "div[class*='markdown'], div[class*='message-content'], div[class*='chat-message']",
+        "stop_selector": "button[aria-label='停止'], button:has-text('Stop')",
+        "new_chat_selector": "a[href='/'], button:has-text('新对话')",
+        "wait_ready_selector": "div[contenteditable='true'], textarea",
+    },
+    "deepseek": {
+        "name": "DeepSeek",
+        "urls": ["https://chat.deepseek.com/"],
+        "input_selector": "textarea, div[contenteditable='true'], [role='textbox']",
+        "submit_selector": "button[class*='send'], button[aria-label='发送'], div[class*='send']",
+        "response_selector": "div[class*='ds-markdown'], div[class*='markdown'], div[class*='message-content']",
+        "stop_selector": "button[aria-label='停止'], button:has-text('Stop')",
+        "new_chat_selector": "a[href='/'], button:has-text('New')",
+        "wait_ready_selector": "textarea, div[contenteditable='true']",
+    },
+    "tongyi": {
+        "name": "Tongyi Qianwen",
+        "urls": ["https://www.qianwen.com/", "https://qianwen.com/", "https://tongyi.aliyun.com/qianwen/"],
+        "input_selector": "textarea, div[contenteditable='true'], [role='textbox']",
+        "submit_selector": "button[class*='send'], button[aria-label='发送'], div[role='button'][class*='send']",
+        "response_selector": "div[class*='markdown'], div[class*='content'], div[class*='answer-content']",
+        "stop_selector": "button[aria-label='停止'], button:has-text('停止')",
+        "new_chat_selector": "a[href='/'], button:has-text('新对话')",
+        "wait_ready_selector": "textarea, div[contenteditable='true']",
+    },
+    "chatglm": {
+        "name": "ChatGLM",
+        "urls": ["https://www.chatglm.cn/", "https://chatglm.cn/"],
+        "input_selector": "textarea, div[contenteditable='true'], [role='textbox']",
+        "submit_selector": "button[class*='send'], button[aria-label='发送'], div[class*='send']",
+        "response_selector": "div[class*='markdown'], div[class*='message-content'], div[class*='answer']",
+        "stop_selector": "button[aria-label='停止'], button:has-text('停止')",
+        "new_chat_selector": "a[href='/'], button:has-text('新对话')",
+        "wait_ready_selector": "textarea, div[contenteditable='true']",
     },
     "perplexity": {
         "name": "Perplexity",
@@ -70,9 +100,12 @@ AI_SERVICES = {
 
 # Fallback order when primary AI is unavailable
 FALLBACK_ORDER = {
-    "chatgpt": ["grok", "perplexity"],
-    "grok": ["chatgpt", "perplexity"],
-    "perplexity": ["chatgpt", "grok"],
+    "grok": ["deepseek", "kimi", "chatglm", "tongyi", "perplexity"],
+    "kimi": ["deepseek", "chatglm", "tongyi", "grok", "perplexity"],
+    "deepseek": ["kimi", "chatglm", "tongyi", "grok", "perplexity"],
+    "tongyi": ["deepseek", "kimi", "chatglm", "grok", "perplexity"],
+    "chatglm": ["deepseek", "kimi", "tongyi", "grok", "perplexity"],
+    "perplexity": ["deepseek", "kimi", "chatglm", "tongyi", "grok"],
 }
 
 MIN_QUALITY_CHARS = 200
@@ -273,7 +306,9 @@ def _quality_for_text(text: str | None) -> tuple[str, str]:
     if len(stripped) < MIN_QUALITY_CHARS:
         return "low", f"response shorter than {MIN_QUALITY_CHARS} chars"
     if not URL_RE.search(stripped):
-        return "low", "missing source URL"
+        if len(stripped) >= 400:
+            return "high", "ok (no URL but substantial content)"
+        return "low", "missing source URL and short"
     return "high", "ok"
 
 
@@ -587,6 +622,65 @@ def _build_role_prompt(role: str, topic: str, keywords: str, data_hint: str) -> 
     return template.format(topic=topic, keywords=keywords, data_hint=data_hint)
 
 
+def _format_plan_context(item: dict) -> str:
+    """Append Step 2 plan context so the search executes the planned contract."""
+    context_lines = []
+    for key in ("dimension_ids", "search_rounds", "source_targets", "asset_requirements"):
+        if item.get(key):
+            context_lines.append(f"- {key}: {json.dumps(item.get(key), ensure_ascii=False)}")
+    if not context_lines:
+        return ""
+    return (
+        "\n\n必须执行以下 Step 2 搜索计划，不得改写成通用搜索：\n"
+        + "\n".join(context_lines)
+        + "\n输出时逐项说明每个 round_id 的覆盖情况、Tier 1-2 来源、素材缺口。"
+    )
+
+
+def _existing_manifest_by_page(manifest_path: Path) -> tuple[dict[str, dict], list[dict]]:
+    """Load existing search_manifest data so manual repair fields survive re-runs."""
+    if not manifest_path.exists():
+        return {}, []
+    try:
+        data = json.loads(manifest_path.read_text(encoding="utf-8"))
+    except (OSError, json.JSONDecodeError):
+        return {}, []
+    if not isinstance(data, dict):
+        return {}, []
+    by_page = {}
+    for item in data.get("results", []):
+        if isinstance(item, dict) and item.get("page_id"):
+            by_page[str(item["page_id"])] = item
+    asset_manifest = data.get("asset_manifest")
+    return by_page, asset_manifest if isinstance(asset_manifest, list) else []
+
+
+def _merge_plan_metadata(item: dict, result: dict, existing: dict | None = None) -> dict:
+    """Preserve old/manual fields and attach Step 2 plan fields to one result."""
+    merged = dict(existing or {})
+    merged.update(result)
+    for key in ("dimension_ids", "search_rounds", "source_targets", "asset_requirements"):
+        if key in item:
+            merged[key] = item.get(key)
+        elif existing and key in existing:
+            merged[key] = existing[key]
+    if "fallback_reason" not in merged:
+        if merged.get("needs_manual_websearch"):
+            merged["fallback_reason"] = merged.get("error") or "browser AI search failed or returned low-quality output"
+        elif merged.get("fallback"):
+            merged["fallback_reason"] = "primary AI target failed or returned low-quality output"
+        else:
+            merged["fallback_reason"] = ""
+    if "quality_gap" not in merged:
+        if merged.get("needs_manual_websearch"):
+            merged["quality_gap"] = "manual WebSearch/WebFetch required to satisfy source and evidence thresholds"
+        elif merged.get("quality") in {"low", "failed"}:
+            merged["quality_gap"] = "result below search quality threshold"
+        else:
+            merged["quality_gap"] = ""
+    return merged
+
+
 def _safe_filename(value: str, fallback: str) -> str:
     """Return a filesystem-safe short filename stem."""
     stem = re.sub(r"[^0-9A-Za-z\u4e00-\u9fff_-]+", "_", value or fallback)
@@ -618,6 +712,8 @@ def search_batch(batch_file: str, output_dir: str, chrome_profile: str | None, t
     plan = json.loads(plan_path.read_text(encoding="utf-8"))
     out_dir = Path(output_dir)
     out_dir.mkdir(parents=True, exist_ok=True)
+    manifest_path = out_dir / "search_manifest.json"
+    existing_by_page, existing_asset_manifest = _existing_manifest_by_page(manifest_path)
 
     # plan is a list of {page_id, topic, keywords, ai_target, ...}
     items = plan if isinstance(plan, list) else plan.get("pages", plan.get("items", []))
@@ -629,17 +725,18 @@ def search_batch(batch_file: str, output_dir: str, chrome_profile: str | None, t
         page_id = item.get("page_id", f"p{i+1:02d}")
         topic = item.get("topic", item.get("title", ""))
         keywords = item.get("keywords", [])
-        ai_target = item.get("ai_target", "chatgpt")
+        ai_target = item.get("ai_target", "grok")
         skip = item.get("skip_search", False)
 
         kw_str = ", ".join(keywords) if isinstance(keywords, list) else str(keywords)
         role = item.get("narrative_role", item.get("content_type", "evidence"))
         data_hint = item.get("data_hint", topic)
-        prompt = _build_role_prompt(role, topic, kw_str, data_hint)
+        prompt = _build_role_prompt(role, topic, kw_str, data_hint) + _format_plan_context(item)
+        existing = existing_by_page.get(str(page_id), {})
 
         if skip:
             print(f"[{i+1}/{total}] Skipping {page_id} (skip_search=true)")
-            results.append({
+            result_item = {
                 "page_id": page_id,
                 "topic": topic,
                 "ai_target": ai_target,
@@ -654,7 +751,8 @@ def search_batch(batch_file: str, output_dir: str, chrome_profile: str | None, t
                 "needs_manual_websearch": False,
                 "manual_websearch_prompt_file": "",
                 "attempts": [],
-            })
+            }
+            results.append(_merge_plan_metadata(item, result_item, existing))
             continue
 
         filename = f"{_safe_filename(str(page_id), f'p{i+1:02d}')}_{_safe_filename(str(topic), 'topic')}.md"
@@ -663,7 +761,7 @@ def search_batch(batch_file: str, output_dir: str, chrome_profile: str | None, t
         print(f"\n[{i+1}/{total}] {page_id}: {topic}")
         result = search_single_result(ai_target, prompt, output_path, chrome_profile, timeout, cdp_port)
 
-        results.append({
+        result_item = {
             "page_id": page_id,
             "topic": topic,
             "ai_target": result.ai_target,
@@ -679,7 +777,8 @@ def search_batch(batch_file: str, output_dir: str, chrome_profile: str | None, t
             "manual_websearch_prompt_file": result.output_file if result.needs_manual_websearch else "",
             "error": result.error,
             "attempts": _attempts_for_manifest(result.attempts),
-        })
+        }
+        results.append(_merge_plan_metadata(item, result_item, existing))
 
         # Brief pause between searches to avoid rate limiting
         if i < total - 1:
@@ -702,14 +801,19 @@ def search_batch(batch_file: str, output_dir: str, chrome_profile: str | None, t
             "requires_source_url": True,
             "retry_once_on_low_quality": True,
         },
+        "dimension_ids": sorted({
+            str(dim_id)
+            for item in items
+            if isinstance(item, dict)
+            for dim_id in (item.get("dimension_ids") or [])
+        }),
+        "asset_manifest": existing_asset_manifest,
         "results": results,
     }
 
-    manifest_path = out_dir / "search_manifest.json"
     manifest_path.write_text(json.dumps(manifest, ensure_ascii=False, indent=2), encoding="utf-8")
     print(f"\nManifest saved to {manifest_path}")
     print(f"Done: {success}/{total - skipped} successful searches; {manual} need manual WebSearch")
-
 
 def validate_selectors(cdp_port: int | None = None, chrome_profile: str | None = None):
     """Test if CSS selectors for each AI service still work.

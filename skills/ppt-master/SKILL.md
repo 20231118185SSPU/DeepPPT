@@ -58,7 +58,11 @@ description: >
 | `${SKILL_DIR}/scripts/latex_render.py` | LaTeX formula rendering (manifest-driven PNG assets) |
 | `${SKILL_DIR}/scripts/image_gen.py` | AI image generation (multi-provider) |
 | `${SKILL_DIR}/scripts/image_search.py` | Web image search (batch mode for deep-dive page assets) |
+| `${SKILL_DIR}/scripts/research/research_gate.py` | Deep-research depth gate — run after Step 7 before sync |
+| `${SKILL_DIR}/scripts/research/asset_gate.py` | Research/image asset gate — run after image acquisition before Executor |
+| `${SKILL_DIR}/scripts/dashboard/server.py` | Unified read-only Dashboard — project status, artifacts, quality reports, trace, Confirm / Live Preview bridges |
 | `${SKILL_DIR}/scripts/confirm_ui/server.py` | Step 4 Eight Confirmations — interactive visual confirmation page |
+| `${SKILL_DIR}/scripts/confirm_ui_gate.py` | Step 4 confirmation gate — verifies recommendations/result freshness before spec writing |
 | `${SKILL_DIR}/scripts/svg_quality_checker.py` | SVG quality check (XML structure, banned features, spec_lock drift) |
 | `${SKILL_DIR}/scripts/spec_compliance_check.py` | spec_lock semantic compliance (unused colors, missing templates, icon inventory, image usage) |
 | `${SKILL_DIR}/scripts/total_md_split.py` | Speaker notes splitting |
@@ -69,9 +73,15 @@ description: >
 | `${SKILL_DIR}/scripts/e2e_validate.py` | End-to-end pipeline validation — page count, speaker notes, image completeness, PPTX integrity |
 | `${SKILL_DIR}/scripts/smoke_check.py` | Script smoke check — import + CLI --help validation for all scripts |
 | `${SKILL_DIR}/scripts/harness_gate.py` | Aggregated quality gate — runs spec_compliance + svg_quality + e2e in one PASS/FAIL report |
+| `${SKILL_DIR}/scripts/layout_capacity_check.py` | Pre-Executor capacity estimation — flags overfull/tight pages before SVG generation |
+| `${SKILL_DIR}/scripts/vision_check.py` | External vision check — delegates PNG visual review to OpenAI/Anthropic-format vision APIs when main model lacks multimodal |
 | `${SKILL_DIR}/scripts/memory_manager.py` | User profile memory management (load/consolidate/show/reset) — cross-session preference persistence |
 | `${SKILL_DIR}/scripts/svg_snapshot.py` | SVG content hashing, structural diff, and editable element enumeration — revision pipeline support |
 | `${SKILL_DIR}/scripts/svg_patch.py` | SVG patch engine — apply localized edits to SVG pages without full regeneration |
+| `${SKILL_DIR}/scripts/beautify_inventory.py` | Beautify workflow Step 4 — extract per-page content inventory from source PPTX |
+| `${SKILL_DIR}/scripts/beautify_identity.py` | Beautify workflow Step 3 — extract visual identity (palette, fonts) from source PPTX |
+| `${SKILL_DIR}/scripts/pptx_to_svg.py` | Convert PPTX slides to SVG (beautify Step 4.0 source vector import) |
+| `${SKILL_DIR}/scripts/svg_editor/server.py` | Browser-based SVG element annotator — interactive annotation and edit of generated SVGs; used by revision-loop and live-preview |
 
 For complete tool documentation, see `${SKILL_DIR}/scripts/README.md`.
 
@@ -100,7 +110,8 @@ For complete tool documentation, see `${SKILL_DIR}/scripts/README.md`.
 | `verify-charts` | `workflows/verify-charts.md` | Chart coordinate calibration — run after SVG generation if the deck contains data charts |
 | `customize-animations` | `workflows/customize-animations.md` | Object-level PPTX animation customization — run only when the user explicitly asks to tune animation order/effects/timing |
 | `live-preview` | `workflows/live-preview.md` | Browser-based live preview — auto-started during generation and re-enterable any time the user mentions "live preview", "preview", "看效果", or wants to click/select a slide element |
-| `visual-review` | `workflows/visual-review.md` | Per-page rubric-based visual self-check — run only when the user explicitly asks for a visual re-pass on the generated SVGs (between Executor and post-processing). Opt-in only; never invoked by the main pipeline. |
+| `visual-review` | `workflows/visual-review.md` | Per-page rubric-based visual self-check — recommended by default after quality gates pass (between Executor and post-processing). Skip with explicit user opt-out ("跳过视觉自检" / "skip visual review"). |
+| `batch-review` | `workflows/batch-review.md` | Optional batch-by-batch generation with intermediate user visual feedback. Activate: "分批审阅" / "batch review". |
 | `revision-loop` | `workflows/revision-loop.md` | Multi-turn local revision — apply targeted patches to generated SVG pages without full regeneration. Enter when user says "修改"/"调整"/"revise" after Step 6. Uses Plan-Act-Guard pipeline. |
 | `content-selection` | `workflows/content-selection.md` | Phase 1 — interactive content dimension selection after deep research. Parse report → present dimensions → user picks → confirm. Triggered automatically when `research_report.md` exists. |
 | `detailed-outline` | `workflows/detailed-outline.md` | Phase 2 — per-page detailed outline generation (core argument, content bullets, narrative function, visual need). Feeds into Strategist's Eight Confirmations. |
@@ -129,7 +140,9 @@ Ambiguous requests such as "make this PPT more professional" or "optimize this d
 
 🚧 **GATE**: User has provided source material (PDF / DOCX / EPUB / URL / Markdown file / text description / conversation content — any form is acceptable).
 
-> **No source content?** When the user supplies only a topic name or requirements without any file or substantive description, run the [`deep-research`](workflows/deep-research.md) orchestrator first (7-step research flow), then return here with its products as input. Source files (PDF/DOCX/URL) also go through deep-research — the search steps are skipped but analysis/narrative/visual strategy still run.
+> **No source content?** When the user supplies only a topic name or requirements without any file or substantive description, run the [`deep-research`](workflows/deep-research.md) orchestrator first (7-step research flow), then return here with its products as input. Source files (PDF/DOCX/URL) also go through deep-research — the search steps are skipped only when the source already satisfies the research depth contract; analysis/narrative/visual strategy still run.
+>
+> **Hard rule**: Do not replace `deep-research` with the agent's built-in WebSearch. Built-in WebSearch is only a recorded fallback inside `deep-research` Step 3 after planned browser / platform / Agent-Reach search paths fail or return low-quality output.
 
 When the user provides non-Markdown content, convert immediately:
 
@@ -192,9 +205,27 @@ Multi-deck: several PPTX files may be imported into one main-pipeline project �
 
 > ⚠️ **MUST use `--move`** (not copy): all source files — Step 1's generated Markdown, original PDFs / MDs / images — go into `sources/` via `import-sources --move`. After execution they no longer exist at the original location. Intermediate artifacts (e.g., `_files/`) are handled automatically.
 
+**Dashboard Auto-Launch (best-effort, non-blocking)**: after the project directory exists and sources have been imported, start the unified read-only Dashboard in the background:
+```bash
+python3 ${SKILL_DIR}/scripts/dashboard/server.py <project_path> --daemon
+```
+- The Dashboard opens at `http://127.0.0.1:<port>/`, defaulting to port `8765`; if that port is occupied, it auto-advances to the next safe port and never uses Chrome's unsafe `5060`.
+- If a Dashboard is already running for this project, the launcher reuses the existing lock URL and does not start a duplicate service.
+- Logs are written to `<project_path>/dashboard/dashboard.log`.
+- Launch failure is non-fatal: print the warning and continue the PPT pipeline. Dashboard availability must never block Step 4 confirmation, Step 6 SVG generation, quality gates, post-processing, or export.
+- Dashboard remains read-only by default. It must not auto-confirm, auto-generate, auto-export, or apply annotations; Confirm UI, Live Preview, and quality actions still require their own workflow gates and explicit user action.
+
 **✅ Checkpoint — Confirm project structure created successfully, `sources/` contains all source files, converted materials are ready.**
 
 > **Content Selection Phase (Conditional)**: if `research_report.md` exists in the project (produced by `deep-research` workflow) and `content_selection.json` does NOT yet exist, run the [`content-selection`](workflows/content-selection.md) workflow before proceeding. This interactive step parses the research report into dimensions and lets the user pick which content to include in the PPT. Skip if the user provided source files directly and skipped research — content selection applies to research-generated reports only. After content selection completes (outputs `content_selection.json`), proceed to Step 3.
+
+> **Research-to-Generation Conditional Chain**: when `deep-research` was used, three conditional workflows execute in sequence across later steps. Each is skipped when its trigger artifact is absent (user provided source files directly):
+>
+> | Step | Workflow | Trigger | Output |
+> |------|----------|---------|--------|
+> | Step 2 | [`content-selection`](workflows/content-selection.md) | `research_report.md` exists | `content_selection.json` |
+> | Step 4 | [`detailed-outline`](workflows/detailed-outline.md) | `content_selection.json` exists | `detailed_outline.json` — feeds Eight Confirmations |
+> | Step 5 | [`image-text-linking`](workflows/image-text-linking.md) | `detailed_outline.json` exists | Enriches `image_prompts.json` / `image_queries.json` |
 
 ---
 
@@ -332,7 +363,9 @@ Read references/strategist.md
 
 > **Layout pattern selection**: when planning the page structure, check for scenarios that match reusable layout patterns — screenshot comparison grids (`screenshot_grid`), project galleries (`gallery`), deep-dive card pages (`deepdive_card`), and centered transition pages (`transition_centered`). See strategist.md §b.1 for the full selection table and hard rules. All transition pages default to centered layout; content pages with expandable claims must be followed by deep-dive pages.
 
-> **Detailed Outline (Conditional)**: if `content_selection.json` exists (from the content-selection workflow), Strategist MUST run the [`detailed-outline`](workflows/detailed-outline.md) workflow **before** the Eight Confirmations. This generates `detailed_outline.json` — a per-page plan with core arguments, content bullets, narrative functions, and visual needs. The detailed outline feeds into the Eight Confirmations as the content basis (page count, outline structure) and into Step 5 as the image-text context source. Skip if `content_selection.json` does not exist (user provided source files directly).
+> **Detailed Outline (Conditional)**: if `content_selection.json` exists (from the content-selection workflow), Strategist MUST run the [`detailed-outline`](workflows/detailed-outline.md) workflow **before** the Eight Confirmations. This generates `detailed_outline.json` — a per-page plan with core arguments, content bullets, narrative functions, visual needs, evidence refs, layout slots, and content/deep-dive pairings. The detailed outline feeds into the Eight Confirmations as the content basis (page count, outline structure), into §VIII as the image acquisition basis, and into Step 5 as the image-text context source. Skip if `content_selection.json` does not exist (user provided source files directly).
+>
+> **Hard rule**: When `research_report.md` exists, Strategist must not draft a thin §IX directly from memory or headings. `content_selection.json` + `detailed_outline.json` are the content contract; if they are missing or too thin, return to the relevant workflow instead of entering Eight Confirmations.
 
 > ⚠️ **Mandatory gate**: before writing `design_spec.md`, Strategist MUST `read_file templates/design_spec_reference.md` and follow its full I–XI section structure. See `strategist.md` Section 1.
 
@@ -355,19 +388,34 @@ Read references/strategist.md
 
 **Confirm UI Auto-Launch (Mandatory — default visual confirmation surface)**: by default the Eight Confirmations are presented through an interactive local page (color swatches, live font previews, candidate picks); the chat path is the always-valid fallback. Steps:
 
-1. Write the recommendations to `<project_path>/confirm_ui/recommendations.json` (full schema + field mapping: [`scripts/docs/confirm_ui.md`](scripts/docs/confirm_ui.md)). Two kinds of field: **enumerable** (canvas / mode / visual_style / icons / formula policy / generation mode; plus image usage with a Custom path; plus AI source only when image usage may include `ai`) — the page lists common options from `confirm_ui/static/catalogs.json`, so you only name the recommended canonical `id` in a `recommend` block (canvas may be a catalog id like `ppt169` or a custom size/prose; style = `mode` + `visual_style`, two independent picks; icon ids are real libraries such as `tabler-outline`, or `emoji` for system emoji; image usage uses `ai` / `web` / `provided` / `placeholder` / `none`, or a custom prose plan when several sources must be combined; never write bare `"custom"` for image usage — write the actual mixed plan, e.g. "AI cover + user product assets + web industry images"; write `image_ai_path` only when recommending `image_usage: "ai"` or a custom plan that includes AI); **generative** (color, typography, generated-image style) — author **≥3 candidates** each (creative recommendations always offer real choice, never a single silent option — same rule as strategist h.5; fewer than 3 only on the honest-shortfall exception, with a stated reason) (color: user-facing core `palette` with background/secondary_bg/primary/accent/secondary_accent/body_text; typography: CJK + Latin for `heading` and `body` with `css` preview stacks, plus `body_size` as the body baseline px; when recommending generated images, `image_strategy.candidates` with rendering × palette combinations from strategist h.5). `page_count` / `audience` / `content_divergence` are plain values (free text). Only open fields show a Custom box: `canvas`, `mode`, `visual_style`, `icons`, `image_usage`, and typography custom text. Closed fields (`image_ai_path`, `formula_policy`, `generation_mode`, `refine_spec`) stay finite. `content_divergence` is a **free-text** field shown under audience in §c — the user states in their own words how closely to follow the source vs how freely to reshape it (blank = balanced; facts stay sourced at every level). Write it as `content_divergence: { "value": "<prose or empty>" }`. It is consumed by Strategist when authoring `§IX`, recorded in `design_spec.md §I`, carries no page-count coupling, and is **not** written to `spec_lock.md`. Set `lang` to the page language; visible candidate text should match `lang`, or provide bilingual `name_zh` / `name_en` and `note_zh` / `note_en` fields. Reuse the same candidate thinking as strategist h.5.
-2. Launch the page **in the background and wait for the browser confirmation** (the child server runs detached; the parent command returns after `result.json` is freshly written). **Run this command with a long tool timeout — 600000 ms** — so the `--wait` (≈590 s budget) can complete:
+1. Write the recommendations to `<project_path>/confirm_ui/recommendations.json` (full schema + field mapping: [`scripts/docs/confirm_ui.md`](scripts/docs/confirm_ui.md)). **The file must exist before launch; skipping this write or launching without it is execution failure.** Two kinds of field: **enumerable** (canvas / mode / visual_style / icons / formula policy / generation mode; plus image usage with a Custom path; plus AI source only when image usage may include `ai`) — the page lists common options from `confirm_ui/static/catalogs.json`, so you only name the recommended canonical `id` in a `recommend` block (canvas may be a catalog id like `ppt169` or a custom size/prose; style = `mode` + `visual_style`, two independent picks; icon ids are real libraries such as `tabler-outline`, or `emoji` for system emoji; image usage uses `ai` / `web` / `provided` / `placeholder` / `none`, or a custom prose plan when several sources must be combined; never write bare `"custom"` for image usage — write the actual mixed plan, e.g. "AI cover + user product assets + web industry images"; write `image_ai_path` only when recommending `image_usage: "ai"` or a custom plan that includes AI); **generative** (color, typography, generated-image style) — author **≥3 candidates** each (creative recommendations always offer real choice, never a single silent option — same rule as strategist h.5; fewer than 3 only on the honest-shortfall exception, with a stated reason) (color: user-facing core `palette` with background/secondary_bg/primary/accent/secondary_accent/body_text; typography: CJK + Latin for `heading` and `body` with `css` preview stacks, plus `body_size` as the body baseline px; when recommending generated images, `image_strategy.candidates` with rendering × palette combinations from strategist h.5). `page_count` / `audience` / `content_divergence` are plain values (free text). Only open fields show a Custom box: `canvas`, `mode`, `visual_style`, `icons`, `image_usage`, and typography custom text. Closed fields (`image_ai_path`, `formula_policy`, `generation_mode`, `refine_spec`) stay finite. `content_divergence` is a **free-text** field shown under audience in §c — the user states in their own words how closely to follow the source vs how freely to reshape it (blank = balanced; facts stay sourced at every level). Write it as `content_divergence: { "value": "<prose or empty>" }`. It is consumed by Strategist when authoring `§IX`, recorded in `design_spec.md §I`, carries no page-count coupling, and is **not** written to `spec_lock.md`. Set `lang` to the page language; visible candidate text should match `lang`, or provide bilingual `name_zh` / `name_en` and `note_zh` / `note_en` fields. Reuse the same candidate thinking as strategist h.5.
+2. Launch the page **in the background and wait for Tier-1 browser confirmation** (the child server runs detached; the parent command returns after `result.json` is freshly written). **Run this command with a long tool timeout — 600000 ms** — so the `--wait` (≈590 s budget) can complete:
    ```bash
    python3 ${SKILL_DIR}/scripts/confirm_ui/server.py <project_path> --daemon --wait
    ```
-   Page opens at `http://localhost:5050` — the **same port as the Step 6 live preview** (they never run at once: this page shuts down at the end of Step 4, freeing the port). If another project already holds 5050, the launcher **auto-advances to the next free port** (5051, …) and serves this project there — read the actual URL from the launch log and report that. When the user clicks **Confirm**, the command exits 0 and Step 4 reads `result.json` immediately; do not require a second chat confirmation. **Launch or wait failure is non-fatal**: if it fails or times out (flask missing, port blocked, no GUI / remote / web host, browser never confirms in time), do **NOT** troubleshoot. The detached page stays open, so a slow user may confirm after the wait returns — therefore **on any non-zero exit, re-check `<project_path>/confirm_ui/result.json` once (a fresh `status: confirmed`) before** dropping to the chat-summary fallback below.
-3. **Always also print the eight recommendations as a short summary in chat, with the URL.** This keeps the chat fallback valid whether or not the browser opened. If the page never appears, the user simply confirms or edits in chat as before.
-4. This is the ⛔ BLOCKING wait. Preferred page path: the `--wait` command returns after the page writes a fresh `<project_path>/confirm_ui/result.json`; immediately read that file and use its values. On a non-zero exit, re-check `result.json` once (per step 2) — a fresh `status: confirmed` still wins. Chat fallback path: only if no fresh result exists (page didn't open, wait timed out with no confirmation, or the user replies in chat with edits) take the chat values directly. Either path converges. A confirmed `result.json` is an explicit user choice: `generation_mode: "split"` means split mode was chosen; `refine_spec: true` means the refine-spec workflow was chosen.
+   Page opens at `http://localhost:5050` — the **same port as the Step 6 live preview** (they never run at once: this page shuts down at the end of Step 4, freeing the port). If another project already holds 5050, the launcher **auto-advances to the next free port** (5051, …) and serves this project there — read the actual URL from the launch log and report that.
+   
+   **Two-tier confirmation flow**: the page presents confirmations in two tiers. **Tier 1 (Anchors)**: Canvas · Audience · Mode · Visual_style. When the user clicks **Next**, the `--wait` command returns with `result.json` containing `stage: "tier1"`, `status: "tier1-confirmed"`. The AI immediately re-derives Tier-2 candidates (color, typography, image strategy, page count, icons, formula policy, generation mode, refine-spec) based on the user's actual Tier-1 choices, overwrites `recommendations.json` with `tier: 2`, and launches the second wait:
+   ```bash
+   python3 ${SKILL_DIR}/scripts/confirm_ui/server.py <project_path> --wait-only
+   ```
+   The page polls `/api/recommendations` until the re-derived Tier-2 payload arrives, then renders the realization sections. When the user clicks **Confirm**, the `--wait-only` command returns with `result.json` containing `stage: "final"`, `status: "confirmed"`. 
+   
+   **Launch or wait failure is non-fatal**: if it fails or times out (flask missing, port blocked, no GUI / remote / web host, browser never confirms in time), do **NOT** troubleshoot. The detached page stays open, so a slow user may confirm after the wait returns — therefore **on any non-zero exit, re-check `<project_path>/confirm_ui/result.json` once (a fresh `status: confirmed` or `status: tier1-confirmed`) before** dropping to the chat-summary fallback below.
+3. **Always also print the eight recommendations as a short summary in chat, with the actual URL from the launch log.** This keeps the chat fallback valid whether or not the browser opened. If the page never appears, the user simply confirms or edits in chat as before. If the launch command was not attempted, do not proceed; write `recommendations.json` and launch or explicitly honor a user opt-out.
+4. This is the ⛔ BLOCKING wait. Preferred page path: the `--wait` / `--wait-only` commands return after the page writes a fresh `<project_path>/confirm_ui/result.json` with `stage: "final"`; immediately read that file and use its values. On a non-zero exit, re-check `result.json` once (per step 2) — a fresh `status: confirmed` still wins. Chat fallback path: only if no fresh result exists (page didn't open, wait timed out with no confirmation, or the user replies in chat with edits) take the chat values directly and write an equivalent `<project_path>/confirm_ui/result.json` with `status: "confirmed"`, `stage: "final"`, `confirmed_at`, `fallback_confirmed: true`, and the same fields the UI would have returned. Either path converges. A confirmed `result.json` is an explicit user choice: `generation_mode: "split"` means split mode was chosen; `refine_spec: true` means the refine-spec workflow was chosen.
 5. **Close the confirm page (Mandatory cleanup — every path).** Once you have the confirmed values (page **or** chat), shut the confirm server down before leaving Step 4 so it cannot keep holding port 5050 (which Step 6 live preview reuses):
    ```bash
    python3 ${SKILL_DIR}/scripts/confirm_ui/server.py <project_path> --shutdown
    ```
    This is **idempotent and required regardless of whether Confirm was clicked**: clicking Confirm already shuts the page down (this is then a no-op), but the chat-fallback path leaves the page running — without this cleanup it would block the live preview launch. Run it after reading the confirmation and before proceeding to Step 5.
+6. **Confirm gate (Mandatory)** — before writing `design_spec.md` / `spec_lock.md`, run:
+   ```bash
+   python3 ${SKILL_DIR}/scripts/confirm_ui_gate.py <project_path>
+   # Chat fallback only, after writing fallback_confirmed result.json:
+   python3 ${SKILL_DIR}/scripts/confirm_ui_gate.py <project_path> --allow-fallback
+   ```
+   Any FAIL means return to the Eight Confirmations step; do not write `design_spec.md` or `spec_lock.md` until the gate passes.
 
 **Honoring the confirmation (result.json is authoritative — Mandatory)**: the confirmed values **override your own recommendations** when you write `design_spec.md` / `spec_lock.md`. A user who changed any field changed it on purpose. In particular, map `image_usage` to §VIII `Acquire Via` (its value names differ from §h options — translate):
 
@@ -453,9 +501,17 @@ This stores a SHA-256 digest of `spec_lock.md` so that Step 6 can verify the fil
 
 🚧 **GATE**: Step 4 complete; Design Specification & Content Outline generated and user confirmed. Any formula rows already have `Acquire Via: formula` and `Status: Rendered`.
 
-> **Trigger**: At least one row in the resource list has `Acquire Via: ai` and/or `Acquire Via: web`. If every row is `user`, `formula`, or `placeholder`, skip to Step 6.
+> **Capacity pre-check (recommended)**: Before image acquisition, run layout capacity estimation to catch text overflow risks early:
+> ```bash
+> python3 ${SKILL_DIR}/scripts/layout_capacity_check.py <project_path>
+> ```
+> Review any `overfull` pages and adjust outline content or layout before generating images. This saves token cost by preventing SVG regeneration due to overflow.
 
-> **Image-Text Linking (Conditional)**: if `detailed_outline.json` exists (from the detailed-outline workflow), run the [`image-text-linking`](workflows/image-text-linking.md) workflow before generating image prompts or search queries. This ensures every AI image prompt includes the corresponding page's `core_argument` + `content_bullets` context (4-part template: description + style + scene + text-image-link), and every web search keyword is extracted from `content_bullets` rather than generic topic words. Minimum AI prompt length: 80 characters. Skip if `detailed_outline.json` does not exist.
+> **Trigger**: At least one row in the resource list has `Acquire Via: ai` and/or `Acquire Via: web`. If every row is `user`, `formula`, or `placeholder`, skip to Step 6.
+>
+> **Asset gate**: after all image acquisition and `analyze_images.py` complete, run `python3 ${SKILL_DIR}/scripts/research/asset_gate.py <project_path>` before entering Executor. Any FAIL means return to Image Acquisition / deep-research Step 7 as reported by the gate; do not generate SVG until it passes.
+
+> **Image-Text Linking (Conditional)**: if `detailed_outline.json` exists (from the detailed-outline workflow), run the [`image-text-linking`](workflows/image-text-linking.md) workflow before generating image prompts or search queries. This ensures every AI image prompt includes the corresponding page's `core_argument` + `content_bullets` context, target slot dimensions, and text-image link; every web search keyword is extracted from `content_bullets` rather than generic topic words. Minimum AI prompt length: 80 characters. Required reference images and target dimensions must be carried into the manifest/query files. Skip if `detailed_outline.json` does not exist.
 
 **Always load the common framework**:
 
@@ -481,7 +537,8 @@ A deck with only `ai` rows never loads `image-searcher.md`; a deck with only `we
 
 Workflow:
 
-0. **Confirm layout-driven image dimensions** — before generating any image, verify that each row in `design_spec.md §VIII` has a `Dimensions` column filled with target pixel values derived from the SVG layout slot (see strategist.md §h.5a). Write `target_width` and `target_height` into `image_prompts.json` for each `ai` row. This ensures generated images fit the SVG layout without awkward cropping or scaling.
+0. **Confirm layout-driven image dimensions** — before generating any image, verify that each row in `design_spec.md §VIII` has a `Dimensions` column filled with target pixel values derived from the SVG layout slot (see strategist.md §h.5a). Write `target_width` and `target_height` into `image_prompts.json` for each `ai` row and `min_width` / `min_height` into `image_queries.json` for each `web` row. This ensures generated or sourced images fit the SVG layout without awkward cropping or scaling.
+0a. **Confirm reference-image readiness** — any AI row depicting a person, product, object, real place, character, or IP-specific subject must include `reference_image` pointing to a vetted local file or URL. Abstract concept backgrounds may omit it. Missing required references block that row until Step 3/7 visual research supplies one.
 1. Extract all rows with `Status: Pending` and `Acquire Via ∈ {ai, web}` from the design spec
 2. Generate prompts (ai rows) and/or run search (web rows) per [image-base.md](references/image-base.md) §2 dispatch table
 3. Verify every row reaches a terminal status: `Generated` (ai success), `Sourced` (web success), or `Needs-Manual`
@@ -494,7 +551,10 @@ Workflow:
 - [x] image_prompts.md sidecar rendered (when any ai rows processed)
 - [x] image_sources.json created (when any web rows processed)
 - [x] Each row: status is `Generated` / `Sourced` / `Needs-Manual` (no `Pending` remaining)
+- [x] AI rows with concrete subjects include vetted `reference_image` paths
+- [x] AI/web rows carry layout-derived target dimensions
 - [x] analyze_images.py re-run so image_analysis.csv covers the acquired web / AI images
+- [x] asset_gate.py passed before Executor
 ```
 
 **Default — auto-proceed to Step 6.** Only when the user's Step 4 response explicitly opted into split mode (in chat or via Confirm UI `result.json` with `generation_mode: "split"`), output the Phase A hand-off below and stop this conversation:
@@ -512,7 +572,7 @@ Workflow:
 
 ### Step 6: Executor Phase
 
-🚧 **GATE**: Step 4 (and Step 5 if triggered) complete; all prerequisite deliverables are ready.
+🚧 **GATE**: Step 4 (and Step 5 if triggered) complete; all prerequisite deliverables are ready. If Step 5 acquired AI/web assets, `python3 ${SKILL_DIR}/scripts/research/asset_gate.py <project_path>` must pass before Executor starts.
 
 **spec_lock integrity check** — before reading any references, verify the contract:
 ```
@@ -585,7 +645,9 @@ python3 ${SKILL_DIR}/scripts/spec_compliance_check.py <project_path>
 
 > **Chart pages?** If this deck contains data charts (bar / line / pie / radar / etc.), run the standalone [`verify-charts`](workflows/verify-charts.md) workflow before Step 7 to calibrate coordinates. AI models routinely introduce 10–50 px errors when mapping data to pixel positions; verify-charts eliminates that class of error. Skip if no chart pages.
 
-> **Visual self-check (opt-in)?** If the user explicitly asked for a per-page visual re-pass on the SVGs ("跑一下视觉自检 / 视觉回看", "visual review", "check pages visually", etc.), run the standalone [`visual-review`](workflows/visual-review.md) workflow before Step 7. Do NOT run it by default and do NOT recommend it based on inferred model capability or deck size — trigger is user request only.
+> **Visual self-check (recommended — default on)**: After quality gates pass, run the [`visual-review`](workflows/visual-review.md) workflow to catch visual issues (hierarchy, rhythm, collision) that structural checks cannot detect. Skip only when the user explicitly says "跳过视觉自检" / "skip visual review", or when `skip_visual_review: true` is set in confirm_ui result.json. [NEEDS_HUMAN_REVIEW]
+
+> **Batch-review mode (opt-in)?** When the user requests batch-by-batch generation ("分批审阅" / "batch review" / "逐批确认"), follow [`workflows/batch-review.md`](workflows/batch-review.md). Executor pauses every N pages to collect visual feedback; later batches absorb style corrections from earlier ones. Never auto-activate — default pipeline runs straight-through. [NEEDS_HUMAN_REVIEW]
 
 ---
 

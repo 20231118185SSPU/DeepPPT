@@ -135,6 +135,52 @@ For batch operations across pages, run sequentially per page (same as Executor's
 - Hash mismatch on any page → pause and report (manual SVG edit detected)
 - Quality check failure → must fix before next round
 
+## Escalation Rules
+
+> Adapted from PPT Hell: "同一页同类 issue 连续两轮仍未解决时，必须升级处理"。
+
+### Issue Tracking
+
+Each round, track unresolved issues in `<project>/.revision/issue_tracker.json`:
+
+```json
+{
+  "slide_05": {
+    "text_overflow": {"rounds_unresolved": 2, "first_seen_round": 3},
+    "color_mismatch": {"rounds_unresolved": 0, "first_seen_round": 5}
+  }
+}
+```
+
+After each Guard step (Step 5), update the tracker:
+- Issue resolved → reset `rounds_unresolved` to 0
+- Issue persists → increment `rounds_unresolved`
+
+### 2-Round Escalation Rule
+
+When the same issue category on the same page persists for **2 consecutive rounds** without resolution:
+
+1. **STOP** attempting the same fix approach
+2. **Present to user** with explicit options:
+   - "回到设计规格调整版式/内容分配" (return to Strategist/spec change)
+   - "接受当前状态并标注已知限制" (accept with noted limitation)
+   - "人工介入修改 SVG" (manual intervention)
+3. Record escalation to `<project>/.revision/escalations.json`
+4. Mark the issue as `escalated` — excluded from automatic retry
+
+### Issue Categories
+
+| Category | Typical Trigger |
+|----------|----------------|
+| `text_overflow` | Text exceeds container bounds after patch |
+| `alignment` | Elements drift from grid/baseline after adjustment |
+| `color_mismatch` | Color cannot match spec_lock despite attempts |
+| `spacing` | Element spacing repeatedly fails minimum gaps |
+| `content_missing` | Required content cannot be restored in layout |
+| `layout_structure` | Major layout rework needed beyond patch scope |
+| `image_fit` | Image cannot fit slot without unacceptable crop |
+| `font_size` | Text requires size below readability minimum |
+
 ## Integration with Live-Preview
 
 If live-preview is running, the user can also submit revisions through the browser:

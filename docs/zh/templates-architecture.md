@@ -1,5 +1,7 @@
 # 模板架构：Brand / Layout / Deck 三分类
 
+[English](../templates-architecture.md) | [中文](./templates-architecture.md)
+
 > 本文是**架构对齐文档**，定义"模板"在数据模型层面的三种身份、各自的 `design_spec.md` 字段集、以及多路径合成与冲突解决规则。面向贡献者与 AI 工作流，回答"一个模板目录里应该写什么、不写什么；多个模板同时给时怎么合成"。
 >
 > 用户视角的用法（怎么触发、怎么选）见 [`templates-guide.md`](./templates-guide.md)；本文不重复。

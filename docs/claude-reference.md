@@ -2,6 +2,19 @@
 
 > **This file supplements `CLAUDE.md` (project root).** The root file is the lightweight charter loaded at every conversation start. This file contains the complete operational reference — read it on-demand when executing specific steps.
 
+## Table of Contents
+
+- [Pipeline Details](#pipeline-details)
+- [Detailed Workflow Routing](#detailed-workflow-routing)
+- [Environment & Setup](#environment--setup)
+- [Multi-Role Architecture](#multi-role-architecture)
+- [Project Artifact Structure](#project-artifact-structure)
+- [Execution Requirements](#execution-requirements)
+- [Required Conventions](#required-conventions)
+- [Command Quick Reference](#command-quick-reference)
+- [Core Directories](#core-directories)
+- [Reference Documents](#reference-documents)
+
 ## Pipeline Details
 
 **Core Pipeline**: `Source Document → Create Project → [Template] → [Content Selection] → [Detailed Outline] → Strategist Eight Confirmations → [Image_Generator + Image-Text Linking] → Executor Live Preview → Quality Check → Post-processing → Export PPTX`
@@ -180,3 +193,9 @@ python3 skills/ppt-master/scripts/svg_to_pptx.py <project_path>
 - `docs/rules/` — repo-wide style rules.
 - `examples/` — example projects.
 - `projects/` — user project workspace.
+
+## Reference Documents
+
+- [Skill Alignment Audit (2026-06-25)](skill-alignment-audit-2026-06-25.md) — audit of divergences between SKILL.md and downstream references.
+- [MemSlides Analysis](memslides-analysis.md) — engineering portability assessment of MemSlides paper.
+- [Spec Review Template](spec-review-template.md) — post-generation spec review checklist.

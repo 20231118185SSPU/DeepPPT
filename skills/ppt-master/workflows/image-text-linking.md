@@ -41,6 +41,9 @@ For each included page, create a context entry with:
 | `image_type` | `pages[i].visual_need.image_type` |
 | `image_description` | `pages[i].visual_need.image_description` |
 | `text_image_link` | `pages[i].visual_need.text_image_link` — how image supports the argument |
+| `image_slot_size` | `pages[i].visual_need.image_slot_size` — target dimensions from layout |
+| `reference_image_required` | `pages[i].visual_need.reference_image_required` |
+| `asset_file` | `pages[i].visual_need.asset_file` |
 
 **1.3 Output format**
 
@@ -57,14 +60,16 @@ When generating `image_prompts.json` for `image_gen.py --manifest`, every prompt
 Each AI image prompt MUST follow this template:
 
 ```
-{image_description}。风格：{deck_rendering}。场景：{core_argument 具体化}。文字呼应：{text_image_link}
+{image_description}。风格：{deck_rendering}。版式尺寸：{image_slot_size.width}×{image_slot_size.height}。场景：{core_argument 具体化}。页面要点：{content_bullets 摘要}。文字呼应：{text_image_link}
 ```
 
 | Part | Source | Purpose |
 |---|---|---|
 | `{image_description}` | `visual_need.image_description` | What the image shows |
 | `{deck_rendering}` | `spec_lock.md` rendering lock | Visual style consistency (e.g., "扁平矢量、蓝绿渐变配色") |
+| `{image_slot_size}` | `detailed_outline.json` | Prevents generating images that are later cropped |
 | `{core_argument 具体化}` | `core_argument` made concrete | Grounds the image in the page's specific message |
+| `{content_bullets 摘要}` | `content_bullets` | Ensures image and slide text express the same point |
 | `{text_image_link}` | `visual_need.text_image_link` | Explains how the image supports the page text |
 
 **2.2 Minimum length**
@@ -79,6 +84,7 @@ Every assembled prompt MUST be ≥80 characters after template assembly. Shorter
 | Style-only prompts | "水彩风格插画" | Describes rendering, not content |
 | Page number without argument | "第三页配图" | No semantic link to the page's message |
 | Duplicate prompts across pages | Same prompt for pages 5 and 8 | Violates one-image-per-claim principle |
+| Missing required reference | People/product/object/IP image with no `reference_image` | Breaks visual fidelity and consistency |
 
 **2.4 Good vs bad examples**
 
@@ -95,6 +101,33 @@ Every assembled prompt MUST be ≥80 characters after template assembly. Shorter
     风格：医学信息图、冷色调。场景：临床研究证据展示。
     文字呼应：支撑'8周改变大脑结构'的实验结论"
 ```
+
+### 2.5 Cross-Page Style Consistency
+
+All AI image prompts within one deck MUST reference a common set of style anchors to ensure visual coherence across pages.
+
+**Style anchors** (derived from `spec_lock.md` during Strategist phase):
+
+| Anchor | Source | How to enforce |
+|---|---|---|
+| `color_temperature` | `spec_lock.md` colors → background + primary | Every prompt includes "warm/cool/neutral color temperature" matching the palette |
+| `lighting_direction` | `spec_lock.md` visual_style behavior | Every prompt uses consistent lighting (e.g., "soft top-left diffused lighting") |
+| `art_style` | `spec_lock.md` rendering lock | Every prompt includes the locked rendering style verbatim (e.g., "flat vector, blue-green gradient") |
+| `background_treatment` | `spec_lock.md` colors.background | Every prompt references the background color family for consistency |
+
+**Cross-page coherence validation** — before finalizing `image_prompts.json`, verify:
+
+| Check | Threshold | Action on failure |
+|---|---|---|
+| Every prompt contains `{deck_rendering}` segment | 100% | Append rendering style to prompt |
+| No two prompts use conflicting lighting directions | 0 conflicts | Unify to the deck's chosen direction |
+| No prompt contradicts the deck's color temperature | 0 conflicts | Rewrite temperature-specific language |
+| Same subject across pages uses consistent reference images | 100% | Link all depictions to the same `reference_image` |
+
+**Forbidden**:
+- Prompts that omit the deck's locked rendering style
+- Contradictory visual language across pages (one page "watercolor pastel" while another "sharp vector illustration")
+- Different reference images for the same character/product across pages
 
 ---
 
@@ -138,6 +171,21 @@ Each entry in the **advisory** `image_queries.json` (produced by this workflow a
 
 > **Schema note**: This advisory format uses `keywords` (array) and `page_number` for Strategist context. The **authoritative** `image_queries.json` consumed by `image_search.py --batch` uses a different schema defined in [`image-searcher.md`](../references/image-searcher.md): `{items: [{filename, query, slide, purpose, orientation, status}]}`. The Strategist is responsible for transforming this advisory format into the authoritative schema (merging `keywords` into a single `query` string, adding `filename`/`status`, wrapping in `items` array) before writing the final `image_queries.json`.
 
+For web rows, include target dimensions and the planned page context in the authoritative batch query:
+
+```json
+{
+  "filename": "p05_growth_chart.jpg",
+  "query": "新能源汽车 2020 2025 销量 柱状图",
+  "slide": "P05",
+  "purpose": "deep_dive:data supporting 市场规模翻5倍",
+  "orientation": "landscape",
+  "min_width": 928,
+  "min_height": 340,
+  "status": "Pending"
+}
+```
+
 The `context` field carries the `core_argument` verbatim — search providers may use it for relevance ranking.
 
 ---
@@ -151,6 +199,8 @@ The `context` field carries the `core_argument` verbatim — search providers ma
 | Minimum AI prompt length | ≥80 characters | After template assembly; reject shorter prompts |
 | `text_image_link` present in every AI prompt | 100% | The 4-part template includes it as the final segment |
 | No duplicate prompts across pages | 0 duplicates | Each page gets a unique prompt reflecting its specific `core_argument` |
+| Required reference images present | 100% | Any `reference_image_required=true` AI row must include a real local path or URL |
+| Target dimensions carried into image manifests/queries | 100% | Every AI/web row includes slot width/height or min dimensions |
 
 ---
 

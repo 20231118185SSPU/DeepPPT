@@ -6,6 +6,7 @@ This directory contains user-facing scripts for conversion, project setup, direc
 
 - Top-level `scripts/`: runnable entry scripts
 - `scripts/source_to_md/`: source-document → Markdown converters (`pdf_to_md.py`, `doc_to_md.py`, `excel_to_md.py`, `ppt_to_md.py`, `web_to_md.py`)
+- `scripts/research/`: deep-research browser search, research depth gate, asset gate, and output sync tools
 - `scripts/image_backends/`: internal provider implementations used by `image_gen.py`
 - `scripts/tts_backends/`: internal TTS provider implementations used by `notes_to_audio.py`
 - `scripts/template_import/`: internal PPTX reference-preparation helpers used by `pptx_template_import.py`
@@ -44,7 +45,8 @@ python3 scripts/update_repo.py
 | Project management | `project_manager.py`, `batch_validate.py`, `generate_examples_index.py`, `error_helper.py`, `pptx_template_import.py`, `template_fill_pptx.py` | [docs/project.md](./docs/project.md) |
 | SVG pipeline | `finalize_svg.py`, `svg_to_pptx.py`, `total_md_split.py`, `svg_quality_checker.py`, `extract_svg_assets.py`, `animation_config.py`, `notes_to_audio.py` | [docs/svg-pipeline.md](./docs/svg-pipeline.md) |
 | Spec maintenance | `update_spec.py` | [docs/update_spec.md](./docs/update_spec.md) |
-| Image tools | `image_gen.py`, `latex_render.py`, `analyze_images.py`, `gemini_watermark_remover.py` | [docs/image.md](./docs/image.md) |
+| Image tools | image_gen.py, latex_render.py, nalyze_images.py, gemini_watermark_remover.py | [docs/image.md](./docs/image.md) |
+| Research gates | `research/browse_ai.py`, `research/research_gate.py`, `research/asset_gate.py`, `research/sync_research_outputs.py`, `confirm_ui_gate.py` | Deep-research and Step 4/5 gate docs in `../workflows/` |
 | Repo maintenance | `update_repo.py` | README install/update section |
 | Troubleshooting | validation, preview, export, dependency issues | [docs/troubleshooting.md](./docs/troubleshooting.md) |
 
@@ -87,6 +89,18 @@ python3 scripts/template_fill_pptx.py apply <project_path>/sources/<source.pptx>
 ```
 
 `apply` automatically writes `filled_YYYYMMDD_HHMMSS.pptx` unless the output stem already ends with a timestamp. It applies a `fade` page transition by default; `--transition <effect>` (fade/push/wipe/split/strips/cover/random, `--transition-duration` in seconds) changes it, `--transition none` removes it, `--transition keep` preserves the source transitions, and a per-slide `transition` field in the plan overrides whatever the CLI selects.
+
+Research / confirmation gates:
+
+```bash
+python3 scripts/research/browse_ai.py --batch <project>/_research/step2_search_plan/search_plan.json --output-dir <project>/_research/step3_search
+python3 scripts/research/research_gate.py <project>          # after deep-research Step 7, before sync
+python3 scripts/research/sync_research_outputs.py <project>
+python3 scripts/confirm_ui_gate.py <project>                 # after Eight Confirmations, before spec writing
+python3 scripts/research/asset_gate.py <project>             # after image acquisition, before Executor
+```
+
+Gate failures are blocking. Return to the step printed by the gate and rerun it before continuing.
 
 Post-processing and export:
 

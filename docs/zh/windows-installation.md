@@ -1,5 +1,7 @@
 # Windows 安装指南
 
+[English](../windows-installation.md) | [中文](./windows-installation.md)
+
 本指南将手把手教你在 Windows 上安装 PPT Master。按顺序操作，10 分钟内即可跑通第一份 PPT。
 
 ---

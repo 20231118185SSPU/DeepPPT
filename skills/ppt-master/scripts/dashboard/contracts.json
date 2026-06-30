@@ -1,0 +1,605 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "DeepPPT Dashboard Data Contracts",
+  "description": "Exhaustive JSON Schema definitions for the unified dashboard: pipeline state, SSE events, REST API, trace mapping, and artifact registry.",
+
+  "definitions": {
+
+    "StepId": {
+      "type": "integer",
+      "enum": [1, 2, 3, 4, 5, 6, 7, 8],
+      "description": "Pipeline step number (1-8). Step 8 = 8a Spec Review."
+    },
+
+    "StepState": {
+      "type": "string",
+      "enum": ["pending", "active", "completed", "failed", "skipped"],
+      "description": "Lifecycle state of a pipeline step."
+    },
+
+    "Severity": {
+      "type": "string",
+      "enum": ["error", "warning", "info"],
+      "description": "Issue severity level used across quality checks."
+    },
+
+    "QualityGate": {
+      "type": "string",
+      "enum": ["PASS", "FAIL", "SKIP", "BLOCKED", "PASS_WITH_WARNINGS", "CLEAN"],
+      "description": "Quality gate verdict."
+    },
+
+    "ISOTimestamp": {
+      "type": "string",
+      "format": "date-time",
+      "description": "ISO 8601 timestamp with timezone, e.g. 2026-06-30T14:30:00+08:00."
+    },
+
+    "CanvasFormat": {
+      "type": "object",
+      "required": ["id", "label", "dim", "viewbox"],
+      "additionalProperties": false,
+      "properties": {
+        "id":       { "type": "string", "description": "Canonical ID, e.g. ppt169, ppt43, xiaohongshu." },
+        "label":    { "type": "string" },
+        "label_zh": { "type": ["string", "null"] },
+        "label_en": { "type": ["string", "null"] },
+        "dim":      { "type": "string", "pattern": "^\\d+x\\d+$", "description": "WxH pixels, e.g. 1280x720." },
+        "viewbox":  { "type": "string", "pattern": "^0 0 \\d+ \\d+$" },
+        "use_zh":   { "type": ["string", "null"] },
+        "use_en":   { "type": ["string", "null"] }
+      }
+    },
+
+    "SubStep": {
+      "type": "object",
+      "required": ["id", "label", "state"],
+      "additionalProperties": false,
+      "properties": {
+        "id":       { "type": "string", "description": "Sub-step identifier, e.g. 'source_convert', 'quality_svg'." },
+        "label":    { "type": "string", "description": "Human-readable label." },
+        "state":    { "$ref": "#/definitions/StepState" },
+        "progress": {
+          "type": ["number", "null"],
+          "minimum": 0,
+          "maximum": 1,
+          "description": "Fractional progress 0.0-1.0. Null when indeterminate."
+        },
+        "detail":   { "type": ["string", "null"], "description": "Free-text status line, e.g. 'Converting PDF page 3/12'." },
+        "started_at":   { "$ref": "#/definitions/ISOTimestamp" },
+        "completed_at": { "oneOf": [{ "$ref": "#/definitions/ISOTimestamp" }, { "type": "null" }] }
+      }
+    },
+
+    "StepDefinition": {
+      "type": "object",
+      "required": ["step", "name", "state", "blocking"],
+      "additionalProperties": false,
+      "properties": {
+        "step":     { "$ref": "#/definitions/StepId" },
+        "name":     { "type": "string", "description": "Step name, e.g. 'Content Processing'." },
+        "state":    { "$ref": "#/definitions/StepState" },
+        "blocking": { "type": "boolean", "description": "True for steps that require explicit user confirmation (Step 4)." },
+        "started_at":   { "oneOf": [{ "$ref": "#/definitions/ISOTimestamp" }, { "type": "null" }] },
+        "completed_at": { "oneOf": [{ "$ref": "#/definitions/ISOTimestamp" }, { "type": "null" }] },
+        "sub_steps": {
+          "type": "array",
+          "items": { "$ref": "#/definitions/SubStep" },
+          "description": "Ordered list of sub-steps within this step."
+        },
+        "gate": {
+          "type": ["object", "null"],
+          "description": "Gate status for this step.",
+          "properties": {
+            "satisfied":   { "type": "boolean" },
+            "requirements": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "required": ["label", "met"],
+                "properties": {
+                  "label": { "type": "string" },
+                  "met":   { "type": "boolean" },
+                  "detail": { "type": ["string", "null"] }
+                }
+              }
+            }
+          }
+        },
+        "error": {
+          "type": ["string", "null"],
+          "description": "Error message if state is 'failed'."
+        }
+      }
+    },
+
+    "PipelineState": {
+      "type": "object",
+      "required": ["project_name", "project_path", "canvas_format", "current_step", "steps", "derived_at"],
+      "additionalProperties": false,
+      "properties": {
+        "project_name": { "type": "string", "description": "Human-readable project name." },
+        "project_path": { "type": "string", "description": "Absolute path to project directory." },
+        "canvas_format": {
+          "type": ["string", "null"],
+          "description": "Canvas format ID (ppt169, ppt43, etc.) or null if not yet initialized."
+        },
+        "canvas_info": {
+          "oneOf": [{ "$ref": "#/definitions/CanvasFormat" }, { "type": "null" }]
+        },
+        "current_step": {
+          "oneOf": [{ "$ref": "#/definitions/StepId" }, { "type": "null" }],
+          "description": "Currently active step number. Null if pipeline not started."
+        },
+        "steps": {
+          "type": "array",
+          "items": { "$ref": "#/definitions/StepDefinition" },
+          "minItems": 8,
+          "maxItems": 8,
+          "description": "All 8 pipeline steps in order."
+        },
+        "generation_mode": {
+          "type": ["string", "null"],
+          "enum": ["continuous", "split", null],
+          "description": "Generation mode chosen in Step 4. Null before Step 4."
+        },
+        "confirm_status": {
+          "type": ["string", "null"],
+          "enum": ["pending", "tier1-confirmed", "confirmed", null],
+          "description": "Eight Confirmations status. Null before Step 4."
+        },
+        "spec_lock_digest": {
+          "type": ["string", "null"],
+          "description": "SHA-256 digest of spec_lock.md. Null before Step 4."
+        },
+        "spec_lock_verified": {
+          "type": ["boolean", "null"],
+          "description": "True if spec_lock digest verified before Step 6. Null if not checked."
+        },
+        "quality_summary": {
+          "oneOf": [{ "$ref": "#/definitions/QualitySummary" }, { "type": "null" }],
+          "description": "Aggregate quality gate results. Null before quality checks."
+        },
+        "page_count": {
+          "type": ["integer", "null"],
+          "minimum": 0,
+          "description": "Number of pages declared in spec_lock page_rhythm. Null before Step 4."
+        },
+        "svg_count": {
+          "type": ["integer", "null"],
+          "minimum": 0,
+          "description": "Number of SVG files in svg_output/. Null before Step 6."
+        },
+        "export_path": {
+          "type": ["string", "null"],
+          "description": "Path to the exported PPTX file. Null before Step 7."
+        },
+        "live_preview": {
+          "type": ["object", "null"],
+          "description": "Live preview server status.",
+          "properties": {
+            "running": { "type": "boolean" },
+            "url":     { "type": ["string", "null"], "format": "uri" },
+            "port":    { "type": ["integer", "null"] },
+            "pid":     { "type": ["integer", "null"] }
+          }
+        },
+        "confirm_ui": {
+          "type": ["object", "null"],
+          "description": "Confirm UI server status.",
+          "properties": {
+            "running": { "type": "boolean" },
+            "url":     { "type": ["string", "null"], "format": "uri" },
+            "port":    { "type": ["integer", "null"] },
+            "pid":     { "type": ["integer", "null"] }
+          }
+        },
+        "derived_at": {
+          "$ref": "#/definitions/ISOTimestamp",
+          "description": "When this state snapshot was computed."
+        }
+      }
+    },
+
+    "QualitySummary": {
+      "type": "object",
+      "required": ["spec_compliance", "svg_quality", "e2e", "overall"],
+      "additionalProperties": false,
+      "properties": {
+        "spec_compliance": { "$ref": "#/definitions/QualityGate" },
+        "svg_quality":     { "$ref": "#/definitions/QualityGate" },
+        "e2e":             { "$ref": "#/definitions/QualityGate" },
+        "overall":         { "$ref": "#/definitions/QualityGate" },
+        "checked_at":      { "$ref": "#/definitions/ISOTimestamp" }
+      }
+    },
+
+    "SVGCheckResult": {
+      "type": "object",
+      "required": ["file", "exists", "errors", "warnings", "passed"],
+      "additionalProperties": false,
+      "properties": {
+        "file":     { "type": "string", "description": "SVG filename (basename)." },
+        "path":     { "type": ["string", "null"], "description": "Absolute path to the SVG file." },
+        "exists":   { "type": "boolean" },
+        "errors":   { "type": "array", "items": { "type": "string" } },
+        "warnings": { "type": "array", "items": { "type": "string" } },
+        "info": {
+          "type": "object",
+          "description": "Informational metadata extracted during check.",
+          "properties": {
+            "viewbox":              { "type": ["string", "null"] },
+            "dimensions":           { "type": ["string", "null"] },
+            "fonts":                { "type": ["array", "null"], "items": { "type": "string" } },
+            "text_elements":        { "type": ["integer", "null"] },
+            "tspan_elements":       { "type": ["integer", "null"] },
+            "layout_overflow_count": { "type": ["integer", "null"] },
+            "spacing_violations":   { "type": ["integer", "null"] }
+          },
+          "additionalProperties": true
+        },
+        "passed":   { "type": "boolean" }
+      }
+    },
+
+    "SVGQualityReport": {
+      "type": "object",
+      "required": ["results", "summary"],
+      "additionalProperties": false,
+      "properties": {
+        "results": {
+          "type": "array",
+          "items": { "$ref": "#/definitions/SVGCheckResult" }
+        },
+        "summary": {
+          "type": "object",
+          "required": ["total", "passed", "warnings", "errors"],
+          "properties": {
+            "total":    { "type": "integer", "minimum": 0 },
+            "passed":   { "type": "integer", "minimum": 0 },
+            "warnings": { "type": "integer", "minimum": 0 },
+            "errors":   { "type": "integer", "minimum": 0 }
+          }
+        },
+        "issue_types": {
+          "type": "object",
+          "description": "Map of issue category name to count.",
+          "additionalProperties": { "type": "integer", "minimum": 0 }
+        },
+        "drift_summary": {
+          "type": ["object", "null"],
+          "description": "spec_lock drift aggregation across all files.",
+          "properties": {
+            "colors": {
+              "type": "object",
+              "additionalProperties": {
+                "type": "array",
+                "items": { "type": "string" },
+                "description": "List of SVG filenames using this undeclared color."
+              }
+            },
+            "fonts": {
+              "type": "object",
+              "additionalProperties": {
+                "type": "array",
+                "items": { "type": "string" }
+              }
+            },
+            "sizes": {
+              "type": "object",
+              "additionalProperties": {
+                "type": "array",
+                "items": { "type": "string" }
+              }
+            }
+          }
+        }
+      }
+    },
+
+    "IntegratedReview": {
+      "type": "object",
+      "required": ["reviewed_at", "method", "pages", "summary"],
+      "additionalProperties": false,
+      "properties": {
+        "reviewed_at": { "$ref": "#/definitions/ISOTimestamp" },
+        "method":      { "type": "string", "description": "e.g. 'svg_quality_checker --integrated-review'." },
+        "pages": {
+          "type": "object",
+          "additionalProperties": {
+            "type": "object",
+            "required": ["decision", "must_fix", "should_fix", "accepted_risks"],
+            "properties": {
+              "decision":       { "type": "string", "enum": ["needs_fix", "acceptable_with_risks", "ready"] },
+              "must_fix":       { "type": "array", "items": { "type": "string" } },
+              "should_fix":     { "type": "array", "items": { "type": "string" } },
+              "accepted_risks": { "type": "array", "items": { "type": "string" } }
+            }
+          }
+        },
+        "summary": {
+          "type": "object",
+          "required": ["total_must_fix", "total_should_fix", "total_accepted", "gate_status"],
+          "properties": {
+            "total_must_fix":   { "type": "integer", "minimum": 0 },
+            "total_should_fix": { "type": "integer", "minimum": 0 },
+            "total_accepted":   { "type": "integer", "minimum": 0 },
+            "gate_status":      { "type": "string", "enum": ["BLOCKED", "PASS_WITH_WARNINGS", "CLEAN"] }
+          }
+        }
+      }
+    },
+
+    "E2EValidateResult": {
+      "type": "object",
+      "required": ["passes", "warns", "errors"],
+      "additionalProperties": false,
+      "properties": {
+        "passes": { "type": "array", "items": { "type": "string" } },
+        "warns":  { "type": "array", "items": { "type": "string" } },
+        "errors": { "type": "array", "items": { "type": "string" } },
+        "has_errors": { "type": "boolean" }
+      }
+    },
+
+    "HarnessGateReport": {
+      "type": "object",
+      "required": ["spec_compliance", "svg_quality", "e2e", "overall"],
+      "additionalProperties": false,
+      "properties": {
+        "spec_compliance": { "$ref": "#/definitions/QualityGate" },
+        "svg_quality":     { "$ref": "#/definitions/QualityGate" },
+        "e2e":             { "$ref": "#/definitions/QualityGate" },
+        "overall":         { "$ref": "#/definitions/QualityGate" },
+        "details": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": ["label", "passed", "returncode"],
+            "properties": {
+              "label":      { "type": "string", "enum": ["spec_compliance", "svg_quality", "e2e"] },
+              "passed":     { "type": "boolean" },
+              "stdout":     { "type": "string" },
+              "stderr":     { "type": "string" },
+              "returncode": { "type": "integer" }
+            }
+          }
+        }
+      }
+    },
+
+    "ComplianceIssue": {
+      "type": "object",
+      "required": ["severity", "check", "message"],
+      "additionalProperties": false,
+      "properties": {
+        "severity": { "$ref": "#/definitions/Severity" },
+        "check":    { "type": "string", "description": "Check name, e.g. 'unused_colors', 'layout_template', 'icon_inventory'." },
+        "message":  { "type": "string" },
+        "detail":   { "type": "string", "default": "" }
+      }
+    },
+
+    "ComplianceReport": {
+      "type": "object",
+      "required": ["project", "issues"],
+      "additionalProperties": false,
+      "properties": {
+        "project": { "type": "string" },
+        "issues":  { "type": "array", "items": { "$ref": "#/definitions/ComplianceIssue" } },
+        "checked_at": { "$ref": "#/definitions/ISOTimestamp" }
+      }
+    },
+
+    "TraceEvent": {
+      "type": "object",
+      "required": ["ts", "type", "detail"],
+      "additionalProperties": true,
+      "properties": {
+        "ts":     { "type": "string", "description": "ISO 8601 timestamp (seconds precision)." },
+        "type":   {
+          "type": "string",
+          "enum": [
+            "step_start",
+            "step_complete",
+            "user_confirm",
+            "auto_check",
+            "error",
+            "spec_change",
+            "artifact_created",
+            "gate_result",
+            "substep_progress",
+            "server_lifecycle"
+          ],
+          "description": "Existing types: step_start, step_complete, user_confirm, auto_check, error, spec_change. New types for dashboard: artifact_created, gate_result, substep_progress, server_lifecycle."
+        },
+        "detail": { "type": "string", "description": "Human-readable detail message." }
+      },
+      "description": "Each line in trace.jsonl. Additional keys passed via **extra are preserved."
+    },
+
+    "ArtifactType": {
+      "type": "string",
+      "enum": [
+        "source",
+        "spec",
+        "lock",
+        "svg",
+        "svg_final",
+        "image",
+        "image_ai",
+        "image_web",
+        "image_user",
+        "image_formula",
+        "icon",
+        "notes",
+        "pptx",
+        "quality_report",
+        "config",
+        "confirm",
+        "audio",
+        "analysis",
+        "template",
+        "animation",
+        "backup"
+      ],
+      "description": "Artifact type for filtering and display."
+    },
+
+    "Artifact": {
+      "type": "object",
+      "required": ["path", "name", "type", "exists"],
+      "additionalProperties": false,
+      "properties": {
+        "path":       { "type": "string", "description": "Path relative to project root." },
+        "name":       { "type": "string", "description": "Filename." },
+        "type":       { "$ref": "#/definitions/ArtifactType" },
+        "exists":     { "type": "boolean" },
+        "size_bytes": { "type": ["integer", "null"], "minimum": 0 },
+        "modified_at": { "oneOf": [{ "$ref": "#/definitions/ISOTimestamp" }, { "type": "null" }] },
+        "created_by_step": {
+          "oneOf": [{ "$ref": "#/definitions/StepId" }, { "type": "null" }],
+          "description": "Which pipeline step produced this artifact."
+        },
+        "metadata": {
+          "type": ["object", "null"],
+          "description": "Type-specific metadata (e.g. viewbox for SVG, dimensions for image).",
+          "additionalProperties": true
+        }
+      }
+    },
+
+    "ArtifactList": {
+      "type": "object",
+      "required": ["artifacts", "total"],
+      "additionalProperties": false,
+      "properties": {
+        "artifacts": { "type": "array", "items": { "$ref": "#/definitions/Artifact" } },
+        "total":     { "type": "integer", "minimum": 0 },
+        "by_type": {
+          "type": "object",
+          "description": "Count per artifact type.",
+          "additionalProperties": { "type": "integer", "minimum": 0 }
+        }
+      }
+    },
+
+    "DashboardConfig": {
+      "type": "object",
+      "required": ["project_name", "project_path", "canvas_format", "theme"],
+      "additionalProperties": false,
+      "properties": {
+        "project_name":   { "type": "string" },
+        "project_path":   { "type": "string" },
+        "canvas_format":  { "type": ["string", "null"] },
+        "canvas_info":    { "oneOf": [{ "$ref": "#/definitions/CanvasFormat" }, { "type": "null" }] },
+        "theme": {
+          "type": "object",
+          "required": ["header_bg", "content_bg", "ok", "warn", "danger", "text_primary", "text_secondary"],
+          "additionalProperties": false,
+          "properties": {
+            "header_bg":      { "type": "string", "pattern": "^#[0-9A-Fa-f]{6}$", "default": "#051C2C" },
+            "content_bg":     { "type": "string", "default": "#FFFFFF" },
+            "ok":             { "type": "string", "default": "#007A53" },
+            "warn":           { "type": "string", "default": "#D46A00" },
+            "danger":         { "type": "string", "default": "#E60012" },
+            "text_primary":   { "type": "string", "default": "#1A1A1A" },
+            "text_secondary": { "type": "string", "default": "#666666" }
+          }
+        },
+        "sse_url":         { "type": "string", "format": "uri", "description": "SSE endpoint, e.g. /api/events." },
+        "refresh_interval": { "type": "integer", "minimum": 1000, "default": 5000, "description": "Milliseconds between full state polls (fallback when SSE disconnects)." },
+        "catalogs":        { "type": ["object", "null"], "description": "Embedded catalogs.json content for offline rendering." }
+      }
+    },
+
+    "StepDetail": {
+      "type": "object",
+      "required": ["step", "name", "state", "blocking", "sub_steps"],
+      "additionalProperties": false,
+      "properties": {
+        "step":        { "$ref": "#/definitions/StepId" },
+        "name":        { "type": "string" },
+        "state":       { "$ref": "#/definitions/StepState" },
+        "blocking":    { "type": "boolean" },
+        "started_at":  { "oneOf": [{ "$ref": "#/definitions/ISOTimestamp" }, { "type": "null" }] },
+        "completed_at": { "oneOf": [{ "$ref": "#/definitions/ISOTimestamp" }, { "type": "null" }] },
+        "sub_steps":   { "type": "array", "items": { "$ref": "#/definitions/SubStep" } },
+        "gate": {
+          "type": ["object", "null"],
+          "properties": {
+            "satisfied":   { "type": "boolean" },
+            "requirements": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "required": ["label", "met"],
+                "properties": {
+                  "label":  { "type": "string" },
+                  "met":    { "type": "boolean" },
+                  "detail": { "type": ["string", "null"] }
+                }
+              }
+            }
+          }
+        },
+        "error":       { "type": ["string", "null"] },
+        "artifacts":   {
+          "type": "array",
+          "items": { "$ref": "#/definitions/Artifact" },
+          "description": "Artifacts produced by or consumed by this step."
+        },
+        "quality": {
+          "type": ["object", "null"],
+          "description": "Quality check results specific to this step (Step 6/7).",
+          "properties": {
+            "svg_quality":     { "oneOf": [{ "$ref": "#/definitions/SVGQualityReport" }, { "type": "null" }] },
+            "spec_compliance": { "oneOf": [{ "$ref": "#/definitions/ComplianceReport" }, { "type": "null" }] },
+            "e2e":             { "oneOf": [{ "$ref": "#/definitions/E2EValidateResult" }, { "type": "null" }] },
+            "harness":         { "oneOf": [{ "$ref": "#/definitions/HarnessGateReport" }, { "type": "null" }] }
+          }
+        },
+        "trace_events": {
+          "type": "array",
+          "items": { "$ref": "#/definitions/TraceEvent" },
+          "description": "Trace events filtered to this step."
+        }
+      }
+    },
+
+    "QualityReport": {
+      "type": "object",
+      "required": ["harness", "checked_at"],
+      "additionalProperties": false,
+      "properties": {
+        "harness":         { "$ref": "#/definitions/HarnessGateReport" },
+        "svg_quality":     { "oneOf": [{ "$ref": "#/definitions/SVGQualityReport" }, { "type": "null" }] },
+        "spec_compliance": { "oneOf": [{ "$ref": "#/definitions/ComplianceReport" }, { "type": "null" }] },
+        "e2e":             { "oneOf": [{ "$ref": "#/definitions/E2EValidateResult" }, { "type": "null" }] },
+        "integrated_review": { "oneOf": [{ "$ref": "#/definitions/IntegratedReview" }, { "type": "null" }] },
+        "checked_at":      { "$ref": "#/definitions/ISOTimestamp" }
+      }
+    },
+
+    "SingleCheckReport": {
+      "type": "object",
+      "required": ["check", "status", "checked_at"],
+      "additionalProperties": false,
+      "properties": {
+        "check":      { "type": "string", "enum": ["svg_quality", "spec_compliance", "e2e", "harness", "integrated_review"] },
+        "status":     { "$ref": "#/definitions/QualityGate" },
+        "checked_at": { "$ref": "#/definitions/ISOTimestamp" },
+        "data": {
+          "description": "The full report data for the requested check type.",
+          "oneOf": [
+            { "$ref": "#/definitions/SVGQualityReport" },
+            { "$ref": "#/definitions/ComplianceReport" },
+            { "$ref": "#/definitions/E2EValidateResult" },
+            { "$ref": "#/definitions/HarnessGateReport" },
+            { "$ref": "#/definitions/IntegratedReview" }
+          ]
+        }
+      }
+    }
+  }
+}

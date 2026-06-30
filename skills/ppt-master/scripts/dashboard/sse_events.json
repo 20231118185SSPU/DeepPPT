@@ -1,0 +1,277 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "DeepPPT Dashboard SSE Event Schemas",
+  "description": "Every SSE event type pushed by the dashboard server. Each event is sent as 'event: <type>\\ndata: <json>\\n\\n'.",
+
+  "definitions": {
+
+    "SSEEvent_PipelineState": {
+      "type": "object",
+      "description": "event: pipeline:state -- Full state snapshot. Sent on initial SSE connect and on every state transition.",
+      "required": ["event", "data"],
+      "properties": {
+        "event": { "const": "pipeline:state" },
+        "data": { "$ref": "contracts.json#/definitions/PipelineState" }
+      }
+    },
+
+    "SSEEvent_StepProgress": {
+      "type": "object",
+      "description": "event: step:progress -- Sub-step progress within a pipeline step. Sent for fine-grained progress (page N/M generated, image 3/5 acquired).",
+      "required": ["event", "data"],
+      "properties": {
+        "event": { "const": "step:progress" },
+        "data": {
+          "type": "object",
+          "required": ["step", "sub_step_id", "progress", "ts"],
+          "additionalProperties": false,
+          "properties": {
+            "step":        { "$ref": "contracts.json#/definitions/StepId" },
+            "sub_step_id": { "type": "string", "description": "Sub-step identifier, e.g. 'svg_generate', 'image_acquire'." },
+            "label":       { "type": ["string", "null"], "description": "Human-readable label for the sub-step." },
+            "state":       { "$ref": "contracts.json#/definitions/StepState" },
+            "progress":    {
+              "type": ["number", "null"],
+              "minimum": 0,
+              "maximum": 1,
+              "description": "Fractional progress 0.0-1.0. Null when indeterminate."
+            },
+            "current": {
+              "type": ["integer", "null"],
+              "minimum": 0,
+              "description": "Current item index (0-based), e.g. page number being generated."
+            },
+            "total": {
+              "type": ["integer", "null"],
+              "minimum": 0,
+              "description": "Total items, e.g. total page count."
+            },
+            "detail": {
+              "type": ["string", "null"],
+              "description": "Free-text status, e.g. 'Generating P03_core_advantages.svg'."
+            },
+            "ts": { "type": "string", "description": "ISO 8601 timestamp." }
+          }
+        }
+      }
+    },
+
+    "SSEEvent_QualityUpdate": {
+      "type": "object",
+      "description": "event: quality:update -- Quality check result. Sent when any quality gate script completes.",
+      "required": ["event", "data"],
+      "properties": {
+        "event": { "const": "quality:update" },
+        "data": {
+          "type": "object",
+          "required": ["check", "status", "ts"],
+          "additionalProperties": false,
+          "properties": {
+            "check": {
+              "type": "string",
+              "enum": ["svg_quality", "spec_compliance", "e2e", "harness", "integrated_review", "spec_lock_digest"],
+              "description": "Which quality check completed."
+            },
+            "status": { "$ref": "contracts.json#/definitions/QualityGate" },
+            "summary": {
+              "type": ["object", "null"],
+              "description": "Compact summary. Shape varies by check type.",
+              "properties": {
+                "total":    { "type": ["integer", "null"] },
+                "passed":   { "type": ["integer", "null"] },
+                "warnings": { "type": ["integer", "null"] },
+                "errors":   { "type": ["integer", "null"] }
+              },
+              "additionalProperties": true
+            },
+            "detail": {
+              "type": ["string", "null"],
+              "description": "One-line human-readable summary, e.g. '12 files, 0 errors, 3 warnings'."
+            },
+            "ts": { "type": "string" }
+          }
+        }
+      }
+    },
+
+    "SSEEvent_ArtifactNew": {
+      "type": "object",
+      "description": "event: artifact:new -- New file generated. Sent when a pipeline step creates or updates a notable artifact.",
+      "required": ["event", "data"],
+      "properties": {
+        "event": { "const": "artifact:new" },
+        "data": {
+          "type": "object",
+          "required": ["path", "type", "step", "ts"],
+          "additionalProperties": false,
+          "properties": {
+            "path": { "type": "string", "description": "Path relative to project root." },
+            "name": { "type": "string", "description": "Filename." },
+            "type": { "$ref": "contracts.json#/definitions/ArtifactType" },
+            "step": { "$ref": "contracts.json#/definitions/StepId" },
+            "size_bytes": { "type": ["integer", "null"], "minimum": 0 },
+            "metadata": {
+              "type": ["object", "null"],
+              "description": "Type-specific metadata, e.g. { viewbox: '0 0 1280 720' } for SVG, { width: 1024, height: 768 } for images.",
+              "additionalProperties": true
+            },
+            "ts": { "type": "string" }
+          }
+        }
+      }
+    },
+
+    "SSEEvent_ConfirmNeeded": {
+      "type": "object",
+      "description": "event: confirm:needed -- Confirmation gate reached. Sent when Step 4 is waiting for user input.",
+      "required": ["event", "data"],
+      "properties": {
+        "event": { "const": "confirm:needed" },
+        "data": {
+          "type": "object",
+          "required": ["tier", "confirm_url", "ts"],
+          "additionalProperties": false,
+          "properties": {
+            "tier": {
+              "type": "integer",
+              "enum": [1, 2],
+              "description": "Confirmation tier. 1 = anchor confirmations (canvas, audience, mode, visual_style). 2 = realization confirmations (color, typography, images, page count, etc.)."
+            },
+            "confirm_url": {
+              "type": ["string", "null"],
+              "format": "uri",
+              "description": "URL to the confirm UI page, e.g. http://localhost:5050. Null if confirm UI failed to launch."
+            },
+            "fallback": {
+              "type": "boolean",
+              "default": false,
+              "description": "True if confirm UI failed and chat fallback is active."
+            },
+            "recommendations_summary": {
+              "type": ["object", "null"],
+              "description": "Compact summary of the eight confirmation recommendations for dashboard display.",
+              "properties": {
+                "canvas":       { "type": ["string", "null"] },
+                "audience":     { "type": ["string", "null"] },
+                "mode":         { "type": ["string", "null"] },
+                "visual_style": { "type": ["string", "null"] },
+                "page_count":   { "type": ["string", "null"] },
+                "color_candidates_count": { "type": ["integer", "null"] },
+                "typography_candidates_count": { "type": ["integer", "null"] },
+                "image_usage":  { "type": ["string", "null"] }
+              }
+            },
+            "ts": { "type": "string" }
+          }
+        }
+      }
+    },
+
+    "SSEEvent_ConfirmDone": {
+      "type": "object",
+      "description": "event: confirm:done -- User confirmed. Sent when result.json is written (tier1 or final).",
+      "required": ["event", "data"],
+      "properties": {
+        "event": { "const": "confirm:done" },
+        "data": {
+          "type": "object",
+          "required": ["stage", "status", "ts"],
+          "additionalProperties": false,
+          "properties": {
+            "stage": {
+              "type": "string",
+              "enum": ["tier1", "final"],
+              "description": "Confirmation stage that was just completed."
+            },
+            "status": {
+              "type": "string",
+              "enum": ["tier1-confirmed", "confirmed"],
+              "description": "Status written to result.json."
+            },
+            "confirmed_at": { "$ref": "contracts.json#/definitions/ISOTimestamp" },
+            "fallback_confirmed": {
+              "type": "boolean",
+              "default": false,
+              "description": "True if confirmation came via chat fallback instead of browser UI."
+            },
+            "confirmed_values": {
+              "type": ["object", "null"],
+              "description": "Key confirmed values for dashboard display.",
+              "properties": {
+                "canvas":          { "type": ["string", "null"] },
+                "mode":            { "type": ["string", "null"] },
+                "visual_style":    { "type": ["string", "null"] },
+                "generation_mode": { "type": ["string", "null"], "enum": ["continuous", "split", null] },
+                "refine_spec":     { "type": ["boolean", "null"] },
+                "image_usage":     { "type": ["string", "null"] },
+                "page_count":      { "type": ["string", "null"] }
+              },
+              "additionalProperties": true
+            },
+            "ts": { "type": "string" }
+          }
+        }
+      }
+    },
+
+    "SSEEvent_Error": {
+      "type": "object",
+      "description": "event: error -- Error occurred. Sent on script failure, gate failure, or unrecoverable exception.",
+      "required": ["event", "data"],
+      "properties": {
+        "event": { "const": "error" },
+        "data": {
+          "type": "object",
+          "required": ["message", "ts"],
+          "additionalProperties": false,
+          "properties": {
+            "step": {
+              "oneOf": [{ "$ref": "contracts.json#/definitions/StepId" }, { "type": "null" }],
+              "description": "Step where the error occurred. Null for system-level errors."
+            },
+            "sub_step_id": { "type": ["string", "null"] },
+            "message":     { "type": "string", "description": "Human-readable error message." },
+            "error_type": {
+              "type": ["string", "null"],
+              "enum": ["script_failure", "gate_failure", "file_not_found", "parse_error", "timeout", "server_error", null],
+              "description": "Error classification."
+            },
+            "script": {
+              "type": ["string", "null"],
+              "description": "Script that failed, e.g. 'svg_quality_checker.py'."
+            },
+            "returncode": {
+              "type": ["integer", "null"],
+              "description": "Process exit code if applicable."
+            },
+            "recoverable": {
+              "type": "boolean",
+              "default": true,
+              "description": "True if the pipeline can continue past this error."
+            },
+            "ts": { "type": "string" }
+          }
+        }
+      }
+    },
+
+    "SSEEvent_Heartbeat": {
+      "type": "object",
+      "description": "event: heartbeat -- Keepalive. Sent every 15 seconds to prevent SSE connection timeout.",
+      "required": ["event", "data"],
+      "properties": {
+        "event": { "const": "heartbeat" },
+        "data": {
+          "type": "object",
+          "required": ["ts"],
+          "additionalProperties": false,
+          "properties": {
+            "ts":      { "type": "string" },
+            "uptime":  { "type": ["integer", "null"], "description": "Server uptime in seconds." },
+            "clients": { "type": ["integer", "null"], "description": "Number of connected SSE clients." }
+          }
+        }
+      }
+    }
+  }
+}

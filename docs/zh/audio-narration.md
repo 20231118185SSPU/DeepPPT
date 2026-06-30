@@ -1,5 +1,7 @@
 # 音频旁白与视频导出
 
+[English](../audio-narration.md) | [中文](./audio-narration.md)
+
 PPT Master 可以把演讲者备注转成逐页音频旁白（默认基于 [`edge-tts`](https://github.com/rany2/edge-tts) —— 微软 Edge 的在线神经网络语音；也可配置 ElevenLabs、MiniMax、Qwen TTS、CosyVoice 使用高质量或复刻音色），再把音频嵌入回 PPTX，由 PowerPoint 自带的"导出视频"一键产出带旁白和转场的 MP4，全程无需第三方工具。
 
 ## 你会得到什么

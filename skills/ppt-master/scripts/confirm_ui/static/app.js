@@ -8,6 +8,16 @@
 (function () {
     "use strict";
 
+    // ---- utilities -------------------------------------------------------
+    function debounce(fn, ms) {
+        var timer;
+        return function () {
+            var ctx = this, args = arguments;
+            clearTimeout(timer);
+            timer = setTimeout(function () { fn.apply(ctx, args); }, ms);
+        };
+    }
+
     // ---- i18n ------------------------------------------------------------
     var MESSAGES = {
         en: {
@@ -16,6 +26,8 @@
             loading: "Loading…",
             load_error: "Could not load recommendations.json. The AI must write it before launch.",
             btn_confirm: "Confirm",
+            btn_next: "Next →",
+            deriving: "Generating the downstream options from your choices…",
             already_confirmed: "Already confirmed once. Re-submitting overwrites the previous choices.",
             confirmed_title: "✓ Confirmed",
             confirmed_hint: "Your choices are saved. You can close this page and return to the chat.",
@@ -49,12 +61,23 @@
             image_strategy_visual: "Visual",
             image_strategy_color: "Color",
             image_strategy_mood: "Mood",
-            image_usage_custom_required: "Describe the custom image plan before confirming.",
+            image_usage_notes: "Additional image requirements",
+            image_usage_notes_placeholder: "e.g. realistic handwashing scenes; avoid cartoon germs; keep product photos untouched.",
+            image_usage_required: "Select at least one image usage option.",
+            image_usage_none_exclusive: "No images cannot be combined with other image options.",
             font_heading: "Heading",
             font_body: "Body",
             font_body_size: "Body baseline size",
             font_body_size_hint: "All type sizes derive from this body baseline.",
             body_size_hint_canvas: "This canvas suggests ~{lo}–{hi}px (scales with canvas height).",
+            body_size_hint_purpose: "This delivery purpose recommends {def}px — one fixed size, not a range.",
+            body_size_hint_oor: "(Current value is outside the usual range for this canvas — check the unit is right and that it fits.)",
+            delivery_purpose: "Delivery purpose",
+            delivery_purpose_hint: "Read-close decks can run smaller; projected decks need larger type.",
+            size_override: "Per-role size override:",
+            size_role_title: "title",
+            size_role_subtitle: "subtitle",
+            size_role_annotation: "annotation",
             custom_typography: "Custom typography",
             custom_typography_placeholder: "Type your font plan, e.g. Heading: Georgia + KaiTi; Body: Microsoft YaHei + Arial…",
             custom_color: "Custom color",
@@ -67,8 +90,10 @@
             role_body_text: "body text",
             cjk: "CJK",
             latin: "Latin",
-            sample_cjk: "数字化转型战略",
-            sample_latin: "Digital Transformation",
+            sample_heading_cjk: "主题方案标题",
+            sample_heading_latin: "Presentation Title",
+            sample_body_cjk: "关键信息摘要",
+            sample_body_latin: "Key message summary",
             style_preview_label: "Overall impression (color + typography)",
             style_preview_body: "· rough feel only, not the actual slide layout",
             mode_continuous_desc: "Generate the whole deck in one pass.",
@@ -86,6 +111,8 @@
             loading: "加载中…",
             load_error: "无法加载推荐文件，需在启动前写入。",
             btn_confirm: "确认",
+            btn_next: "下一步 →",
+            deriving: "正在据你的选择生成下游选项…",
             already_confirmed: "已确认过一次，重新提交会覆盖之前的选择。",
             confirmed_title: "✓ 已确认",
             confirmed_hint: "选择已保存，可关闭此页并回到聊天窗口。",
@@ -119,12 +146,23 @@
             image_strategy_visual: "视觉",
             image_strategy_color: "色彩",
             image_strategy_mood: "情绪",
-            image_usage_custom_required: "请先写清楚自定义图片方案。",
+            image_usage_notes: "图片补充要求",
+            image_usage_notes_placeholder: "例如：优先真实洗手场景；不要卡通病菌；产品照片保持原样。",
+            image_usage_required: "请至少选择一种图片使用方式。",
+            image_usage_none_exclusive: "「不使用图片」不能和其它图片选项同时选择。",
             font_heading: "标题",
             font_body: "正文",
             font_body_size: "正文基准字号",
             font_body_size_hint: "所有字号按这个正文基准推导。",
             body_size_hint_canvas: "当前画布建议 ~{lo}–{hi}px（随画布高度缩放）。",
+            body_size_hint_purpose: "该交付目的推荐 {def}px（单一固定值，非区间）。",
+            body_size_hint_oor: "（当前数值超出该画布的常用范围——请确认单位无误、是否合适。）",
+            delivery_purpose: "交付目的",
+            delivery_purpose_hint: "近读型可以小一点；投影型需要更大的字。",
+            size_override: "逐角色字号覆盖：",
+            size_role_title: "标题",
+            size_role_subtitle: "副标题",
+            size_role_annotation: "注释",
             custom_typography: "自定义字体方案",
             custom_typography_placeholder: "输入字体方案，如：标题用楷体；正文用微软雅黑…",
             custom_color: "自定义配色",
@@ -137,8 +175,10 @@
             role_body_text: "正文文字",
             cjk: "中文",
             latin: "西文",
-            sample_cjk: "数字化转型战略",
-            sample_latin: "Digital Transformation",
+            sample_heading_cjk: "主题方案标题",
+            sample_heading_latin: "Presentation Title",
+            sample_body_cjk: "关键信息摘要",
+            sample_body_latin: "Key message summary",
             style_preview_label: "整体形象（配色 + 字体）",
             style_preview_body: "· 仅大致形象，非实际版式",
             mode_continuous_desc: "一次性连续生成整份演示文稿。",
@@ -231,10 +271,15 @@
         return node;
     }
 
+    // Section numbers run 1..N within the tier currently rendered; the counter is
+    // reset at the top of renderForTier. The legacy `num` arg is ignored so each
+    // tier numbers its own sections cleanly (tier 2 is not a continuation of 1).
+    var _secCounter = 0;
     function section(num, titleKey, noteText) {
+        _secCounter += 1;
         var sec = el("div", "section");
         var head = el("div", "section-head");
-        head.appendChild(el("span", "section-num", String(num)));
+        head.appendChild(el("span", "section-num", String(_secCounter)));
         head.appendChild(el("span", "section-title", t(titleKey)));
         if (noteText) head.appendChild(el("span", "section-note", noteText));
         sec.appendChild(head);
@@ -252,9 +297,19 @@
     }
 
     function normalizeRecId(field, value) {
+        if (Array.isArray(value)) return normalizeRecId(field, value[0]);
         if (value == null || value === "") return value;
         var aliases = REC_ALIASES[field] || {};
         return aliases[value] || value;
+    }
+
+    function normalizeRecIds(field, value) {
+        if (Array.isArray(value)) {
+            return value.map(function (item) { return normalizeRecId(field, item); })
+                .filter(function (item, idx, arr) { return item && arr.indexOf(item) === idx; });
+        }
+        var normalized = normalizeRecId(field, value);
+        return normalized ? [normalized] : [];
     }
 
     function legacyRecId(field) {
@@ -273,6 +328,10 @@
         var value = (REC && REC.recommend && REC.recommend[field]) || legacyRecId(field);
         return normalizeRecId(field, value || null);
     }
+
+    function recValue(field) {
+        return (REC && REC.recommend && REC.recommend[field]) || legacyRecId(field);
+    }
     // Guaranteed recommendation: the AI's pick, or the first catalog option as a
     // fallback so an enumerable field ALWAYS shows a badged recommendation.
     function recOrFirst(field, list) {
@@ -280,10 +339,9 @@
         if (r != null && r !== "") return r;
         return firstId(list);
     }
-
     // Render an enumerable field: ALL options from the catalog, recommended one
     // badged, current selection from STATE, plus a trailing Custom box.
-    // `list` is either a flat array of {id,label,desc,dim} or a grouped array
+    // `list` is either a flat array of {id,label,desc,dim,viewbox} or a grouped array
     // of {group, items:[...]}.
     function enumField(parent, list, recommendedId, getVal, setVal, opts2) {
         list = list || [];
@@ -321,12 +379,16 @@
         function deselect() { allChips.forEach(function (c) { c.classList.remove("selected"); }); }
         function makeChip(o) {
             var label = optionLabel(o);
-            if (o.dim) label += " · " + o.dim;
             var desc = optionDesc(o);
-            if (desc) label += (LANG === "zh" ? "：" : " — ") + desc;
             var spec = specById[o.id];
-            if (spec && spec.note) label += " · " + spec.note;
             var chip = el("div", "chip");
+            if (o.viewbox) {
+                label = label + (o.dim ? " · " + o.dim : "");
+            } else {
+                if (o.dim) label += " · " + o.dim;
+                if (desc) label += (LANG === "zh" ? "：" : " — ") + desc;
+                if (spec && spec.note) label += " · " + spec.note;
+            }
             chip.appendChild(el("span", "chip-text", label));
             if (spec) {
                 // spectrum pick: badge shows its temperament tag, not the generic ★
@@ -428,7 +490,17 @@
     function normTypography(c) {
         c = c || {};
         if (c.heading && typeof c.heading === "object" && c.body && typeof c.body === "object") {
-            return Object.assign({}, c, { body_size: typographyBodySize(c) });
+            return Object.assign({}, c, {
+                body_size: typographyBodySize(c),
+                heading: Object.assign({}, c.heading, {
+                    sample_cjk: c.heading.sample_cjk || c.sample_heading || "",
+                    sample_latin: c.heading.sample_latin || c.sample_heading_latin || ""
+                }),
+                body: Object.assign({}, c.body, {
+                    sample_cjk: c.body.sample_cjk || c.sample_body || "",
+                    sample_latin: c.body.sample_latin || c.sample_body_latin || ""
+                })
+            });
         }
         return {
             name: c.name || "",
@@ -475,6 +547,7 @@
 
     function usesCustomImagePlanValue(value) {
         var ids = (CAT.image_usage || []).map(function (item) { return item.id; });
+        if (Array.isArray(value)) return false;
         return value && ids.indexOf(value) === -1;
     }
 
@@ -483,7 +556,28 @@
     }
 
     function needsGeneratedImagesForUsage(value) {
+        if (Array.isArray(value)) return value.indexOf("ai") >= 0;
         return value === "ai" || (usesCustomImagePlanValue(value) && customImagePlanHasAiSignal());
+    }
+
+    function selectedImageUsageIds(value) {
+        var validIds = (CAT.image_usage || []).map(function (item) { return item.id; });
+        return normalizeRecIds("image_usage", value).filter(function (id) {
+            return validIds.indexOf(id) >= 0;
+        });
+    }
+
+    function imageUsageNotesRecommendation(rawUsage) {
+        var notes = (REC && REC.image_notes && REC.image_notes.value) ||
+            (REC && REC.image_notes) ||
+            (REC && REC.images && REC.images.notes) ||
+            "";
+        if (!notes && usesCustomImagePlanValue(rawUsage)) notes = rawUsage;
+        return typeof notes === "string" ? notes : "";
+    }
+
+    function defaultImageUsageId() {
+        return firstId(CAT.image_usage);
     }
 
     function imageStrategySelectedIndex() {
@@ -495,9 +589,20 @@
     // ---- section renderers ----------------------------------------------
     function renderCanvas(host) {
         var sec = section(1, "sec_canvas");
+        renderAiNote(sec, "canvas");
         enumField(sec, CAT.canvas, recOrFirst("canvas", CAT.canvas),
             function () { return STATE.canvas; },
-            function (v) { STATE.canvas = v; refreshBodySizeHint(); }, { allowCustom: true });
+            function (v) {
+                STATE.canvas = v;
+                if (!STATE.typography) STATE.typography = { name: "", heading: {}, body: {} };
+                // Canvas changes dimensions only — never silently rewrite font sizes
+                // the user can see / edit. The size hint re-renders with the new
+                // canvas; a default body is filled only when none is set yet.
+                if (!STATE.typography.body_size) {
+                    STATE.typography.body_size = defaultBodySizeForCanvas(v, STATE.delivery_purpose);
+                }
+                renderAll();
+            }, { allowCustom: true });
         host.appendChild(sec);
     }
 
@@ -510,6 +615,7 @@
 
     function renderAudience(host) {
         var sec = section(3, "sec_audience");
+        renderAiNote(sec, "audience");
         textField(sec, function () { return STATE.audience; },
             function (v) { STATE.audience = v; }, "placeholder_audience", false);
         // Material divergence — a distinct, free-text sub-question inside §c, shown
@@ -521,11 +627,27 @@
         textField(subDiv, function () { return STATE.content_divergence; },
             function (v) { STATE.content_divergence = v; }, "placeholder_divergence", false);
         sec.appendChild(subDiv);
+        // Delivery purpose (PPT only) lives in the §c key-information confirmation,
+        // beside audience — it is part of "who / how this deck is consumed". It is a
+        // Tier-1 anchor: its value sets the body size (one fixed value per purpose), page
+        // density, and the re-derived Tier-2 page-count recommendation. Non-PPT
+        // canvases scale the body by canvas height instead, so the axis does not apply.
+        if (isPptCanvas(STATE.canvas)) {
+            var purposeField = el("div", "subfield");
+            purposeField.appendChild(el("div", "subfield-label", t("delivery_purpose")));
+            enumField(purposeField, CAT.delivery_purpose,
+                recOrFirst("delivery_purpose", CAT.delivery_purpose),
+                function () { return STATE.delivery_purpose; },
+                function (v) { STATE.delivery_purpose = v; });
+            sec.appendChild(purposeField);
+        }
         host.appendChild(sec);
     }
 
     function renderStyle(host) {
         var sec = section(4, "sec_style");
+        renderAiNote(sec, "style");
+        renderAiNote(sec, "mode");
         sec.appendChild(el("div", "subfield-label", t("sub_mode")));
         enumField(sec, CAT.modes, recOrFirst("mode", CAT.modes),
             function () { return STATE.mode; }, function (v) { STATE.mode = v; }, { allowCustom: true });
@@ -561,6 +683,23 @@
     // Replaced when the typography section mounts; the canvas section calls it so
     // the body-size hint tracks the chosen canvas height.
     var refreshBodySizeHint = function () {};
+    // Replaced when the typography section mounts; body-size / delivery changes
+    // call it so the per-role size overrides the user hasn't pinned re-derive.
+    var refreshSizeInputs = function () {};
+
+    // Per-role size slots the user can edit directly (parallel to color roles).
+    // Defaults derive from `body` via mid-band ramp ratios (strategist.md §g);
+    // values are px (the system's only unit).
+    var SIZE_ROLES = ["title", "subtitle", "annotation"];
+    var SIZE_RATIO = { title: 1.75, subtitle: 1.35, annotation: 0.78 };
+    function deriveSize(role, bodyVal) {
+        var raw = (bodyVal || 0) * (SIZE_RATIO[role] || 1);
+        // All px. On PPT, snap the recommended role size to a clean even number so
+        // the user sees conventional sizes (body 24 → title 42, subtitle 32), not
+        // ratio leftovers. Non-PPT keeps a plain integer — large px, snapping moot.
+        if (isPptCanvas(STATE.canvas)) return Math.round(raw / 2) * 2;
+        return Math.round(raw);
+    }
 
     // Canvas height (viewBox user units) parsed from a catalog `dim` like
     // "1242×1660" or from a custom canvas string containing WxH; null if unknown.
@@ -571,9 +710,79 @@
         return m ? parseInt(m[2], 10) : null;
     }
 
+    function bodySizeRatioBand(canvasVal) {
+        var dim = null;
+        (CAT.canvas || []).forEach(function (o) { if (o.id === canvasVal) dim = o.dim; });
+        var raw = String(dim || canvasVal || "");
+        var id = String(canvasVal || "").toLowerCase();
+        var isPpt = id === "ppt169" || id === "ppt43" ||
+            /1280\s*[×xX*]\s*720/.test(raw) ||
+            /1024\s*[×xX*]\s*768/.test(raw);
+        return isPpt ? { lo: 0.031, hi: 0.047 } : { lo: 0.025, hi: 0.033 };
+    }
+
+    // PPT canvases (16:9 / 4:3) take the fixed per-delivery-purpose body px;
+    // social / print canvases scale the body px by canvas height instead.
+    function isPptCanvas(canvasVal) {
+        var dim = null;
+        (CAT.canvas || []).forEach(function (o) { if (o.id === canvasVal) dim = o.dim; });
+        var raw = String(dim || canvasVal || "");
+        var id = String(canvasVal || "").toLowerCase();
+        return id === "ppt169" || id === "ppt43" ||
+            /1280\s*[×xX*]\s*720/.test(raw) ||
+            /1024\s*[×xX*]\s*768/.test(raw);
+    }
+
+    // Body baseline in **px** per delivery purpose (see strategist.md §g). The
+    // system is px-only — these are the SVG/execution px values, recalibrated for
+    // the 1280×720 PPT canvas. No pt layer, no conversion. `def` is the fixed
+    // recommendation; lo/hi are a sanity envelope for the out-of-range flag only.
+    function deliveryBodyPx(purposeId) {
+        if (purposeId === "text") return { lo: 18, hi: 21, def: 20 };
+        if (purposeId === "presentation") return { lo: 28, hi: 32, def: 32 };
+        return { lo: 22, hi: 25, def: 24 }; // balanced — the default
+    }
+
+    function defaultBodySizeForCanvas(canvasVal, purposeId) {
+        if (isPptCanvas(canvasVal)) return deliveryBodyPx(purposeId).def;
+        var h = canvasHeight(canvasVal);
+        if (!h) return 40;
+        var band = bodySizeRatioBand(canvasVal);
+        return Math.round(h * (band.lo + band.hi) / 2);
+    }
+
+    function roundSize(value) {
+        return Math.round(value * 100) / 100;
+    }
+
+    function normalizeTypographyForSubmit(payload) {
+        if (!payload.typography || typeof payload.typography !== "object") return;
+        var typ = payload.typography;
+        var body = parseFloat(typ.body_size);
+        if (!isFinite(body)) {
+            // Cleared / invalid body field — fall back so role sizes never submit
+            // against an empty anchor.
+            body = defaultBodySizeForCanvas(payload.canvas, payload.delivery_purpose);
+        }
+        // px is the only unit — round and submit as-is. No pt conversion, no
+        // body_size_pt / sizes_pt provenance (the system never carries pt).
+        typ.body_size = roundSize(body);
+        typ.body_size_unit = "px";
+        if (typ.sizes && typeof typ.sizes === "object") {
+            Object.keys(typ.sizes).forEach(function (role) {
+                var raw = parseFloat(typ.sizes[role]);
+                if (isFinite(raw)) typ.sizes[role] = roundSize(raw);
+            });
+        }
+        // delivery_purpose is PPT-only; drop it on non-PPT canvases where it has
+        // no meaning and was never shown.
+        if (!isPptCanvas(payload.canvas)) delete payload.delivery_purpose;
+    }
+
     function renderColor(host) {
         var cands = (REC.color && REC.color.candidates) || [];
         var sec = section(5, "sec_color");
+        renderAiNote(sec, "color");
         var grid = el("div", "color-grid");
         var hexInputs = {};
         var hexSwatches = {};
@@ -658,19 +867,17 @@
             var sw = el("div", "hex-swatch hex-swatch-empty");
             var inp = document.createElement("input");
             inp.type = "text"; inp.placeholder = "#";
-            inp.addEventListener("input", function () {
+            inp.addEventListener("input", debounce(function () {
                 if (!STATE.color) STATE.color = { name: "custom", palette: {} };
                 if (!STATE.color.palette) STATE.color.palette = {};
                 STATE.color.palette[role] = inp.value;
                 paintSwatch(sw, inp.value);
-                // Reflect a valid override straight onto the selected card so the
-                // user sees the change in context, not just in the input row.
                 var n = normHex(inp.value);
                 if (n && selectedIdx >= 0 && cardSwatchRefs[selectedIdx] && cardSwatchRefs[selectedIdx][role]) {
                     cardSwatchRefs[selectedIdx][role].style.background = n;
                 }
                 refreshStylePreview();
-            });
+            }, 150));
             hexInputs[role] = inp; hexSwatches[role] = sw;
             line.appendChild(sw); line.appendChild(inp);
             wrap.appendChild(line); row.appendChild(wrap);
@@ -706,10 +913,35 @@
         return primary + ", " + fallback;
     }
 
-    function fontSample(box, slot, css) {
+    function sampleCandidate(role, script) {
+        var sample = (REC && REC.sample_text) || (REC && REC.samples) || {};
+        var isHeading = role === "heading";
+        var isLatin = script === "latin";
+        var keys = isHeading
+            ? (isLatin ? ["heading_latin", "sample_heading_latin", "title_latin", "title_en"] : ["heading_cjk", "sample_heading", "sample_heading_cjk", "title_zh", "title"])
+            : (isLatin ? ["body_latin", "sample_body_latin", "summary_latin", "summary_en"] : ["body_cjk", "sample_body", "sample_body_cjk", "summary_zh", "summary"]);
+        for (var i = 0; i < keys.length; i += 1) {
+            if (sample[keys[i]]) return sample[keys[i]];
+            if (REC && REC[keys[i]]) {
+                if (typeof REC[keys[i]] === "object" && REC[keys[i]].value) return REC[keys[i]].value;
+                if (typeof REC[keys[i]] === "string") return REC[keys[i]];
+            }
+        }
+        return "";
+    }
+
+    function sampleText(role, script, explicit) {
+        if (explicit) return explicit;
+        var fromRec = sampleCandidate(role, script);
+        if (fromRec) return fromRec;
+        if (role === "heading") return t(script === "latin" ? "sample_heading_latin" : "sample_heading_cjk");
+        return t(script === "latin" ? "sample_body_latin" : "sample_body_cjk");
+    }
+
+    function fontSample(box, slot, css, role) {
         var line = el("div", "font-sample-line");
-        var cjk = el("span", "fs-cjk", slot.sample_cjk || t("sample_cjk"));
-        var lat = el("span", "fs-latin", slot.sample_latin || t("sample_latin"));
+        var cjk = el("span", "fs-cjk", sampleText(role, "cjk", slot.sample_cjk));
+        var lat = el("span", "fs-latin", sampleText(role, "latin", slot.sample_latin));
         var cjkStack = previewFontStack(slot.cjk, css);
         var latinStack = previewFontStack(slot.latin, css);
         if (cjkStack) cjk.style.fontFamily = cjkStack;
@@ -723,38 +955,45 @@
         var f = REC.typography || {};
         var cands = f.candidates || [];
         var sec = section(7, "sec_type");
+        renderAiNote(sec, "typography");
         var grid = el("div", "font-grid");
         var customInput = el("textarea", "text-input custom-typography-input");
         customInput.rows = 2;
         customInput.placeholder = t("custom_typography_placeholder");
         customInput.style.display = "none";
 
-        function selectFont(idx) {
+        function selectFont(idx, preserveSizing) {
             var c = normTypography(cands[idx] || {});
+            var prev = STATE.typography || {};
             STATE.typography = {
                 name: c.name || "",
                 heading: c.heading || {},
                 body: c.body || {},
-                body_size: c.body_size || (STATE.typography && STATE.typography.body_size) || ""
+                body_size: (preserveSizing && prev.body_size) ? prev.body_size : (c.body_size || prev.body_size || ""),
+                sizes: (preserveSizing && prev.sizes) ? Object.assign({}, prev.sizes) : Object.assign({}, c.sizes || {})
             };
             if (sizeInput) sizeInput.value = STATE.typography.body_size || "";
             customInput.style.display = "none";
             grid.querySelectorAll(".font-card").forEach(function (card, i) { card.classList.toggle("selected", i === idx); });
+            refreshSizeInputs();   // fill any role with no value yet; never overwrites existing values
             refreshStylePreview();
         }
 
         function selectCustomTypography() {
+            var prev = STATE.typography || {};
             STATE.typography = {
                 name: "custom",
                 custom: customInput.value || "",
                 heading: {},
                 body: {},
-                body_size: (STATE.typography && STATE.typography.body_size) || ""
+                body_size: prev.body_size || "",
+                sizes: Object.assign({}, prev.sizes || {})   // switching font family must not drop sizes
             };
             grid.querySelectorAll(".font-card").forEach(function (card) { card.classList.remove("selected"); });
             customCard.classList.add("selected");
             customInput.style.display = "block";
             customInput.focus();
+            refreshSizeInputs();
             refreshStylePreview();
         }
 
@@ -769,8 +1008,8 @@
             if (c.body_size) meta += "  ·  " + t("font_body_size") + ":" + c.body_size + "px";
             top.appendChild(el("span", "font-card-meta", meta));
             card.appendChild(top);
-            var hbox = el("div", "font-sample-heading-box"); fontSample(hbox, head, head.css); card.appendChild(hbox);
-            var bbox = el("div", "font-sample-body-box"); fontSample(bbox, body, body.css); card.appendChild(bbox);
+            var hbox = el("div", "font-sample-heading-box"); fontSample(hbox, head, head.css, "heading"); card.appendChild(hbox);
+            var bbox = el("div", "font-sample-body-box"); fontSample(bbox, body, body.css, "body"); card.appendChild(bbox);
             if (localized(c, "note")) card.appendChild(el("div", "color-note", localized(c, "note")));
             card.addEventListener("click", function () { selectFont(idx); });
             grid.appendChild(card);
@@ -796,31 +1035,99 @@
         sizeInput.max = "96";
         sizeInput.step = "1";
         sizeInput.value = (STATE.typography && STATE.typography.body_size) || "";
-        sizeInput.placeholder = "18 / 24";
+        sizeInput.placeholder = isPptCanvas(STATE.canvas) ? "16 / 20 / 24" : "40 / 48";
         sizeInput.addEventListener("input", function () {
             if (!STATE.typography) STATE.typography = { name: "", heading: {}, body: {} };
+            // Independent input — body never auto-changes the role sizes (no
+            // interlinking); the role inputs carry their own values.
             STATE.typography.body_size = sizeInput.value;
+            refreshBodySizeHint();   // hint text only (e.g. out-of-range flag) — no value cascade
             refreshStylePreview();
         });
         sizeRow.appendChild(sizeInput);
         var sizeHint = el("div", "toggle-desc");
         sizeRow.appendChild(sizeHint);
-        // Suggest a canvas-appropriate baseline (≈2.5–3.3% of canvas height) so
-        // a 16:9 default is not silently kept on a tall canvas. Hint only — the
-        // user's value is never overwritten; downstream §g re-derives if ignored.
+        // Hint only — the user's value is never overwritten; downstream §g
+        // re-derives if ignored. PPT body is one fixed px value per delivery
+        // purpose (not a range); non-PPT canvases scale px to canvas height.
+        // Everything is px — lo/hi are only a sanity envelope for the OOR flag.
         refreshBodySizeHint = function () {
-            var h = canvasHeight(STATE.canvas);
             var txt = t("font_body_size_hint");
-            if (h) {
-                txt += " " + t("body_size_hint_canvas")
-                    .replace("{lo}", Math.round(h * 0.025))
-                    .replace("{hi}", Math.round(h * 0.033));
+            var lo, hi;
+            if (isPptCanvas(STATE.canvas)) {
+                var pb = deliveryBodyPx(STATE.delivery_purpose);
+                lo = pb.lo; hi = pb.hi;
+                txt += " " + t("body_size_hint_purpose").replace("{def}", pb.def);
+            } else {
+                var h = canvasHeight(STATE.canvas);
+                var band = bodySizeRatioBand(STATE.canvas);
+                if (h) {
+                    lo = Math.round(h * band.lo); hi = Math.round(h * band.hi);
+                    txt += " " + t("body_size_hint_canvas")
+                        .replace("{lo}", lo).replace("{hi}", hi);
+                }
+            }
+            // Flag (hint only — never auto-corrected) a value far outside the
+            // canvas's usual px range, so an accidental extreme value is visible
+            // instead of silently submitting it.
+            var cur = parseFloat(STATE.typography && STATE.typography.body_size);
+            if (isFinite(cur) && isFinite(lo) && isFinite(hi) && (cur < lo || cur > hi)) {
+                txt += " " + t("body_size_hint_oor");
             }
             sizeHint.textContent = txt;
         };
         refreshBodySizeHint();
         sizeField.appendChild(sizeRow);
+
+        // Delivery purpose is a Tier-1 anchor confirmed inside renderAudience (§c) —
+        // it is set before this Tier-2 section exists, so its value drives the
+        // body-size hint here via STATE.delivery_purpose (preserved across the
+        // single-session transition). The control itself no longer lives here.
         sec.appendChild(sizeField);
+
+        // Per-role size override (parallel to color's per-role HEX override): the
+        // ramp derives title / subtitle / annotation from body, but the user may
+        // set each explicitly. Values are px (the system's only unit).
+        var sizeOverride = el("div", "hex-override");
+        sizeOverride.appendChild(el("div", "subfield-label", t("size_override")));
+        var srow = el("div", "hex-row");
+        var sizeInputs = {};
+        SIZE_ROLES.forEach(function (role) {
+            var wrap = el("div", "hex-cell");
+            wrap.appendChild(el("div", "hex-cell-label", t("size_role_" + role)));
+            var inp = document.createElement("input");
+            inp.type = "number"; inp.min = "6"; inp.max = "200"; inp.step = "1";
+            inp.addEventListener("input", function () {
+                if (!STATE.typography) STATE.typography = { name: "", heading: {}, body: {} };
+                if (!STATE.typography.sizes) STATE.typography.sizes = {};
+                // Independent input — each role holds its own value; no cascade.
+                STATE.typography.sizes[role] = inp.value;
+                refreshStylePreview();
+            });
+            sizeInputs[role] = inp;
+            wrap.appendChild(inp); srow.appendChild(wrap);
+        });
+        sizeOverride.appendChild(srow);
+        sec.appendChild(sizeOverride);
+
+        // Inputs are independent — this only **fills a role that has no value yet**
+        // (a one-time starting suggestion from the ramp) and reflects the current
+        // value into the input. It never overwrites an existing value, so editing
+        // body / purpose / canvas does not cascade into the role sizes, and a
+        // re-render (canvas / language switch) preserves exactly what the user sees.
+        refreshSizeInputs = function () {
+            if (!STATE.typography) STATE.typography = { name: "", heading: {}, body: {} };
+            if (!STATE.typography.sizes) STATE.typography.sizes = {};
+            var bodyVal = parseFloat(STATE.typography.body_size) ||
+                (isPptCanvas(STATE.canvas) ? deliveryBodyPx(STATE.delivery_purpose).def : 40);
+            SIZE_ROLES.forEach(function (role) {
+                var cur = STATE.typography.sizes[role];
+                var hasVal = cur !== undefined && cur !== null && cur !== "";
+                if (!hasVal) STATE.typography.sizes[role] = deriveSize(role, bodyVal);
+                if (sizeInputs[role]) sizeInputs[role].value = STATE.typography.sizes[role];
+            });
+        };
+        refreshSizeInputs();
 
         var subfp = el("div", "subfield");
         subfp.appendChild(el("div", "subfield-label", t("formula_policy")));
@@ -831,7 +1138,7 @@
 
         var selIdx = -1;
         if (STATE.typography && STATE.typography.name) cands.forEach(function (c, i) { if (c.name === STATE.typography.name) selIdx = i; });
-        if (selIdx >= 0) selectFont(selIdx);
+        if (selIdx >= 0) selectFont(selIdx, true);
         else if (STATE.typography && STATE.typography.name === "custom") {
             customInput.value = STATE.typography.custom || "";
             customCard.classList.add("selected");
@@ -888,23 +1195,25 @@
             var acc = hexOr(pal.accent, pri);
             var sacc = hexOr(pal.secondary_accent, acc);
             var txt = hexOr(pal.body_text, "#1d2430");
-            var bodyPx = Math.max(12, Math.min(26, parseInt(typ.body_size, 10) || 18));
+            // body_size is px everywhere — preview it directly, no conversion.
+            var rawSize = parseFloat(typ.body_size) || (isPptCanvas(STATE.canvas) ? 24 : 18);
+            var bodyPx = Math.max(12, Math.min(34, rawSize));
             var headStack = previewFontStack(head.cjk, head.css);
             var headLatStack = previewFontStack(head.latin, head.css);
             var bodyStack = previewFontStack(body.cjk, body.css);
             var bodyLatStack = previewFontStack(body.latin, body.css);
 
             card.style.background = bg;
-            titleCjk.textContent = head.sample_cjk || t("sample_cjk");
-            titleLat.textContent = head.sample_latin || t("sample_latin");
+            titleCjk.textContent = sampleText("heading", "cjk", head.sample_cjk);
+            titleLat.textContent = sampleText("heading", "latin", head.sample_latin);
             title.style.color = pri;
             title.style.fontSize = Math.round(bodyPx * 1.7) + "px";
             titleCjk.style.fontFamily = headStack || "";
             titleLat.style.fontFamily = headLatStack || "";
             // CJK and Latin previewed with their own stacks (mirrors the title
             // and the per-card font samples) so each script's font is visible.
-            bodyCjk.textContent = body.sample_cjk || t("sample_cjk");
-            bodyLat.textContent = body.sample_latin || t("sample_latin");
+            bodyCjk.textContent = sampleText("body", "cjk", body.sample_cjk);
+            bodyLat.textContent = sampleText("body", "latin", body.sample_latin);
             bodyWrap.style.color = txt;
             bodyWrap.style.fontSize = bodyPx + "px";
             bodyCjk.style.fontFamily = bodyStack || "";
@@ -921,15 +1230,21 @@
 
     function renderImages(host) {
         var sec = section(8, "sec_images");
+        renderAiNote(sec, "images");
+        var usageChips = el("div", "chips");
+        var usageNote = el("div", "subfield");
+        usageNote.appendChild(el("div", "subfield-label", t("image_usage_notes")));
+        var usageNoteInput = el("textarea", "text-input image-usage-notes-input");
+        usageNoteInput.placeholder = t("image_usage_notes_placeholder");
+        usageNoteInput.value = STATE.image_notes || "";
+        usageNoteInput.addEventListener("input", function () { STATE.image_notes = usageNoteInput.value; });
+        usageNote.appendChild(usageNoteInput);
         var sub = el("div", "subfield");
         sub.appendChild(el("div", "subfield-label", t("image_ai_path")));
         var strategySub = el("div", "subfield image-strategy-subfield");
         strategySub.appendChild(el("div", "subfield-label", t("image_strategy")));
         var strategyGrid = el("div", "font-grid");
         var strategyCands = imageStrategyCandidates();
-        function usesCustomImagePlan() {
-            return usesCustomImagePlanValue(STATE.image_usage);
-        }
         function needsGeneratedImages() {
             return needsGeneratedImagesForUsage(STATE.image_usage);
         }
@@ -971,27 +1286,51 @@
         });
         if (!strategyCands.length) strategyGrid.appendChild(el("div", "toggle-desc", t("image_strategy_empty")));
         strategySub.appendChild(strategyGrid);
-        enumField(sec, CAT.image_usage, recOrFirst("image_usage", CAT.image_usage),
-            function () { return STATE.image_usage; },
-            function (v) {
-                STATE.image_usage = v;
-                refreshAiControls();
-            },
-            {
-                allowCustom: true,
-                customSentinel: "custom",
-                customInvalidValues: ["custom"],
-                inputClass: "image-usage-custom-input",
-                placeholder: LANG === "zh"
-                    ? "例如：封面用 AI 生成，产品页用用户素材，行业页用网络来源"
-                    : "e.g. AI cover + user product assets + web industry images"
+        var recommendedIds = selectedImageUsageIds(recValue("image_usage"));
+        if (!recommendedIds.length) recommendedIds = [defaultImageUsageId()];
+        var usageChipById = {};
+        function refreshUsageChips() {
+            Object.keys(usageChipById).forEach(function (id) {
+                usageChipById[id].classList.toggle("selected", STATE.image_usage.indexOf(id) >= 0);
             });
+            var noImages = STATE.image_usage.indexOf("none") >= 0;
+            usageNote.style.display = noImages ? "none" : "block";
+            refreshAiControls();
+        }
+        function toggleImageUsage(id) {
+            var cur = STATE.image_usage.slice();
+            if (id === "none") {
+                cur = cur.indexOf("none") >= 0 ? [] : ["none"];
+            } else {
+                cur = cur.filter(function (item) { return item !== "none"; });
+                if (cur.indexOf(id) >= 0) cur = cur.filter(function (item) { return item !== id; });
+                else cur.push(id);
+            }
+            STATE.image_usage = cur;
+            refreshUsageChips();
+        }
+        (CAT.image_usage || []).forEach(function (o) {
+            var label = optionLabel(o);
+            var desc = optionDesc(o);
+            if (desc) label += (LANG === "zh" ? "：" : " — ") + desc;
+            var chip = el("div", "chip");
+            chip.appendChild(el("span", "chip-text", label));
+            if (recommendedIds.indexOf(o.id) >= 0) {
+                chip.classList.add("recommended");
+                chip.appendChild(el("span", "rec-badge", "★ " + t("recommended")));
+            }
+            chip.addEventListener("click", function () { toggleImageUsage(o.id); });
+            usageChipById[o.id] = chip;
+            usageChips.appendChild(chip);
+        });
+        sec.appendChild(usageChips);
+        sec.appendChild(usageNote);
         enumField(sub, CAT.image_ai_path, recOrFirst("image_ai_path", CAT.image_ai_path),
             function () { return STATE.image_ai_path; }, function (v) { STATE.image_ai_path = v; });
         sec.appendChild(sub);
         sec.appendChild(strategySub);
         if (strategyCands.length) selectImageStrategy(imageStrategySelectedIndex());
-        refreshAiControls();
+        refreshUsageChips();
         host.appendChild(sec);
     }
 
@@ -1019,30 +1358,59 @@
         host.appendChild(sec);
     }
 
-    function renderAll() {
+    // Stage of the two-tier confirm flow: 1 = anchors, 2 = re-derived realization,
+    // "all" = legacy single-pass (recommendations.json carried no `tier`).
+    var STAGE = 1;
+
+    function renderForTier(tier) {
         var host = document.getElementById("sections");
         host.innerHTML = "";
-        // Detach the previous preview's repaint closure before the sections
-        // re-render: color/typography auto-select would otherwise call it and
-        // write to now-detached nodes until renderStylePreview remounts it.
+        _secCounter = 0;
+        // Detach the previous preview's repaint closures before the sections
+        // re-render: color/typography auto-select would otherwise call them and
+        // write to now-detached nodes until renderStylePreview remounts them.
         refreshStylePreview = function () {};
         refreshBodySizeHint = function () {};
-        renderCanvas(host);
-        renderPages(host);
-        renderAudience(host);
-        renderStyle(host);
-        // Group the preview with the three sections it reflects so its sticky
-        // scope ends when typography scrolls past — it does not linger over the
-        // image / mode / refine sections below.
-        var styleGroup = el("div", "style-group");
-        renderStylePreview(styleGroup);
-        renderColor(styleGroup);
-        renderIcons(styleGroup);
-        renderTypography(styleGroup);
-        host.appendChild(styleGroup);
-        renderImages(host);
-        renderMode(host);
-        renderRefine(host);
+        refreshSizeInputs = function () {};
+        if (tier === 1) {
+            // Anchors — decided first; Tier 2 is re-derived from these.
+            // Delivery purpose rides inside renderAudience (§c key info).
+            renderCanvas(host);
+            renderAudience(host);
+            renderStyle(host);
+        } else {
+            // Tier 2 (realization) or single-pass: page count + visual treatment.
+            // Single-pass also shows the anchors up front on the same page.
+            if (tier === "all") {
+                renderCanvas(host);
+                renderAudience(host);
+                renderStyle(host);
+            }
+            renderPages(host);
+            // Group the preview with the three sections it reflects so its sticky
+            // scope ends when typography scrolls past — it does not linger over the
+            // image / mode / refine sections below.
+            var styleGroup = el("div", "style-group");
+            renderStylePreview(styleGroup);
+            renderColor(styleGroup);
+            renderIcons(styleGroup);
+            renderTypography(styleGroup);
+            host.appendChild(styleGroup);
+            renderImages(host);
+            renderMode(host);
+            renderRefine(host);
+        }
+        updateActionBar(tier);
+        populateSideNav();
+    }
+
+    function renderAll() { renderForTier(STAGE); }
+
+    function updateActionBar(tier) {
+        var btn = document.getElementById("btn-confirm");
+        btn.disabled = false;
+        // Tier 1 advances to the re-derived Tier 2; Tier 2 / single-pass confirm.
+        btn.textContent = (tier === 1) ? t("btn_next") : t("btn_confirm");
     }
 
     // ---- state init (once) ----------------------------------------------
@@ -1055,13 +1423,23 @@
         return recOrFirst(field, catList);
     }
 
-    function initState() {
+    function initTier1State() {
         STATE.canvas = pick("canvas", CAT.canvas);
-        STATE.page_count = (REC.page_count && REC.page_count.value != null) ? String(REC.page_count.value) : "";
         STATE.audience = (REC.audience && REC.audience.value) || "";
         STATE.content_divergence = (REC.content_divergence && REC.content_divergence.value) || "";  // free text; blank = balanced default
         STATE.mode = pick("mode", CAT.modes);
         STATE.visual_style = pick("visual_style", CAT.visual_styles);
+        // Delivery purpose drives the PPT body px baseline; default balanced
+        // (not the catalog-first id) when the Strategist did not recommend one.
+        STATE.delivery_purpose = recId("delivery_purpose") || "balanced";
+    }
+
+    // Tier-2 fields are (re-)read from the recommendations. At boot they come from
+    // whatever recommendations.json carried; after a tier-1 confirm enterTier2()
+    // calls this again with the re-derived candidates. Tier-1 STATE is preserved
+    // across the single-session transition — this never resets the anchors.
+    function initTier2State() {
+        STATE.page_count = (REC.page_count && REC.page_count.value != null) ? String(REC.page_count.value) : (STATE.page_count || "");
 
         var cc = (REC.color && REC.color.candidates) || [];
         var csel = (REC.color && REC.color.selected) || 0;
@@ -1077,15 +1455,32 @@
             name: t0.name || "",
             heading: t0.heading || {},
             body: t0.body || {},
-            body_size: t0.body_size || typographyBodySize(REC.typography)
+            body_size: t0.body_size || typographyBodySize(REC.typography),
+            sizes: Object.assign({}, t0.sizes || {})
         };
         STATE.formula_policy = pick("formula_policy", CAT.formula_policy);
 
-        STATE.image_usage = pick("image_usage", CAT.image_usage);
+        var rawImageUsage = recValue("image_usage");
+        STATE.image_usage = selectedImageUsageIds(rawImageUsage);
+        if (!STATE.image_usage.length) {
+            STATE.image_usage = [defaultImageUsageId()];
+        }
+        STATE.image_notes = imageUsageNotesRecommendation(rawImageUsage);
         STATE.image_ai_path = pick("image_ai_path", CAT.image_ai_path);
 
         STATE.generation_mode = pick("generation_mode", CAT.generation_mode);
         STATE.refine_spec = !!((REC.refine_spec && REC.refine_spec.value) || (REC.recommend && REC.recommend.refine_spec));
+        // Guarantee a body baseline even when a candidate omitted body_size, on
+        // any canvas (PPT → px default by purpose, non-PPT → px from canvas height),
+        // so role sizes never derive from an empty anchor.
+        if (STATE.typography && !STATE.typography.body_size) {
+            STATE.typography.body_size = defaultBodySizeForCanvas(STATE.canvas, STATE.delivery_purpose);
+        }
+    }
+
+    function initState() {
+        initTier1State();
+        initTier2State();
     }
 
     // ---- confirm + close -------------------------------------------------
@@ -1096,17 +1491,88 @@
         ov.style.display = "flex";
     }
 
+    // ---- tier-1 submit + re-derive transition ---------------------------
+    function submitTier1() {
+        var btn = document.getElementById("btn-confirm");
+        // Anchors only — the page stays open; the AI re-derives Tier 2 and the
+        // same browser session renders it (STATE is preserved across the poll).
+        var payload = {
+            stage: "tier1",
+            canvas: STATE.canvas,
+            audience: STATE.audience,
+            content_divergence: STATE.content_divergence,
+            mode: STATE.mode,
+            visual_style: STATE.visual_style
+        };
+        // Delivery purpose is PPT-only and rendered only on PPT canvases (§c).
+        // On a non-PPT canvas the control is never shown, so STATE holds an unseen
+        // default — do NOT write it as a confirmed anchor, or it would steer the
+        // Tier-2 page-count / density re-derivation behind the user's back. (The
+        // final submit drops it for non-PPT the same way, via normalizeTypographyForSubmit.)
+        if (isPptCanvas(STATE.canvas)) {
+            payload.delivery_purpose = STATE.delivery_purpose;
+        }
+        btn.disabled = true;
+        fetch("/api/confirm", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(payload)
+        }).then(function (r) {
+            if (!r.ok) throw new Error("tier1 failed");
+            showDeriving();
+            pollForTier2();
+        }).catch(function () {
+            btn.disabled = false;
+            document.getElementById("confirm-status").textContent = t("error_retry");
+        });
+    }
+
+    function showDeriving() {
+        document.getElementById("sections").style.display = "none";
+        document.getElementById("actionbar").style.display = "none";
+        var l = document.getElementById("loading");
+        l.textContent = t("deriving");
+        l.style.display = "block";
+    }
+
+    // Poll the recommendations endpoint (no-store) until the AI overwrites it with
+    // the re-derived Tier 2, then render Tier 2 in the same session.
+    function pollForTier2() {
+        fetch("/api/recommendations", { cache: "no-store" })
+            .then(function (r) { if (!r.ok) throw new Error("poll failed"); return r.json(); })
+            .then(function (data) {
+                if (data && data.tier === 2) { enterTier2(data); }
+                else { setTimeout(pollForTier2, 1200); }
+            })
+            .catch(function () { setTimeout(pollForTier2, 1500); });
+    }
+
+    function enterTier2(data) {
+        REC = data;
+        initTier2State();   // re-read realization fields; tier-1 STATE preserved
+        STAGE = 2;
+        document.getElementById("loading").style.display = "none";
+        document.getElementById("sections").style.display = "block";
+        document.getElementById("actionbar").style.display = "flex";
+        document.getElementById("confirm-status").textContent = "";
+        renderForTier(2);
+    }
+
     function confirm() {
         var btn = document.getElementById("btn-confirm");
-        var payload = Object.assign({}, STATE);
-        var customImagePlan = usesCustomImagePlanValue(payload.image_usage);
-        if (payload.image_usage === "custom" || (customImagePlan && !String(payload.image_usage).trim())) {
-            document.getElementById("confirm-status").textContent = t("image_usage_custom_required");
-            var customImageInput = document.querySelector(".image-usage-custom-input");
-            if (customImageInput) customImageInput.focus();
+        var payload = JSON.parse(JSON.stringify(STATE));
+        normalizeTypographyForSubmit(payload);
+        payload.stage = "final";
+        payload.image_usage = selectedImageUsageIds(payload.image_usage);
+        if (!payload.image_usage.length) {
+            document.getElementById("confirm-status").textContent = t("image_usage_required");
             return;
         }
-        if (customImagePlan) payload.image_usage = String(payload.image_usage).trim();
+        if (payload.image_usage.indexOf("none") >= 0 && payload.image_usage.length > 1) {
+            document.getElementById("confirm-status").textContent = t("image_usage_none_exclusive");
+            return;
+        }
+        if (!String(payload.image_notes || "").trim()) delete payload.image_notes;
         if (!needsGeneratedImagesForUsage(payload.image_usage)) {
             delete payload.image_ai_path;
             delete payload.image_strategy;
@@ -1131,6 +1597,82 @@
         });
     }
 
+    // ---- scroll-aware header + side navigation ----------------------------
+    var _navObserver = null;
+
+    function initScrollHeader() {
+        function update() {
+            document.body.classList.toggle("header-scrolled", window.scrollY > 24);
+        }
+        update();
+        window.addEventListener("scroll", update, { passive: true });
+    }
+
+    function populateSideNav() {
+        var navList = document.getElementById("nav-list");
+        if (!navList) return;
+        navList.innerHTML = "";
+        if (_navObserver) { _navObserver.disconnect(); _navObserver = null; }
+        var sections = document.querySelectorAll(".section");
+        if (!sections.length) return;
+        sections.forEach(function (sec, i) {
+            sec.id = "sec-" + i;
+            var dot = document.createElement("a");
+            dot.className = "nav-dot";
+            dot.href = "#sec-" + i;
+            dot.addEventListener("click", function (e) {
+                e.preventDefault();
+                sec.scrollIntoView({ behavior: "smooth", block: "start" });
+            });
+            navList.appendChild(dot);
+        });
+        _navObserver = new IntersectionObserver(function (entries) {
+            entries.forEach(function (entry) {
+                if (!entry.isIntersecting) return;
+                navList.querySelectorAll(".nav-dot").forEach(function (d) { d.classList.remove("active"); });
+                var idx = Array.prototype.indexOf.call(sections, entry.target);
+                var active = navList.querySelectorAll(".nav-dot")[idx];
+                if (active) active.classList.add("active");
+            });
+        }, { rootMargin: "-30% 0px -60% 0px", threshold: 0 });
+        sections.forEach(function (sec) { _navObserver.observe(sec); });
+    }
+
+    // ---- AI reasoning note helper ----------------------------------------
+    function aiReasoningNote(key) {
+        if (!REC) return "";
+        var note = "";
+        if (key === "canvas") {
+            note = localized(REC, "canvas_note") || (REC.canvas && localized(REC.canvas, "note")) || "";
+        } else if (key === "style") {
+            note = localized(REC, "visual_style_behavior") || localized(REC, "style_note") ||
+                (REC.style && localized(REC.style, "note")) || "";
+        } else if (key === "mode") {
+            note = localized(REC, "mode_behavior") || localized(REC, "mode_note") ||
+                (REC.mode && localized(REC.mode, "note")) || "";
+        } else if (key === "color") {
+            note = (REC.color && localized(REC.color, "note")) || localized(REC, "color_note") || "";
+        } else if (key === "typography") {
+            note = (REC.typography && localized(REC.typography, "note")) ||
+                localized(REC, "typography_note") || "";
+        } else if (key === "images") {
+            note = (REC.images && localized(REC.images, "note")) || localized(REC, "image_note") || "";
+        } else if (key === "audience") {
+            note = localized(REC, "audience_note") || "";
+        }
+        return note;
+    }
+
+    function renderAiNote(parent, key) {
+        var note = aiReasoningNote(key);
+        if (!note) return;
+        var wrap = el("div", "ai-note");
+        var label = el("div", "ai-note-label", LANG === "zh" ? "AI 推荐理由" : "AI Reasoning");
+        wrap.appendChild(label);
+        wrap.appendChild(document.createTextNode(note));
+        parent.appendChild(wrap);
+    }
+
     // ---- boot ------------------------------------------------------------
     function showError(msg) {
         document.getElementById("loading").style.display = "none";
@@ -1146,6 +1688,7 @@
     }
 
     function boot() {
+        initScrollHeader();
         applyStaticTranslations();
         var toggleBtn = document.getElementById("btn-lang-toggle");
         refreshLangToggle(toggleBtn);
@@ -1156,7 +1699,9 @@
             refreshLangToggle(toggleBtn);
             if (REC && CAT) renderAll();   // STATE persists → selections preserved
         });
-        document.getElementById("btn-confirm").addEventListener("click", confirm);
+        document.getElementById("btn-confirm").addEventListener("click", function () {
+            if (STAGE === 1) { submitTier1(); } else { confirm(); }
+        });
 
         Promise.all([
             loadCatalogs(),
@@ -1170,6 +1715,8 @@
                 if (!hasStored) { LANG = REC.lang; applyStaticTranslations(); refreshLangToggle(toggleBtn); }
             }
             initState();
+            // tier 1 / 2 from the recommendations; absent → legacy single-pass.
+            STAGE = (REC.tier === 1) ? 1 : (REC.tier === 2 ? 2 : "all");
             document.getElementById("loading").style.display = "none";
             document.getElementById("sections").style.display = "block";
             document.getElementById("actionbar").style.display = "flex";

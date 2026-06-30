@@ -125,6 +125,99 @@ If `images/image_manifest.json` does not exist because the source deck has no ex
 - [x] `analysis/<stem>.slide_library.json` holds chart + table data for regeneration
 - [x] `analysis/source_profile.json` (multi-deck index) summarizes the source facts in its `decks[]` entry
 - [x] `analysis/beautify_inventory.json` ledgers per-slide text / images / data + ignored + needs-confirmation
+- [ ] **Next**: Step 4.5 — Layout Analysis
+```
+
+---
+
+## 4.5 Layout Analysis
+
+> **Purpose**: bridge the gap between raw content extraction and Executor layout decisions. Without this step, the Executor defaults to card grids for every page. This step produces a per-page layout analysis that the Strategist (Step 5) consumes when writing `design_spec.md §IX` and `spec_lock.md page_rhythm`.
+
+Read `analysis/beautify_inventory.json` + `sources/<stem>.md`. For **each source page**, the Strategist performs semantic analysis of the content and produces `analysis/beautify_layout_analysis.json`.
+
+### 4.5.1 Per-page analysis fields
+
+Reuse the layout-thinking enumerations from [`detailed-outline.md §3.1b`](./detailed-outline.md):
+
+| Field | Type | Source | Description |
+|---|---|---|---|
+| `slide_index` | int | inventory | 1-based source slide index |
+| `refined_page_type` | enum | analysis | `cover` \| `toc` \| `chapter` \| `content` \| `timeline` \| `comparison` \| `data` \| `quote` \| `synthesis` \| `ending` — finer than inventory's coarse `page_type` |
+| `page_mode` | enum | analysis | `rational` \| `emotional` — determines visual treatment |
+| `persuasion_action` | enum | analysis | `define` \| `prove` \| `compare` \| `sequence` \| `structure` \| `summarize` \| `emotionalize` — what persuasion task does this page perform? |
+| `content_relation` | enum | analysis | `single_claim` \| `parallel_set` \| `weighted_set` \| `compare` \| `sequence` \| `hierarchy` \| `evidence_chain` \| `matrix` \| `summary` — how do content elements relate to each other? |
+| `layout_family` | string | analysis | Layout logic family (e.g. `L03_timeline`, `L05_comparison`, `L08_quote`, `L10_hero_image`, `L12_process_flow`). See mapping below |
+| `layout_suggestion` | string | optional | Specific template from `content_pages/` library, if a good match exists |
+| `page_rhythm` | enum | derived | `anchor` \| `dense` \| `breathing` — derived from page_mode + layout_family |
+| `why_not_card_grid` | string | **required for content pages** | ≤80 chars. Explain why this page should NOT be a generic card grid. If it genuinely is a parallel set, say so explicitly |
+| `preserve_source_logic` | string | analysis | If the source page uses a narrative layout (timeline, flowchart, progression arrows, hierarchy tree), describe it here and mark it for preservation. Empty if the source layout has no narrative logic worth keeping |
+| `background_strategy` | enum | analysis | `image_canvas` \| `gradient` \| `solid` \| `inherited` — recommended background treatment. `image_canvas` when source page had image background or when the page has associated images that work well as full-bleed backgrounds with mask overlay |
+
+### 4.5.2 Layout family mapping
+
+The `content_relation` field drives the `layout_family` selection:
+
+| content_relation | → layout_family | Rationale | Card grid allowed? |
+|---|---|---|---|
+| `sequence` | `L03_timeline` or `L12_process_flow` | Time/step progression needs directional layout | **No** — use timeline or flow |
+| `hierarchy` | `L06_hierarchy` or `L14_nested` | Nested structure needs visual depth | **No** |
+| `single_claim` | `L08_quote` or `L10_hero_image` | One strong statement needs space | **No** — use full emphasis |
+| `compare` | `L05_comparison` | Side-by-side needs symmetric split | **No** — use L/R or T/B split |
+| `weighted_set` | `L04_weighted` | Unequal items need asymmetric layout | **No** |
+| `evidence_chain` | `L09_evidence` | Argument→proof flow | **No** |
+| `parallel_set` | `L01_card_grid` or `L02_columns` | Equal-weight items → cards are valid | **Yes** |
+| `matrix` | `L07_matrix` or `L01_card_grid` | Two-axis structure → grid/matrix | **Yes** |
+| `summary` | `L13_summary` or `L08_quote` | Condensed takeaway | **No** |
+
+### 4.5.3 Diversity check gate
+
+Before finalizing the analysis, run these checks across the full deck:
+
+| Check | Threshold | Action if failed |
+|---|---|---|
+| `unique_layout_families` | ≥ 3 (for decks with >5 content pages) | Reassign at least one page to a different family |
+| `consecutive_same_family_max` | ≤ 3 | Break the run by inserting a different family between them |
+| `card_grid_percentage` | ≤ 40% of content pages | Reassign excess card-grid pages — check if their `content_relation` was misclassified |
+
+### 4.5.4 Output
+
+Write `<project_path>/analysis/beautify_layout_analysis.json`:
+
+```json
+{
+  "pages": [
+    {
+      "slide_index": 1,
+      "refined_page_type": "cover",
+      "page_mode": "emotional",
+      "persuasion_action": "emotionalize",
+      "content_relation": "single_claim",
+      "layout_family": "L10_hero_image",
+      "layout_suggestion": "",
+      "page_rhythm": "anchor",
+      "why_not_card_grid": "",
+      "preserve_source_logic": "",
+      "background_strategy": "image_canvas"
+    }
+  ],
+  "diversity_check": {
+    "unique_layout_families": 5,
+    "consecutive_same_family_max": 2,
+    "card_grid_percentage": 25,
+    "pass": true
+  }
+}
+```
+
+```markdown
+## ✅ Layout Analysis Complete
+
+- [x] Every page has `refined_page_type`, `persuasion_action`, `content_relation`, `layout_family`
+- [x] Every content page has `why_not_card_grid` filled
+- [x] Narrative layouts (timelines, flowcharts) identified in `preserve_source_logic`
+- [x] Diversity check passed (≥3 families, ≤40% card grids)
+- [x] `background_strategy` set for each page
 - [ ] **Next**: Step 5 — Beautify Plan (recommend & confirm)
 ```
 
@@ -132,7 +225,9 @@ If `images/image_manifest.json` does not exist because the source deck has no ex
 
 ## 5. Beautify Plan — Recommend & Confirm
 
-⛔ **BLOCKING**: the scope is not hard-coded — same spirit as the Eight Confirmations. Recommend each item below from what the deck actually contains (the Step 4 inventory), present the plan, and **wait for the user to confirm or adjust** before writing any spec. Chat is the canonical channel; the confirm UI below is the visual convenience surface over it for the palette + typography review (its result is honored identically to a chat reply).
+**Prerequisite**: `analysis/beautify_layout_analysis.json` from Step 4.5 MUST exist. The Strategist reads it to populate `design_spec.md §IX` (per-page layout plan) and `spec_lock.md page_rhythm` — do NOT use generic defaults; every page's rhythm and layout direction comes from the analysis.
+
+⛔ **BLOCKING**: the scope is not hard-coded — same spirit as the Eight Confirmations. Recommend each item below from what the deck actually contains (the Step 4 inventory + Step 4.5 layout analysis), present the plan, and **wait for the user to confirm or adjust** before writing any spec. Chat is the canonical channel; the confirm UI below is the visual convenience surface over it for the palette + typography review (its result is honored identically to a chat reply).
 
 This step has two halves:
 - **Visual re-confirm via the confirm UI** — the **full** Step 4 confirm page (below), seeded from the source so every targeted-confirmation field (canvas, mode, visual style, palette, icons, typography incl. body baseline, image strategy, generation mode) is **pre-filled with the inherited / source-derived default and left editable**. Beautify *recommends* keeping the source's identity, but never removes the user's place to override any field — you may choose not to change a value, but you must not deny the place to change it. This is also where the deck's text size is set: `<stem>.identity.json` carries fonts and palette but **no body font size** (source decks inherit sizes from master placeholders), so the body baseline is undetermined and must be chosen here, not silently defaulted to a small dense value.
@@ -198,6 +293,8 @@ Read the confirmed canvas + palette + typography (incl. `body_size`) and any oth
 On confirmation, enter SKILL.md Step 4 as Strategist with the plan pre-resolved. The two beautify invariants always hold: the content-faithful clause ([`strategist.md`](../references/strategist.md) §d Layer 1) and page count = source slide count (strict 1:1). Everything else comes from the **confirmed** `result.json` — `mode` (recommended `briefing`), canvas, `visual_style`, color (e) + typography (g) incl. `body_size` (the reviewed values; skip both recommendation flows) — honoring whatever the user kept or overrode. §VII = chart/table data → `templates/charts/`, §VIII = source pictures for re-layout.
 
 **Hard rule — §IX is verbatim and 1:1**: each source slide becomes exactly one page, in source order, its text transcribed word-for-word from `sources/<stem>.md`. Do not merge, split, drop, or rewrite. Write `design_spec.md` + `spec_lock.md` per `strategist.md` §6, then hand off to the Executor.
+
+**Hard rule — §IX layout comes from Step 4.5**: when writing `design_spec.md §IX`, the per-page layout columns (`page_type`, `layout_suggestion`, `persuasion_action`, `content_relation`) MUST be populated from `beautify_layout_analysis.json`. The `page_rhythm` values in `spec_lock.md` MUST match the analysis. Do not override the analysis with generic defaults — if a page was analyzed as `sequence` → `L03_timeline`, it must appear in the spec as a timeline layout, not a card grid.
 
 ---
 

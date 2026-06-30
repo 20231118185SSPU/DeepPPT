@@ -275,7 +275,7 @@ def check_pptx(pptx_path: Path, expected_pages: int, result: CheckResult) -> Non
     except RuntimeError as e:
         result.fail(str(e))
         return
-    except Exception as e:
+    except (OSError, KeyError, ValueError) as e:
         result.fail(f"PPTX cannot be opened: {e}")
         return
 

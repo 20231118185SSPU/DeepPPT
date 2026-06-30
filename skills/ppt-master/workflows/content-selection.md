@@ -24,6 +24,8 @@ This workflow is **conditional**: it inserts between source processing and the S
 
 Read `<project>/sources/research_report.md`.
 
+Also read `<project>/analysis/research_analysis.json` when it exists. `research_analysis.json.content_options` and `speaking_depth` are the authoritative expansion pool; `research_report.md` headings are only the prose surface.
+
 **1.1 Split into dimensions**
 
 Split the document by H2 (`##`) and H3 (`###`) headings into **content dimensions**. Each dimension is an independent topical section of the research.
@@ -37,12 +39,16 @@ For each dimension, extract:
 | `title` | Heading text (H2/H3) |
 | `summary` | First sentence of the section, or ≤30 chars summarizing the section |
 | `density` | Info density score = `(dimension_word_count / total_word_count) × 10`, rounded to integer |
+| `evidence_count` | Number of sourced facts / data / cases available |
+| `available_angles` | 2-5 concrete talkable angles |
+| `asset_coverage` | Whether the dimension has assigned images / charts / svg-native cards |
 
 **1.3 Sort and filter**
 
 - Sort dimensions by `density` descending (highest information density first)
-- Discard dimensions with `density < 1` (less than 1% of total content — too thin to warrant PPT pages)
-- If fewer than 3 dimensions remain after filtering, skip this workflow entirely — the content is too focused to require selection
+- Do not discard low-density dimensions when they contain high-value evidence, a strong case, a DEEP_DIVE marker, or an assigned asset
+- If fewer than 6 useful options remain, synthesize additional selectable angles from `content_options.available_angles`, `narrative_nodes`, `structured_data`, and `speaking_depth`
+- If fewer than 4 useful options remain even after synthesis, treat the research as insufficient and return to deep-research Step 3 instead of continuing
 
 ---
 
@@ -89,9 +95,18 @@ After the user completes selection, write `<project>/content_selection.json`:
     {
       "title": "维度标题",
       "summary": "摘要文本",
-      "density": 8
+      "density": 8,
+      "evidence_count": 6,
+      "available_angles": ["角度A", "角度B"],
+      "asset_coverage": "ready"
     }
   ],
+  "unselected_dimensions": [],
+  "content_budget": {
+    "selected_evidence_count": 24,
+    "selected_data_points": 10,
+    "selected_assets": 8
+  },
   "suggested_pages": 12,
   "selection_rounds": 3,
   "total_density": 24.5
@@ -152,8 +167,9 @@ Before proceeding, verify:
 | `research_report.md` exists and has H2/H3 structure | Required |
 | At least 3 content dimensions found | Required |
 | At least 1 dimension selected | Required |
+| Selection exposes enough talkable content | selected evidence >= suggested_pages × 2 |
 
-If the H2/H3 structure check fails (flat document without section headings), skip this workflow — the content is unstructured and the Strategist should handle outline generation directly.
+If the H2/H3 structure check fails (flat document without section headings), rebuild dimensions from `research_analysis.json.content_options`. Skip this workflow only when neither file contains enough structure; in that case return to deep-research Step 5/6 rather than letting Strategist invent a thin outline.
 
 ---
 

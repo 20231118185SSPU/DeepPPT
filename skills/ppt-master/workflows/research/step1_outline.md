@@ -54,9 +54,11 @@ mkdir -p <project>/_research/step1_outline
 
 如果用户只有主题：
 
-1. 使用 WebSearch 快速了解主题背景
-2. 确定主题的核心维度（3-5 个）
-3. 为每个维度确定叙事角度
+1. 只基于用户输入和常识建立**待验证假设**，不得把未搜索信息写成事实
+2. 确定 4-6 个候选调研维度，每个维度标注需要在 Step 2-3 验证的问题
+3. 为每个维度确定叙事角度、数据需求和素材需求
+
+**禁止**：在 Step 1 使用内置 WebSearch 直接补事实。正式信息搜集只能从 Step 2 的搜索计划开始，否则后续逐页搜索无法追踪来源和质量。
 
 ---
 
@@ -73,6 +75,8 @@ mkdir -p <project>/_research/step1_outline
 | `needs_data` | 是否需要搜索数据支撑（true/false） |
 | `needs_image` | 是否需要配图（true/false） |
 | `data_hint` | 如果 needs_data=true，简述需要什么数据 |
+| `research_questions` | 该页需要验证的 2-4 个问题 |
+| `asset_hint` | 该页需要的参考图 / 网络素材 / 信息图方向 |
 
 **大纲节奏要求**（发布会/汇报场景）：
 
@@ -139,7 +143,9 @@ P15: 结尾页（ending）
       "narrative_role": "cover",
       "needs_data": false,
       "needs_image": true,
-      "data_hint": null
+      "data_hint": null,
+      "research_questions": [],
+      "asset_hint": "封面视觉参考图"
     }
   ]
 }

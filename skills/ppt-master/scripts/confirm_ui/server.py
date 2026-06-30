@@ -50,6 +50,7 @@ _SCRIPTS_DIR = Path(__file__).resolve().parent.parent
 if str(_SCRIPTS_DIR) not in sys.path:
     sys.path.insert(0, str(_SCRIPTS_DIR))
 
+from console_encoding import configure_utf8_stdio  # noqa: E402
 from server_common import (  # noqa: E402
     claim_lock as _claim_lock,
     find_free_port as _find_free_port,
@@ -57,6 +58,8 @@ from server_common import (  # noqa: E402
     read_lock as _read_lock,
     release_lock as _release_lock,
 )
+
+configure_utf8_stdio()
 
 logger = logging.getLogger('confirm_ui')
 
@@ -106,8 +109,8 @@ def _wait_for_result(
                     except subprocess.TimeoutExpired:
                         pass
                     return 0
-            except OSError:
-                pass
+            except OSError as e:
+                logger.debug('result stat failed (transient): %s', e)
 
         returncode = proc.poll()
         if returncode is not None:
@@ -118,6 +121,69 @@ def _wait_for_result(
             logger.error(
                 'timed out waiting for browser confirmation — the page is still '
                 'open; re-check %s before falling back to chat', result_file,
+            )
+            return 124
+
+        time.sleep(0.5)
+
+
+def _result_stage(result_file: Path) -> Optional[str]:
+    """Return the ``stage`` field of result.json (``tier1`` / ``final``), or None."""
+    try:
+        data = json.loads(result_file.read_text(encoding='utf-8'))
+    except (OSError, json.JSONDecodeError):
+        return None
+    return data.get('stage') if isinstance(data, dict) else None
+
+
+_ANCHOR_RECOMMEND_KEYS = ('canvas', 'mode', 'visual_style', 'delivery_purpose')
+_ANCHOR_VALUE_KEYS = ('audience', 'content_divergence')
+
+
+def _merge_confirmed_anchors(data: dict, result_file: Path) -> None:
+    """Fold the Tier-1 anchors confirmed in result.json into a Tier-2
+    recommendations payload, so a refresh / reopen re-initializes them."""
+    try:
+        res = json.loads(result_file.read_text(encoding='utf-8'))
+    except (OSError, json.JSONDecodeError):
+        return
+    if not isinstance(res, dict):
+        return
+    recommend = data.setdefault('recommend', {})
+    if not isinstance(recommend, dict):
+        recommend = data['recommend'] = {}
+    for key in _ANCHOR_RECOMMEND_KEYS:
+        if res.get(key) not in (None, ''):
+            recommend[key] = res[key]
+    for key in _ANCHOR_VALUE_KEYS:
+        if key in res:
+            data[key] = {'value': res.get(key) or ''}
+
+
+def _wait_only_for_result(
+    result_file: Path,
+    lock_file: Path,
+    timeout: int,
+) -> int:
+    """Attach to an already-running confirm server and wait for the **final**
+    (tier-2) result.json — the second leg of the two-tier flow."""
+    logger.info('waiting for tier-2 browser confirmation...')
+    deadline = None if timeout <= 0 else time.time() + timeout
+    while True:
+        if _result_stage(result_file) == 'final':
+            logger.info('tier-2 confirmation received: %s', result_file)
+            return 0
+
+        lock = _read_lock(lock_file)
+        pid = int((lock or {}).get('pid', 0) or 0)
+        if not pid or not _process_alive(pid):
+            logger.error('confirm server is no longer running before tier 2 was confirmed')
+            return 1
+
+        if deadline is not None and time.time() >= deadline:
+            logger.error(
+                'timed out waiting for tier-2 confirmation — the page may still '
+                'be open; re-check %s before falling back to chat', result_file,
             )
             return 124
 
@@ -269,7 +335,9 @@ def create_app(
         """Serve the option universe; canvas is synced live from config.py so
         the static catalogs.json copy can never drift from the real formats."""
         try:
-            return jsonify(_build_catalogs())
+            resp = jsonify(_build_catalogs())
+            resp.headers['Cache-Control'] = 'no-store'
+            return resp
         except (OSError, json.JSONDecodeError) as exc:
             return jsonify({'error': f'invalid catalogs.json: {exc}'}), 500
 
@@ -283,10 +351,13 @@ def create_app(
             data = json.loads(rec_file.read_text(encoding='utf-8'))
         except (OSError, json.JSONDecodeError) as exc:
             return jsonify({'error': f'invalid recommendations.json: {exc}'}), 400
-        # Report whether a result already exists (re-open after confirm).
         result_file = confirm_dir / RESULT_NAME
         data['_already_confirmed'] = result_file.exists()
-        return jsonify(data)
+        if data.get('tier') == 2 and result_file.exists():
+            _merge_confirmed_anchors(data, result_file)
+        resp = jsonify(data)
+        resp.headers['Cache-Control'] = 'no-store'
+        return resp
 
     @app.route('/api/confirm', methods=['POST'])
     def confirm():
@@ -296,14 +367,15 @@ def create_app(
             return jsonify({'error': 'invalid payload'}), 400
         confirm_dir.mkdir(parents=True, exist_ok=True)
         result = dict(payload)
-        result['status'] = 'confirmed'
+        stage = result.get('stage')
+        result['status'] = 'tier1-confirmed' if stage == 'tier1' else 'confirmed'
         result['confirmed_at'] = time.strftime('%Y-%m-%dT%H:%M:%S')
         result_file = confirm_dir / RESULT_NAME
         result_file.write_text(
             json.dumps(result, ensure_ascii=False, indent=2),
             encoding='utf-8',
         )
-        logger.info('confirmation written to %s', result_file)
+        logger.info('%s confirmation written to %s', stage or 'final', result_file)
         return jsonify({'status': 'ok'})
 
     return app
@@ -327,6 +399,13 @@ def build_parser() -> argparse.ArgumentParser:
     parser.add_argument(
         '--wait', action='store_true',
         help='With --daemon, wait until a fresh result.json is written',
+    )
+    parser.add_argument(
+        '--wait-only', action='store_true',
+        help='Do not launch. Attach to the already-running confirm server for '
+             'this project and wait for the final (tier-2) result.json. Used for '
+             'the second leg of the two-tier flow after the tier-2 '
+             'recommendations have been re-derived and written.',
     )
     parser.add_argument(
         '--wait-timeout', type=int, default=WAIT_TIMEOUT_DEFAULT,
@@ -365,6 +444,13 @@ def main(argv: Optional[list[str]] = None) -> int:
     # recommendations.json (the page may never have been confirmed).
     if args.shutdown:
         return _shutdown_existing(project_path / LOCK_FILE_NAME)
+
+    if args.wait_only:
+        return _wait_only_for_result(
+            project_path / CONFIRM_DIR_NAME / RESULT_NAME,
+            project_path / LOCK_FILE_NAME,
+            args.wait_timeout,
+        )
 
     rec_file = project_path / CONFIRM_DIR_NAME / RECOMMENDATIONS_NAME
     if not rec_file.exists():

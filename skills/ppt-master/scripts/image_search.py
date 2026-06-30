@@ -45,7 +45,6 @@ import json
 import os
 import re
 import sys
-import tempfile
 import threading
 import urllib.parse
 from datetime import datetime, timezone
@@ -624,21 +623,8 @@ def load_search_manifest(path: str) -> dict:
 
 def save_search_manifest(path: str, data: dict) -> None:
     """Atomically write the batch manifest back (tmp file + rename)."""
-    target = Path(path)
-    fd, tmp_path = tempfile.mkstemp(
-        prefix=target.stem + ".", suffix=".tmp", dir=str(target.parent)
-    )
-    try:
-        with os.fdopen(fd, "w", encoding="utf-8") as f:
-            json.dump(data, f, ensure_ascii=False, indent=2)
-            f.write("\n")
-        os.replace(tmp_path, target)
-    except Exception:
-        try:
-            os.unlink(tmp_path)
-        except OSError:
-            pass
-        raise
+    from json_utils import atomic_write_json
+    atomic_write_json(path, data)
 
 
 def _resolve_search_concurrency(cli_value: Optional[int]) -> int:

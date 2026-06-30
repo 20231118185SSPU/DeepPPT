@@ -1,5 +1,5 @@
 ---
-description: 深度调研 Step 3 — 逐页搜索。按搜索计划通过 Playwright 浏览器自动化调用 ChatGPT/Grok/Perplexity 逐页搜集资料。
+description: 深度调研 Step 3 — 逐页搜索。按搜索计划通过 Playwright 浏览器自动化调用 Kimi/DeepSeek/通义/Grok/Perplexity 逐页搜集资料。
 ---
 
 # Step 3: 逐页搜索（Per-Page Search）
@@ -9,6 +9,8 @@ description: 深度调研 Step 3 — 逐页搜索。按搜索计划通过 Playwr
 **输入**: `_research/step2_search_plan/search_plan.json`
 **输出**: `_research/step3_search/p{NN}_{topic}.md` + `search_manifest.json` + `images/`
 
+**Hard rule**: Step 3 必须执行 Step 2 的计划，不得重新发散成通用搜索。每页结果必须写明使用了哪些 `dimension_ids`、`round_id`、`source_targets` 和 `asset_requirements`。
+
 ---
 
 ## 前置条件
@@ -17,7 +19,7 @@ description: 深度调研 Step 3 — 逐页搜索。按搜索计划通过 Playwr
 |--------|------|
 | `search_plan.json` 存在且合法 | 继续 |
 | Playwright 可用（`python3 -c "from playwright.sync_api import sync_playwright"`） | 继续 |
-| Playwright 不可用 | `browse_ai.py` 输出 `needs_manual_websearch` 和可复制提示词；Agent 手动使用内置 WebSearch + WebFetch |
+| Playwright 不可用 | 先使用 Agent-Reach / 平台 CLI / 直接 URL 读取等可用渠道；全部失败后，`browse_ai.py` 输出 `needs_manual_websearch` 和可复制提示词；Agent 手动使用内置 WebSearch + WebFetch |
 
 创建输出目录：
 ```bash
@@ -46,12 +48,12 @@ python3 ${SKILL_DIR}/scripts/research/browse_ai.py \
 对 search_plan.json 中每个 skip_search=false 的页面:
   1. 根据 ai_target 选择 AI 服务
   2. 通过 Playwright MCP 打开对应 AI 网页
-  3. 构建搜索提示词（见 3.2）
+  3. 构建搜索提示词（见 3.2），必须包含该页的 `dimension_ids`、`search_rounds`、`source_targets`
   4. 粘贴提示词并提交
   5. 等待 AI 回复完成
   6. 复制回复文本
   7. 保存到 p{NN}_{topic}.md
-  8. 如果回复质量不足（<200字或无具体数据），重试一次
+  8. 如果回复质量不足（<800字、少于2个来源URL、无具体数据、未覆盖计划轮次），重试一次或换目标 AI
 ```
 
 ### 方式 B: Agent 手动降级（当浏览器自动化不可用时）
@@ -61,10 +63,11 @@ python3 ${SKILL_DIR}/scripts/research/browse_ai.py \
 ```
 对每个 needs_manual_websearch=true 的页面:
   1. Agent 读取 manual WebSearch prompt
-  2. 使用内置 WebSearch 工具搜索关键词
+  2. 使用内置 WebSearch 工具搜索关键词（仅作为降级，不得替代计划内搜索）
   3. 使用 WebFetch 获取排名前 3 的结果全文
   4. 使用 web_to_md.py 提取结构化内容
   5. 合并搜索结果保存到 p{NN}_{topic}.md
+  6. 在 `search_manifest.json` 记录 `fallback_reason`、`quality_gap`、`manual_sources`
 ```
 
 ---
@@ -138,9 +141,19 @@ python3 ${SKILL_DIR}/scripts/research/browse_ai.py \
 
 ### 按 AI 服务微调（后缀追加）
 
-**→ ChatGPT**（追加到提示词末尾）:
+**→ Kimi**（追加到提示词末尾）:
 ```
-请以结构化表格形式呈现数据。对每个数据点标注可信度（高/中/低）。
+请提供准确的数据来源和引用链接。如有长篇报告或文档，请摘取关键段落。
+```
+
+**→ DeepSeek**（追加到提示词末尾）:
+```
+请进行深度分析，提供技术细节和数据支撑。优先引用中文权威来源。
+```
+
+**→ 通义千问**（追加到提示词末尾）:
+```
+请基于国内可靠来源整理信息，标注具体出处。优先使用官方报告和权威媒体。
 ```
 
 **→ Grok**（追加到提示词末尾）:
@@ -159,6 +172,8 @@ python3 ${SKILL_DIR}/scripts/research/browse_ai.py \
 
 `browse_ai.py` 不直接下载图片。它只从 AI 回复中提取图片 URL / 图片关键词，写入 `search_manifest.json` 的 `image_suggestions`，作为后续独立图片搜索动作的输入。
 
+**Hard rule**: 只记录图片 URL 不算完成素材搜集。每个被接受的素材必须保存为本地文件，并通过文件存在性和可读性验证。
+
 搜索内容完成后，再使用 `image_search.py` 收集对应图片：
 
 ```bash
@@ -175,6 +190,33 @@ python3 ${SKILL_DIR}/scripts/image_search.py \
   --url-capture "{product_url}" \
   --filename p{NN}_screenshot.jpg \
   -o <project>/_research/step3_search/images/
+```
+
+### 3.3a 素材分类与审查
+
+| 类型 | 保存位置 | 通过标准 |
+|------|----------|----------|
+| AI 参考图 | `_research/step7_visual/ref/` 或 `_research/step3_search/images/ref/` | 与页面主体直接相关，可作为图生图锚点 |
+| 网络素材 | `_research/step3_search/images/` | 与讲解页 / 对比页 / 数据页 / 时间线页内容直接相关 |
+| 截图素材 | `_research/step3_search/images/` | 页面内容可读，分辨率足够，不是缩略图 |
+| svg-native 信息卡 | 记录在 `search_manifest.json`，后续由 Executor 绘制 | 当真实图片缺失或质量不达标时使用 |
+
+每张素材写入 `search_manifest.json.asset_manifest[]`：
+
+```json
+{
+  "page_id": "P05",
+  "dimension_id": "D02",
+  "kind": "web_asset",
+  "file": "images/p05_case_chart.jpg",
+  "source_url": "https://...",
+  "planned_slot": {"width": 370, "height": 500},
+  "review": {
+    "content_match": "pass",
+    "quality": "pass",
+    "cropping_risk": "low"
+  }
+}
 ```
 
 ---
@@ -212,9 +254,11 @@ python3 ${SKILL_DIR}/scripts/image_search.py \
 当某个 AI 服务不可用或低质量（空回复、少于 200 字、缺少来源 URL）时，先对同一 AI 自动重试一次，再进入自动降级链：
 
 ```
-chatgpt 不可用/低质量 → chatgpt 重试 → grok → perplexity → needs_manual_websearch
-grok 不可用/低质量 → grok 重试 → chatgpt → perplexity → needs_manual_websearch
-perplexity 不可用/低质量 → perplexity 重试 → chatgpt → grok → needs_manual_websearch
+grok 不可用/低质量 → grok 重试 → kimi → deepseek → tongyi → perplexity → needs_manual_websearch
+kimi 不可用/低质量 → kimi 重试 → grok → deepseek → tongyi → perplexity → needs_manual_websearch
+deepseek 不可用/低质量 → deepseek 重试 → grok → kimi → tongyi → perplexity → needs_manual_websearch
+tongyi 不可用/低质量 → tongyi 重试 → grok → kimi → deepseek → perplexity → needs_manual_websearch
+perplexity 不可用/低质量 → perplexity 重试 → grok → kimi → deepseek → tongyi → needs_manual_websearch
 ```
 
 **降级触发条件**:
@@ -223,7 +267,19 @@ perplexity 不可用/低质量 → perplexity 重试 → chatgpt → grok → ne
 - 回复为空、少于 200 字、或缺少来源 URL
 - API 限流/错误
 
-**降级记录**: 在 `search_manifest.json` 中记录 `ai_target`、`ai_used`、`fallback`、`fallback_chain`、`status`、`char_count`、`quality`、`output_file`、`image_suggestions`、`needs_manual_websearch`。
+**降级记录**: 在 `search_manifest.json` 中记录 `ai_target`、`ai_used`、`fallback`、`fallback_chain`、`status`、`char_count`、`quality`、`output_file`、`image_suggestions`、`needs_manual_websearch`、`fallback_reason`、`quality_gap`。每页结果还必须保留 Step 2 的 `dimension_ids`、`search_rounds`、`source_targets`、`asset_requirements`；`browse_ai.py` 会从计划中带入这些字段，并在重跑时保留手工补充字段。
+
+**质量失败自动补搜**：任一页面出现以下情况，必须补搜该页，不能进入 Step 4：
+
+| 失败项 | 阈值 |
+|--------|------|
+| Tier 1-2 来源 | 少于 2 个 |
+| 总来源 URL | 少于 3 个 |
+| 正文搜索结果 | 少于 800 字 |
+| 结构化数据点 | 少于 2 个 |
+| 反面观点或风险 | 缺失（适用时） |
+| 计划轮次覆盖 | 未覆盖 Step 2 分配的 `search_rounds` |
+| 素材文件 | 需要素材但本地文件缺失，且未声明 svg-native 降级 |
 
 ---
 
@@ -237,16 +293,23 @@ perplexity 不可用/低质量 → perplexity 重试 → chatgpt → grok → ne
   "total_searched": 10,
   "total_skipped": 5,
   "fallback_used": 2,
+  "asset_manifest": [],
   "results": [
     {
       "page_id": "P03",
-      "ai_target": "chatgpt",
-      "ai_used": "chatgpt",
+      "ai_target": "kimi",
+      "ai_used": "kimi",
       "output_file": "p03_AI行业增长.md",
       "char_count": 1580,
       "quality": "high",
       "images_collected": 2,
-      "fallback": false
+      "fallback": false,
+      "dimension_ids": ["D01"],
+      "search_rounds": ["D01-R1", "D01-R2", "D01-R3"],
+      "source_targets": {"tier12_min": 2},
+      "asset_requirements": [],
+      "fallback_reason": "",
+      "quality_gap": ""
     }
   ]
 }
@@ -257,6 +320,6 @@ perplexity 不可用/低质量 → perplexity 重试 → chatgpt → grok → ne
 ## 交接
 
 ```
-下一步输入: _research/step3_search/ 所有 p{NN}_*.md 文件
+下一步输入: _research/step3_search/ 所有 p{NN}_*.md 文件；最终 Step 7 后必须通过 research_gate.py
 下一步工作流: step4_consolidate.md
 ```

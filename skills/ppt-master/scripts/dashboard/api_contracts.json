@@ -1,0 +1,253 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "DeepPPT Dashboard REST API Contracts",
+  "description": "Request/response schemas for every REST endpoint.",
+
+  "endpoints": {
+
+    "GET /api/state": {
+      "description": "Full pipeline state snapshot. Same payload as the pipeline:state SSE event.",
+      "request": {
+        "params": {},
+        "query": {}
+      },
+      "response": {
+        "200": { "$ref": "contracts.json#/definitions/PipelineState" },
+        "404": {
+          "type": "object",
+          "properties": {
+            "error": { "type": "string", "example": "Project not found or not initialized." }
+          }
+        }
+      }
+    },
+
+    "GET /api/step/{n}": {
+      "description": "Detailed view of a single pipeline step, including its artifacts, quality results, and filtered trace events.",
+      "request": {
+        "params": {
+          "n": {
+            "$ref": "contracts.json#/definitions/StepId",
+            "description": "Step number (1-8)."
+          }
+        },
+        "query": {
+          "include_artifacts": {
+            "type": "boolean",
+            "default": true,
+            "description": "Include artifacts produced by this step."
+          },
+          "include_quality": {
+            "type": "boolean",
+            "default": true,
+            "description": "Include quality check results (Step 6/7 only)."
+          },
+          "include_trace": {
+            "type": "boolean",
+            "default": false,
+            "description": "Include trace events for this step."
+          },
+          "trace_limit": {
+            "type": "integer",
+            "default": 50,
+            "minimum": 1,
+            "maximum": 500,
+            "description": "Max trace events to return (newest first)."
+          }
+        }
+      },
+      "response": {
+        "200": { "$ref": "contracts.json#/definitions/StepDetail" },
+        "400": {
+          "type": "object",
+          "properties": {
+            "error": { "type": "string", "example": "Invalid step number. Must be 1-8." }
+          }
+        }
+      }
+    },
+
+    "GET /api/quality": {
+      "description": "Aggregate quality report covering all check types. Returns the most recent results for each check.",
+      "request": {
+        "params": {},
+        "query": {}
+      },
+      "response": {
+        "200": { "$ref": "contracts.json#/definitions/QualityReport" },
+        "404": {
+          "type": "object",
+          "properties": {
+            "error": { "type": "string", "example": "No quality checks have been run yet." }
+          }
+        }
+      }
+    },
+
+    "GET /api/quality/{check}": {
+      "description": "Single quality check report. Returns the full data for one specific check type.",
+      "request": {
+        "params": {
+          "check": {
+            "type": "string",
+            "enum": ["svg_quality", "spec_compliance", "e2e", "harness", "integrated_review"],
+            "description": "Quality check type."
+          }
+        },
+        "query": {}
+      },
+      "response": {
+        "200": { "$ref": "contracts.json#/definitions/SingleCheckReport" },
+        "404": {
+          "type": "object",
+          "properties": {
+            "error": { "type": "string", "example": "Check 'e2e' has not been run yet." }
+          }
+        }
+      }
+    },
+
+    "GET /api/artifacts": {
+      "description": "List all project artifacts with type classification and metadata.",
+      "request": {
+        "params": {},
+        "query": {
+          "type": {
+            "oneOf": [
+              { "$ref": "contracts.json#/definitions/ArtifactType" },
+              { "type": "null" }
+            ],
+            "description": "Filter by artifact type. Omit for all types."
+          },
+          "step": {
+            "oneOf": [
+              { "$ref": "contracts.json#/definitions/StepId" },
+              { "type": "null" }
+            ],
+            "description": "Filter by producing step. Omit for all steps."
+          }
+        }
+      },
+      "response": {
+        "200": { "$ref": "contracts.json#/definitions/ArtifactList" }
+      }
+    },
+
+    "GET /api/artifacts/{type}": {
+      "description": "Filtered artifact list by type. Convenience alias for GET /api/artifacts?type={type}.",
+      "request": {
+        "params": {
+          "type": { "$ref": "contracts.json#/definitions/ArtifactType" }
+        },
+        "query": {}
+      },
+      "response": {
+        "200": { "$ref": "contracts.json#/definitions/ArtifactList" }
+      }
+    },
+
+    "GET /api/log": {
+      "description": "Query trace.jsonl events with filtering, pagination, and time-range support.",
+      "request": {
+        "params": {},
+        "query": {
+          "type": {
+            "type": ["string", "null"],
+            "description": "Filter by event type (e.g. 'step_start', 'error'). Comma-separated for multiple types."
+          },
+          "step": {
+            "oneOf": [
+              { "$ref": "contracts.json#/definitions/StepId" },
+              { "type": "null" }
+            ],
+            "description": "Filter by step number (events that have a 'step' field matching)."
+          },
+          "since": {
+            "type": ["string", "null"],
+            "format": "date-time",
+            "description": "ISO 8601 timestamp. Only return events with ts >= since."
+          },
+          "until": {
+            "type": ["string", "null"],
+            "format": "date-time",
+            "description": "ISO 8601 timestamp. Only return events with ts <= until."
+          },
+          "limit": {
+            "type": "integer",
+            "default": 100,
+            "minimum": 1,
+            "maximum": 1000,
+            "description": "Max events to return."
+          },
+          "offset": {
+            "type": "integer",
+            "default": 0,
+            "minimum": 0,
+            "description": "Skip first N matching events (for pagination)."
+          },
+          "order": {
+            "type": "string",
+            "enum": ["asc", "desc"],
+            "default": "desc",
+            "description": "Sort order by timestamp."
+          }
+        }
+      },
+      "response": {
+        "200": {
+          "type": "object",
+          "required": ["events", "total", "has_more"],
+          "additionalProperties": false,
+          "properties": {
+            "events": {
+              "type": "array",
+              "items": { "$ref": "contracts.json#/definitions/TraceEvent" }
+            },
+            "total": {
+              "type": "integer",
+              "minimum": 0,
+              "description": "Total matching events (before limit/offset)."
+            },
+            "has_more": {
+              "type": "boolean",
+              "description": "True if more events exist beyond offset+limit."
+            },
+            "offset": { "type": "integer" },
+            "limit":  { "type": "integer" }
+          }
+        }
+      }
+    },
+
+    "GET /api/config": {
+      "description": "Dashboard configuration including project info, theme colors, SSE URL, and embedded catalogs.",
+      "request": {
+        "params": {},
+        "query": {}
+      },
+      "response": {
+        "200": { "$ref": "contracts.json#/definitions/DashboardConfig" }
+      }
+    },
+
+    "GET /api/events": {
+      "description": "SSE stream endpoint. Returns text/event-stream. Each event is one of the types defined in sse_events.json. Initial connection sends pipeline:state, then incremental events as they occur. Heartbeats every 15s.",
+      "request": {
+        "params": {},
+        "query": {
+          "last_event_id": {
+            "type": ["string", "null"],
+            "description": "Last-Event-ID for reconnection. Server replays missed events if available in buffer."
+          }
+        }
+      },
+      "response": {
+        "200": {
+          "type": "string",
+          "contentMediaType": "text/event-stream",
+          "description": "SSE stream. Each message: 'id: <seq>\\nevent: <type>\\ndata: <json>\\n\\n'."
+        }
+      }
+    }
+  }
+}

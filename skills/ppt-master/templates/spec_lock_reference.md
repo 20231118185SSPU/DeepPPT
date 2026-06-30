@@ -118,6 +118,8 @@
 > **Rhythm follows narrative**: `breathing` pages appear where narrative genuinely pauses — section transitions, a single argument worth standalone emphasis, a deliberate stop after a dense sequence. A data briefing or consulting analysis may legitimately be nearly all `dense` — **do not invent filler pages** to pad rhythm. Validation: every `breathing` page must answer "what independent thing is this page saying?".
 >
 > **Missing or empty section** → Executor falls back to `dense` for every page (legacy pre-rhythm behavior). Remove the section only for legacy decks; new decks MUST fill it.
+>
+> **Beautify-mode note**: when the project is a beautify type, `page_rhythm` values are derived from `analysis/beautify_layout_analysis.json` (Step 4.5 of `beautify-pptx.md`), not from generic heuristics. The analysis classifies each source page by content relation and persuasion action, then maps to rhythm tags. The Strategist writes these derived values here; the Executor reads them identically to any other project.
 
 ## page_layouts
 - P01: 01_cover
@@ -178,3 +180,30 @@
 - `<style>`, `class`, `<foreignObject>`, `textPath`, `@font-face`, `<animate*>`, `<script>`, `<iframe>`, `<symbol>`+`<use>`
 - `<g opacity>` (set opacity on each child element individually)
 - HTML named entities in text (`&nbsp;`, `&mdash;`, `&copy;`, `&ndash;`, `&reg;`, `&hellip;`, `&bull;` …) — write as raw Unicode (`—`, `©`, `→`, NBSP, etc.); XML reserved chars `& < > " '` must be escaped as `&amp; &lt; &gt; &quot; &apos;`. See shared-standards.md §1.0
+
+## copy_contract
+
+- preservation_level: balanced
+- P01: final="标题文案" | source="原始文案..." | rationale="保留核心判断，去除口语铺垫"
+- P02: final="精简表达" | source="完整原文..." | rationale="事实压缩，数字完整保留"
+
+> **Optional section.** When present, Executor MUST NOT alter `final` text on any listed page.
+> If text cannot fit the layout, Executor MUST escalate to user — do NOT silently rewrite, shrink, or truncate.
+> Omit this section entirely when copy fidelity tracking is not needed (e.g., free-topic research decks where the content was AI-generated).
+>
+> **`preservation_level` values** (section-wide default; per-page entries may override):
+> - `verbatim` — 原文逐字上屏（法律/合规/引用类）
+> - `balanced` — 可精简表达但不得改变含义（策略/咨询类）**← 默认值**
+> - `free` — 可自由重组（研究/教育类；当 `copy_contract` section 不存在时的隐式行为）
+>
+> **Per-page entry format**: `- P<NN>: final="上屏文案" | source="原始来源文本" | rationale="压缩理由"`
+> - `final` — Executor 必须使用的精确上屏文案（标题 + 正文均受约束）
+> - `source` — 原始来源文本（用于对比审阅时展示简化了多少）
+> - `rationale` — 为什么这样精简，保留了什么，移走了什么
+>
+> **Executor behavior when this section exists**:
+> 1. Per-page re-read spec_lock.md 时，检查当前页是否在 copy_contract 中有 entry
+> 2. 如有，SVG 中的标题和核心正文必须与 `final` 值匹配（允许断行差异，不允许内容变更）
+> 3. 如果放不下 → 记录原因，回到 Strategist/用户确认，不得自行缩减
+>
+> **Strategist source**: 在 Eight Confirmations 期间，根据 `content_divergence` 设定和 `detailed_outline.json` 中的 `text_hierarchy` 生成此契约。仅当用户输入为密集文案（策略稿/提案/咨询报告）时写入；研究类 deck 通常省略。

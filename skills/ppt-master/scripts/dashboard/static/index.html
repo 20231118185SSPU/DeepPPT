@@ -1,0 +1,49 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>DeepPPT 控制台</title>
+  <link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+  <div class="shell">
+    <aside class="sidebar">
+      <div class="brand">
+        <span class="brand-mark">D</span>
+        <div>
+          <div class="brand-title">DeepPPT</div>
+          <div class="brand-subtitle">项目控制台</div>
+        </div>
+      </div>
+      <nav class="nav" aria-label="控制台页面">
+        <a href="#/pipeline" data-route="pipeline" title="查看管线总览">管线总览</a>
+        <a href="#/step/4" data-route="step" title="查看步骤工作台">步骤工作台</a>
+        <a href="#/confirm" data-route="confirm" title="查看确认中心">确认中心</a>
+        <a href="#/preview" data-route="preview" title="查看实时预览状态">实时预览</a>
+        <a href="#/quality" data-route="quality" title="查看质量中心">质量中心</a>
+        <a href="#/artifacts" data-route="artifacts" title="查看产物与日志">产物与日志</a>
+      </nav>
+      <div id="stepRail" class="step-rail"></div>
+    </aside>
+
+    <main class="main">
+      <header class="topbar">
+        <div>
+          <h1 id="pageTitle">管线总览</h1>
+          <p id="projectMeta">正在读取项目...</p>
+        </div>
+        <div class="top-actions">
+          <span id="connectionBadge" class="badge">连接中</span>
+          <a id="confirmLink" class="button secondary disabled" target="_blank" rel="noreferrer" aria-disabled="true" title="确认服务尚未运行">确认未运行</a>
+          <a id="previewLink" class="button secondary disabled" target="_blank" rel="noreferrer" aria-disabled="true" title="预览服务尚未运行">预览未运行</a>
+        </div>
+      </header>
+
+      <section id="app" class="content"></section>
+    </main>
+  </div>
+
+  <script src="/static/app.js"></script>
+</body>
+</html>

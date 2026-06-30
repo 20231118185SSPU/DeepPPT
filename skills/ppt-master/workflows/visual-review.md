@@ -12,16 +12,56 @@ description: Per-page rubric-based visual self-review via parallel subagents. Ru
 
 ## Positioning
 
-This is an **optional auxiliary loop**, opt-in only. The main pipeline (SKILL.md Step 1–7) does not invoke it; trigger only when the user explicitly asks for a visual re-pass on the generated SVGs before export.
+This is a **recommended quality step**, on by default after quality gates pass. It catches visual issues (hierarchy, rhythm, image treatment, collision) that structural checks cannot detect.
+
+**Skip**: explicit user opt-out via "--skip-vision", "跳过视觉自检", or `skip_visual_review: true` in confirm_ui result.json. Legacy behavior (opt-in only) is preserved when the user says "skip".
 
 **Token cost**: each batch subagent re-reads the rubric + `design_spec.md` + `spec_lock.md` and processes K SVG+PNG pairs. For a 20-page deck with K=5, expect on the order of 100–150K additional input tokens on top of the main generation run.
+
+## Vision Capability Detection
+
+The visual review requires **seeing** the rendered PNGs. Three execution paths:
+
+| Main Model Capability | Execution Path |
+|----------------------|----------------|
+| **Has multimodal** (Claude/GPT-4o/Gemini) | Subagents read PNGs directly (default, existing behavior) |
+| **No multimodal** but external vision API available | Call `vision_check.py` for external visual analysis |
+| **No multimodal, no external API** | Mark `vision_available: false`, skip to user review |
+
+### Path 2: External Vision Model (for text-only main models)
+
+When the main model/runtime cannot read images, delegate to an external vision-capable API:
+
+```bash
+# Auto-detect available backend (checks env vars)
+python3 ${SKILL_DIR}/scripts/vision_check.py <project_path> --rubric quality --auto
+
+# Or specify explicitly:
+python3 ${SKILL_DIR}/scripts/vision_check.py <project_path> \
+  --format openai --base-url https://api.siliconflow.cn/v1 \
+  --model Qwen/Qwen2.5-VL-72B-Instruct
+```
+
+The script supports **two API protocols** that cover virtually all vision models:
+
+- **OpenAI format** (`--format openai`): GPT-4o, DeepSeek-VL, Qwen-VL, Gemini (via compat), SiliconFlow, OpenRouter, Azure OpenAI
+- **Anthropic format** (`--format anthropic`): Claude Sonnet/Haiku/Opus, AWS Bedrock Claude
+- **Local** (`--format ollama`): LLaVA, Llama-3.2-Vision via Ollama
+
+Output: `<project>/vision_check_report.json` — same `must_fix/should_fix/accepted` schema as `--integrated-review`. The main model reads this report and decides which SVGs to fix.
+
+### Path 3: No Vision Available
+
+When neither the main model nor any external API can check images:
+- Record `vision_available: false` in review metadata
+- Skip automated visual self-check entirely
+- Require user to perform manual visual review before export
 
 ## When to Run
 
 - Executor (SKILL.md Step 6) has finished all pages
 - `svg_quality_checker.py` has passed
 - Post-processing (`finalize_svg.py`, `svg_to_pptx.py`) has **not** yet run
-- The user has explicitly requested visual review
 
 For decks containing data charts, run [`verify-charts`](./verify-charts.md) first — visual-review focuses on visual rhythm / collision / alignment, not chart coordinate math.
 

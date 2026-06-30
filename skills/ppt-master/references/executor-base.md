@@ -1,3 +1,5 @@
+<!-- PHASE: Executor (Step 6). DO NOT re-read strategist.md — design decisions are locked in spec_lock.md. -->
+
 # Executor Common Guidelines
 
 > Narrative skeleton and visual aesthetic come from this deck's locked files under [`modes/`](./modes/_index.md) and [`visual-styles/`](./visual-styles/_index.md). Technical constraints are in shared-standards.md.
@@ -92,6 +94,19 @@ Before generating each page, output which template is used:
 | Decorative elements | Symmetric left/right | Top and bottom corners |
 
 **Forbidden**: left-aligned transition pages where content clusters on the left side leaving large empty space on the right. If the project uses `transition_centered` template, inherit its centered structure. For free-design transition pages, apply the same centering discipline.
+
+**Section Divider Visual Treatment**:
+
+Chapter / section divider pages (all `anchor`-tagged transition pages) MUST NOT be a plain solid-color background with centered text — that is the "generic PowerPoint" appearance. Minimum visual treatment for every divider:
+
+| Technique | When to use |
+|---|---|
+| Geometric decoration | Concentric circles, diagonal bands, corner color blocks — at least one element that breaks symmetry |
+| Gradient background | Linear or radial gradient using `primary` / `accent` from spec_lock |
+| Oversized chapter number | Chapter number typeset at ≥3× body size, semi-transparent, as a decorative anchor |
+| Image-as-canvas + mask | When the page has associated images or the source PPT used image backgrounds — full-bleed image with semi-transparent overlay (see §17.3 for opacity rules), content floated on top |
+
+At minimum, apply **2 of the 4 techniques** on each divider page. Use inherited palette colors (`primary`, `accent`, `secondary_accent`) to create visual hierarchy — not just the background color.
 
 ### Deep-Dive Page Pairing Rule
 
@@ -213,6 +228,24 @@ Before drawing each page, look up its entry in `page_rhythm` (key format `P<NN>`
 
 **Tag not found for current page** → emit `warning: spec_lock.md page_rhythm tag not found for P<NN> — falling back to dense` once per deck (aggregate; do not repeat per page), fall back to `dense`. Do not invent a tag.
 
+**Layout-analysis-aware generation (beautify mode)**:
+
+When `design_spec.md §IX` includes per-page layout analysis fields (`persuasion_action`, `content_relation`, `layout_family`, `why_not_card_grid`) — typically present in beautify projects via `beautify_layout_analysis.json` — the Executor MUST respect these fields:
+
+| `content_relation` | → Required layout approach | Card grid allowed? |
+|---|---|---|
+| `sequence` | Timeline, process flow, or step progression — directional layout with connectors | **No** |
+| `hierarchy` | Nested or layered structure with visual depth | **No** |
+| `single_claim` | Full-emphasis layout — hero image, big quote, or full-bleed statement | **No** |
+| `compare` | Side-by-side split (L/R or T/B) with symmetric structure | **No** |
+| `weighted_set` | Asymmetric layout — larger area for the primary item | **No** |
+| `evidence_chain` | Argument → proof flow — directional reading path | **No** |
+| `parallel_set` | Equal-weight items — card grid IS appropriate | **Yes** |
+| `matrix` | Two-axis structure — grid or matrix layout | **Yes** |
+| `summary` | Condensed takeaway — quote-style or hero layout | **No** |
+
+**Self-check before generating a card grid**: if about to produce a multi-card grid layout (≥3 parallel rounded containers), check the page's `content_relation`. If it is NOT `parallel_set` or `matrix`, STOP and select a different layout that matches the content relation. This is the single most impactful rule for avoiding the "AI-generated look" in beautified decks.
+
 **Per-page template lookup — `page_layouts` section**:
 
 Before drawing each page, look up its entry in `page_layouts` to decide which basename to inherit (the SVG itself was loaded in §1.0):
@@ -297,6 +330,27 @@ Examples: `01_封面.svg` / `02_目录.svg` / `03_核心优势.svg`; `01_cover.s
 ---
 
 ## 4. Icon Usage
+
+### 4.0 Emoji Ban (Hard Rule)
+
+**Forbidden**: Using emoji characters (Unicode emoji ranges U+1F600–U+1F64F, U+1F300–U+1F5FF, U+1F680–U+1F6FF, U+2600–U+26FF, etc.) anywhere in SVG page content. Emoji render inconsistently across platforms, cannot be styled with the project's color palette, and look unprofessional in PPT output.
+
+**Instead**: Use icons from the project's icon library via `<use data-icon="..." />` placeholder. The library contains 11,600+ icons covering every concept emoji might express. Search: `ls templates/icons/<library>/ | grep <keyword>`.
+
+| Common emoji | Icon replacement |
+|---|---|
+| ✅ Checkmark | `data-icon="chunk-filled/circle-checkmark"` |
+| ⚠️ Warning | `data-icon="chunk-filled/triangle-exclamation"` |
+| 💡 Lightbulb | `data-icon="chunk-filled/lightbulb"` |
+| ⭐ Star | `data-icon="chunk-filled/star"` |
+| 🚀 Rocket | `data-icon="chunk-filled/rocket"` |
+| 📊 Chart | `data-icon="chunk-filled/chart-bar"` |
+| 🎯 Target | `data-icon="chunk-filled/target"` |
+| 🔒 Lock | `data-icon="chunk-filled/lock"` |
+| 👥 Users | `data-icon="chunk-filled/users"` |
+| ⚙️ Settings | `data-icon="chunk-filled/cog"` |
+
+`svg_quality_checker.py` enforces this rule as an **error** — decks with emoji in SVG text will not pass the quality gate.
 
 Strategist chooses the library and inventory; Executor only implements. Library details and one-library rule: [`../templates/icons/README.md`](../templates/icons/README.md). This section defines placeholder syntax.
 
@@ -663,6 +717,26 @@ Used for: deep-dive side images, data page illustrations, comparison page visual
 - Exception: `breathing` pages with intentional negative space (hero number, full-bleed image with floating caption) — the dominant visual element must still touch ≥ 2 zones
 
 **Forbidden**: stacking all cards, text, and data in the top half of the canvas. If content does not fill the full height, enlarge elements, increase spacing, or add decorative fills in the lower region.
+
+### 14.6 Layout Pre-Generation Checklist (Mandatory)
+
+**Hard rule**: before writing each SVG page, mentally verify ALL of the following. Any violation must be corrected in the SVG before moving to the next page.
+
+| # | Check | Threshold |
+|---|---|---|
+| 1 | Template assigned in `page_layouts` → MUST use it | No free-design when template exists |
+| 2 | All text within safe margins (LR 50px, TB 40px) | 0 overflows |
+| 3 | No content elements overlap by >20px in both axes | 0 violations |
+| 4 | Font sizes meet page-type minimums (§14.2) | body ≥14px global, ≥20px content, ≥22px deep-dive |
+| 5 | ALL colors from `spec_lock.md colors` section | 0 undeclared colors |
+| 6 | Images sized to match layout slots (±10% tolerance) | 0 mismatches |
+| 7 | Image-text spacing between 20–80px | No element pairs outside range |
+| 8 | Content distributed across top/middle/bottom zones (§14.5) | Each zone ≥20% weight |
+| 9 | Left/right halves balanced (neither side >70% empty) | No one-sided layouts |
+| 10 | Icons use `data-icon` placeholder — no emoji (§4.0) | 0 emoji characters |
+| 11 | Page colors consistent with other pages in the deck | ≤3 new colors per page |
+
+This checklist is enforced by `svg_quality_checker.py` post-generation but catching violations at authoring time prevents rework.
 
 ## 15. Character Consistency Rule (角色一致性规则)
 

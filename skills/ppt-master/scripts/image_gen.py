@@ -48,7 +48,6 @@ import json
 import os
 import sys
 import argparse
-import tempfile
 import threading
 import time
 from pathlib import Path
@@ -442,23 +441,8 @@ def load_manifest(path: str) -> dict:
 
 def save_manifest(path: str, data: dict) -> None:
     """Atomically write manifest back to disk (tmp file + rename)."""
-    target = Path(path)
-    fd, tmp_path = tempfile.mkstemp(
-        prefix=target.stem + ".",
-        suffix=".tmp",
-        dir=str(target.parent),
-    )
-    try:
-        with os.fdopen(fd, "w", encoding="utf-8") as f:
-            json.dump(data, f, ensure_ascii=False, indent=2)
-            f.write("\n")
-        os.replace(tmp_path, target)
-    except Exception:
-        try:
-            os.unlink(tmp_path)
-        except OSError:
-            pass
-        raise
+    from json_utils import atomic_write_json
+    atomic_write_json(path, data)
 
 
 def _run_manifest(manifest: dict, manifest_path: str, backend_module, *,
@@ -543,7 +527,7 @@ def _run_manifest(manifest: dict, manifest_path: str, backend_module, *,
                         print(f"  [CROP] {item['filename']}: {cur_w}x{cur_h} -> {target_w}x{target_h}")
                 except ImportError:
                     pass  # Pillow not available, skip resize
-                except Exception as crop_exc:
+                except (OSError, ValueError) as crop_exc:
                     print(f"  [WARN] {item['filename']}: crop failed: {crop_exc}")
             return idx, saved_path, None
         except Exception as exc:  # noqa: BLE001 — backend raises arbitrary types
