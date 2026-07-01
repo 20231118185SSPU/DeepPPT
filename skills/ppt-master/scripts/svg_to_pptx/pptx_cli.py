@@ -29,6 +29,18 @@ try:
 except ImportError:
     _ANIMATIONS = {}
 
+try:
+    from dashboard.trace_writer import artifact_created, trace_event
+except ImportError:
+    _DASHBOARD_DIR = Path(__file__).resolve().parents[1] / 'dashboard'
+    if str(_DASHBOARD_DIR) not in sys.path:
+        sys.path.insert(0, str(_DASHBOARD_DIR))
+    try:
+        from trace_writer import artifact_created, trace_event  # type: ignore
+    except ImportError:
+        artifact_created = None  # type: ignore
+        trace_event = None  # type: ignore
+
 
 def _as_dict(value: object) -> dict:
     return value if isinstance(value, dict) else {}
@@ -81,7 +93,7 @@ def main(argv: list[str] | None = None) -> int:
         formatter_class=argparse.RawDescriptionHelpFormatter,
         epilog=f'''
 Examples:
-    %(prog)s examples/ppt169_demo -s final               # Default: native pptx -> exports/, svg_output -> backup/<ts>/
+    %(prog)s examples/ppt169_demo                        # Default split: native reads svg_output/, snapshot reads svg_final/
     %(prog)s examples/ppt169_demo --svg-snapshot         # Also emit SVG-rendered snapshot pptx alongside native in exports/
     %(prog)s examples/ppt169_demo --only legacy          # Only SVG image version (skips native)
     %(prog)s examples/ppt169_demo -o out.pptx            # Explicit path (no backup/)
@@ -91,8 +103,8 @@ Examples:
     %(prog)s examples/ppt169_demo -t push --transition-duration 1.0
 
 SVG source directory (-s):
-    output   - svg_output (original version)
-    final    - svg_final (post-processed, recommended)
+    output   - svg_output (Executor source; native PPTX default)
+    final    - svg_final (post-processed preview / legacy source)
     <any>    - Specify a subdirectory name directly
 
 Transition effects (-t/--transition):
@@ -101,7 +113,7 @@ Transition effects (-t/--transition):
 Per-element entrance animation (-a/--animation, native shapes mode):
     {', '.join(animation_choices)}
     Notes: applied to top-level <g id="..."> SVG groups in z-order. Default is
-           "auto" (map effect from group id: chart→wipe, card-/step-/pillar-→fly,
+           "none" (off). Pass "-a auto" to map effect from group id: chart→wipe, card-/step-/pillar-→fly,
            title/takeaway→fade; image-like ids hero/figure-/image/img-/kpi cycle
            zoom/dissolve/circle/box/diamond/wheel so multiple images vary across
            the deck; unmatched ids cycle fade/wipe/fly/zoom). Start mode set by
@@ -128,7 +140,7 @@ Speaker notes (enabled by default):
     - Use --no-notes to disable
 
 Recorded narration:
-    %(prog)s examples/ppt169_demo -s final --recorded-narration audio
+    %(prog)s examples/ppt169_demo --recorded-narration audio
     - Keeps speaker notes when enabled
     - Prepares PowerPoint recorded timings and narrations
     - Requires one m4a/mp3/wav file per slide
@@ -634,6 +646,21 @@ Recorded narration:
             if verbose:
                 print(f"  [warn] cache cleanup skipped: {exc}")
 
+    if trace_event is not None:
+        trace_event(
+            project_path,
+            "step_complete" if success else "error",
+            "PPTX export completed" if success else "PPTX export failed",
+            step=7,
+            status="PASS" if success else "FAIL",
+            script="svg_to_pptx.py",
+            producer="svg_to_pptx.py",
+        )
+    if success and artifact_created is not None:
+        if gen_native:
+            artifact_created(project_path, native_path, "pptx", step=7, producer="svg_to_pptx.py")
+        if gen_legacy and legacy_path is not None:
+            artifact_created(project_path, legacy_path, "pptx", step=7, producer="svg_to_pptx.py")
     return 0 if success else 1
 
 

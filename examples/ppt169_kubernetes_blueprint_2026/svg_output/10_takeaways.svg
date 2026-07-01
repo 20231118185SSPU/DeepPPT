@@ -11,7 +11,7 @@
     </pattern>
     <radialGradient id="endVignette" cx="50%" cy="50%" r="75%">
       <stop offset="50%" stop-color="#0E2A47" stop-opacity="0" />
-      <stop offset="100%" stop-color="#000000" stop-opacity="0.5" />
+      <stop offset="100%" stop-color="#0E2A47" stop-opacity="0.5" />
     </radialGradient>
   </defs>
 
@@ -59,17 +59,17 @@
     <g id="loop-watch">
       <circle cx="780" cy="500" r="40" fill="none" stroke="#5BA3E0" stroke-width="1.5" />
       <text x="780" y="495" font-family="Consolas, 'Courier New', monospace" font-size="11" fill="#5BA3E0" text-anchor="middle" font-weight="bold">watch</text>
-      <text x="780" y="510" font-family="Arial, 'Microsoft YaHei', sans-serif" font-size="9" fill="#A0B8D0" text-anchor="middle">desired</text>
+      <text x="780" y="510" font-family="Arial, 'Microsoft YaHei', sans-serif" font-size="10" fill="#A0B8D0" text-anchor="middle">desired</text>
     </g>
     <g id="loop-diff">
       <circle cx="940" cy="500" r="40" fill="none" stroke="#FFB627" stroke-width="1.5" />
       <text x="940" y="495" font-family="Consolas, 'Courier New', monospace" font-size="11" fill="#FFB627" text-anchor="middle" font-weight="bold">diff</text>
-      <text x="940" y="510" font-family="Arial, 'Microsoft YaHei', sans-serif" font-size="9" fill="#A0B8D0" text-anchor="middle">vs actual</text>
+      <text x="940" y="510" font-family="Arial, 'Microsoft YaHei', sans-serif" font-size="10" fill="#A0B8D0" text-anchor="middle">vs actual</text>
     </g>
     <g id="loop-act">
       <circle cx="1100" cy="500" r="40" fill="none" stroke="#7FD99F" stroke-width="1.5" />
       <text x="1100" y="495" font-family="Consolas, 'Courier New', monospace" font-size="11" fill="#7FD99F" text-anchor="middle" font-weight="bold">act</text>
-      <text x="1100" y="510" font-family="Arial, 'Microsoft YaHei', sans-serif" font-size="9" fill="#A0B8D0" text-anchor="middle">converge</text>
+      <text x="1100" y="510" font-family="Arial, 'Microsoft YaHei', sans-serif" font-size="10" fill="#A0B8D0" text-anchor="middle">converge</text>
     </g>
 
     <line x1="820" y1="500" x2="900" y2="500" stroke="#5BA3E0" stroke-width="1" />

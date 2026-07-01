@@ -82,7 +82,7 @@ Full guide → [Live Preview Workflow](../skills/ppt-master/workflows/live-previ
 
 ## Animations & transitions
 
-Exported decks ship **page transitions** and **per-element entrance animations** as real OOXML — not embedded video. By default, elements cascade in on slide entry with no setup, and the deck plays natively in PowerPoint and Keynote with no extra tooling. Reach for customization only when you want a specific order, effect, or timing.
+Exported decks ship **page transitions** as real OOXML — not embedded video. Page transitions are on by default; per-element entrance animations are off by default, so each slide appears as a whole unless you explicitly enable element builds with `-a auto`, another animation effect, or `animations.json`. Reach for customization when you want a specific order, effect, or timing.
 
 Full guide → [Animations & Transitions](../skills/ppt-master/references/animations.md)
 

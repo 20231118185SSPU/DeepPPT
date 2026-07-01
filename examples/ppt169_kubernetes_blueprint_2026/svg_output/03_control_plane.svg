@@ -51,7 +51,7 @@
     <text x="640" y="430" font-family="Consolas, 'Courier New', monospace" font-size="14" fill="#FFB627" text-anchor="middle" font-weight="bold">kube-apiserver</text>
     <text x="640" y="450" font-family="Arial, 'Microsoft YaHei', sans-serif" font-size="11" fill="#F0F4F8" text-anchor="middle">REST + admission</text>
     <text x="640" y="466" font-family="Arial, 'Microsoft YaHei', sans-serif" font-size="11" fill="#F0F4F8" text-anchor="middle">+ validation</text>
-    <text x="640" y="484" font-family="Consolas, 'Courier New', monospace" font-size="9" fill="#A0B8D0" text-anchor="middle">HUB · scales horizontally</text>
+    <text x="640" y="484" font-family="Consolas, 'Courier New', monospace" font-size="10" fill="#A0B8D0" text-anchor="middle">HUB · scales horizontally</text>
   </g>
 
   <g id="spoke-etcd">
@@ -62,7 +62,7 @@
     <text x="556" y="206" font-family="Arial, 'Microsoft YaHei', sans-serif" font-size="11" fill="#A0B8D0">Distributed K/V store</text>
     <text x="556" y="222" font-family="Arial, 'Microsoft YaHei', sans-serif" font-size="11" fill="#A0B8D0">Raft · all cluster state</text>
     <line x1="640" y1="232" x2="640" y2="280" stroke="#FFB627" stroke-width="1" stroke-dasharray="2 3" />
-    <text x="660" y="260" font-family="Consolas, 'Courier New', monospace" font-size="9" fill="#FFB627">↕ only direct talker</text>
+    <text x="660" y="260" font-family="Consolas, 'Courier New', monospace" font-size="10" fill="#FFB627">↕ only direct talker</text>
   </g>
 
   <g id="spoke-scheduler">
@@ -104,17 +104,17 @@
   <g id="annotations">
     <line x1="75" y1="148" x2="120" y2="148" stroke="#FFB627" stroke-width="0.8" />
     <line x1="75" y1="148" x2="75" y2="232" stroke="#FFB627" stroke-width="0.8" />
-    <text x="75" y="143" font-family="Consolas, 'Courier New', monospace" font-size="9" fill="#FFB627">PERSISTENCE</text>
+    <text x="75" y="143" font-family="Consolas, 'Courier New', monospace" font-size="10" fill="#FFB627">PERSISTENCE</text>
 
     <line x1="1080" y1="290" x2="1140" y2="290" stroke="#5BA3E0" stroke-width="0.8" />
     <line x1="1140" y1="290" x2="1140" y2="530" stroke="#5BA3E0" stroke-width="0.8" />
     <line x1="1080" y1="530" x2="1140" y2="530" stroke="#5BA3E0" stroke-width="0.8" />
-    <text x="1148" y="394" font-family="Consolas, 'Courier New', monospace" font-size="9" fill="#5BA3E0">RECONCILE</text>
-    <text x="1148" y="410" font-family="Consolas, 'Courier New', monospace" font-size="9" fill="#5BA3E0">LOOPS</text>
+    <text x="1148" y="394" font-family="Consolas, 'Courier New', monospace" font-size="10" fill="#5BA3E0">RECONCILE</text>
+    <text x="1148" y="410" font-family="Consolas, 'Courier New', monospace" font-size="10" fill="#5BA3E0">LOOPS</text>
 
     <line x1="140" y1="290" x2="200" y2="290" stroke="#3E7AB8" stroke-width="0.8" />
     <line x1="140" y1="290" x2="140" y2="332" stroke="#3E7AB8" stroke-width="0.8" />
-    <text x="80" y="316" font-family="Consolas, 'Courier New', monospace" font-size="9" fill="#3E7AB8">CLOUD GLUE</text>
+    <text x="80" y="316" font-family="Consolas, 'Courier New', monospace" font-size="10" fill="#3E7AB8">CLOUD GLUE</text>
   </g>
 
   <g id="key-fact">

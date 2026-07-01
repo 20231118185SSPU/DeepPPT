@@ -53,8 +53,10 @@ Match the canvas to the source so 1:1 pages and paste-back align. Determine the 
 
 ```bash
 python3 ${SKILL_DIR}/scripts/project_manager.py init <project_name> --format <format>
-python3 ${SKILL_DIR}/scripts/project_manager.py import-sources <project_path> <source.pptx> --move
+python3 ${SKILL_DIR}/scripts/project_manager.py import-sources <project_path> <source.pptx>
 ```
+
+Use the unflagged default for user-provided decks so originals outside the repo are copied, not moved. Add `--move` only when the user explicitly wants the source deck relocated.
 
 ---
 

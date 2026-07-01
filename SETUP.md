@@ -76,7 +76,7 @@ OPENAI_API_KEY=sk-xxx
 
 ## AI Agent 平台使用说明
 
-DeepPPT 为以下 12 个主流 AI Agent 平台提供了项目级配置：
+DeepPPT 为以下 13 个主流 AI Agent 平台提供了项目级配置：
 
 ### P0 — 核心平台
 

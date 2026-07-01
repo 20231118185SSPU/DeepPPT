@@ -20,6 +20,8 @@ from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any, Optional
 
+from artifact_registry import latest_pptx
+
 
 _CHECK_FILES = {
     "svg_quality": (
@@ -469,6 +471,86 @@ def _raw_payload(reports: dict[str, ReportFile]) -> dict[str, Any]:
     return raw
 
 
+def _detail_command(detail: dict[str, Any]) -> str:
+    command = detail.get("command")
+    if isinstance(command, list):
+        return " ".join(str(part) for part in command)
+    return str(command or "")
+
+
+def _failed_details(reports: dict[str, ReportFile]) -> list[dict[str, Any]]:
+    failed: list[dict[str, Any]] = []
+    for report in reports.values():
+        data = report.data or {}
+        details = data.get("details")
+        if not isinstance(details, list):
+            continue
+        for detail in details:
+            if not isinstance(detail, dict) or detail.get("passed", True):
+                continue
+            failed.append({
+                "check": str(detail.get("label") or report.check),
+                "source_file": report.source_file,
+                "command": _detail_command(detail),
+                "returncode": detail.get("returncode"),
+                "stderr": str(detail.get("stderr") or "")[:1000],
+                "stdout": str(detail.get("stdout") or "")[:1000],
+            })
+    return failed
+
+
+def _diagnostics(
+    project: Path,
+    reports: dict[str, ReportFile],
+    checks: list[dict[str, Any]],
+    issues: dict[str, list[dict[str, str]]],
+    overall: str,
+) -> dict[str, Any]:
+    report_files = [
+        {
+            "check": report.check,
+            "source_file": report.source_file,
+            "updated_at": report.updated_at,
+        }
+        for report in reports.values()
+    ]
+    report_files.sort(key=lambda item: item["updated_at"] or "", reverse=True)
+    latest_check = report_files[0] if report_files else None
+    failed_checks = [
+        item for item in checks
+        if item.get("status") == "fail"
+    ]
+    failed_details = _failed_details(reports)
+    must_fix = issues.get("must_fix", [])
+    related_files = []
+    for item in must_fix + issues.get("should_fix", []):
+        path = item.get("path") or item.get("source_file")
+        if path and path not in related_files:
+            related_files.append(path)
+    failed_scripts = [
+        item.get("check") for item in failed_details
+        if item.get("check")
+    ] or [item.get("id") for item in failed_checks if item.get("id")]
+    commands = []
+    if any(name in failed_scripts for name in ("spec_compliance", "spec")):
+        commands.append(f"python skills/ppt-master/scripts/spec_compliance_check.py {project}")
+    if any(name in failed_scripts for name in ("svg_quality", "svg")):
+        commands.append(f"python skills/ppt-master/scripts/svg_quality_checker.py {project}")
+    if failed_scripts or overall == "fail":
+        commands.append(f"python skills/ppt-master/scripts/harness_gate.py {project} --quick")
+    return {
+        "latest_check": latest_check,
+        "failed_scripts": failed_scripts,
+        "failed_stage": failed_scripts[0] if failed_scripts else None,
+        "error_summary": (must_fix[0].get("message") if must_fix else ""),
+        "related_files": related_files[:10],
+        "recommended_commands": commands,
+        "final_export_path": latest_pptx(project),
+        "report_files": report_files,
+        "failed_details": failed_details[:5],
+    }
+
+
 def _check_entry(check: str, report: ReportFile | None) -> dict[str, Any]:
     if report is None:
         return {
@@ -527,10 +609,12 @@ def normalize_quality_report(project: Path) -> Optional[dict]:
         overall = _normalize_status(integrated.data, integrated.parse_warning)
     harness = _legacy_harness(reports, checks, overall)
 
+    issues = _merge_issues(reports)
     return {
         "overall": overall,
         "checks": checks,
-        "issues": _merge_issues(reports),
+        "issues": issues,
+        "diagnostics": _diagnostics(project, reports, checks, issues, overall),
         "raw": _raw_payload(reports),
         "parse_warnings": [
             {

@@ -36,6 +36,14 @@ import sys
 from datetime import datetime, timezone
 from pathlib import Path
 
+# Auto-load .env from repo root so VISION_* vars are available without manual export
+try:
+    from dotenv import load_dotenv
+    _repo_root = Path(__file__).resolve().parent.parent.parent.parent
+    load_dotenv(_repo_root / ".env")
+except ImportError:
+    pass
+
 sys.path.insert(0, str(Path(__file__).parent))
 
 from vision_backends import backend_common  # noqa: E402

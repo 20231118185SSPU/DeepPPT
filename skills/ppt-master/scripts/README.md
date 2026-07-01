@@ -24,7 +24,8 @@ python3 scripts/source_to_md/pdf_to_md.py <file.pdf>
 python3 scripts/source_to_md/ppt_to_md.py <deck.pptx>
 python3 scripts/source_to_md/excel_to_md.py <workbook.xlsx>
 python3 scripts/project_manager.py init <project_name> --format ppt169
-python3 scripts/project_manager.py import-sources <project_path> <source_files...> --move
+python3 scripts/project_manager.py import-sources <project_path> <source_files...>
+python3 scripts/project_manager.py validate <project_path> --start-dashboard --no-browser
 python3 scripts/total_md_split.py <project_path>
 python3 scripts/finalize_svg.py <project_path>
 python3 scripts/animation_config.py scaffold <project_path>  # optional object-level animation overrides
@@ -45,7 +46,7 @@ python3 scripts/update_repo.py
 | Project management | `project_manager.py`, `batch_validate.py`, `generate_examples_index.py`, `error_helper.py`, `pptx_template_import.py`, `template_fill_pptx.py` | [docs/project.md](./docs/project.md) |
 | SVG pipeline | `finalize_svg.py`, `svg_to_pptx.py`, `total_md_split.py`, `svg_quality_checker.py`, `extract_svg_assets.py`, `animation_config.py`, `notes_to_audio.py` | [docs/svg-pipeline.md](./docs/svg-pipeline.md) |
 | Spec maintenance | `update_spec.py` | [docs/update_spec.md](./docs/update_spec.md) |
-| Image tools | image_gen.py, latex_render.py, nalyze_images.py, gemini_watermark_remover.py | [docs/image.md](./docs/image.md) |
+| Image tools | `image_gen.py`, `latex_render.py`, `analyze_images.py`, `gemini_watermark_remover.py` | [docs/image.md](./docs/image.md) |
 | Research gates | `research/browse_ai.py`, `research/research_gate.py`, `research/asset_gate.py`, `research/sync_research_outputs.py`, `confirm_ui_gate.py` | Deep-research and Step 4/5 gate docs in `../workflows/` |
 | Repo maintenance | `update_repo.py` | README install/update section |
 | Troubleshooting | validation, preview, export, dependency issues | [docs/troubleshooting.md](./docs/troubleshooting.md) |
@@ -66,9 +67,30 @@ Project setup:
 
 ```bash
 python3 scripts/project_manager.py init <project_name> --format ppt169
-python3 scripts/project_manager.py import-sources <project_path> <source_files...> --move
+python3 scripts/project_manager.py import-sources <project_path> <source_files...>
 python3 scripts/project_manager.py validate <project_path>
 ```
+
+Leave `import-sources` unflagged by default. Add `--move` only when intentionally relocating originals; add `--copy` when an in-repo source must remain in place.
+
+After Step 2 project setup/import, start or reuse the read-only Dashboard:
+
+```bash
+python3 scripts/dashboard/server.py <project_path> --daemon --no-browser
+```
+
+Or ask `project_manager.py` to do the same best-effort startup after a successful
+project command:
+
+```bash
+python3 scripts/project_manager.py init <project_name> --format ppt169 --start-dashboard --no-browser
+python3 scripts/project_manager.py import-sources <project_path> <source_files...> --start-dashboard --no-browser
+python3 scripts/project_manager.py validate <project_path> --start-dashboard --no-browser
+```
+
+Without `--start-dashboard`, project commands only print the Dashboard hint.
+
+Default port: `8765`; log: `<project_path>/dashboard/dashboard.log`. Launch failure is non-fatal. Dashboard shows status, artifacts, quality, trace, and bridge state only; it does not replace Confirm UI, Live Preview, quality gates, post-processing, or export.
 
 Template source import:
 
@@ -102,6 +124,18 @@ python3 scripts/research/asset_gate.py <project>             # after image acqui
 
 Gate failures are blocking. Return to the step printed by the gate and rerun it before continuing.
 
+Aggregated quality gate:
+
+```bash
+python3 scripts/harness_gate.py <project_path> --quick
+python3 scripts/harness_gate.py <project_path> --quick --read-only
+```
+
+By default, `harness_gate.py` writes `<project_path>/quality/harness.json` and appends
+`<project_path>/trace.jsonl` so the Dashboard can show the latest aggregate gate
+result. Add `--read-only` (alias: `--no-write`) for regression checks that must not
+modify project files.
+
 Post-processing and export:
 
 ```bash
@@ -133,7 +167,8 @@ python3 scripts/update_repo.py --skip-pip
 - Keep one user-facing entry point per workflow at the top level of `scripts/`
 - Move provider-specific or helper internals into subdirectories
 - Prefer the unified entry points `project_manager.py`, `finalize_svg.py`, and `image_gen.py`
-- Prefer `svg_final/` over `svg_output/` when exporting
+- Use the default export source split: native PPTX reads `svg_output/`; SVG snapshot / legacy preview reads `svg_final/`.
+- Pass `-s output` or `-s final` only when a workflow explicitly needs both export products to read from one source.
 
 ## Related Docs
 

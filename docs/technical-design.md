@@ -36,7 +36,7 @@ User Input (PDF/DOCX/XLSX/URL/Markdown)
     ↓
 [Chart calibration (optional)] → verify-charts workflow (for decks containing data charts)
     ↓
-[Visual self-check (optional, opt-in)] → visual-review workflow (only when the user explicitly requests it)
+[Visual self-check (recommended by default)] → visual-review workflow (after quality gates, before Step 7; skip only on explicit opt-out or `skip_visual_review: true`)
     ↓
 [Post-processing] → total_md_split.py (split notes) → finalize_svg.py → svg_to_pptx.py
     ↓
@@ -110,7 +110,7 @@ Source documents (PDF / DOCX / EPUB / XLSX / PPTX / web pages) are normalized in
 
 ## Project Structure & Lifecycle
 
-The non-obvious bit of the project layout is `import-sources`'s **asymmetric default**: files outside the repo are *copied* in (preserving the user's original), files inside the repo are *moved* in (so intermediate artifacts don't get committed by accident). The asymmetry tracks the natural risk profile — outside-repo files are typically user assets we shouldn't disturb, inside-repo files are typically transient artifacts that should be cleaned up. A single uniform default would get one or the other case wrong every time.
+The non-obvious bit of the project layout is `import-sources`'s **asymmetric default**: files outside the repo are *copied* in (preserving the user's original), files inside the repo are *moved* in (so intermediate artifacts don't get committed by accident). The asymmetry tracks the natural risk profile — outside-repo files are typically user assets we shouldn't disturb, inside-repo files are typically transient artifacts that should be cleaned up. A single uniform default would get one or the other case wrong every time. Use `--move` only when intentionally relocating originals; use `--copy` when an in-repo source must remain in place.
 
 ---
 
@@ -152,7 +152,7 @@ PPT Master uses **role switching within one main agent** rather than parallel su
 
 ## Execution Discipline
 
-The pipeline is enforced by an 8-rule set in [`SKILL.md` § Global Execution Discipline](../skills/ppt-master/SKILL.md) — that file is authoritative; the rules live there. They look bureaucratic but exist because LLMs default to "let me solve the whole problem in this turn", which is exactly the wrong shape for a serial pipeline where each step's output is bounded, checkpointed, and consumed by the next. The rules collectively close failure modes that surfaced repeatedly in practice: out-of-order execution, AI proxying user design decisions, cross-phase bundling, missing prerequisites, speculative pre-work, sub-agent context loss, page-batching drift, and long-deck color/font drift.
+The pipeline is enforced by the rule set in [`SKILL.md` § Global Execution Discipline](../skills/ppt-master/SKILL.md) — that file is authoritative; the rules live there. They look bureaucratic but exist because LLMs default to "let me solve the whole problem in this turn", which is exactly the wrong shape for a serial pipeline where each step's output is bounded, checkpointed, and consumed by the next. The rules collectively close failure modes that surfaced repeatedly in practice: out-of-order execution, AI proxying user design decisions, cross-phase bundling, missing prerequisites, speculative pre-work, sub-agent context loss, page-batching drift, and long-deck color/font drift.
 
 The Role Switching Protocol (mandated read of `references/<role>.md` before mode change) serves two reinforcing purposes: forcing fresh role instructions into context overrides drift from the previous mode, and the visible marker in the conversation transcript creates an audit trail so the user can see when the agent moved between modes — critical when reviewing why a particular decision was made.
 
@@ -296,4 +296,4 @@ The interesting design choice is the animation **anchor**, not the effect list.
 
 ## Standalone Workflows
 
-Six capabilities (`create-template`, `verify-charts`, `customize-animations`, `live-preview`, `generate-audio`, `visual-review`) live as standalone workflows rather than pipeline steps. Each is sparsely triggered — per-template, per-chart-deck, per-animation-tuning request, per-complaint, per-video-export, per explicit visual-review request — not per-deck. Folding any into the default pipeline would either run unnecessary steps for the majority of users (added latency and failure surface) or force a one-size-fits-all narrowing of the main flow. Keeping them opt-in lets the deck-generation pipeline stay tight and predictable while making the capability available when its trigger condition fires; each `workflows/<name>.md` is self-contained and loaded on demand, so paying the prompt-context cost is also opt-in.
+Six capabilities (`create-template`, `verify-charts`, `customize-animations`, `live-preview`, `generate-audio`, `visual-review`) live as standalone workflows rather than inline pipeline code. Most remain sparsely triggered — per-template, per-chart-deck, per-animation-tuning request, per-complaint, or per-video-export. `visual-review` is the exception: it is recommended by default after Executor quality gates and before Step 7, skipped only when the user explicitly says "skip visual review" / "跳过视觉自检" or when `confirm_ui/result.json` contains `skip_visual_review: true`; for chart decks, run `verify-charts` first. Keeping these capabilities as standalone workflows keeps each `workflows/<name>.md` self-contained and loaded only when its trigger condition fires.

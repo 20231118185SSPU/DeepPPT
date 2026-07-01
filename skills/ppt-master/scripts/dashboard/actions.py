@@ -30,6 +30,7 @@ from pathlib import Path
 from typing import Any
 
 from bridge import confirm_ui_status, live_preview_status
+from trace_writer import trace_event
 
 
 _DASHBOARD_DIR = Path(__file__).resolve().parent
@@ -62,6 +63,17 @@ def run_action(project: Path, action: str, payload: dict[str, Any] | None) -> tu
     if action == "start-confirm":
         existing = confirm_ui_status(project)
         if existing.get("running"):
+            trace_event(
+                project,
+                "bridge_status",
+                "Confirm UI already running",
+                bridge="confirm",
+                running=True,
+                url=existing.get("url"),
+                pid=existing.get("pid"),
+                port=existing.get("port"),
+                producer="dashboard.actions",
+            )
             return _record_existing(project, action, existing), 200
         command = _start_confirm_command(project)
         return _start_background_action(project, action, [command], START_TIMEOUT), 202
@@ -69,6 +81,17 @@ def run_action(project: Path, action: str, payload: dict[str, Any] | None) -> tu
     if action == "start-preview":
         existing = live_preview_status(project)
         if existing.get("running"):
+            trace_event(
+                project,
+                "bridge_status",
+                "Live Preview already running",
+                bridge="live-preview",
+                running=True,
+                url=existing.get("url"),
+                pid=existing.get("pid"),
+                port=existing.get("port"),
+                producer="dashboard.actions",
+            )
             return _record_existing(project, action, existing), 200
         command = _start_preview_command(project)
         return _start_background_action(project, action, [command], START_TIMEOUT), 202
@@ -227,6 +250,15 @@ def _start_background_action(
         "stderr_tail": "",
     }
     _write_record(project, record)
+    trace_event(
+        project,
+        "substep_progress",
+        f"Dashboard action started: {action}",
+        step=_action_step(action),
+        sub_step_id=action,
+        producer="dashboard.actions",
+        script="dashboard/actions.py",
+    )
     thread = threading.Thread(
         target=_run_commands,
         args=(project, action_id, commands, timeout_seconds),
@@ -281,6 +313,7 @@ def _run_commands(
         stdout_all.append(result["stdout"])
         stderr_all.append(result["stderr"])
         _persist_quality_stdout(project, command, result["stdout"])
+        _trace_command_result(project, record.get("action"), command, result)
         if result["returncode"] != 0:
             status = "failed"
 
@@ -304,6 +337,15 @@ def _run_commands(
     _write_text(_stdout_path(project, action_id), "\n".join(stdout_all))
     _write_text(_stderr_path(project, action_id), "\n".join(stderr_all))
     _write_record(project, record)
+    trace_event(
+        project,
+        "step_complete" if status == "done" else "error",
+        f"Dashboard action {record.get('action')} {status}",
+        step=_action_step(str(record.get("action") or "")),
+        status=status,
+        producer="dashboard.actions",
+        script="dashboard/actions.py",
+    )
 
 
 def _run_one_command(
@@ -375,6 +417,47 @@ def _persist_quality_stdout(project: Path, command: list[str], stdout: str) -> N
     quality_dir = project / "quality"
     quality_dir.mkdir(parents=True, exist_ok=True)
     _write_json(quality_dir / filename, parsed)
+
+
+def _trace_command_result(
+    project: Path,
+    action: str,
+    command: list[str],
+    result: dict[str, Any],
+) -> None:
+    script_name = Path(command[1]).name if len(command) > 1 else ""
+    returncode = int(result.get("returncode") or 0)
+    if action == "run-quality":
+        trace_event(
+            project,
+            "quality_result",
+            f"{script_name} {'passed' if returncode == 0 else 'failed'}",
+            step=6,
+            check=script_name.replace(".py", ""),
+            status="PASS" if returncode == 0 else "FAIL",
+            returncode=returncode,
+            command=_preview_command(command),
+            producer="dashboard.actions",
+        )
+    elif action in {"start-confirm", "start-preview"}:
+        trace_event(
+            project,
+            "bridge_status",
+            f"{action} command {'completed' if returncode == 0 else 'failed'}",
+            bridge="confirm" if action == "start-confirm" else "live-preview",
+            running=returncode == 0,
+            returncode=returncode,
+            command=_preview_command(command),
+            producer="dashboard.actions",
+        )
+
+
+def _action_step(action: str) -> int | None:
+    return {
+        "start-confirm": 4,
+        "start-preview": 6,
+        "run-quality": 6,
+    }.get(action)
 
 
 def _new_action_id(action: str) -> str:

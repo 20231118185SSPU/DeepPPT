@@ -33,7 +33,7 @@ A brand is structurally a layout template minus its page roster. Use a brand whe
 
 ## Visualization Templates
 
-The `charts/` directory contains 57 standardized visualization templates. For backward compatibility, the directory name remains `charts/`, but its scope includes charts, infographics, process diagrams, relationship diagrams, strategic frameworks, and system architecture diagrams:
+The `charts/` directory contains 71 standardized visualization templates. For backward compatibility, the directory name remains `charts/`, but its scope includes charts, infographics, process diagrams, relationship diagrams, strategic frameworks, and system architecture diagrams:
 
 - KPI Cards
 - Bar Chart / Stacked Bar Chart

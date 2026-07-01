@@ -35,7 +35,7 @@ Every brand directory is self-contained:
 
 ```
 templates/brands/<brand_id>/
-├── design_spec.md            # required — brand identity spec (7 sections)
+├── design_spec.md            # required — brand identity spec (six sections)
 ├── logo.<ext>                # optional — primary brand logo (single-lockup brands)
 │   …or…
 ├── <brand>_wordmark.<ext>    # optional — wordmark variant (dual-lockup brands)

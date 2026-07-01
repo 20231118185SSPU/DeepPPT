@@ -2,17 +2,18 @@
 """
 PPT Master - Script Smoke Check
 
-Verifies that all top-level scripts under scripts/ can be imported
-and that their CLI entry points respond to --help without crashing.
+Verifies that all top-level scripts under scripts/ plus selected nested
+entry points can be imported and that their CLI entry points respond to
+--help without crashing.
 
 Usage:
-    python3 scripts/smoke_check.py
-    python3 scripts/smoke_check.py --scripts-dir <path>
-    python3 scripts/smoke_check.py --skip-help
+    python3 skills/ppt-master/scripts/smoke_check.py
+    python3 skills/ppt-master/scripts/smoke_check.py --scripts-dir <path>
+    python3 skills/ppt-master/scripts/smoke_check.py --skip-help
 
 Examples:
-    python3 scripts/smoke_check.py
-    python3 scripts/smoke_check.py --skip-help
+    python3 skills/ppt-master/scripts/smoke_check.py
+    python3 skills/ppt-master/scripts/smoke_check.py --skip-help
 
 Dependencies:
     None for import checks (--help checks may need project deps)
@@ -21,6 +22,7 @@ Notes:
     - Import check: verifies the module loads without ImportError
     - --help check: invokes each script's CLI with --help, catches crashes
     - Scripts that require interactive input or long startup are skipped
+    - Selected nested entry points are included when they are workflow-facing
     - Exit 0 = all pass; exit 1 = failures found
 """
 
@@ -29,15 +31,33 @@ import sys
 import argparse
 import importlib
 import importlib.util
+import json
+import shutil
 import subprocess
+import time
+import urllib.error
+import urllib.request
+import uuid
+from datetime import datetime
 from pathlib import Path
 from typing import Optional
+
+_SCRIPTS_DIR = Path(__file__).resolve().parent
+if str(_SCRIPTS_DIR) not in sys.path:
+    sys.path.insert(0, str(_SCRIPTS_DIR))
+
+from console_encoding import configure_utf8_stdio  # noqa: E402
 
 # Scripts that need interactive input or a running server — skip --help check.
 _SKIP_HELP: set[str] = {
     "confirm_ui/server.py",
     "svg_editor/server.py",
     "server_common.py",
+}
+
+# Nested entry points that are directly exposed in SKILL.md / AGENTS.md.
+_EXTRA_ENTRYPOINTS: set[str] = {
+    "dashboard/server.py",
 }
 
 # Thin wrappers that delegate to a same-named sub-package.
@@ -53,11 +73,16 @@ _SKIP_IMPORT: set[str] = set()
 
 
 def find_scripts(scripts_dir: Path) -> list[Path]:
-    """Return all top-level .py files in scripts/, excluding __init__.py."""
-    return sorted(
+    """Return smoke-covered script entry points."""
+    scripts = [
         p for p in scripts_dir.glob("*.py")
         if p.name != "__init__.py" and p.name != "smoke_check.py"
-    )
+    ]
+    for rel in _EXTRA_ENTRYPOINTS:
+        path = scripts_dir / rel
+        if path.is_file():
+            scripts.append(path)
+    return sorted(scripts, key=lambda p: p.relative_to(scripts_dir).as_posix())
 
 
 def check_import(script_path: Path, scripts_dir: Path) -> tuple[bool, str]:
@@ -115,6 +140,113 @@ def check_help(script_path: Path, python: str) -> tuple[bool, str]:
         return False, f"{type(e).__name__}: {e}"
 
 
+def dashboard_e2e_smoke(scripts_dir: Path) -> tuple[bool, str]:
+    """Create a temporary project, start Dashboard, read state, then shut down."""
+    repo_root = scripts_dir.parents[2]
+    projects_dir = repo_root / "projects"
+    project = None
+    stage = "init"
+    try:
+        from project_manager import ProjectManager
+        from dashboard_launcher import launch_dashboard_daemon
+
+        projects_dir.mkdir(parents=True, exist_ok=True)
+        stamp = datetime.now().strftime("%Y%m%d_%H%M%S")
+        name = f"_smoke_dashboard_{stamp}_{uuid.uuid4().hex[:6]}"
+        manager = ProjectManager(projects_dir)
+        project = Path(manager.init_project(name, "ppt169")).resolve()
+
+        stage = "launch"
+        result = launch_dashboard_daemon(project, port=8765, no_browser=True)
+        if result != 0:
+            return False, f"launch returned {result}; project={project}"
+
+        stage = "lock"
+        lock = _wait_for_lock(project / ".dashboard.lock")
+        if not lock:
+            return False, f"dashboard lock not found; project={project}; log={_dashboard_log(project)}"
+        port = int(lock.get("port", 0) or 0)
+        url = str(lock.get("url") or f"http://127.0.0.1:{port}/")
+        if not port:
+            return False, f"dashboard lock missing port; project={project}; log={_dashboard_log(project)}"
+
+        stage = "state"
+        state = _get_json(f"{url.rstrip('/')}/api/state")
+        missing = [
+            key for key in (
+                "project_name",
+                "project_path",
+                "canvas_format",
+                "steps",
+                "current_step",
+                "confirm_ui",
+                "live_preview",
+            )
+            if key not in state
+        ]
+        if missing:
+            return False, f"/api/state missing {missing}; url={url}; log={_dashboard_log(project)}"
+
+        stage = "shutdown"
+        _post_json(f"{url.rstrip('/')}/api/shutdown")
+        if not _wait_for_down(f"{url.rstrip('/')}/api/state"):
+            return False, f"dashboard still responds after shutdown; url={url}; log={_dashboard_log(project)}"
+
+        stage = "cleanup"
+        if project.name.startswith("_smoke_dashboard_"):
+            shutil.rmtree(project)
+        return True, f"PASS dashboard-e2e url={url} log={_dashboard_log(project)}"
+    except Exception as exc:
+        return False, f"dashboard-e2e failed at {stage}: {type(exc).__name__}: {exc}; project={project}"
+
+
+def _wait_for_lock(lock_path: Path, timeout: float = 10.0) -> dict | None:
+    deadline = time.time() + timeout
+    while time.time() < deadline:
+        try:
+            data = json.loads(lock_path.read_text(encoding="utf-8"))
+        except (OSError, json.JSONDecodeError):
+            time.sleep(0.2)
+            continue
+        if isinstance(data, dict):
+            return data
+    return None
+
+
+def _get_json(url: str, timeout: float = 3.0) -> dict:
+    with urllib.request.urlopen(url, timeout=timeout) as response:
+        data = json.loads(response.read().decode("utf-8"))
+    if not isinstance(data, dict):
+        raise ValueError(f"Expected JSON object from {url}")
+    return data
+
+
+def _post_json(url: str, timeout: float = 3.0) -> None:
+    request = urllib.request.Request(
+        url,
+        data=b"{}",
+        headers={"Content-Type": "application/json"},
+        method="POST",
+    )
+    with urllib.request.urlopen(request, timeout=timeout):
+        pass
+
+
+def _wait_for_down(url: str, timeout: float = 5.0) -> bool:
+    deadline = time.time() + timeout
+    while time.time() < deadline:
+        try:
+            urllib.request.urlopen(url, timeout=0.5).close()
+        except (urllib.error.URLError, TimeoutError, OSError):
+            return True
+        time.sleep(0.2)
+    return False
+
+
+def _dashboard_log(project: Path) -> Path:
+    return project / "dashboard" / "dashboard.log"
+
+
 def build_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(
         description="Smoke check all PPT Master scripts.",
@@ -128,6 +260,11 @@ def build_parser() -> argparse.ArgumentParser:
         "--skip-help",
         action="store_true",
         help="Only check imports, skip --help invocations",
+    )
+    parser.add_argument(
+        "--dashboard-e2e",
+        action="store_true",
+        help="Run opt-in Dashboard daemon/API/shutdown smoke check",
     )
     return parser
 
@@ -192,6 +329,17 @@ def main(argv: Optional[list[str]] = None) -> int:
                 print(f"  [FAIL] {rel} — {msg}")
                 failed += 1
 
+    if args.dashboard_e2e:
+        print("\nDashboard e2e")
+        print("-" * 50)
+        ok, msg = dashboard_e2e_smoke(scripts_dir)
+        if ok:
+            print(f"  [PASS] {msg}")
+            passed += 1
+        else:
+            print(f"  [FAIL] {msg}")
+            failed += 1
+
     total = passed + failed + skipped
     print(f"\n{'=' * 50}")
     print(f"Result: {passed} passed, {failed} failed, {skipped} skipped / {total} checks")
@@ -200,4 +348,5 @@ def main(argv: Optional[list[str]] = None) -> int:
 
 
 if __name__ == "__main__":
+    configure_utf8_stdio()
     raise SystemExit(main())

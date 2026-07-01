@@ -5,7 +5,9 @@ DeepPPT is an AI-driven presentation generation system (Strategist → Image_Gen
 
 Read skills/ppt-master/SKILL.md before any PPT generation task. It is the authoritative workflow.
 
-Core pipeline: Source → Project → Template → Strategist → Image_Generator → Executor SVG → Quality → Export.
+Shared rules: docs/ai-rules-shared.md. Routing details: docs/routing.md.
+
+Core pipeline: Source → Project + Dashboard → Template → Strategist → Image_Generator → Executor SVG → Quality → Export.
 
 Steps are strictly serial. ⛔ BLOCKING steps require explicit user confirmation. Never skip them.
 
@@ -19,8 +21,18 @@ Match user's input language for responses. Design spec follows English template 
 
 Do not create .worktrees/, tests/, or generic engineering scaffolding.
 
-For topic-only requests (no source file), run deep-research workflow first (workflows/deep-research.md).
+For topic-only requests (no source file), run deep-research workflow first (workflows/deep-research.md). Do not replace it with ordinary WebSearch.
 
-Key scripts: project_manager.py init, confirm_ui/server.py, image_gen.py, image_search.py, svg_quality_checker.py, svg_to_pptx.py.
+After Step 2 creates/imports the project, start or reuse the read-only Dashboard: python3 skills/ppt-master/scripts/dashboard/server.py <project_path> --daemon --no-browser. Default port: 8765. Log: <project_path>/dashboard/dashboard.log. Launch failure is non-fatal. Dashboard does not replace Confirm UI, Live Preview, quality gates, post-processing, or export.
+
+Existing PPTX routing: preserve page count/order/wording and beautify only -> beautify-pptx; reuse original deck design with new content -> template-fill-pptx; restructure story or change page count/order -> main pipeline + ppt_to_md; harvest reusable template -> create-template.
+
+Animation routing: page transitions are default; per-element animations are off unless requested. Object-level animation tuning -> customize-animations.
+
+Live preview starts automatically in Step 6; apply submitted annotations only after Step 7 through live-preview.
+
+Visual review: follow current SKILL.md; currently visual-review is recommended by default after quality gates and skipped only by explicit opt-out.
+
+Key scripts: project_manager.py init, dashboard/server.py, confirm_ui/server.py, image_gen.py, image_search.py, svg_quality_checker.py, svg_to_pptx.py.
 
 Configuration: copy .env.example to .env, set IMAGE_BACKEND + API key. Optional: PEXELS/PIXABAY/UNSPLASH/FLICKR keys.

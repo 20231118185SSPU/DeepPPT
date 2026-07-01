@@ -828,6 +828,7 @@ function renderQuality(app) {
   const issues = q.issues || { must_fix: [], should_fix: [], accepted_risks: [] };
   const overall = q.overall || normalizeQualityStatus(harness.overall);
   const raw = q.raw || q;
+  const diagnostics = q.diagnostics || {};
   app.innerHTML = `
     <section class="hero-panel quality-hero">
       <div>
@@ -858,6 +859,7 @@ function renderQuality(app) {
       ${qualityCheckMatrix(checks)}
       ${actionStatusPanel('run-quality')}
     </div>
+    ${qualityDiagnosticsPanel(diagnostics)}
     <div class="quality-issues-grid">
       ${qualityIssueSection('must_fix', '必须修复', issues.must_fix || [])}
       ${qualityIssueSection('should_fix', '建议修复', issues.should_fix || [])}
@@ -1399,11 +1401,13 @@ function logTable(events) {
 }
 
 function servicePanel(service, label, actionText, action = '') {
+  const diagnostics = serviceDiagnostics(service);
   if (service?.running && service.url) {
     return `<div class="service-card running">
       <div>
         <strong>${escapeHtml(label)} 正在运行</strong>
         <p>pid ${escapeHtml(service.pid || '-')} · port ${escapeHtml(service.port || '-')}</p>
+        ${diagnostics}
       </div>
       <a class="button" href="${escapeAttr(service.url)}" target="_blank" rel="noreferrer" title="${escapeAttr(actionText)}">${escapeHtml(actionText)}</a>
     </div>`;
@@ -1411,14 +1415,60 @@ function servicePanel(service, label, actionText, action = '') {
   return `<div class="service-card stopped">
     <div>
       <strong>${escapeHtml(label)} 未运行</strong>
-      <p>对应工作流启动后，这里会显示可打开的入口。</p>
+      <p>${escapeHtml(serviceNextActionText(service?.next_action))}</p>
+      ${diagnostics}
     </div>
     ${action ? actionButton(action) : ''}
   </div>`;
 }
 
 function serviceStatusText(service) {
-  return service?.running ? '运行中' : '未运行';
+  if (service?.running) return '运行中';
+  if (service?.stale_lock) return '锁已过期';
+  if (service?.project_matches === false) return '项目不匹配';
+  return '未运行';
+}
+
+function serviceDiagnostics(service) {
+  if (!service) return '';
+  const rows = [];
+  if (service.lock_path) rows.push(`lock ${compactPath(service.lock_path)}`);
+  if (service.lock_age_seconds !== null && service.lock_age_seconds !== undefined) {
+    rows.push(`age ${formatAge(service.lock_age_seconds)}`);
+  }
+  if (service.stale_lock) rows.push('stale lock');
+  if (service.project_matches === false) rows.push('project mismatch');
+  if (service.last_result_file?.path) rows.push(`result ${service.last_result_file.path}`);
+  if (service.last_annotation_file?.path) rows.push(`annotations ${service.last_annotation_file.path}`);
+  if (service.last_update_file?.path) rows.push(`edits ${service.last_update_file.path}`);
+  return rows.length ? `<p class="service-diagnostics">${escapeHtml(rows.join(' · '))}</p>` : '';
+}
+
+function serviceNextActionText(action) {
+  return {
+    open_confirm_ui: '打开 Confirm UI 完成或查看确认。',
+    review_confirm_result: '已有确认结果，可查看 result.json。',
+    start_confirm_ui: '建议启动 Confirm UI。',
+    restart_confirm_ui: '存在过期锁，建议重新启动确认页。',
+    prepare_confirm_recommendations: '等待 Step 4 生成确认建议。',
+    review_live_preview_changes_after_export: '已有预览注解或编辑，导出后按 Live Preview workflow 处理。',
+    open_live_preview: '打开实时预览继续查看。',
+    restart_live_preview: '存在过期锁，建议重新启动实时预览。',
+    start_live_preview: '建议启动实时预览。',
+  }[action] || '对应工作流启动后，这里会显示可打开的入口。';
+}
+
+function compactPath(path) {
+  const text = String(path || '').replaceAll('\\', '/');
+  const parts = text.split('/');
+  return parts.slice(-3).join('/');
+}
+
+function formatAge(seconds) {
+  const value = Number(seconds || 0);
+  if (value < 60) return `${value}s`;
+  if (value < 3600) return `${Math.floor(value / 60)}m`;
+  return `${Math.floor(value / 3600)}h`;
 }
 
 function actionButton(action) {
@@ -1547,6 +1597,42 @@ function qualityCheckMatrix(checks) {
       </div>`;
     }).join('')}
   </div>`;
+}
+
+function qualityDiagnosticsPanel(diagnostics) {
+  const failed = diagnostics.failed_scripts || [];
+  const reports = diagnostics.report_files || [];
+  const commands = diagnostics.recommended_commands || [];
+  const details = diagnostics.failed_details || [];
+  if (!failed.length && !reports.length && !diagnostics.final_export_path) return '';
+  return `<div class="panel premium-panel quality-panel">
+    <span class="eyebrow">失败诊断</span>
+    <h2>诊断摘要</h2>
+    <div class="status-list rich-list">
+      ${statusRow('最近报告', !!diagnostics.latest_check, diagnostics.latest_check?.source_file || '未发现')}
+      ${statusRow('失败阶段', !failed.length, failed.join(', ') || '无失败')}
+      ${statusRow('最终导出', !!diagnostics.final_export_path, diagnostics.final_export_path || '未导出')}
+    </div>
+    ${diagnostics.error_summary ? `<p class="diagnostic-summary">${escapeHtml(diagnostics.error_summary)}</p>` : ''}
+    ${details.length ? `<div class="quality-issue-list">${details.map(qualityFailedDetailCard).join('')}</div>` : ''}
+    ${commands.length ? `<pre>${escapeHtml(commands.slice(0, 3).join('\n'))}</pre>` : ''}
+    ${reports.length ? `<small>${escapeHtml(reports.map((item) => item.source_file).join(' · '))}</small>` : ''}
+  </div>`;
+}
+
+function qualityFailedDetailCard(item) {
+  const text = item.stderr || item.stdout || '未提供输出。';
+  return `<article class="quality-issue must_fix">
+    <div class="quality-issue-top">
+      <span class="quality-severity">失败</span>
+      <strong>${escapeHtml(item.check || '质量检查')}</strong>
+    </div>
+    <p>${escapeHtml(text)}</p>
+    <div class="quality-issue-meta">
+      <span>${escapeHtml(item.command || '')}</span>
+      <span>${escapeHtml(String(item.returncode ?? ''))}</span>
+    </div>
+  </article>`;
 }
 
 function qualityIssueSection(group, label, items) {

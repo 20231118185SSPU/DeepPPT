@@ -23,6 +23,12 @@ from xml.etree import ElementTree as ET
 logger = logging.getLogger(__name__)
 
 try:
+    from console_encoding import configure_utf8_stdio
+except ImportError:
+    def configure_utf8_stdio() -> None:
+        return None
+
+try:
     from project_utils import CANVAS_FORMATS
     from error_helper import ErrorHelper
 except ImportError:
@@ -2254,4 +2260,5 @@ def main() -> None:
 
 
 if __name__ == '__main__':
+    configure_utf8_stdio()
     main()

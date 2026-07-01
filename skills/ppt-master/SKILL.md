@@ -11,7 +11,7 @@ description: >
 
 > AI-driven multi-format SVG content generation system. Converts source documents into high-quality SVG pages through multi-role collaboration and exports to PPTX.
 
-**Core Pipeline**: `Source Document → Create Project → [Template] → Strategist → [Image_Generator] → Executor Live Preview → Quality Check → Post-processing → Export`
+**Core Pipeline**: `Source Document → Create Project + Dashboard → [Template] → Strategist → [Image_Generator] → Executor Live Preview → Quality Check → Post-processing → Export`
 
 > [!CAUTION]
 > ## 🚨 Global Execution Discipline (MANDATORY)
@@ -190,7 +190,7 @@ Import source content (choose based on the situation):
 
 | Situation | Action |
 |-----------|--------|
-| Has source files (PDF/MD/etc.) | `python3 ${SKILL_DIR}/scripts/project_manager.py import-sources <project_path> <source_files...> --move` |
+| Has source files (PDF/MD/etc.) | `python3 ${SKILL_DIR}/scripts/project_manager.py import-sources <project_path> <source_files...>` |
 | User provided text directly in conversation | No import needed — content is already in conversation context; subsequent steps can reference it directly |
 
 For PPTX sources, `import-sources` automatically runs the standard intake enrichment:
@@ -203,19 +203,29 @@ For each PPTX it writes `<stem>.identity.json` (canvas, theme palette/fonts, obs
 
 Multi-deck: several PPTX files may be imported into one main-pipeline project — each gets its own `<stem>.*` artifacts and a deck entry in `source_profile.json`. `source_profile.json` stays the single must-read index (one entry for a one-deck project, several for a combined-source project). Stems must be distinct; re-importing the same stem replaces that deck's entry. The beautify / template-fill workflows remain single-deck (1:1 to one chosen source deck) and read that deck's `<stem>.*` artifacts.
 
-> ⚠️ **MUST use `--move`** (not copy): all source files — Step 1's generated Markdown, original PDFs / MDs / images — go into `sources/` via `import-sources --move`. After execution they no longer exist at the original location. Intermediate artifacts (e.g., `_files/`) are handled automatically.
+**Import ownership policy**: leave `import-sources` unflagged by default. The script protects user originals with an asymmetric default:
 
-**Dashboard Auto-Launch (best-effort, non-blocking)**: after the project directory exists and sources have been imported, start the unified read-only Dashboard in the background:
+| Source location / intent | Default / flag |
+|--------------------------|----------------|
+| User-owned files outside the repo | Default copies into `sources/`; do not add `--move` unless the user explicitly wants the originals relocated |
+| Temporary or intermediate files inside the repo | Default moves into `sources/` to avoid leaving commit-prone artifacts |
+| In-repo files that must remain in place | Add `--copy` |
+| Disposable Step 1 intermediates that should be cleaned up | Add `--move` only for those items; if mixed with external user originals, run a separate import command |
+
+Intermediate Markdown asset folders (e.g., `_files/`) are handled automatically with their Markdown source.
+
+**Dashboard Auto-Launch (best-effort, non-blocking)**: after the project directory exists and sources have been imported, start or reuse the unified read-only Dashboard in the background:
 ```bash
 python3 ${SKILL_DIR}/scripts/dashboard/server.py <project_path> --daemon
 ```
 - The Dashboard opens at `http://127.0.0.1:<port>/`, defaulting to port `8765`; if that port is occupied, it auto-advances to the next safe port and never uses Chrome's unsafe `5060`.
 - If a Dashboard is already running for this project, the launcher reuses the existing lock URL and does not start a duplicate service.
 - Logs are written to `<project_path>/dashboard/dashboard.log`.
+- Report the actual Dashboard URL and log path in the Step 2 checkpoint. If the browser cannot auto-open, still print the URL for the user/developer to open manually.
 - Launch failure is non-fatal: print the warning and continue the PPT pipeline. Dashboard availability must never block Step 4 confirmation, Step 6 SVG generation, quality gates, post-processing, or export.
 - Dashboard remains read-only by default. It must not auto-confirm, auto-generate, auto-export, or apply annotations; Confirm UI, Live Preview, and quality actions still require their own workflow gates and explicit user action.
 
-**✅ Checkpoint — Confirm project structure created successfully, `sources/` contains all source files, converted materials are ready.**
+**✅ Checkpoint — Confirm project structure created successfully, `sources/` contains all source files, converted materials are ready, and Dashboard URL/log path were reported (or a non-fatal launch warning was reported).**
 
 > **Content Selection Phase (Conditional)**: if `research_report.md` exists in the project (produced by `deep-research` workflow) and `content_selection.json` does NOT yet exist, run the [`content-selection`](workflows/content-selection.md) workflow before proceeding. This interactive step parses the research report into dimensions and lets the user pick which content to include in the PPT. Skip if the user provided source files directly and skipped research — content selection applies to research-generated reports only. After content selection completes (outputs `content_selection.json`), proceed to Step 3.
 

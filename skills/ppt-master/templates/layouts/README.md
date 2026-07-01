@@ -2,7 +2,9 @@
 
 **Layout = structure-only template.** Captures canvas, page structure, page types, and SVG roster — but **no identity segment** (color / typography / logo / voice / icon style). Layered identity comes from `templates/brands/` or is decided per-deck in Strategist's Eight Confirmations. For full-identity replicas of specific PPTs, see [`templates/decks/`](../decks/) instead.
 
-Single source of truth for what layouts exist: [`layouts_index.json`](./layouts_index.json) (`layout_id → { summary, canvas_format, page_count, page_types }`). This README explains the kind; it does **not** enumerate layouts.
+Single source of truth for what layout directories exist: [`layouts_index.json`](./layouts_index.json) (`layout_id → { summary, canvas_format, page_count, page_types }`). This README explains the kind; it does **not** enumerate layouts.
+
+Root-level SVGs such as `screenshot_grid.svg`, `gallery.svg`, `deepdive_card.svg`, and `transition_centered.svg` are built-in single-page layout templates. They are not layout directories and therefore do not appear in `layouts_index.json`; when selected for a page, record their basename in `spec_lock.md` `page_layouts`.
 
 Full data model: [`docs/zh/templates-architecture.md`](../../../../docs/zh/templates-architecture.md).
 

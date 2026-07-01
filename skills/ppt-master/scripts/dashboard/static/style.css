@@ -1603,6 +1603,14 @@ body.modal-open {
   max-height: 460px;
 }
 
+.service-diagnostics,
+.diagnostic-summary {
+  color: var(--muted);
+  font-size: 12px;
+  line-height: 1.45;
+  overflow-wrap: anywhere;
+}
+
 @media (max-width: 1100px) {
   .quality-summary,
   .quality-check-grid,

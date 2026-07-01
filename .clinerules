@@ -7,6 +7,7 @@ DeepPPT: AI-driven PPT generation system. Source → Strategist → Image_Genera
 ## Authority
 
 Read `skills/ppt-master/SKILL.md` for the full workflow before any PPT task.
+Shared rules live in `docs/ai-rules-shared.md`; routing details live in `docs/routing.md`.
 
 ## Rules
 
@@ -19,6 +20,7 @@ Read `skills/ppt-master/SKILL.md` for the full workflow before any PPT task.
 ## Key Scripts
 
 - `project_manager.py init <name> --format ppt169` — Create project
+- `dashboard/server.py <path> --daemon --no-browser` — Start/reuse read-only Dashboard after Step 2 (default port 8765; log `<path>/dashboard/dashboard.log`; failure non-fatal)
 - `confirm_ui/server.py <path> --daemon --wait` — Eight Confirmations
 - `image_gen.py --manifest <path>/images/image_prompts.json` — AI images
 - `svg_quality_checker.py <path>` — Quality check
@@ -26,7 +28,15 @@ Read `skills/ppt-master/SKILL.md` for the full workflow before any PPT task.
 
 ## Deep Research
 
-Topic only (no source)? → `skills/ppt-master/workflows/deep-research.md` first.
+Topic only (no source)? → `skills/ppt-master/workflows/deep-research.md` first. Do not replace it with ordinary WebSearch.
+
+## Routing Guardrails
+
+- Existing PPTX: preserve page count/order/wording and beautify only → `beautify-pptx`; reuse original deck design with new content → `template-fill-pptx`; restructure story or change page count/order → main pipeline + `ppt_to_md`; harvest reusable template → `create-template`.
+- Dashboard is observability only; it does not replace Confirm UI, Live Preview, quality gates, post-processing, or export.
+- Animation: page transitions are default; per-element animations are off unless requested. Object-level animation tuning → `customize-animations`.
+- Live preview starts automatically in Step 6; apply submitted annotations only after Step 7 through `live-preview`.
+- Visual review: follow current `SKILL.md`; currently `visual-review` is recommended by default after quality gates and skipped only by explicit opt-out.
 
 ## Config
 

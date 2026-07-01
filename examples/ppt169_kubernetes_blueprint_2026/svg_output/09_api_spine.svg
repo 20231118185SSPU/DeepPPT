@@ -87,7 +87,7 @@
     <circle cx="640" cy="360" r="180" fill="url(#apiGlow)"/>
     <rect x="540" y="180" width="200" height="360" fill="#0E2A47" stroke="#FFB627" stroke-width="2"/>
     <rect x="540" y="180" width="200" height="36" fill="#FFB627"/>
-    <text x="640" y="204" font-family="Consolas, 'Courier New', monospace" font-size="12" fill="#0E2A47" text-anchor="middle" font-weight="bold">★ SPINE</text>
+    <text x="640" y="204" font-family="Consolas, 'Courier New', monospace" font-size="12" fill="#0E2A47" text-anchor="middle" font-weight="bold">API SPINE</text>
     <text x="640" y="245" font-family="Consolas, 'Courier New', monospace" font-size="16" fill="#FFB627" text-anchor="middle" font-weight="bold">kube-apiserver</text>
     <line x1="560" y1="263" x2="720" y2="263" stroke="#FFB627" stroke-width="0.5"/>
     <text x="640" y="290" font-family="Arial, 'Microsoft YaHei', sans-serif" font-size="12" fill="#F0F4F8" text-anchor="middle">REST API surface</text>
@@ -114,30 +114,30 @@
     <text x="1100" y="380" font-family="Arial, 'Microsoft YaHei', sans-serif" font-size="11" fill="#F0F4F8" text-anchor="middle">Raft K/V cluster</text>
     <text x="1100" y="398" font-family="Arial, 'Microsoft YaHei', sans-serif" font-size="11" fill="#A0B8D0" text-anchor="middle">all cluster state</text>
     <line x1="1018" y1="410" x2="1182" y2="410" stroke="#FFB627" stroke-width="0.4"/>
-    <text x="1100" y="424" font-family="Consolas, 'Courier New', monospace" font-size="9" fill="#A0B8D0" text-anchor="middle">3 or 5 members · odd</text>
+    <text x="1100" y="424" font-family="Consolas, 'Courier New', monospace" font-size="10" fill="#A0B8D0" text-anchor="middle">3 or 5 members · odd</text>
   </g>
 
   <g id="watch-arrows">
     <line x1="280" y1="183" x2="540" y2="218" stroke="#5BA3E0" stroke-width="1.5" marker-end="url(#arrow09Cyan)"/>
-    <text x="295" y="173" font-family="Consolas, 'Courier New', monospace" font-size="9" fill="#A0B8D0">POST · PUT</text>
+    <text x="295" y="173" font-family="Consolas, 'Courier New', monospace" font-size="10" fill="#A0B8D0">POST · PUT</text>
     <line x1="280" y1="253" x2="540" y2="263" stroke="#5BA3E0" stroke-width="1.5" marker-end="url(#arrow09Cyan)"/>
-    <text x="305" y="244" font-family="Consolas, 'Courier New', monospace" font-size="9" fill="#A0B8D0">watch unscheduled</text>
+    <text x="305" y="244" font-family="Consolas, 'Courier New', monospace" font-size="10" fill="#A0B8D0">watch unscheduled</text>
     <line x1="540" y1="290" x2="280" y2="270" stroke="#7FD99F" stroke-width="1.2" marker-end="url(#arrow09Cyan)"/>
-    <text x="338" y="285" font-family="Consolas, 'Courier New', monospace" font-size="9" fill="#7FD99F">bind decision</text>
+    <text x="338" y="285" font-family="Consolas, 'Courier New', monospace" font-size="10" fill="#7FD99F">bind decision</text>
 
     <line x1="280" y1="323" x2="540" y2="333" stroke="#5BA3E0" stroke-width="1.5" marker-end="url(#arrow09Cyan)"/>
-    <text x="320" y="316" font-family="Consolas, 'Courier New', monospace" font-size="9" fill="#A0B8D0">watch + patch</text>
+    <text x="320" y="316" font-family="Consolas, 'Courier New', monospace" font-size="10" fill="#A0B8D0">watch + patch</text>
 
     <line x1="280" y1="393" x2="540" y2="403" stroke="#5BA3E0" stroke-width="1.5" marker-end="url(#arrow09Cyan)"/>
-    <text x="320" y="386" font-family="Consolas, 'Courier New', monospace" font-size="9" fill="#A0B8D0">watch pods/node</text>
+    <text x="320" y="386" font-family="Consolas, 'Courier New', monospace" font-size="10" fill="#A0B8D0">watch pods/node</text>
     <line x1="540" y1="425" x2="280" y2="420" stroke="#7FD99F" stroke-width="1.2" marker-end="url(#arrow09Cyan)"/>
-    <text x="380" y="418" font-family="Consolas, 'Courier New', monospace" font-size="9" fill="#7FD99F">report status</text>
+    <text x="380" y="418" font-family="Consolas, 'Courier New', monospace" font-size="10" fill="#7FD99F">report status</text>
 
     <line x1="280" y1="463" x2="540" y2="475" stroke="#5BA3E0" stroke-width="1.5" marker-end="url(#arrow09Cyan)"/>
-    <text x="318" y="456" font-family="Consolas, 'Courier New', monospace" font-size="9" fill="#A0B8D0">watch services</text>
+    <text x="318" y="456" font-family="Consolas, 'Courier New', monospace" font-size="10" fill="#A0B8D0">watch services</text>
 
     <line x1="280" y1="533" x2="540" y2="510" stroke="#3E7AB8" stroke-width="1.2" stroke-dasharray="4 3" marker-end="url(#arrow09Cyan)"/>
-    <text x="320" y="523" font-family="Consolas, 'Courier New', monospace" font-size="9" fill="#3E7AB8">cloud sync (optional)</text>
+    <text x="320" y="523" font-family="Consolas, 'Courier New', monospace" font-size="10" fill="#3E7AB8">cloud sync (optional)</text>
 
     <line x1="740" y1="345" x2="1000" y2="345" stroke="#FFB627" stroke-width="2" marker-end="url(#arrow09Amber)"/>
     <line x1="1000" y1="375" x2="740" y2="375" stroke="#FFB627" stroke-width="2" marker-end="url(#arrow09Amber)"/>

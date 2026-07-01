@@ -97,34 +97,6 @@
       "ending"
     ]
   },
-  "screenshot_grid": {
-    "summary": "Side-by-side screenshot comparison grid. Left/right columns with 2-3 screenshots each + bottom comparison table. Use for: project comparison, before/after, A/B showcase.",
-    "canvas_format": "ppt169",
-    "page_count": 1,
-    "page_types": ["comparison"],
-    "placeholders": ["TITLE", "LEFT_LABEL", "RIGHT_LABEL", "SCREENSHOT_L1", "SCREENSHOT_L2", "SCREENSHOT_L3", "SCREENSHOT_R1", "SCREENSHOT_R2", "SCREENSHOT_R3", "TABLE_AREA"]
-  },
-  "gallery": {
-    "summary": "Project gallery with 3x2 grid layout. Each cell contains a screenshot + title + description. Use for: multi-project showcase, portfolio, case studies.",
-    "canvas_format": "ppt169",
-    "page_count": 1,
-    "page_types": ["showcase"],
-    "placeholders": ["TITLE", "GALLERY_IMG_1", "GALLERY_TITLE_1", "GALLERY_DESC_1", "GALLERY_IMG_2", "GALLERY_TITLE_2", "GALLERY_DESC_2", "GALLERY_IMG_3", "GALLERY_TITLE_3", "GALLERY_DESC_3", "GALLERY_IMG_4", "GALLERY_TITLE_4", "GALLERY_DESC_4", "GALLERY_IMG_5", "GALLERY_TITLE_5", "GALLERY_DESC_5", "GALLERY_IMG_6", "GALLERY_TITLE_6", "GALLERY_DESC_6"]
-  },
-  "deepdive_card": {
-    "summary": "Deep-dive explanation page with card layout. Title + optional side image + 2 card columns. Use for: expanding content page claims with data, steps, scenarios.",
-    "canvas_format": "ppt169",
-    "page_count": 1,
-    "page_types": ["deep_dive"],
-    "placeholders": ["TITLE", "CARD_ICON_1", "CARD_TITLE_1", "CARD_BODY_1", "CARD_ICON_2", "CARD_TITLE_2", "CARD_BODY_2", "DEEPDIVE_IMAGE"]
-  },
-  "transition_centered": {
-    "summary": "Centered transition page with symmetric decorations. Number + title + description + hook all centered. Use for: all chapter transitions (replaces left-aligned default).",
-    "canvas_format": "ppt169",
-    "page_count": 1,
-    "page_types": ["transition"],
-    "placeholders": ["CHAPTER_NUM", "CHAPTER_TITLE", "CHAPTER_DESC", "NEXT_HOOK", "TRANSITION_BG"]
-  },
   "content_pages/_shared": {
     "summary": "跨场景通用内容页模板。呼吸页、行动号召、致谢页，适用于所有演示主题。",
     "canvas_format": "ppt169",

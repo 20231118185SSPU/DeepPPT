@@ -14,7 +14,7 @@ description: Per-page rubric-based visual self-review via parallel subagents. Ru
 
 This is a **recommended quality step**, on by default after quality gates pass. It catches visual issues (hierarchy, rhythm, image treatment, collision) that structural checks cannot detect.
 
-**Skip**: explicit user opt-out via "--skip-vision", "跳过视觉自检", or `skip_visual_review: true` in confirm_ui result.json. Legacy behavior (opt-in only) is preserved when the user says "skip".
+**Skip**: explicit user opt-out via "--skip-vision", "skip visual review", "跳过视觉自检", or `skip_visual_review: true` in confirm_ui result.json.
 
 **Token cost**: each batch subagent re-reads the rubric + `design_spec.md` + `spec_lock.md` and processes K SVG+PNG pairs. For a 20-page deck with K=5, expect on the order of 100–150K additional input tokens on top of the main generation run.
 
@@ -70,7 +70,7 @@ For decks containing data charts, run [`verify-charts`](./verify-charts.md) firs
 - The project has no `svg_output/<page>.svg` files yet — finish Executor first
 - `svg_quality_checker.py` has not been run or has failed — fix static violations first
 - User has already applied annotations via `live-preview` workflow and is in a fixed-edit loop — describe changes directly, do not re-trigger rubric
-- The user has not asked for it — do not auto-invoke based on inferred model capability or deck size
+- The user explicitly opted out via "--skip-vision", "skip visual review", "跳过视觉自检", or `skip_visual_review: true` in confirm_ui result.json
 
 ---
 

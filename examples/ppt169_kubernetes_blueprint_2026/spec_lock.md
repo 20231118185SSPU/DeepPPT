@@ -32,7 +32,7 @@
 ## icons
 - library: tabler-outline
 - stroke_width: 1.5
-- inventory: network, server, database, settings, refresh, cloud, cube, box, route, heartbeat, plug, device-floppy, stack, shield-check, arrow-right
+- inventory: network, server, database, settings, refresh, cloud, cube, box, route, heartbeat, plug, device-floppy, stack, shield-check, arrow-right, contract, info-circle, plug-connected, template, terminal
 
 ## page_rhythm
 - P01: anchor

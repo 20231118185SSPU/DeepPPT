@@ -126,7 +126,7 @@
 - P03: 02a_chapter
 - P04: 03a_content_abstract
 
-> One entry per page **that uses a template SVG**. Key: `P<NN>` matching §IX. Value: the template's SVG basename without extension (e.g., `01_cover`, `03a_content_image_text`) — Executor resolves it to `templates/<value>.svg`. Modern templates ship many content-page variants (`03a_content_abstract`, `03b_content_image_text`, `03c_content_three_items` …); the page-type → single-file mapping in `executor-base.md §1` no longer covers them, so this section is the per-page truth.
+> One entry per page **that uses a template SVG**. Key: `P<NN>` matching §IX. Value: the template's SVG basename without extension (e.g., `01_cover`, `03a_content_image_text`, `screenshot_grid`) — Executor resolves it from the imported project templates or the skill's `templates/layouts/` tree. Modern templates ship many content-page variants (`03a_content_abstract`, `03b_content_image_text`, `03c_content_three_items` …), and root-level built-in SVGs such as `screenshot_grid.svg` / `gallery.svg` are valid single-page templates even though they are not layout directories in `layouts_index.json`; the page-type → single-file mapping in `executor-base.md §1` no longer covers these, so this section is the per-page truth.
 >
 > **No entry for a page** → that page is free design (no template inheritance). Mixed decks are supported: e.g., cover/chapter pages inherit a template while content pages are free.
 >
@@ -134,7 +134,7 @@
 >
 > **Whole section omitted** → entire deck is free design. Equivalent to no rows but cleaner; do this when zero pages reference a template.
 >
-> **Strategist source**: copy the per-page SVG choices from `design_spec.md §VI Page Roster` (or §IX outline if Roster is absent). Names must match files in `templates/` exactly — typos cause silent fallback to free design.
+> **Strategist source**: copy the per-page SVG choices from `design_spec.md §VI Page Roster` (or §IX outline if Roster is absent). Names must match available template SVG basenames exactly — typos cause `spec_compliance_check.py` warnings and Executor fallback to free design.
 
 ## page_charts
 - P05: bar_chart

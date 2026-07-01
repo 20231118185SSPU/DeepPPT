@@ -12,6 +12,8 @@ Main entry point for project setup and validation.
 python3 scripts/project_manager.py init <project_name> --format ppt169
 python3 scripts/project_manager.py import-sources <project_path> <source1> [<source2> ...]
 python3 scripts/project_manager.py validate <project_path>
+python3 scripts/project_manager.py validate <project_path> --start-dashboard --no-browser
+python3 scripts/dashboard/server.py <project_path> --daemon --no-browser
 python3 scripts/project_manager.py info <project_path>
 ```
 
@@ -22,11 +24,23 @@ Notes:
   note), to avoid leaving unintended artifacts that could be committed by mistake.
   Pass `--copy` to force a copy for in-repo sources instead.
 - `--move` and `--copy` are mutually exclusive.
+- Use the unflagged default unless you intentionally need one of the overrides above.
 - PPTX-family inputs are enriched automatically under `analysis/` with
   per-deck `<stem>.identity.json` / `<stem>.slide_library.json` plus the shared
   multi-deck index `source_profile.json` (`decks[]`).
   Multi-deck per project: several PPTX imports each get their own `<stem>.*`
   artifacts and a `decks[]` entry; re-importing the same stem replaces its entry.
+
+Dashboard:
+- After Step 2 project setup/import, start or reuse the read-only Dashboard with
+  `python3 scripts/dashboard/server.py <project_path> --daemon --no-browser`.
+- `init`, `import-sources`, and `validate` accept `--start-dashboard`,
+  `--no-browser`, and `--dashboard-port 8765` for explicit best-effort startup.
+  Without `--start-dashboard`, they only print the Dashboard hint.
+- Default port: `8765`; log path: `<project_path>/dashboard/dashboard.log`.
+- Launch failure is non-fatal; continue the PPT workflow.
+- Dashboard is observability only. It does not replace Confirm UI, Live Preview,
+  quality gates, post-processing, or export.
 
 Common formats:
 - `ppt169`

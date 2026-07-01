@@ -52,7 +52,7 @@ Defined in the Design Specification & Content Outline; each image carries an `Ac
 5. Post-processing & Export → follow shared-standards.md §5
 ```
 
-> Keep external references in `svg_output/` during generation. `finalize_svg.py` auto-embeds images into `svg_final/`; export PPTX from `svg_final/`.
+> Keep external references in `svg_output/` during generation. `finalize_svg.py` auto-embeds images into `svg_final/`. Default export uses the source-directory split from [`shared-standards.md`](./shared-standards.md) §5: native PPTX reads `svg_output/`, and the optional SVG snapshot / legacy preview reads `svg_final/`. Pass `-s output` or `-s final` only when one explicit source is required.
 
 ---
 
@@ -124,7 +124,7 @@ python3 -m http.server -d <project_path> 8000
 
 ## Conversion Process
 
-Use the unified pipeline in [shared-standards.md §5](shared-standards.md). `finalize_svg.py` runs before export so image references in `svg_output/` become embedded assets in `svg_final/`.
+Use the unified pipeline in [`shared-standards.md`](./shared-standards.md) §5. `finalize_svg.py` runs before export so image references in `svg_output/` become embedded assets in `svg_final/`; `svg_to_pptx.py` then auto-splits sources by output type unless `-s output` or `-s final` is passed.
 
 ```bash
 python3 scripts/finalize_svg.py <project_path>

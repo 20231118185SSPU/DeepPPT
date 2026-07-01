@@ -10,6 +10,7 @@ natively editable PPTX through SVG intermediate pages, using multi-role collabor
 
 Read `skills/ppt-master/SKILL.md` before any PPT generation task or repository modification.
 It is the authoritative workflow document.
+Shared rules live in `docs/ai-rules-shared.md`; routing details live in `docs/routing.md`.
 
 ## Core Rules
 
@@ -21,10 +22,12 @@ It is the authoritative workflow document.
    icons, and images. Never use values from memory.
 4. **Image handling**: Never read/open image files (.jpg, .png). Use `analyze_images.py` output.
 5. **Language**: Match the user's input language. Design spec follows English template structure.
+6. **Dashboard**: After Step 2, start or reuse `python3 skills/ppt-master/scripts/dashboard/server.py <project_path> --daemon --no-browser`. Default port is `8765`; logs are at `<project_path>/dashboard/dashboard.log`; failure is non-fatal.
 
 ## Key Scripts
 
 - `python3 skills/ppt-master/scripts/project_manager.py init <name> --format ppt169`
+- `python3 skills/ppt-master/scripts/dashboard/server.py <path> --daemon --no-browser`
 - `python3 skills/ppt-master/scripts/confirm_ui/server.py <path> --daemon --wait`
 - `python3 skills/ppt-master/scripts/image_gen.py --manifest <path>/images/image_prompts.json`
 - `python3 skills/ppt-master/scripts/svg_quality_checker.py <path>`
@@ -33,7 +36,22 @@ It is the authoritative workflow document.
 ## Deep Research
 
 When the user asks to "做PPT" with only a topic (no source files), first run
-`skills/ppt-master/workflows/deep-research.md`, then proceed with the main pipeline.
+`skills/ppt-master/workflows/deep-research.md`, then proceed with the main pipeline. Do not
+replace it with ordinary WebSearch.
+
+## Routing Guardrails
+
+- Existing PPTX: preserve page count/order/wording and beautify only → `beautify-pptx`; reuse
+  original deck design with new content → `template-fill-pptx`; restructure story or change
+  page count/order → main pipeline + `ppt_to_md`; harvest reusable template → `create-template`.
+- Dashboard is read-only observability; it does not replace Confirm UI, Live Preview, quality
+  gates, post-processing, or export.
+- Animation: page transitions are default; per-element animations are off unless requested.
+  Object-level animation tuning → `customize-animations`.
+- Live preview starts automatically in Step 6; apply submitted annotations only after Step 7
+  through `live-preview`.
+- Visual review: follow current `SKILL.md`; currently `visual-review` is recommended by default
+  after quality gates and skipped only by explicit opt-out.
 
 ## Configuration
 

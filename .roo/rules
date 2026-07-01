@@ -8,6 +8,7 @@ DeepPPT: AI-driven PPT generation. Strategist → Image_Generator → Executor �
 ## Authority
 
 Read `skills/ppt-master/SKILL.md` before any PPT task.
+Shared rules live in `docs/ai-rules-shared.md`; routing details live in `docs/routing.md`.
 
 ## Rules
 
@@ -21,13 +22,23 @@ Read `skills/ppt-master/SKILL.md` before any PPT task.
 
 ```bash
 python3 skills/ppt-master/scripts/project_manager.py init <name> --format ppt169
+python3 skills/ppt-master/scripts/dashboard/server.py <path> --daemon --no-browser
 python3 skills/ppt-master/scripts/svg_quality_checker.py <path>
 python3 skills/ppt-master/scripts/svg_to_pptx.py <path>
 ```
 
+Start/reuse Dashboard after Step 2. Default port is 8765; logs are at `<path>/dashboard/dashboard.log`; launch failure is non-fatal. Dashboard is read-only observability and does not replace Confirm UI, Live Preview, quality gates, post-processing, or export.
+
 ## Deep Research
 
-Topic only? → `skills/ppt-master/workflows/deep-research.md` first.
+Topic only? → `skills/ppt-master/workflows/deep-research.md` first. Do not replace it with ordinary WebSearch.
+
+## Routing Guardrails
+
+- Existing PPTX: preserve page count/order/wording and beautify only → `beautify-pptx`; reuse original deck design with new content → `template-fill-pptx`; restructure story or change page count/order → main pipeline + `ppt_to_md`; harvest reusable template → `create-template`.
+- Animation: page transitions are default; per-element animations are off unless requested. Object-level animation tuning → `customize-animations`.
+- Live preview starts automatically in Step 6; apply submitted annotations only after Step 7 through `live-preview`.
+- Visual review: follow current `SKILL.md`; currently `visual-review` is recommended by default after quality gates and skipped only by explicit opt-out.
 
 ## Config
 

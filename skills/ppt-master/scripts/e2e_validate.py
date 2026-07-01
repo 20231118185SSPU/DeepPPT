@@ -30,6 +30,12 @@ import re
 from pathlib import Path
 from typing import Optional
 
+_SCRIPTS_DIR = Path(__file__).resolve().parent
+if str(_SCRIPTS_DIR) not in sys.path:
+    sys.path.insert(0, str(_SCRIPTS_DIR))
+
+from console_encoding import configure_utf8_stdio  # noqa: E402
+
 
 # ---------------------------------------------------------------------------
 # Helpers
@@ -104,11 +110,44 @@ def find_note_file(notes_dir: Path, page_id: str) -> Optional[Path]:
     """Find a speaker notes .md file matching the page ID."""
     if not notes_dir.is_dir():
         return None
-    # Notes files are named like P01_cover.md, P02_toc.md, etc.
+    numeric_prefix = page_id[1:].lstrip("0") or "0"
+    normalized_numeric = f"{int(numeric_prefix):02d}" if numeric_prefix.isdigit() else ""
+
+    # Notes files are named like P01_cover.md or 01_cover.md.
     for f in notes_dir.iterdir():
-        if f.suffix == ".md" and f.stem != "total" and f.name.startswith(page_id):
+        if f.suffix != ".md" or f.stem == "total":
+            continue
+        if f.name.startswith(page_id):
+            return f
+        if normalized_numeric and f.name.startswith(normalized_numeric):
             return f
     return None
+
+
+def normalize_svg_page_id(stem: str) -> Optional[str]:
+    """Map supported SVG filename stems to spec page IDs."""
+    prefixed = re.match(r"^(P\d+)(?:_|$)", stem)
+    if prefixed:
+        return prefixed.group(1)
+
+    numeric = re.match(r"^(\d+)(?:_|$)", stem)
+    if numeric:
+        return f"P{int(numeric.group(1)):02d}"
+
+    return None
+
+
+def find_svg_pages(svg_dir: Path) -> list[tuple[Path, str]]:
+    """Find supported SVG files and return ``(path, page_id)`` pairs."""
+    if not svg_dir.is_dir():
+        return []
+
+    pages: list[tuple[Path, str]] = []
+    for svg_file in sorted(svg_dir.glob("*.svg")):
+        page_id = normalize_svg_page_id(svg_file.stem)
+        if page_id is not None:
+            pages.append((svg_file, page_id))
+    return pages
 
 
 def count_pptx_slides(pptx_path: Path) -> tuple[int, list[str]]:
@@ -139,14 +178,6 @@ def count_pptx_slides(pptx_path: Path) -> tuple[int, list[str]]:
 # Checks
 # ---------------------------------------------------------------------------
 
-def _safe_print(msg: str) -> None:
-    """Print with encoding fallback for Windows consoles."""
-    try:
-        print(msg)
-    except UnicodeEncodeError:
-        print(msg.encode("utf-8", errors="replace").decode("utf-8", errors="replace"))
-
-
 class CheckResult:
     """Accumulates pass/fail/warn messages."""
 
@@ -170,11 +201,11 @@ class CheckResult:
 
     def report(self) -> None:
         for m in self.passes:
-            _safe_print(f"  [PASS] {m}")
+            print(f"  [PASS] {m}")
         for m in self.warns:
-            _safe_print(f"  [WARN] {m}")
+            print(f"  [WARN] {m}")
         for m in self.errors:
-            _safe_print(f"  [FAIL] {m}")
+            print(f"  [FAIL] {m}")
 
 
 def check_page_count(project: Path, result: CheckResult) -> list[str]:
@@ -190,22 +221,22 @@ def check_page_count(project: Path, result: CheckResult) -> list[str]:
         return []
 
     svg_dir = project / "svg_output"
-    svg_files = sorted(svg_dir.glob("P*.svg")) if svg_dir.is_dir() else []
-    svg_stems = [f.stem for f in svg_files]
+    svg_pages = find_svg_pages(svg_dir)
+    svg_page_ids = [page_id for _, page_id in svg_pages]
 
-    if len(svg_files) == len(page_ids):
-        result.ok(f"SVG count ({len(svg_files)}) = spec_lock page count ({len(page_ids)})")
+    if len(svg_pages) == len(page_ids) and set(svg_page_ids) == set(page_ids):
+        result.ok(f"SVG count ({len(svg_pages)}) = spec_lock page count ({len(page_ids)})")
     else:
         result.fail(
-            f"SVG count ({len(svg_files)}) ≠ spec_lock page count ({len(page_ids)}). "
-            f"Missing: {set(page_ids) - set(svg_stems)}, "
-            f"Extra: {set(svg_stems) - set(page_ids)}"
+            f"SVG count ({len(svg_pages)}) ≠ spec_lock page count ({len(page_ids)}). "
+            f"Missing: {set(page_ids) - set(svg_page_ids)}, "
+            f"Extra: {set(svg_page_ids) - set(page_ids)}"
         )
 
-    return svg_stems
+    return svg_page_ids
 
 
-def check_speaker_notes(project: Path, svg_stems: list[str], result: CheckResult) -> None:
+def check_speaker_notes(project: Path, svg_page_ids: list[str], result: CheckResult) -> None:
     """Check that every SVG page has a corresponding speaker notes file."""
     notes_dir = project / "notes"
     total_md = notes_dir / "total.md"
@@ -220,17 +251,16 @@ def check_speaker_notes(project: Path, svg_stems: list[str], result: CheckResult
         result.warn("notes/total.md not found — may not have been generated yet")
 
     missing: list[str] = []
-    for stem in svg_stems:
-        page_id = stem.split("_")[0]  # "P01_cover" → "P01"
+    for page_id in svg_page_ids:
         note_file = find_note_file(notes_dir, page_id)
         if note_file is None:
-            missing.append(stem)
+            missing.append(page_id)
 
     if not missing:
-        result.ok(f"All {len(svg_stems)} pages have speaker notes files")
+        result.ok(f"All {len(svg_page_ids)} pages have speaker notes files")
     else:
         result.warn(
-            f"{len(missing)}/{len(svg_stems)} pages missing speaker notes: "
+            f"{len(missing)}/{len(svg_page_ids)} pages missing speaker notes: "
             + ", ".join(missing)
         )
 
@@ -303,6 +333,16 @@ def check_pptx(pptx_path: Path, expected_pages: int, result: CheckResult) -> Non
         )
 
 
+def resolve_pptx_path(project: Path, raw_pptx_path: str) -> Path:
+    """Resolve --pptx as absolute, cwd-relative, then project-relative."""
+    pptx_path = Path(raw_pptx_path)
+    if pptx_path.is_absolute():
+        return pptx_path
+    if pptx_path.exists():
+        return pptx_path
+    return project / pptx_path
+
+
 # ---------------------------------------------------------------------------
 # Main
 # ---------------------------------------------------------------------------
@@ -356,9 +396,7 @@ def main(argv: Optional[list[str]] = None) -> int:
 
     # 4. PPTX validation (optional)
     if args.pptx:
-        pptx_path = Path(args.pptx)
-        if not pptx_path.is_absolute():
-            pptx_path = project / pptx_path
+        pptx_path = resolve_pptx_path(project, args.pptx)
 
         print("PPTX Export")
         expected = len(svg_stems) if svg_stems else 0
@@ -384,4 +422,5 @@ def main(argv: Optional[list[str]] = None) -> int:
 
 
 if __name__ == "__main__":
+    configure_utf8_stdio()
     raise SystemExit(main())

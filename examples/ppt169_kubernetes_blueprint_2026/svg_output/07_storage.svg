@@ -105,16 +105,16 @@
       <text x="660" y="392" font-family="Consolas, 'Courier New', monospace" font-size="11" fill="#FFB627">▼ ACCESS MODES</text>
       <rect x="660" y="402" width="120" height="40" fill="none" stroke="#5BA3E0" stroke-width="1"/>
       <text x="720" y="423" font-family="Consolas, 'Courier New', monospace" font-size="11" fill="#F0F4F8" text-anchor="middle" font-weight="bold">RWO</text>
-      <text x="720" y="436" font-family="Arial, 'Microsoft YaHei', sans-serif" font-size="9" fill="#A0B8D0" text-anchor="middle">1 node, R/W</text>
+      <text x="720" y="436" font-family="Arial, 'Microsoft YaHei', sans-serif" font-size="10" fill="#A0B8D0" text-anchor="middle">1 node, R/W</text>
       <rect x="785" y="402" width="120" height="40" fill="none" stroke="#5BA3E0" stroke-width="1"/>
       <text x="845" y="423" font-family="Consolas, 'Courier New', monospace" font-size="11" fill="#F0F4F8" text-anchor="middle" font-weight="bold">ROX</text>
-      <text x="845" y="436" font-family="Arial, 'Microsoft YaHei', sans-serif" font-size="9" fill="#A0B8D0" text-anchor="middle">many nodes, RO</text>
+      <text x="845" y="436" font-family="Arial, 'Microsoft YaHei', sans-serif" font-size="10" fill="#A0B8D0" text-anchor="middle">many nodes, RO</text>
       <rect x="910" y="402" width="120" height="40" fill="none" stroke="#5BA3E0" stroke-width="1"/>
       <text x="970" y="423" font-family="Consolas, 'Courier New', monospace" font-size="11" fill="#F0F4F8" text-anchor="middle" font-weight="bold">RWX</text>
-      <text x="970" y="436" font-family="Arial, 'Microsoft YaHei', sans-serif" font-size="9" fill="#A0B8D0" text-anchor="middle">many nodes, R/W</text>
+      <text x="970" y="436" font-family="Arial, 'Microsoft YaHei', sans-serif" font-size="10" fill="#A0B8D0" text-anchor="middle">many nodes, R/W</text>
       <rect x="1035" y="402" width="120" height="40" fill="none" stroke="#FFB627" stroke-width="1"/>
       <text x="1095" y="423" font-family="Consolas, 'Courier New', monospace" font-size="11" fill="#FFB627" text-anchor="middle" font-weight="bold">RWOP</text>
-      <text x="1095" y="436" font-family="Arial, 'Microsoft YaHei', sans-serif" font-size="9" fill="#A0B8D0" text-anchor="middle">1 pod, R/W</text>
+      <text x="1095" y="436" font-family="Arial, 'Microsoft YaHei', sans-serif" font-size="10" fill="#A0B8D0" text-anchor="middle">1 pod, R/W</text>
     </g>
 
     <g id="reclaim">
@@ -124,7 +124,7 @@
       <rect x="830" y="486" width="160" height="22" fill="none" stroke="#5BA3E0" stroke-width="1"/>
       <text x="910" y="501" font-family="Consolas, 'Courier New', monospace" font-size="11" fill="#F0F4F8" text-anchor="middle">Delete (default)</text>
       <rect x="1000" y="486" width="160" height="22" fill="none" stroke="#3E7AB8" stroke-width="1" stroke-dasharray="3 3"/>
-      <text x="1080" y="501" font-family="Consolas, 'Courier New', monospace" font-size="11" fill="#6B85A3" text-anchor="middle">Recycle ✗ deprecated</text>
+      <text x="1080" y="501" font-family="Consolas, 'Courier New', monospace" font-size="11" fill="#6B85A3" text-anchor="middle">Recycle deprecated</text>
     </g>
   </g>
 

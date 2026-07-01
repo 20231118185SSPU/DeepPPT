@@ -22,6 +22,132 @@
 ---
 
 ## Log
+
+### 2026-07-01 — Harness gate read-only validation mode
+- **Files**: `skills/ppt-master/scripts/harness_gate.py`, `skills/ppt-master/scripts/e2e_validate.py`, `skills/ppt-master/scripts/README.md`, `docs/change-log.md`
+- **Reason**: 消除最终回归中发现的验证副作用风险，并修正数字前缀 notes 文件被误报缺失的问题
+- **Before**: `harness_gate.py` 每次运行都会写入 `quality/harness.json` 并追加 `trace.jsonl`；`e2e_validate.py` 只按 `P01_*.md` 查找 speaker notes，无法匹配现有 `01_*.md` 产物
+- **After**: `harness_gate.py` 保留默认 Dashboard 报告/trace 写入，但新增 `--read-only` / `--no-write` 跳过写入；`e2e_validate.py` 同时支持 `P01_*.md` 和 `01_*.md` notes 命名；脚本 README 说明默认写入与只读回归边界
+- **Risk**: low（只影响验证命令副作用控制和验证口径；不改 PPT 生成、后处理或导出逻辑）
+- **Human reviewed**: pending
+
+### 2026-07-01 — Dashboard project manager explicit startup flags
+- **Files**: `skills/ppt-master/scripts/project_manager.py`, `skills/ppt-master/scripts/README.md`, `skills/ppt-master/scripts/docs/project.md`, `docs/change-log.md`
+- **Reason**: 为 `init` / `import-sources` / `validate` 增加显式 Dashboard 半自动启动入口，同时保持默认只提示、不启动后台服务
+- **Before**: `project_manager.py` 成功路径只输出 Dashboard 启动提示；用户需手动复制 `dashboard/server.py <project_path> --daemon --no-browser`
+- **After**: 三个项目命令支持 `--start-dashboard`、`--no-browser`、`--dashboard-port 8765`；显式启动时复用 `dashboard_launcher.py`，启动失败作为 warning 处理并继续原 PPT 流程；未传 `--start-dashboard` 时行为不变
+- **Risk**: low（只接入既有 Dashboard launcher；不改变 PPT 生成语义，不默认打开浏览器，不替代 Confirm UI / Live Preview / 质量门或导出）
+- **Human reviewed**: pending
+
+### 2026-07-01 — Dashboard default agent entry integration
+- **Files**: `AGENTS.md`, `CLAUDE.md`, `docs/ai-rules-shared.md`, platform agent rule files, `hermes.md`, `junie/guidelines.md`, `skills/ppt-master/scripts/project_manager.py`, `skills/ppt-master/scripts/README.md`, `skills/ppt-master/scripts/docs/project.md`, `docs/change-log.md`
+- **Reason**: 让所有 AI Agent 默认知道 Step 2 后应优先暴露统一 Dashboard，并让项目管理 CLI 在低风险路径上输出一致提示
+- **Before**: 部分 Agent 入口仍只知道 Project / Confirm UI / Live Preview；`project_manager.py import-sources` 和成功的 `validate` 不提示 Dashboard；共享规则未把 Dashboard 写入核心管线
+- **After**: Agent 入口统一记录 Step 2 后启动/复用 `dashboard/server.py <project_path> --daemon --no-browser`、默认端口 `8765`、日志路径、失败 non-fatal 和只读边界；`project_manager.py` 在 init/import/validate 成功路径输出 Dashboard 提示，不自动启动后台服务
+- **Risk**: low（文档和 CLI 提示增强；不改变 PPT 生成主流程，不自动打开浏览器，不替代 Confirm UI / Live Preview / 质量门或导出）
+- **Human reviewed**: pending
+
+### 2026-07-01 — E2E smoke test visual review fixes (4-page deck)
+- **Files**: `projects/e2e_smoke_test_ppt169_20260701/svg_output/03_quality_assurance.svg`, `projects/e2e_smoke_test_ppt169_20260701/svg_output/04_export_routing.svg`, `docs/change-log.md`
+- **Reason**: 运行 vision_check.py quality rubric 后发现 4 项 should_fix 级别视觉问题，需修正后重新验证
+- **Before**:
+  1. P03 gate 标题 (svg_quality_checker / spec_compliance_check / harness_gate) 使用蓝色 `#1A73E8`，不符合 Swiss-minimal 深灰层级规范
+  2. P03 底部有一条孤立橙色装饰线 (`#FF6B35`)，与主内容无视觉关联
+  3. P04 Decision Axis 框使用白色填充 `#FFFFFF`，在白色背景上不可见
+  4. P04 左右两列标题 (Export Pipeline / Routing Boundaries) 使用蓝色 `#0D47A1`，与 P03 同类问题
+- **After**:
+  1. P03 三个 gate 标题颜色改为 `#333333` (body text)
+  2. P03 底部橙色装饰线移除
+  3. P04 Decision Axis 框填充改为 `#F5F7FA` (secondary_bg)
+  4. P04 两列标题颜色改为 `#333333` (body text)
+  5. 重新渲染 PNG → vision_check.py 第二轮: **CLEAN** (0 must_fix, 0 should_fix)
+  6. 重新导出 PPTX: 4 slides, 4 notes, 0 failures
+- **Risk**: low（仅修改测试项目 SVG 视觉属性，不改脚本逻辑或工作流规则）
+- **Human reviewed**: pending
+
+### 2026-07-01 — vision_check.py .env auto-load
+- **Files**: `scripts/vision_check.py`, `.env`, `docs/change-log.md`
+- **Reason**: vision_check.py 从 os.environ 读取 API key，但不自动加载 .env 文件，导致用户每次运行前需手动 export 环境变量
+- **Before**: `vision_check.py` 只读 `os.environ.get()`；.env 中的 `VISION_*` 变量不会被自动加载
+- **After**: 在 imports 后添加 `dotenv.load_dotenv()` 从 repo root 的 `.env` 自动加载；`.env` 新增 `VISION_OPENAI_API_KEY`、`VISION_OPENAI_BASE_URL`、`VISION_OPENAI_MODEL` 配置段（指向 Xiaomi MiMo 端点）
+- **Risk**: low（添加 dotenv 加载为幂等操作，已有环境变量优先级高于 .env；不改 vision_check 核心逻辑）
+- **Human reviewed**: pending
+
+### 2026-07-01 — E2E smoke test validation (4-page deck)
+- **Files**: `projects/e2e_smoke_test_ppt169_20260701/` (test project, not skill files)
+- **Reason**: 端到端验证修复后的主流程实际行为是否与文档一致，覆盖 Confirm UI / quality gate / export 关键路径
+- **Before**: 无 E2E smoke test 基线
+- **After**: 主流程 Steps 1→2→4→6→7 完整走通。发现 3 项问题：
+  1. **icon inventory 未验证**: Strategist 阶段写入 `tabler-outline/export`，实际文件名为 `file-export`。`finalize_svg.py` 报 icon not found，`svg_to_pptx.py` 因未嵌入的 `<use data-icon>` 抛 `SvgNativeConversionError`。**修复**: 修正 SVG 和 spec_lock 中的 icon 名称为 `file-export`。
+  2. **e2e_validate SVG 命名约定**: validator 期望 `P01_*.svg`，实际生成 `01_*.svg`，导致 SVG count 检查显示 0。PPTX 本身验证通过 (4 slides + notes)。
+  3. **visual_review 环境限制**: 当前模型 (mimo-v2.5-pro) 无 multimodal 能力，无外部 vision API key。按 visual-review.md Path 3 标记 `vision_available: false`，待用户人工验证。
+- **Risk**: low（仅运行验证，未修改 skill 脚本或工作流文件）
+- **Human reviewed**: pending
+
+### 2026-07-01 — Kubernetes blueprint example SVG quality repair
+- **Files**: `examples/ppt169_kubernetes_blueprint_2026/svg_output/01_cover.svg`, `02_two_planes.svg`, `03_control_plane.svg`, `05_pod_lifecycle.svg`, `06_service_types.svg`, `07_storage.svg`, `08_ha_topology.svg`, `09_api_spine.svg`, `10_takeaways.svg`, `docs/change-log.md`
+- **Reason**: 修复示例项目 quick gate 中剩余的 SVG 数据质量硬错误，不修改质量规则、不重新生成 PPT
+- **Before**: 示例 SVG 中存在低于绝对下限的 `font-size="9"`、文本符号 `✓/✗/★`，以及未声明的 `#000000` 渐变色，导致 `svg_quality_checker.py` 和 `harness_gate.py --quick` 失败
+- **After**: 将硬错误字号提升到 10px；将文本符号替换为普通文本语义；将黑色渐变 stop 改为已锁定背景色；`svg_quality_checker.py` 不再报告 error，quick gate 可通过
+- **Risk**: low（仅修复示例 SVG 数据；保持页数、文件名、页面结构和视觉风格不变；未改脚本逻辑、未导出 PPTX）
+- **Human reviewed**: pending
+
+### 2026-07-01 — Windows quick gate diagnostics repair
+- **Files**: `skills/ppt-master/scripts/svg_quality_checker.py`, `skills/ppt-master/scripts/spec_compliance_check.py`, `skills/ppt-master/scripts/harness_gate.py`, `docs/change-log.md`
+- **Reason**: 修复轻量验证中 Windows 控制台编码崩溃、旧示例 SVG 命名漏检和 chart index 嵌套结构误判
+- **Before**: `svg_quality_checker.py` 在 GBK 控制台打印 `✓/✗/★` 等字符会 `UnicodeEncodeError`；`spec_compliance_check.py` 只扫描 `P*.svg`，对旧示例 `01_cover.svg` 命名误报 `No SVG output found`；chart 模板校验只读 `charts_index.json` 顶层 key，误判已存在于 `charts` 下的模板缺失；`harness_gate.py --quick` 把跳过的 e2e 显示为 PASS
+- **After**: SVG checker CLI 入口配置 UTF-8 stdio；spec compliance 扫描所有 `*.svg` 并支持 `charts_index.json` 的 `charts` 嵌套结构；quick gate 将跳过的 e2e 标为 SKIP，剩余失败定位到示例 SVG 质量问题
+- **Risk**: low（脚本鲁棒性和诊断输出修复；不改生成流程、不改示例 SVG、不补模板数据）
+- **Human reviewed**: pending
+
+### 2026-07-01 — Agent and workflow entry consistency repair
+- **Files**: Agent entries (`AGENTS.md`, `CLAUDE.md`, `docs/ai-rules-shared.md`, `docs/claude-reference.md`, platform rule files); workflow/docs (`skills/ppt-master/SKILL.md`, `skills/ppt-master/workflows/visual-review.md`, `skills/ppt-master/workflows/beautify-pptx.md`, `docs/routing.md`, getting-started/audio/roadmap/technical docs); scripts/templates docs (`skills/ppt-master/scripts/README.md`, `skills/ppt-master/scripts/docs/project.md`, `skills/ppt-master/scripts/project_manager.py`, `skills/ppt-master/scripts/smoke_check.py`, `skills/ppt-master/scripts/svg_to_pptx*.py`, `skills/ppt-master/templates/**`)
+- **Reason**: 文档 / workflow / Agent 入口一致性修复，统一多入口对默认流程、验证命令、导出源和资源发现的描述
+- **Before**: 多个入口仍把 `visual-review` 写成仅显式请求触发；`CLAUDE.md` 指向不存在或不匹配的验证命令；`import-sources` 示例默认带 `--move`，容易误移动源文件；`svg_final` 仍被部分帮助文案描述为推荐导出源；布局根级 SVG 被混入目录索引，资源发现边界不清
+- **After**: `visual-review` 统一为质量门禁后默认推荐、仅显式 opt-out 跳过；Agent 入口改为有效的 smoke / harness / e2e 验证说明；`import-sources` 默认示例不移动原件并明确 `--move` / `--copy` 边界；导出说明统一为 native 默认读取 `svg_output/`、`svg_final` 用于预览 / legacy snapshot；模板索引只列 layout directories，根级 SVG 作为可按 basename 引用的单页内建模板说明
+- **Risk**: medium（涉及 Agent 入口与 workflow 默认行为说明，可能影响后续代理执行路径；改动主要是文档/help/索引一致性，不声称已运行生成流程）
+- **Human reviewed**: pending
+
+### 2026-07-01 — Review follow-up documentation fixes
+- **Files**: `docs/zh/audio-narration.md`, `skills/ppt-master/templates/layouts/README.md`, `skills/ppt-master/templates/spec_lock_reference.md`, `docs/change-log.md`
+- **Reason**: 落实 git diff 人工审查发现的两处文档语义漂移
+- **Before**: 中文音频文档仍暗示页内元素动画默认保留；布局 README 将根级 SVG 说成不可复制的 planning patterns，但 spec_lock / 校验仍允许按 SVG basename 引用
+- **After**: 中文音频文档与英文版一致，说明只保留默认页间转场和显式启用的页内元素动画；布局文档明确根级 SVG 是可被 `page_layouts` 引用的单页内建模板，但不属于 `layouts_index.json` 的目录索引
+- **Risk**: low（仅文档语义修正，不改脚本逻辑）
+- **Human reviewed**: pending
+
+### 2026-07-01 — Python help examples consistency cleanup
+- **Files**: `skills/ppt-master/scripts/smoke_check.py`, `skills/ppt-master/scripts/project_manager.py`, `docs/change-log.md`
+- **Reason**: 清除最终复扫后维护者确认的 Python 帮助/示例残留
+- **Before**: `smoke_check.py` docstring 使用 repo-root 下不可直接执行的 `python3 scripts/smoke_check.py`；`project_manager.py` epilog 示例仍默认带 `import-sources ... --move`
+- **After**: `smoke_check.py` 示例改为 `python3 skills/ppt-master/scripts/smoke_check.py`；`project_manager.py` import 示例改为无 flag 默认导入
+- **Risk**: low（仅帮助文案/docstring，不改运行逻辑）
+- **Human reviewed**: pending
+
+### 2026-07-01 — Final consistency sweep follow-up
+- **Files**: `skills/ppt-master/scripts/README.md`, `skills/ppt-master/workflows/beautify-pptx.md`, `docs/audio-narration.md`, `docs/change-log.md`
+- **Reason**: 补齐最终复扫发现的少量旧示例和容易误读的动画保留说明
+- **Before**: 脚本 README 和 beautify workflow 的 `import-sources` 示例默认带 `--move`；音频导出文档未说明页内元素动画只有显式启用时才保留
+- **After**: 示例改为无 flag 默认导入，并补充 `--move` 仅用于明确迁移原件；音频导出文档改为保留默认页间转场和任何显式启用的页内元素动画
+- **Risk**: low（仅文档/workflow 文案，不改 Python 源码、不启动服务、不运行生成流程）
+- **Human reviewed**: pending
+
+### 2026-07-01 — svg_to_pptx CLI help source-default correction
+- **Files**: `scripts/svg_to_pptx.py`, `scripts/svg_to_pptx/pptx_discovery.py`, `scripts/svg_to_pptx/pptx_cli.py`, `docs/change-log.md`
+- **Reason**: 修复最终一致性复扫遗留的源码帮助文案漂移，避免 `svg_final` 被描述为推荐导出源
+- **Before**: thin wrapper 和 CLI 示例默认带 `-s final`；`svg_final` help/docstring 写作 recommended；CLI animation help 仍暗示默认 `auto`
+- **After**: 默认示例改为无 `-s`；`svg_final` 描述为 preview / legacy source；动画 help 明确默认 `none`，用 `-a auto` 才开启元素级动画
+- **Risk**: low（仅 CLI/help/docstring 文案，不改导出逻辑）
+- **Human reviewed**: pending
+
+### 2026-07-01 — Final consistency sweep documentation fixes
+- **Files**: `workflows/visual-review.md`, `docs/getting-started.md`, `docs/zh/getting-started.md`, `docs/claude-reference.md`, `docs/change-log.md`
+- **Reason**: 修复最终一致性复扫发现的残留旧表述，避免 visual-review、动画默认值和 import-sources 示例互相矛盾
+- **Before**: `visual-review.md` 仍提到 legacy opt-in；getting-started 中英文版仍暗示元素级动画默认级联；claude-reference 的 import 示例默认带 `--move`
+- **After**: visual-review 只保留默认推荐 + 显式 opt-out；getting-started 明确页间转场默认开启、页内元素动画默认关闭；claude-reference 的 import 示例改为无 flag 默认并补充 `--move` / `--copy` 使用边界
+- **Risk**: low（仅文档一致性修正，不改源码、不启动服务、不运行生成流程）
+- **Human reviewed**: pending
+
 ### 2026-06-30 — Dashboard auto-launch daemon
 - **Files**: `scripts/dashboard/server.py`, `scripts/dashboard_launcher.py` (NEW), `SKILL.md`, `docs/change-log.md`
 - **Reason**: 做 PPT 时自动后台启动统一 Dashboard，同时保证启动失败不阻塞主生成流程
@@ -274,9 +400,6 @@
 - **Smoke check**: 38 passed, 0 failed, 3 skipped / 41 checks；专项 `py_compile` 覆盖 `scripts/research/browse_ai.py` 和 `scripts/research/sync_research_outputs.py`
 - **Risk**: medium（修改新研究流程脚本和 manifest 结构；主 PPT 生成流程未改）
 - **Human reviewed**: pending
-
-
-
 
 
 

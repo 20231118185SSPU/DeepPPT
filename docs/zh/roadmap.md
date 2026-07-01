@@ -23,9 +23,9 @@
 
 - **无源生成**：`deep-research` 编排器支持「只给主题、不给源文件」，7 步独立调研流程
 - **PPTX 导出质变**：SVG clipPath → DrawingML picture geometry、marker → 原生箭头、输出归集到 `exports/`
-- **图表库 70 个 + 图标三库**（simple-icons / phosphor-duotone / brand-logo）
+- **图表库 71 个 + 图标三库**（simple-icons / phosphor-duotone / brand-logo）
 - **`spec_lock.md` 机器可读契约**：Strategist 锁定后 Executor 每页强制重读，跨页一致性有了保证
-- **元素级动画默认开启** + 旁白音频 / 视频导出([`workflows/generate-audio.md`](../../skills/ppt-master/workflows/generate-audio.md))
+- **页间转场默认开启，元素级动画改为 opt-in** — 默认导出只保留 `fade` 页间转场；元素级入场动画默认关闭，需通过 `-a auto` 或 `animations.json` 启用，旁白音频 / 视频导出同步上线([`workflows/generate-audio.md`](../../skills/ppt-master/workflows/generate-audio.md))
 
 ### 2026-05（视觉编辑 + AI 图系统化）
 

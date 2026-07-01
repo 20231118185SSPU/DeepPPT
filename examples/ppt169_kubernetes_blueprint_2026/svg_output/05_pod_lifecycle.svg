@@ -47,7 +47,7 @@
     </g>
 
     <line x1="280" y1="290" x2="370" y2="290" stroke="#5BA3E0" stroke-width="2" marker-end="url(#arrowCyan)" />
-    <text x="325" y="278" font-family="Consolas, 'Courier New', monospace" font-size="9" fill="#A0B8D0" text-anchor="middle">bind+pull</text>
+    <text x="325" y="278" font-family="Consolas, 'Courier New', monospace" font-size="10" fill="#A0B8D0" text-anchor="middle">bind+pull</text>
 
     <g id="phase-running">
       <rect x="380" y="240" width="200" height="100" fill="#0E2A47" stroke="#FFB627" stroke-width="2" />
@@ -60,20 +60,20 @@
 
     <line x1="580" y1="270" x2="700" y2="270" stroke="#5BA3E0" stroke-width="2" marker-end="url(#arrowCyan)" />
     <line x1="580" y1="310" x2="700" y2="310" stroke="#5BA3E0" stroke-width="2" marker-end="url(#arrowCyan)" />
-    <text x="640" y="262" font-family="Consolas, 'Courier New', monospace" font-size="9" fill="#7FD99F" text-anchor="middle">exit 0</text>
-    <text x="640" y="328" font-family="Consolas, 'Courier New', monospace" font-size="9" fill="#FF6B6B" text-anchor="middle">exit ≠ 0</text>
+    <text x="640" y="262" font-family="Consolas, 'Courier New', monospace" font-size="10" fill="#7FD99F" text-anchor="middle">exit 0</text>
+    <text x="640" y="328" font-family="Consolas, 'Courier New', monospace" font-size="10" fill="#FF6B6B" text-anchor="middle">exit ≠ 0</text>
 
     <g id="phase-succeeded">
       <rect x="710" y="220" width="180" height="60" fill="#0E2A47" stroke="#7FD99F" stroke-width="1.5" />
       <rect x="710" y="220" width="180" height="20" fill="#7FD99F" />
-      <text x="800" y="234" font-family="Consolas, 'Courier New', monospace" font-size="10" fill="#0E2A47" text-anchor="middle" font-weight="bold">TERMINAL ✓</text>
+      <text x="800" y="234" font-family="Consolas, 'Courier New', monospace" font-size="10" fill="#0E2A47" text-anchor="middle" font-weight="bold">TERMINAL OK</text>
       <text x="800" y="262" font-family="Consolas, 'Courier New', monospace" font-size="15" fill="#7FD99F" text-anchor="middle" font-weight="bold">Succeeded</text>
     </g>
 
     <g id="phase-failed">
       <rect x="710" y="300" width="180" height="60" fill="#0E2A47" stroke="#FF6B6B" stroke-width="1.5" />
       <rect x="710" y="300" width="180" height="20" fill="#FF6B6B" />
-      <text x="800" y="314" font-family="Consolas, 'Courier New', monospace" font-size="10" fill="#0E2A47" text-anchor="middle" font-weight="bold">TERMINAL ✗</text>
+      <text x="800" y="314" font-family="Consolas, 'Courier New', monospace" font-size="10" fill="#0E2A47" text-anchor="middle" font-weight="bold">TERMINAL ERR</text>
       <text x="800" y="342" font-family="Consolas, 'Courier New', monospace" font-size="15" fill="#FF6B6B" text-anchor="middle" font-weight="bold">Failed</text>
     </g>
 

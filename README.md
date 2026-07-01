@@ -12,7 +12,7 @@ English | [中文](#简介)
 
 DeepPPT 是一个端到端的 AI PPT 生成系统。给定一个主题或源文件，它会自动完成深度调研、结构化分析、叙事构建、视觉身份提取、资源获取、SVG 页面生成、质量门禁和 PPTX 导出，最终产出一份**原生可编辑的 PPTX**。
 
-**支持 12 个主流 AI Agent 平台**，克隆即用：Claude Code / Cursor / Windsurf / GitHub Copilot / OpenAI Codex / Pi / Cline / Roo Code / Aider / Amazon Q / Kiro / Junie / Hermes Agent。
+**支持 13 个主流 AI Agent 平台**，克隆即用：Claude Code / Cursor / Windsurf / GitHub Copilot / OpenAI Codex / Pi / Cline / Roo Code / Aider / Amazon Q / Kiro / Junie / Hermes Agent。
 
 **核心差异化**（相比上游 ppt-master）：
 
@@ -210,7 +210,7 @@ DeepPPT/
 
 | 文档 | 说明 |
 |------|------|
-| [SETUP.md](SETUP.md) | 首次使用指南（安装 + 配置 + 12 平台使用） |
+| [SETUP.md](SETUP.md) | 首次使用指南（安装 + 配置 + 13 平台使用） |
 | [SKILL.md](skills/ppt-master/SKILL.md) | 核心工作流（必须阅读） |
 | [deep-research.md](skills/ppt-master/workflows/deep-research.md) | 深度调研编排器 |
 | [research/](skills/ppt-master/workflows/research/) | 7 步独立调研工作流 |

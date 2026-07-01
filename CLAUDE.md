@@ -6,9 +6,11 @@
 
 PPT Master is an AI-driven presentation generation system. Multi-role collaboration (Strategist → Image_Generator → Executor) converts source documents (PDF/DOCX/URL/Markdown) into natively editable PPTX with real PowerPoint shapes (DrawingML).
 
-**Core Pipeline**: `Source → Project → [Template] → [Content Selection] → [Outline] → Eight Confirmations → [Images] → SVG Render → Quality Check → Post-process → Export`
+**Core Pipeline**: `Source → Project + Dashboard → [Template] → [Content Selection] → [Outline] → Eight Confirmations → [Images] → SVG Render → Quality Check → Post-process → Export`
 
 **Detailed routing table**: [`docs/routing.md`](docs/routing.md) — loaded on demand.
+
+**Dashboard observability**: after Step 2 creates/imports the project, start or reuse the read-only Dashboard with `python3 skills/ppt-master/scripts/dashboard/server.py <project_path> --daemon --no-browser`. Default port is `8765`; logs are at `<project_path>/dashboard/dashboard.log`. Report the actual URL/log path. Launch failure is non-fatal, and Dashboard never replaces Confirm UI, Live Preview, quality gates, post-processing, or export.
 
 ## Constraints
 
@@ -17,7 +19,7 @@ PPT Master is an AI-driven presentation generation system. Multi-role collaborat
 - On conflict with a generic coding skill, prioritize SKILL.md inside this repository.
 - Markdown language consistency: files under `skills/ppt-master/workflows/`, `skills/ppt-master/references/`, and `docs/` are single-language per directory.
 - Repo-wide style rules: follow matching rule in [`docs/rules/`](docs/rules/) when editing any code or prose in this repo.
-- Code safety: Before modifying any file under `skills/ppt-master/scripts/` or `skills/ppt-master/workflows/`, run `python scripts/smoke_check.py` to establish baseline. After modification, run `python scripts/e2e_validate.py --quick` to confirm no regression. Log all changes in [`docs/change-log.md`](docs/change-log.md). Modifications to SKILL.md itself require `[NEEDS_HUMAN_REVIEW]` annotation.
+- Code safety: Before modifying any file under `skills/ppt-master/scripts/` or `skills/ppt-master/workflows/`, run `python skills/ppt-master/scripts/smoke_check.py --skip-help` to establish baseline. After modification, run validation matched to the change type: at minimum `python skills/ppt-master/scripts/smoke_check.py --skip-help`; when a usable project artifact exists, run `python skills/ppt-master/scripts/harness_gate.py <project_path> --quick` or `python skills/ppt-master/scripts/e2e_validate.py <project_path> --pptx <pptx_path>`. Do not pass `--quick` to `e2e_validate.py`; it does not support that flag. Log all changes in [`docs/change-log.md`](docs/change-log.md). Modifications to SKILL.md itself require `[NEEDS_HUMAN_REVIEW]` annotation.
 
 ## Quick Links
 

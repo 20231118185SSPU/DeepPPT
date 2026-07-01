@@ -8,9 +8,11 @@ This file is the project entry point for general AI agents.
 
 PPT Master is an AI-driven presentation generation system. Multi-role collaboration (Strategist → Image_Generator → Executor) converts source documents (PDF/DOCX/URL/Markdown) into natively editable PPTX with real PowerPoint shapes (DrawingML).
 
-**Core Pipeline**: `Source Document → Create Project → [Template] → Strategist Eight Confirmations → [Image_Generator] → Executor Live Preview → Quality Check → Post-processing → Export PPTX`
+**Core Pipeline**: `Source Document → Create Project + Dashboard → [Template] → Strategist Eight Confirmations → [Image_Generator] → Executor Live Preview → Quality Check → Post-processing → Export PPTX`
 
 > Topic-only requests with no source material: run the [`deep-research`](skills/ppt-master/workflows/deep-research.md) orchestrator before SKILL.md Step 1 to gather web materials (7-step research flow with multi-AI browser automation).
+>
+> Dashboard observability: after Step 2 creates the project directory and imports sources, start or reuse the unified read-only Dashboard with `python3 skills/ppt-master/scripts/dashboard/server.py <project_path> --daemon --no-browser` (default port `8765`; occupied ports auto-advance). Report the actual URL and `<project_path>/dashboard/dashboard.log`; if launch fails, report the warning and continue the PPT workflow. Dashboard is for status/artifacts/quality/log/bridge visibility only — it does not replace Confirm UI, Live Preview, quality gates, post-processing, or export commands.
 >
 > Template fill: when the user provides an existing `.pptx` template plus text materials or a topic and asks to reuse the original PPT design or fill content back into it (for example, "fill this deck with the new content", "fill this back into the template", or "reuse this deck's design"), run the standalone [`template-fill-pptx`](skills/ppt-master/workflows/template-fill-pptx.md) workflow. This route edits PPTX directly and must not enter the SVG generation pipeline.
 >
@@ -30,7 +32,7 @@ PPT Master is an AI-driven presentation generation system. Multi-role collaborat
 >
 > Brand identity setup: when the user asks to "set up brand" / "建立品牌" / "做品牌规范", provides a brand asset (logo / brand site URL / branded PPTX / brand PDF), or wants to extract a brand from existing materials, run the standalone [`create-brand`](skills/ppt-master/workflows/create-brand.md) workflow. Output goes to `skills/ppt-master/templates/brands/<id>/`. Brands apply at SKILL.md Step 3 via the same explicit-path rule as layout templates — the user supplies the brand directory path to apply it; bare brand names never trigger.
 >
-> Visual self-check: only when the user explicitly requests a per-page visual review on the generated SVGs (e.g., "跑一下视觉自检 / 视觉回看 / 视觉 rubric", "visual review", "check each page visually"), run the standalone [`visual-review`](skills/ppt-master/workflows/visual-review.md) workflow between the executor and post-processing steps. The main pipeline does NOT invoke it automatically; do not infer or recommend it from deck size, model identity, or any other signal — user request is the only trigger.
+> Visual self-check: after Executor quality gates pass and before Step 7 post-processing, run the standalone [`visual-review`](skills/ppt-master/workflows/visual-review.md) workflow as the default recommended quality step. Skip it only when the user explicitly says "跳过视觉自检" / "skip visual review", or when `confirm_ui/result.json` contains `skip_visual_review: true`. For decks containing data charts, run [`verify-charts`](skills/ppt-master/workflows/verify-charts.md) first, then run `visual-review`.
 
 ## Execution Requirements
 
@@ -67,8 +69,12 @@ python3 skills/ppt-master/scripts/source_to_md/web_to_md.py <URL>
 
 # Project management
 python3 skills/ppt-master/scripts/project_manager.py init <project_name> --format ppt169
-python3 skills/ppt-master/scripts/project_manager.py import-sources <project_path> <source_files_or_URLs...> --move
+python3 skills/ppt-master/scripts/project_manager.py import-sources <project_path> <source_files_or_URLs...>
+# Add --move only when intentionally relocating originals; add --copy to keep in-repo sources in place.
 python3 skills/ppt-master/scripts/project_manager.py validate <project_path>
+
+# Unified read-only workflow dashboard — start/reuse after Step 2 project setup
+python3 skills/ppt-master/scripts/dashboard/server.py <project_path> --daemon --no-browser
 
 # Icon selection — copy chosen library icons into <project>/icons/ (missing names reported + non-zero = re-pick)
 python3 skills/ppt-master/scripts/icon_sync.py <project_path> <lib/name> [<lib/name>...]

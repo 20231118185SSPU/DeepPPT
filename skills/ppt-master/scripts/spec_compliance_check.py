@@ -48,6 +48,7 @@ if str(_SCRIPTS_DIR) not in sys.path:
     sys.path.insert(0, str(_SCRIPTS_DIR))
 
 from update_spec import parse_lock  # noqa: E402
+from console_encoding import configure_utf8_stdio  # noqa: E402
 
 # ---------------------------------------------------------------------------
 # Constants
@@ -96,19 +97,24 @@ class ComplianceReport:
 # Helpers
 # ---------------------------------------------------------------------------
 def _find_svg_dir(project: Path) -> Optional[Path]:
-    """Return svg_output/ if it exists, else svg_final/, else None."""
+    """Return svg_output/ if it contains SVGs, else svg_final/, else None."""
     for name in ("svg_output", "svg_final"):
         d = project / name
-        if d.is_dir() and any(d.glob("P*.svg")):
+        if d.is_dir() and any(d.glob("*.svg")):
             return d
     return None
+
+
+def _iter_svg_files(svg_dir: Path) -> list[Path]:
+    """Return SVG files in deterministic order, including legacy NN_* names."""
+    return sorted(svg_dir.glob("*.svg"))
 
 
 def _collect_svg_colors(svg_dir: Path) -> set[str]:
     """Return all lowercase HEX color values found in SVG fill/stroke/stop-color."""
     colors: set[str] = set()
     hex_re = re.compile(r'(?:fill|stroke|stop-color)\s*=\s*"(#[0-9A-Fa-f]{6})"')
-    for svg in sorted(svg_dir.glob("P*.svg")):
+    for svg in _iter_svg_files(svg_dir):
         text = svg.read_text(encoding="utf-8", errors="replace")
         for m in hex_re.finditer(text):
             colors.add(m.group(1).lower())
@@ -118,7 +124,7 @@ def _collect_svg_colors(svg_dir: Path) -> set[str]:
 def _collect_svg_data_icons(svg_dir: Path) -> set[str]:
     """Return all data-icon attribute values across SVGs."""
     icons: set[str] = set()
-    for svg in sorted(svg_dir.glob("P*.svg")):
+    for svg in _iter_svg_files(svg_dir):
         text = svg.read_text(encoding="utf-8", errors="replace")
         for m in _DATA_ICON_RE.finditer(text):
             icons.add(m.group(1))
@@ -129,7 +135,7 @@ def _collect_svg_image_refs(svg_dir: Path) -> set[str]:
     """Return all image href paths referenced in SVGs."""
     refs: set[str] = set()
     href_re = re.compile(r'href="([^"]+)"')
-    for svg in sorted(svg_dir.glob("P*.svg")):
+    for svg in _iter_svg_files(svg_dir):
         text = svg.read_text(encoding="utf-8", errors="replace")
         for m in href_re.finditer(text):
             val = m.group(1)
@@ -228,7 +234,9 @@ def check_chart_templates(
     if index_path.exists():
         try:
             index_data = json.loads(index_path.read_text(encoding="utf-8"))
-            if isinstance(index_data, dict):
+            if isinstance(index_data, dict) and isinstance(index_data.get("charts"), dict):
+                valid_names = set(index_data["charts"].keys())
+            elif isinstance(index_data, dict):
                 valid_names = set(index_data.keys())
             elif isinstance(index_data, list):
                 valid_names = {
@@ -534,4 +542,5 @@ def main(argv: Optional[list[str]] = None) -> int:
 
 
 if __name__ == "__main__":
+    configure_utf8_stdio()
     raise SystemExit(main())

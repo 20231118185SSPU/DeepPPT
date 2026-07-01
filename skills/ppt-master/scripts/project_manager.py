@@ -2,9 +2,9 @@
 """PPT Master project management helpers.
 
 Usage:
-    python3 scripts/project_manager.py init <project_name> [--format ppt169] [--dir <path>]
-    python3 scripts/project_manager.py import-sources <project_path> <source1> [<source2> ...] [--move | --copy]
-    python3 scripts/project_manager.py validate <project_path>
+    python3 scripts/project_manager.py init <project_name> [--format ppt169] [--dir <path>] [--start-dashboard]
+    python3 scripts/project_manager.py import-sources <project_path> <source1> [<source2> ...] [--move | --copy] [--start-dashboard]
+    python3 scripts/project_manager.py validate <project_path> [--start-dashboard]
     python3 scripts/project_manager.py info <project_path>
     python3 scripts/project_manager.py checkpoint save <project_path> [--notes "..."]
     python3 scripts/project_manager.py checkpoint load <project_path>
@@ -24,6 +24,10 @@ from pathlib import Path
 from urllib.parse import urlparse
 
 try:
+    from dashboard_launcher import (
+        DEFAULT_PORT as DASHBOARD_DEFAULT_PORT,
+        launch_dashboard_daemon,
+    )
     from project_utils import (
         CANVAS_FORMATS,
         get_project_info as get_project_info_common,
@@ -35,6 +39,10 @@ except ImportError:
     tools_dir = Path(__file__).resolve().parent
     if str(tools_dir) not in sys.path:
         sys.path.insert(0, str(tools_dir))
+    from dashboard_launcher import (  # type: ignore
+        DEFAULT_PORT as DASHBOARD_DEFAULT_PORT,
+        launch_dashboard_daemon,
+    )
     from project_utils import (  # type: ignore
         CANVAS_FORMATS,
         get_project_info as get_project_info_common,
@@ -65,6 +73,78 @@ IMAGE_ASSET_SUFFIXES = {
     ".png", ".jpg", ".jpeg", ".gif", ".webp", ".bmp", ".tiff", ".tif",
     ".emf", ".wmf", ".svg",
 }
+DASHBOARD_COMMAND = "python3 skills/ppt-master/scripts/dashboard/server.py"
+DASHBOARD_NO_BROWSER_DEFAULT = True
+
+
+def dashboard_command(project_path: str | Path, port: int = DASHBOARD_DEFAULT_PORT) -> str:
+    """Return the Dashboard daemon command shown to agents and users."""
+    command = f"{DASHBOARD_COMMAND} {project_path} --daemon --no-browser"
+    if port != DASHBOARD_DEFAULT_PORT:
+        command += f" --port {port}"
+    return command
+
+
+def print_dashboard_hint(project_path: str | Path, port: int = DASHBOARD_DEFAULT_PORT) -> None:
+    """Print the non-blocking Dashboard startup hint for a project."""
+    log_path = Path(project_path) / "dashboard" / "dashboard.log"
+    print("\nDashboard observability:")
+    print(f"  {dashboard_command(project_path, port)}")
+    print(f"  Default port: {DASHBOARD_DEFAULT_PORT}")
+    print(f"  Log: {log_path}")
+    print("  Launch failure is non-fatal; continue the PPT workflow.")
+    print("  Dashboard is read-only and does not replace Confirm UI, Live Preview,")
+    print("  quality gates, post-processing, or export.")
+
+
+def handle_dashboard_option(
+    project_path: str | Path,
+    *,
+    start_dashboard: bool,
+    no_browser: bool = DASHBOARD_NO_BROWSER_DEFAULT,
+    port: int = DASHBOARD_DEFAULT_PORT,
+) -> None:
+    """Print the Dashboard hint or explicitly start/reuse the Dashboard."""
+    if not start_dashboard:
+        print_dashboard_hint(project_path, port)
+        return
+
+    print("\nDashboard observability:")
+    try:
+        result = launch_dashboard_daemon(
+            Path(project_path),
+            port=port,
+            no_browser=no_browser,
+        )
+    except Exception as exc:
+        log_path = Path(project_path) / "dashboard" / "dashboard.log"
+        print(f"Warning: Dashboard failed to launch: {exc}")
+        print(f"Warning: Dashboard log path: {log_path}")
+        print("Warning: continuing the PPT workflow.")
+        return
+    if result != 0:
+        print(f"Warning: Dashboard launcher exited with code {result}; continuing the PPT workflow.")
+
+
+def add_dashboard_options(parser: argparse.ArgumentParser) -> None:
+    """Add explicit Dashboard startup controls to a project subcommand."""
+    parser.add_argument(
+        "--start-dashboard",
+        action="store_true",
+        help="Start or reuse the read-only Dashboard after this command succeeds",
+    )
+    parser.add_argument(
+        "--no-browser",
+        action="store_true",
+        default=DASHBOARD_NO_BROWSER_DEFAULT,
+        help="Do not open the browser when --start-dashboard is used (default)",
+    )
+    parser.add_argument(
+        "--dashboard-port",
+        type=int,
+        default=DASHBOARD_DEFAULT_PORT,
+        help=f"Preferred Dashboard port (default: {DASHBOARD_DEFAULT_PORT})",
+    )
 
 
 def _curl_cffi_available() -> bool:
@@ -120,20 +200,14 @@ def trace_event(project_path: str | Path, event_type: str, detail: str, **extra)
     Each line is a JSON object with ``ts``, ``type``, ``detail``, and
     any additional keyword arguments.
     """
-    import json as _json
-
-    trace_file = Path(project_path) / "trace.jsonl"
-    entry = {
-        "ts": datetime.now().isoformat(timespec="seconds"),
-        "type": event_type,
-        "detail": detail,
-        **extra,
-    }
     try:
-        with open(trace_file, "a", encoding="utf-8") as f:
-            f.write(_json.dumps(entry, ensure_ascii=False) + "\n")
-    except OSError:
-        pass  # non-fatal — trace is best-effort
+        from dashboard.trace_writer import trace_event as _trace_event
+    except ImportError:
+        try:
+            from trace_writer import trace_event as _trace_event
+        except ImportError:
+            return
+    _trace_event(project_path, event_type, detail, **extra)
 
 
 class ProjectManager:
@@ -1030,7 +1104,8 @@ def build_parser() -> argparse.ArgumentParser:
         formatter_class=argparse.RawDescriptionHelpFormatter,
         epilog="""Examples:
   python3 scripts/project_manager.py init demo --format ppt169
-  python3 scripts/project_manager.py import-sources projects/demo file.md --move
+  python3 scripts/project_manager.py init demo --format ppt169 --start-dashboard --no-browser
+  python3 scripts/project_manager.py import-sources projects/demo file.md
   python3 scripts/project_manager.py validate projects/demo
   python3 scripts/project_manager.py info projects/demo
 """,
@@ -1041,6 +1116,7 @@ def build_parser() -> argparse.ArgumentParser:
     init.add_argument("project_name", help="Project name")
     init.add_argument("--format", default="ppt169", help="Canvas format (default: ppt169)")
     init.add_argument("--dir", default=None, help="Base directory for the project")
+    add_dashboard_options(init)
 
     import_sources = subparsers.add_parser(
         "import-sources",
@@ -1051,9 +1127,11 @@ def build_parser() -> argparse.ArgumentParser:
     mode = import_sources.add_mutually_exclusive_group()
     mode.add_argument("--move", action="store_true", help="Move local source files")
     mode.add_argument("--copy", action="store_true", help="Copy local source files")
+    add_dashboard_options(import_sources)
 
     validate = subparsers.add_parser("validate", help="Validate a project directory")
     validate.add_argument("project_path", help="Project directory")
+    add_dashboard_options(validate)
 
     info = subparsers.add_parser("info", help="Print project metadata")
     info.add_argument("project_path", help="Project directory")
@@ -1084,8 +1162,15 @@ def main(argv: list[str] | None = None) -> int:
             print(f"[OK] Project initialized: {project_path}")
             print("Next:")
             print("1. Put source files into sources/ (or use import-sources)")
-            print("2. Save your design spec to the project root")
-            print("3. Generate SVG files into svg_output/")
+            print("2. Validate/import sources, then start or reuse Dashboard:")
+            print(f"   {dashboard_command(project_path, args.dashboard_port)}")
+            print("3. Continue with SKILL.md Step 3/4 (template option and Strategist confirmations)")
+            handle_dashboard_option(
+                project_path,
+                start_dashboard=args.start_dashboard,
+                no_browser=args.no_browser,
+                port=args.dashboard_port,
+            )
             return 0
 
         if args.command == "import-sources":
@@ -1120,6 +1205,12 @@ def main(argv: list[str] | None = None) -> int:
                 print("\nSkipped:")
                 for item in summary["skipped"]:
                     print(f"  - {item}")
+            handle_dashboard_option(
+                args.project_path,
+                start_dashboard=args.start_dashboard,
+                no_browser=args.no_browser,
+                port=args.dashboard_port,
+            )
             return 0
 
         if args.command == "validate":
@@ -1146,6 +1237,12 @@ def main(argv: list[str] | None = None) -> int:
             else:
                 print("\n[ERROR] Project structure is invalid.")
                 return 1
+            handle_dashboard_option(
+                project_path,
+                start_dashboard=args.start_dashboard,
+                no_browser=args.no_browser,
+                port=args.dashboard_port,
+            )
             return 0
 
         if args.command == "info":

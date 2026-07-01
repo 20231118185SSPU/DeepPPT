@@ -53,8 +53,8 @@
     <text x="120" y="530" font-family="Arial, 'Microsoft YaHei', sans-serif" font-size="11" fill="#F0F4F8">Backend services</text>
     <text x="120" y="546" font-family="Arial, 'Microsoft YaHei', sans-serif" font-size="11" fill="#A0B8D0">internal APIs</text>
     <line x1="120" y1="580" x2="240" y2="580" stroke="#2D4A6B" stroke-width="0.5"/>
-    <text x="180" y="610" font-family="Consolas, 'Courier New', monospace" font-size="9" fill="#5BA3E0" text-anchor="middle">DEFAULT</text>
-    <text x="180" y="624" font-family="Consolas, 'Courier New', monospace" font-size="9" fill="#A0B8D0" text-anchor="middle">90% of services</text>
+    <text x="180" y="610" font-family="Consolas, 'Courier New', monospace" font-size="10" fill="#5BA3E0" text-anchor="middle">DEFAULT</text>
+    <text x="180" y="624" font-family="Consolas, 'Courier New', monospace" font-size="10" fill="#A0B8D0" text-anchor="middle">90% of services</text>
   </g>
 
   <g id="pillar-nodeport">
@@ -81,8 +81,8 @@
     <text x="405" y="530" font-family="Arial, 'Microsoft YaHei', sans-serif" font-size="11" fill="#F0F4F8">No cloud LB</text>
     <text x="405" y="546" font-family="Arial, 'Microsoft YaHei', sans-serif" font-size="11" fill="#A0B8D0">dev / on-prem</text>
     <line x1="405" y1="580" x2="525" y2="580" stroke="#2D4A6B" stroke-width="0.5"/>
-    <text x="465" y="610" font-family="Consolas, 'Courier New', monospace" font-size="9" fill="#5BA3E0" text-anchor="middle">L4 EXPOSURE</text>
-    <text x="465" y="624" font-family="Consolas, 'Courier New', monospace" font-size="9" fill="#A0B8D0" text-anchor="middle">no LB needed</text>
+    <text x="465" y="610" font-family="Consolas, 'Courier New', monospace" font-size="10" fill="#5BA3E0" text-anchor="middle">L4 EXPOSURE</text>
+    <text x="465" y="624" font-family="Consolas, 'Courier New', monospace" font-size="10" fill="#A0B8D0" text-anchor="middle">no LB needed</text>
   </g>
 
   <g id="pillar-loadbalancer">
@@ -109,8 +109,8 @@
     <text x="690" y="530" font-family="Arial, 'Microsoft YaHei', sans-serif" font-size="11" fill="#F0F4F8">Public-facing app</text>
     <text x="690" y="546" font-family="Arial, 'Microsoft YaHei', sans-serif" font-size="11" fill="#A0B8D0">requires cloud</text>
     <line x1="690" y1="580" x2="810" y2="580" stroke="#2D4A6B" stroke-width="0.5"/>
-    <text x="750" y="610" font-family="Consolas, 'Courier New', monospace" font-size="9" fill="#FFB627" text-anchor="middle">▲ PRODUCTION</text>
-    <text x="750" y="624" font-family="Consolas, 'Courier New', monospace" font-size="9" fill="#F0F4F8" text-anchor="middle">canonical pattern</text>
+    <text x="750" y="610" font-family="Consolas, 'Courier New', monospace" font-size="10" fill="#FFB627" text-anchor="middle">▲ PRODUCTION</text>
+    <text x="750" y="624" font-family="Consolas, 'Courier New', monospace" font-size="10" fill="#F0F4F8" text-anchor="middle">canonical pattern</text>
   </g>
 
   <g id="pillar-externalname">
@@ -137,8 +137,8 @@
     <text x="975" y="530" font-family="Arial, 'Microsoft YaHei', sans-serif" font-size="11" fill="#F0F4F8">External DB / API</text>
     <text x="975" y="546" font-family="Arial, 'Microsoft YaHei', sans-serif" font-size="11" fill="#A0B8D0">migration shim</text>
     <line x1="975" y1="580" x2="1095" y2="580" stroke="#2D4A6B" stroke-width="0.5"/>
-    <text x="1035" y="610" font-family="Consolas, 'Courier New', monospace" font-size="9" fill="#3E7AB8" text-anchor="middle">NO PROXYING</text>
-    <text x="1035" y="624" font-family="Consolas, 'Courier New', monospace" font-size="9" fill="#A0B8D0" text-anchor="middle">edge case only</text>
+    <text x="1035" y="610" font-family="Consolas, 'Courier New', monospace" font-size="10" fill="#3E7AB8" text-anchor="middle">NO PROXYING</text>
+    <text x="1035" y="624" font-family="Consolas, 'Courier New', monospace" font-size="10" fill="#A0B8D0" text-anchor="middle">edge case only</text>
   </g>
 
   <g id="footer">
