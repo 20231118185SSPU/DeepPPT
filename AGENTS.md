@@ -78,6 +78,7 @@ python3 skills/ppt-master/scripts/dashboard/server.py <project_path> --daemon
 # Add --no-browser only for headless/remote sessions or explicit no-window runs.
 
 # Icon selection — copy chosen library icons into <project>/icons/ (missing names reported + non-zero = re-pick)
+python3 skills/ppt-master/scripts/icon_sync.py search <query> [--library lib] [--limit N]
 python3 skills/ppt-master/scripts/icon_sync.py <project_path> <lib/name> [<lib/name>...]
 
 # Step 4 Eight Confirmations — interactive visual page (default auto-launch; chat fallback)
@@ -92,6 +93,7 @@ python3 skills/ppt-master/scripts/image_gen.py --render-md <project_path>/images
 python3 skills/ppt-master/scripts/image_gen.py "prompt" --aspect_ratio 16:9 --image_size 1K -o <project_path>/images
 python3 skills/ppt-master/scripts/svg_editor/server.py <project_path> --live
 python3 skills/ppt-master/scripts/svg_quality_checker.py <project_path>
+python3 skills/ppt-master/scripts/consulting_content_lock.py <project_path>  # optional, consulting/high-density sidecar
 python3 skills/ppt-master/scripts/animation_config.py scaffold <project_path>  # optional, only for custom object-level animation
 python3 skills/ppt-master/scripts/animation_config.py validate <project_path>  # optional, before re-export
 
@@ -99,6 +101,8 @@ python3 skills/ppt-master/scripts/animation_config.py validate <project_path>  #
 python3 skills/ppt-master/scripts/total_md_split.py <project_path>
 python3 skills/ppt-master/scripts/finalize_svg.py <project_path>
 python3 skills/ppt-master/scripts/svg_to_pptx.py <project_path>
+python3 skills/ppt-master/scripts/e2e_validate.py <project_path> --pptx exports/<exported_file>.pptx
+python3 skills/ppt-master/scripts/pptx_quality_check.py <project_path>/exports/<exported_file>.pptx --json-out <project_path>/quality/pptx_quality.json  # optional strict post-export structure QA
 # Mergeable dy-stacked paragraph blocks collapse into one editable text frame by default; add --no-merge to keep every line as its own frame (strict line fidelity). See SKILL.md Step 7.3.
 ```
 

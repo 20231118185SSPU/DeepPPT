@@ -23,6 +23,14 @@
 
 ## Log
 
+### 2026-07-02 — Consulting evidence layer and post-export PPTX QA
+- **Files**: `skills/ppt-master/workflows/deep-research.md`, `skills/ppt-master/workflows/detailed-outline.md`, `skills/ppt-master/references/strategist.md`, `skills/ppt-master/references/executor-base.md`, `skills/ppt-master/references/shared-standards.md`, `skills/ppt-master/scripts/consulting_content_lock.py`, `skills/ppt-master/scripts/pptx_quality_check.py`, `skills/ppt-master/scripts/icon_sync.py`, `skills/ppt-master/scripts/README.md`, `skills/ppt-master/SKILL.md`, `AGENTS.md`, `docs/claude-reference.md`, `README.md`, `docs/change-log.md`
+- **Reason**: 吸收 CyberPPT 源码审计中适合 DeepPPT 的咨询证据链、SCR 备选、可编辑信息层、PPTX post-export 结构 QA 和图标搜索能力，同时保持 DeepPPT 的 SVG -> DrawingML 主线
+- **Before**: deep-research / detailed-outline 没有咨询类 `evidence_table` / SCR 候选输出约束；Executor 文档缺少可编辑信息层与高密度表格 QA 术语；没有可选 `slide_content_lock` sidecar；PPTX 导出后只有 `e2e_validate.py` 的基础结构检查；`icon_sync.py` 只能复制已知图标名
+- **After**: 咨询 / briefing / pyramid / high-density business 场景可选启用证据表、2-3 条 SCR 候选、每页 `evidence_ids` / `caveats` / `so_what` / `content_density`；Executor/shared standards 明确关键文字数字必须可编辑、复杂视觉可用图片/path、`pictures=0` 不是质量目标；新增 `consulting_content_lock.py` 输出 `ppt_master.slide_content_lock.v1`；新增 `pptx_quality_check.py` 直接读取 PPTX ZIP/XML 检查 slide size、shape bounds、placeholder、大面积图片、native text 和字号；`icon_sync.py search` 可搜索候选 `lib/name`；README / AGENTS / SKILL / claude-reference / scripts README 对齐新增能力和命令
+- **Risk**: medium（新增可选脚本与主流程文档说明；不引入 PptxGenJS / COM 合并，不新增 `test_*.py` 或 unittest/pytest，不改变默认 SVG -> DrawingML 导出路线）
+- **Human reviewed**: pending [NEEDS_HUMAN_REVIEW for SKILL.md workflow documentation update]
+
 ### 2026-07-02 — Dashboard default browser behavior alignment
 - **Files**: `skills/ppt-master/scripts/project_manager.py`, `skills/ppt-master/scripts/dashboard/state_reader.py`, `skills/ppt-master/scripts/docs/project.md`, `docs/change-log.md`
 - **Reason**: 最终整合复查发现 `AGENTS.md` / `SKILL.md` 已要求 Dashboard 默认本地自动打开浏览器，但 `project_manager.py` 与项目工具文档仍输出 `--no-browser` 默认提示；同时包方式导入 `dashboard.state_reader` 时缺少 dashboard 模块路径
@@ -424,4 +432,3 @@
 - **Smoke check**: 38 passed, 0 failed, 3 skipped / 41 checks；专项 `py_compile` 覆盖 `scripts/research/browse_ai.py` 和 `scripts/research/sync_research_outputs.py`
 - **Risk**: medium（修改新研究流程脚本和 manifest 结构；主 PPT 生成流程未改）
 - **Human reviewed**: pending
-

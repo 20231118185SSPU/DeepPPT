@@ -53,7 +53,7 @@ description: >
 | `${SKILL_DIR}/scripts/source_to_md/web_to_md.py` | Web page to Markdown (supports WeChat via `curl_cffi`) |
 | `agent-reach doctor --json` | Multi-platform content availability check (optional; when `agent-reach` is installed. Zero-config: B站/V2EX/RSS/web/YouTube) |
 | `${SKILL_DIR}/scripts/project_manager.py` | Project init / validate / manage |
-| `${SKILL_DIR}/scripts/icon_sync.py` | Copy chosen library icons into `<project>/icons/` at selection time; missing names reported + non-zero (re-pick gate) |
+| `${SKILL_DIR}/scripts/icon_sync.py` | Search icon candidates and copy chosen library icons into `<project>/icons/` at selection time; missing names reported + non-zero (re-pick gate) |
 | `${SKILL_DIR}/scripts/analyze_images.py` | Image analysis |
 | `${SKILL_DIR}/scripts/latex_render.py` | LaTeX formula rendering (manifest-driven PNG assets) |
 | `${SKILL_DIR}/scripts/image_gen.py` | AI image generation (multi-provider) |
@@ -71,7 +71,9 @@ description: >
 | `${SKILL_DIR}/scripts/svg_to_pptx.py` | Export to PPTX |
 | `${SKILL_DIR}/scripts/update_spec.py` | Propagate a `spec_lock.md` color / font_family change across all generated SVGs |
 | `${SKILL_DIR}/scripts/spec_lock_digest.py` | spec_lock integrity guard — generate/verify SHA-256 digest to detect unintended modifications |
+| `${SKILL_DIR}/scripts/consulting_content_lock.py` | Optional consulting sidecar — generate `analysis/slide_content_lock.json` from detailed outline / spec_lock |
 | `${SKILL_DIR}/scripts/e2e_validate.py` | End-to-end pipeline validation — page count, speaker notes, image completeness, PPTX integrity |
+| `${SKILL_DIR}/scripts/pptx_quality_check.py` | Optional post-export PPTX structure QA — slide size, bounds, placeholders, image-area risk, native text, font floor |
 | `${SKILL_DIR}/scripts/smoke_check.py` | Script smoke check — import + CLI --help validation for all scripts |
 | `${SKILL_DIR}/scripts/harness_gate.py` | Aggregated quality gate — runs spec_compliance + svg_quality + e2e in one PASS/FAIL report |
 | `${SKILL_DIR}/scripts/layout_capacity_check.py` | Pre-Executor capacity estimation — flags overfull/tight pages before SVG generation |
@@ -763,6 +765,12 @@ Full effect list, anchor logic, and limits: [`references/animations.md`](referen
 python3 ${SKILL_DIR}/scripts/e2e_validate.py <project_path> --pptx exports/<exported_file>.pptx
 ```
 Validates page count consistency, speaker notes completeness, image file presence, and PPTX structural integrity. Reports PASS/WARN/FAIL per check. Non-blocking — warnings and failures are informational, not gating.
+
+**Step 7.4b** — Optional strict PPTX structure QA:
+```bash
+python3 ${SKILL_DIR}/scripts/pptx_quality_check.py <project_path>/exports/<exported_file>.pptx --json-out <project_path>/quality/pptx_quality.json
+```
+Checks the exported PPTX package directly via ZIP/XML: slide size / aspect ratio, negative or out-of-bounds shapes, placeholder text, large/full-slide image risk, native text shape count, and minimum font size. Exit code 0 = no errors, 1 = quality errors, 2 = argument/input/package error. This complements SVG/spec/render gates; it does not replace `svg_quality_checker.py`, `spec_compliance_check.py`, `rendered_layout_check.py`, or `e2e_validate.py`.
 
 **Step 7.5** — Memory consolidation (automatic, no user action needed):
 ```bash

@@ -179,6 +179,23 @@ One offending character invalidates the file and aborts export. Numeric refs (`&
 - **Images**: `<image href="../images/xxx.png" preserveAspectRatio="xMidYMid slice"/>`
 - **Icons**: `<use data-icon="<library>/<name>" x="" y="" width="48" height="48" fill="#HEX"/>` (auto-embedded post-processing). Always include library prefix. One stylistic library per deck (`chunk-filled`/`tabler-filled`/`tabler-outline`/`phosphor-duotone`); `simple-icons` only for real brand marks. See [`../templates/icons/README.md`](../templates/icons/README.md).
 
+### Editable Information vs Visual Asset Layers
+
+**Hard rule**: the SVG is the authoring surface for native DrawingML output. Use SVG primitives so `svg_to_pptx.py` can produce editable PowerPoint text, shapes, lines, fills, shadows, geometry, and pictures.
+
+| Layer | SVG authoring form | PPTX expectation |
+|---|---|---|
+| Editable information layer | `<text>`, `<tspan>`, `<rect>`, `<line>`, `<path>`, `<polygon>`, chart/table geometry | Native DrawingML objects that users can select, edit, recolor, and resize |
+| Complex visual asset layer | `<image>` for photos/screenshots/textures/logos; text-free `<path>` / clipped geometry for hard-to-rebuild visuals | Pictures or vector geometry used only where editability is not the main value |
+
+**Forbidden — baked information**: do not put main titles, KPI numbers, chart labels, table text, annotations, SO WHAT, page numbers, or sources inside an image. If a source image already contains text that must appear in the final deck, mask/crop it and redraw the final wording as SVG `<text>`.
+
+**Forbidden — whole-slide rasterization**: do not use a screenshot or blueprint render as the final full-slide background for a normal editable deck. A full-bleed photo or texture is allowed only when it is visual context and all information sits above it as editable text/shapes.
+
+**pictures=0 is not a quality target**: fewer images do not prove a page is better. Use zero pictures when everything can be faithfully rebuilt with native text/shapes/paths; use justified non-text assets when removing them would damage the visual semantics. The invariant is: key information stays editable and visual semantics stay intact.
+
+**DeepPPT pipeline boundary**: these rules strengthen the existing SVG→DrawingML route. They do not introduce PptxGenJS, COM merge, or any alternate PPT generation path.
+
 ### Inline Text Runs (Single Logical Line = Single `<text>`)
 
 One logical line — even with mixed colors/weights/sizes — MUST be one `<text>` with inline `<tspan>` children. Never use multiple adjacent `<text>` elements. The converter maps each `<tspan>` to a `<a:r>` run within the same PPT text frame, keeping the line as one editable shape.

@@ -44,7 +44,7 @@ python3 scripts/update_repo.py
 |------|-----------------|---------------|
 | Conversion | `source_to_md/pdf_to_md.py`, `source_to_md/doc_to_md.py`, `source_to_md/excel_to_md.py`, `source_to_md/ppt_to_md.py`, `source_to_md/web_to_md.py`, `pptx_intake.py` | [docs/conversion.md](./docs/conversion.md) |
 | Project management | `project_manager.py`, `batch_validate.py`, `generate_examples_index.py`, `error_helper.py`, `pptx_template_import.py`, `template_fill_pptx.py` | [docs/project.md](./docs/project.md) |
-| SVG pipeline | `finalize_svg.py`, `svg_to_pptx.py`, `total_md_split.py`, `svg_quality_checker.py`, `rendered_layout_check.py`, `extract_svg_assets.py`, `animation_config.py`, `notes_to_audio.py` | [docs/svg-pipeline.md](./docs/svg-pipeline.md) |
+| SVG pipeline | `finalize_svg.py`, `svg_to_pptx.py`, `total_md_split.py`, `svg_quality_checker.py`, `rendered_layout_check.py`, `pptx_quality_check.py`, `extract_svg_assets.py`, `animation_config.py`, `notes_to_audio.py`, `consulting_content_lock.py` | [docs/svg-pipeline.md](./docs/svg-pipeline.md) |
 | Spec maintenance | `update_spec.py` | [docs/update_spec.md](./docs/update_spec.md) |
 | Image tools | `image_gen.py`, `latex_render.py`, `analyze_images.py`, `gemini_watermark_remover.py` | [docs/image.md](./docs/image.md) |
 | Research gates | `research/browse_ai.py`, `research/research_gate.py`, `research/asset_gate.py`, `research/sync_research_outputs.py`, `confirm_ui_gate.py` | Deep-research and Step 4/5 gate docs in `../workflows/` |
@@ -148,6 +148,10 @@ python skills/ppt-master/scripts/harness_gate.py projects/e2e_smoke_test_ppt169_
 # Full E2E validation: verifies page count, notes, image completeness, and PPTX integrity.
 python skills/ppt-master/scripts/e2e_validate.py projects/e2e_smoke_test_ppt169_20260701 --pptx projects/e2e_smoke_test_ppt169_20260701/exports/e2e_smoke_test_20260701_151710.pptx
 
+# Post-export PPTX structure QA: checks slide size, bounds, placeholders,
+# native text count, font floor, and large/full-slide image risks.
+python skills/ppt-master/scripts/pptx_quality_check.py projects/e2e_smoke_test_ppt169_20260701/exports/e2e_smoke_test_20260701_151710.pptx --json-out projects/e2e_smoke_test_ppt169_20260701/quality/pptx_quality.json
+
 # Quick static gate: runs static project gates only; it skips e2e validation.
 python skills/ppt-master/scripts/harness_gate.py examples/ppt169_kubernetes_blueprint_2026 --quick
 ```
@@ -156,6 +160,15 @@ python skills/ppt-master/scripts/harness_gate.py examples/ppt169_kubernetes_blue
 SVG quality checks, marks e2e as skipped, and does not prove the deck passed the
 complete end-to-end export validation. Use the full E2E gate plus
 `e2e_validate.py --pptx ...` before treating a fix as end-to-end validated.
+
+Optional consulting content lock:
+
+```bash
+python3 scripts/consulting_content_lock.py <project_path>
+```
+
+This writes `<project_path>/analysis/slide_content_lock.json` from
+`analysis/detailed_outline.json`, root `detailed_outline.json`, or `spec_lock.md`.
 
 Rendered visual gate:
 

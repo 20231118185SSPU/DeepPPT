@@ -37,6 +37,8 @@ From `research_report.md`, extract only the content belonging to the dimensions 
 
 **Brief inheritance**: when `ppt_brief.json` exists, every page plan must respect its `narrative_frame`, `content_boundary`, `material_strategy`, `source_strategy`, `copyright_and_risk`, and `acceptance_criteria`.
 
+**咨询模式证据继承（可选）**：当 `_research/step5_analysis/research_analysis.json` 包含 `evidence_table`，或 `_research/step6_narrative/research_report.md` 明确给出 `storyline_alternatives` / SCR 备选时，读取这些字段并作为高密度咨询页的证据约束。没有这些字段时，不要为通用 PPT 强行补 MBB schema。
+
 **1.2 Determine page count**
 
 Use `content_selection.json.suggested_pages` as the target page count. Adjust within ±2 pages if the narrative arc (Step 2) requires it, but do not exceed the `[8, 25]` range.
@@ -46,6 +48,20 @@ Use `content_selection.json.suggested_pages` as the target page count. Adjust wi
 ## Step 2: Design Narrative Arc
 
 Arrange the selected dimensions into a coherent story that guides the audience from attention to understanding to action.
+
+**2.0 咨询模式故事线收敛（可选）**
+
+当输入包含 `storyline_alternatives`，且目标是 consulting / briefing / pyramid / high-density business report：
+
+| 字段 | 要求 |
+|---|---|
+| `storyline_alternatives` | 保留 2-3 条候选故事线，不要只输出单一大纲 |
+| `scr` | 每条候选包含 Situation / Complication / Resolution 一句话 |
+| `recommended_storyline` | 说明推荐理由：论证锋利度、证据强度、受众适配、页面可视化潜力 |
+| `rejected_reasons` | 对弃选候选写明 caveat、证据缺口、重复性或不适合当前场景的原因 |
+| `key_evidence_ids` | 绑定来自 `evidence_table` 或研究来源的证据 ID |
+
+**边界**：该步骤只影响咨询类高密度大纲的论证选择；不改变通用 PPT 的默认叙事 arc，也不新增 Confirm UI 阻塞点。
 
 **2.1 Define the arc**
 
@@ -111,6 +127,10 @@ For each page in the target page count, generate a structured plan with the foll
 | `content_mode` | enum | `text-primary` \| `image-primary` \| `image_with_text`. Determines image generation strategy. See §3.4 below |
 | `paired_with` | string | For deep-dive pages, the preceding content page id; for content pages, the follow-up deep-dive page id or empty with reason |
 | `evidence_refs` | string[] | Source IDs / URLs / fact IDs supporting this page |
+| `evidence_ids` | string[] | Optional consulting-mode stable IDs from `evidence_table`; may mirror `evidence_refs` when no separate table exists |
+| `caveats` | string[] | Optional. Conflicts, missing denominator, directional-only evidence, or assumptions that weaken the page claim |
+| `so_what` | string | Optional. ≤50 chars. The business implication or decision meaning of the page |
+| `content_density` | enum | Optional. `low` \| `medium` \| `high`; for consulting pages, also note major information zones in `element_list` |
 | `page_description` | string | ≤100 chars. One-sentence description of what the complete page looks like when finished — layout, visual elements, content placement |
 | `text_hierarchy` | object | Explicit text breakdown: `{"title": "...", "subtitle": "...", "body": ["..."], "annotation": "..."}`. Draft content for each text level on this page |
 | `element_list` | string[] | Enumerate ALL visual elements on this page: title, subtitle, body_bullets, chart_bar, icon_decoration, hero_image, source_annotation, etc. |
@@ -220,6 +240,8 @@ Every content page MUST have a `layout_plan` determined BEFORE image generation:
 
 **Hard rule — evidence per page**: every content and deep-dive page must cite at least 2 evidence refs. Pages that cannot cite evidence must be rewritten, merged, or sent back to research.
 
+**咨询模式规则（可选）**：当 `evidence_table` 或 SCR 备选存在时，每个 `content` / `deep_dive` / `comparison` / `data` 页面还应填写 `evidence_ids`、`caveats`、`so_what`、`content_density`。缺证据时不要编造；在 `caveats` 中标记 `not provided` / `directional only` / `needs external verification`，并降低 `content_density` 或返回研究补证。
+
 **Hard rule — layout before image**: `layout_plan.image_area` and `visual_need.image_slot_size` must be filled before any image prompt or web query is written.
 
 ---
@@ -284,6 +306,10 @@ Write `<project>/detailed_outline.json`:
       "source_dimension": "市场规模与增长",
       "paired_with": "P03",
       "evidence_refs": ["S01", "S03"],
+      "evidence_ids": ["E001", "E007"],
+      "caveats": ["2025年为预测值，需在页脚注明来源口径"],
+      "so_what": "增长确定性提高，但区域结构决定优先级",
+      "content_density": "high",
       "page_description": "柱状图占据页面中央，上方标题和三条要点总结市场翻倍论点，底部注明数据来源",
       "text_hierarchy": {
         "title": "新能源汽车市场规模翻5倍",
@@ -310,6 +336,8 @@ Write `<project>/detailed_outline.json`:
 | `font_plan` | Populated after Eight Confirmations; left as empty `{}` if Confirmations have not run yet |
 | `narrative_arc` | One-sentence summary from Step 2.3 |
 | `total_pages` | Actual page count (may differ from `suggested_pages` by ±2) |
+| `storyline_alternatives` | Optional. Consulting-mode SCR candidates copied from research when available |
+| `recommended_storyline` | Optional. Consulting-mode chosen SCR with recommendation rationale |
 
 ---
 
@@ -355,6 +383,8 @@ The Strategist reads `narrative_function` values and assigns page rhythm labels:
 |---|---|---|
 | Every page has all 5 required fields + `visual_need` sub-object | 100% | Fill missing fields; abort if `core_argument` cannot be derived |
 | Every content/deep-dive page has `evidence_refs` | >=2 refs | Return to research or merge page |
+| Consulting-mode pages with `evidence_table` have `evidence_ids`, `caveats`, `so_what`, `content_density` | 100% when applicable | Fill from evidence table or mark missing evidence explicitly |
+| Consulting-mode output preserves 2-3 `storyline_alternatives` before choosing one SCR | 2-3 when applicable | Re-run narrative selection; do not collapse directly to one outline |
 | Every substantive content page has a follow-up deep-dive page | 100% | Add deep-dive page or mark reason |
 | Every image page has `layout_plan.image_area` before prompt generation | 100% | Fill layout first |
 | No consecutive pages share the same `narrative_function` | 0 violations | Swap adjacent pages or reassign functions |

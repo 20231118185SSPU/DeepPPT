@@ -868,6 +868,19 @@ Content-outline and speaker-notes strategy follow the deck's locked **mode** —
 
 **Detailed outline integration (conditional)**: when `<project>/detailed_outline.json` exists (produced by the `detailed-outline` workflow), use it as the authoritative page-by-page content plan for §IX. Transcribe each page's `core_argument`, `content_bullets`, `narrative_function`, and `visual_need` into the corresponding §IX entry — do NOT draft §IX from scratch or from headings alone when this file is present. The outline also provides `evidence_refs` for source traceability and `layout_plan` hints for §V. `§VIII Image Resource List` rows should reference the outline's `visual_need.image_description` and `image_slot_size`. When `detailed_outline.json` does not exist (user provided source files directly, no research), draft §IX as usual from the source material.
 
+**Consulting outline fields (optional)**: when `detailed_outline.json` includes `storyline_alternatives`, `recommended_storyline`, `evidence_ids`, `caveats`, `so_what`, or `content_density`, preserve them in `design_spec.md §IX` for consulting / briefing / pyramid / executive-report / high-density business decks.
+
+| Field | How to use in §IX |
+|---|---|
+| `storyline_alternatives` | Summarize 2-3 SCR candidates before the page list, with the recommended one and rejected reasons |
+| `recommended_storyline` | State the chosen SCR and why it fits the audience / decision |
+| `evidence_ids` | Add a per-page `Evidence IDs:` line, not just generic source prose |
+| `caveats` | Add a per-page `Caveats:` line for conflicts, missing evidence, assumptions, or directional-only claims |
+| `so_what` | Add a per-page `SO WHAT:` line that names the business implication / decision meaning |
+| `content_density` | Add a per-page `Density:` line (`low` / `medium` / `high`) and ensure layout / chart recommendations match it |
+
+**Boundary**: these fields are optional consulting-mode evidence controls. Do not invent them for lightweight, narrative, showcase, or source-file decks that did not go through the evidence-table / SCR path.
+
 ### 6.2 Outline Output Specification (Must include 11 chapters)
 
 | Chapter | Content Requirements |

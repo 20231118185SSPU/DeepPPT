@@ -144,6 +144,7 @@ python3 skills/ppt-master/scripts/project_manager.py checkpoint save <project_pa
 python3 skills/ppt-master/scripts/project_manager.py checkpoint load <project_path>
 
 # Icon selection — copy chosen library icons into <project>/icons/ (missing names reported + non-zero = re-pick)
+python3 skills/ppt-master/scripts/icon_sync.py search <query> [--library lib] [--limit N]
 python3 skills/ppt-master/scripts/icon_sync.py <project_path> <lib/name> [<lib/name>...]
 
 # Step 4 Eight Confirmations — interactive visual page (default auto-launch; chat fallback)
@@ -169,8 +170,10 @@ python3 skills/ppt-master/scripts/svg_quality_checker.py <project_path>
 python3 skills/ppt-master/scripts/spec_compliance_check.py <project_path>    # spec_lock semantic compliance
 python3 skills/ppt-master/scripts/spec_lock_digest.py generate <project_path>  # Step 4 end: seal spec_lock integrity
 python3 skills/ppt-master/scripts/spec_lock_digest.py verify <project_path>    # Step 6 start: verify before Executor reads
+python3 skills/ppt-master/scripts/consulting_content_lock.py <project_path>    # optional consulting/high-density sidecar
 python3 skills/ppt-master/scripts/e2e_validate.py <project_path>               # post-export: page count + notes + images + PPTX
 python3 skills/ppt-master/scripts/e2e_validate.py <project_path> --pptx exports/deck.pptx  # with PPTX slide-level checks
+python3 skills/ppt-master/scripts/pptx_quality_check.py <project_path>/exports/deck.pptx --json-out <project_path>/quality/pptx_quality.json  # optional strict PPTX structure QA
 python3 skills/ppt-master/scripts/smoke_check.py                                # import + CLI smoke check for all scripts
 python3 skills/ppt-master/scripts/animation_config.py scaffold <project_path>  # optional, only for custom object-level animation
 python3 skills/ppt-master/scripts/animation_config.py validate <project_path>  # optional, before re-export

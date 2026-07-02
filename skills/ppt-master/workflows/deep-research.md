@@ -33,6 +33,44 @@ This workflow is the **single entry point** for all research. The former `topic-
 
 If any metric fails, return to Step 2 or Step 3 and fill the gap before entering the main PPT pipeline. Do not pad prose to pass a word-count gate.
 
+### Consulting Evidence Layer (Optional)
+
+**When to run**: enable this layer only for consulting, briefing, pyramid, board-report, investor, strategy, or other high-density business decks. General educational, showcase, narrative, and lightweight marketing decks keep the default research contract above.
+
+**Output when enabled**: Step 5 analysis SHOULD include an `evidence_table` in `_research/step5_analysis/research_analysis.json`:
+
+| Field | Notes |
+|---|---|
+| `evidence_id` | Stable ID such as `E001`; referenced later by outline pages |
+| `claim_or_data` | Fact, number, comparison, caveat, or recommendation |
+| `value` / `unit` / `period` | Preserve original units and periods; add normalized values only when derivable |
+| `source_location` | File, URL, page, section, table, sheet, paragraph, or timestamp |
+| `confidence` | High / medium / low, based on source quality and cross-checks |
+| `conflict_or_caveat` | Competing numbers, missing denominator, forecast vs actual, or directional-only evidence |
+| `implication` | Why the evidence matters for the audience decision |
+| `recommended_visual` | Chart, table, matrix, timeline, map, evidence block, or text treatment |
+
+**Mandatory when enabled**: do not turn weak or missing evidence into confident claims. Mark gaps as `not provided`, `not derivable`, `directional only`, or `needs external verification` and keep them visible for `detailed-outline`.
+
+### Storyline Alternatives (Optional)
+
+**When to run**: enable after the optional consulting evidence layer when the deck needs a management recommendation, investment view, board decision, market assessment, or high-density business report.
+
+**Output when enabled**: Step 6 narrative SHOULD include `storyline_alternatives` alongside the research report. Provide 2-3 candidate storylines before converging:
+
+| Field | Notes |
+|---|---|
+| `storyline_id` | Stable ID such as `S1` |
+| `scr` | Situation, Complication, Resolution as one sentence each |
+| `management_conclusion` | The decision-oriented answer this storyline supports |
+| `key_evidence_ids` | 5-8 IDs from `evidence_table` when available |
+| `caveats` | Evidence gaps, conflicts, or conditions that could weaken the story |
+| `recommended_reason` | Why this storyline best serves the user's goal |
+| `rejected_reason` | Why this storyline should not be used, when it is not recommended |
+| `page_material_pool` | Candidate numbers, tables, sidebars, charts, annotations, and SO WHAT blocks |
+
+**Default — no extra user stop (may override when requested)**: these alternatives inform the Strategist's recommendations and `detailed-outline`. They do not add a new mandatory confirmation screen unless the user asks to review the storyline before generation.
+
 ## When to Run
 
 | User-supplied input | Action |

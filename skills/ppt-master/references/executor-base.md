@@ -228,6 +228,32 @@ Before drawing each page, look up its entry in `page_rhythm` (key format `P<NN>`
 
 **Tag not found for current page** → emit `warning: spec_lock.md page_rhythm tag not found for P<NN> — falling back to dense` once per deck (aggregate; do not repeat per page), fall back to `dense`. Do not invent a tag.
 
+### 2.2 Editable Information Layer (Consulting / Dense Pages)
+
+**When to run**: apply this rule to consulting, briefing, pyramid, executive-report, data-room, and other high-density business pages. General visual decks still follow the same SVG→DrawingML pipeline, but may use fewer evidence/table conventions when the page is not information-dense.
+
+**Hard rule**: load-bearing information MUST survive export as editable PowerPoint content. Do not bake it into a bitmap, full-slide screenshot, or opaque image/SVG asset.
+
+| Information type | Required output form |
+|---|---|
+| Page title / subtitle / section label | SVG `<text>` that exports to a native text frame |
+| KPI values, deltas, percentages, units, dates | Editable text runs, with emphasis via `<tspan>` when needed |
+| Chart axis labels, legends, data labels, callouts | Editable text plus native shapes/lines/paths for marks |
+| Table headers, row labels, values, caveats | Editable text positioned inside the table grid |
+| SO WHAT / implication / action line | Editable text, not part of a background image |
+| Source, footnote, page number | Editable text at the page edge or footer zone |
+
+**Allowed visual asset layer**: use `<image>`, SVG `<path>`, custom geometry, clipped images, filters, gradients, and icon placeholders for non-text complexity: photos, product screenshots, official logos, texture, atmospheric backgrounds, complex non-text illustration, unusual curves, and brand-specific geometry.
+
+**Forbidden — screenshot substitution**:
+- Do not use a full-slide screenshot as the final content page.
+- Do not place a large background image that contains the page's title, KPI values, chart labels, table text, source, or SO WHAT.
+- Do not replace a simple chart, table, or evidence block with an image only to preserve appearance.
+
+**Default — mixed reconstruction (may override when user asks for static-image delivery)**: native text / shapes carry the information layer; small non-text assets carry only visual complexity. When an asset contains useful source text, cover or crop the source text and redraw the final text as editable SVG text.
+
+**pictures=0 is not a goal**: a page with no pictures can still fail if the chart semantics, surface system, spatial anchors, or reading order are visually degraded. A page with a small number of justified non-text assets can pass when the title, data, labels, SO WHAT, and sources remain editable.
+
 **Layout-analysis-aware generation (beautify mode)**:
 
 When `design_spec.md §IX` includes per-page layout analysis fields (`persuasion_action`, `content_relation`, `layout_family`, `why_not_card_grid`) — typically present in beautify projects via `beautify_layout_analysis.json` — the Executor MUST respect these fields:
@@ -706,6 +732,24 @@ Used for: deep-dive side images, data page illustrations, comparison page visual
 - Multi-card grids should reserve at least 55% of each card's height for visible content or purposeful visual structure.
 - If content uses less than 45% of a card's height, enlarge text / numbers, reduce card height, reduce card count, or convert the layout away from cards.
 - Do not shrink card body text below the deck body size to preserve a chosen grid. Recompose the hierarchy first.
+
+### 14.2b High-Density Information QA
+
+**When to run**: apply these checks to consulting, briefing, pyramid, data-dashboard, matrix, table, evidence-chain, and executive-report pages.
+
+| QA term | Failure condition | Required response |
+|---|---|---|
+| `container_overflow` | Text, KPI values, bullets, chart labels, caveats, or sources cross their assigned card / panel / table cell / SO WHAT / chart region boundary | Enlarge the container, wrap earlier, reduce copy, reallocate columns, or split the content |
+| `continuous_text_flow` | One logical sentence or SO WHAT line is split into separate text frames that create abnormal gaps, broken phrasing, baseline drift, or wrong reading order | Keep the line in one `<text>` with inline `<tspan>` runs, or split only at real paragraph / column boundaries |
+| `table_semantic_typography` | Table body, action items, risk statements, explanatory sentences, or recommendation text are styled as micro labels to make them fit | Assign body-like typography from the deck ramp; reserve micro text for units, short column labels, legends, and footnotes |
+| `table_density` | Table rows, columns, line-height, wrap behavior, and font sizes create either cramped unreadable cells or large empty cells that collapse the reading weight | Adjust row height, column width, grouping, wrapping, or copy length together; do not solve table fit by shrinking every cell |
+
+**Hard rule**: high-density pages must pass both information editability and layout readability. A page does not pass because `pictures=0`, because no text leaves the canvas, or because static SVG checks pass.
+
+**Validation**:
+- For every fixed container, verify the text belongs inside that container, not merely inside the slide safe area.
+- For every highlighted sentence, verify the exported PowerPoint object preserves the intended line as an editable text frame with stable inline runs.
+- For every table, verify semantic role before font size: body/recommendation/risk/action text cannot become chart-axis micro text.
 
 ### 14.3 Centering discipline
 - All text inside content boxes must be horizontally centered (`text-anchor="middle"`)
