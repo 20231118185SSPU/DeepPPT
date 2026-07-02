@@ -4,8 +4,9 @@
 
 | User Intent | Workflow | Trigger |
 |-------------|----------|---------|
-| Generate PPT from source/topic | SKILL.md main pipeline | default |
-| Deep research before generation | [`deep-research`](../skills/ppt-master/workflows/deep-research.md) | All topic-only inputs; "深度调研" / "deep research" |
+| Generate PPT from source material or substantive content | SKILL.md main pipeline | default |
+| Topic-only generation | [`ppt-briefing`](../skills/ppt-master/workflows/ppt-briefing.md) -> user confirmation -> [`deep-research`](../skills/ppt-master/workflows/deep-research.md) -> SKILL.md main pipeline | No source material; topic / direction / thin requirements only |
+| Deep research before generation | [`deep-research`](../skills/ppt-master/workflows/deep-research.md) | After confirmed `ppt-briefing`; or source-backed requests that explicitly need research depth |
 | Fill existing template with new content | [`template-fill-pptx`](../skills/ppt-master/workflows/template-fill-pptx.md) | "fill this deck", "reuse this design" |
 | Beautify / re-layout existing PPT | [`beautify-pptx`](../skills/ppt-master/workflows/beautify-pptx.md) | "美化", "re-layout", "内容别动" |
 | Resume generation in new chat | [`resume-execute`](../skills/ppt-master/workflows/resume-execute.md) | "继续生成 projects/…" |
@@ -33,9 +34,9 @@ Ambiguous requests such as "make this PPT more professional" must be clarified w
 
 ## Other High-Risk Boundaries
 
-- Topic-only with no source material: run [`deep-research`](../skills/ppt-master/workflows/deep-research.md) first. Do not replace it with ordinary built-in WebSearch; WebSearch is only a fallback inside the workflow.
+- Topic-only with no source material: run [`ppt-briefing`](../skills/ppt-master/workflows/ppt-briefing.md) first, stop for user confirmation, then run [`deep-research`](../skills/ppt-master/workflows/deep-research.md) before the main pipeline. Do not replace `deep-research` with ordinary built-in WebSearch; WebSearch is only a fallback inside the workflow.
 - Animation: page transitions are on by default; per-element entrance animations are off by default. Use [`customize-animations`](../skills/ppt-master/workflows/customize-animations.md) only for object-level order / effect / timing requests.
 - Live preview: Step 6 starts live preview automatically. Do not apply submitted annotations during generation; the annotation-application window opens after Step 7 through [`live-preview`](../skills/ppt-master/workflows/live-preview.md).
 - Visual review: follow the current `skills/ppt-master/SKILL.md` rule. As of this file, [`visual-review`](../skills/ppt-master/workflows/visual-review.md) is recommended by default after Executor quality gates and before Step 7. Skip only by explicit opt-out or `confirm_ui/result.json` `skip_visual_review: true`; for chart decks, run `verify-charts` first.
 
-> **Routing boundaries**: beautify preserves page count/order 1:1; any change to page structure = main pipeline. Template fill edits PPTX directly; beautify regenerates through SVG pipeline. deep-research creates the project directory at its own Step 0. For all topic-only requests with no source, deep-research is the single entry point (topic-research has been removed). Source files (PDF/DOCX/URL) also route through deep-research with search steps skipped.
+> **Routing boundaries**: beautify preserves page count/order 1:1; any change to page structure = main pipeline. Template fill edits PPTX directly; beautify regenerates through SVG pipeline. For topic-only requests with no source, `ppt-briefing` is the first entry and `deep-research` runs only after the Brief is confirmed. Source files (PDF/DOCX/URL) may also route through `deep-research`; search steps are skipped only when the source already satisfies the research depth contract.

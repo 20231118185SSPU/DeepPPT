@@ -23,6 +23,14 @@
 
 ## Log
 
+### 2026-07-02 — Documentation governance P0 alignment
+- **Files**: `docs/routing.md`, `docs/ai-rules-shared.md`, `skills/ppt-master/workflows/batch-review.md`, `docs/rules/README.md`, `docs/rules/agent-governance.md`, `docs/rules/documentation-style.md`, `docs/rules/workflow-style.md`, `docs/rules/change-management.md`
+- **Reason**: 对齐文档治理审计发现的 P0/P1 问题：topic-only 路由摘要、Dashboard 默认命令、shared rules 权威措辞、batch-review 触发边界，以及 docs/rules 治理草案索引
+- **Before**: `docs/routing.md` 和 `docs/ai-rules-shared.md` 仍可读成 topic-only 直接进入 `deep-research`；shared rules 自称 single source of truth；Dashboard 示例默认带 `--no-browser`；`batch-review.md` 把长 deck / 高质量放进触发表，容易被误解为自动触发；`docs/rules/` 缺少入口治理、文档风格、workflow 风格和变更管理草案
+- **After**: topic-only 摘要统一为 `ppt-briefing -> 用户确认 -> deep-research -> main pipeline`；`docs/ai-rules-shared.md` 降级为 lightweight baseline；Dashboard 默认示例为 `--daemon`，`--no-browser` 仅限 headless/remote/用户要求；batch-review 只由显式用户选择或 `generation_mode: "batch-review"` 启用，长 deck / 高质量仅提示可选；新增 4 个 draft docs/rules 文件并登记索引
+- **Risk**: medium（修改 agent-facing 摘要与一个 workflow 触发边界说明；未修改 `AGENTS.md`、`SKILL.md`、脚本或生成流程）
+- **Human reviewed**: pending
+
 ### 2026-07-02 — Consulting evidence layer and post-export PPTX QA
 - **Files**: `skills/ppt-master/workflows/deep-research.md`, `skills/ppt-master/workflows/detailed-outline.md`, `skills/ppt-master/references/strategist.md`, `skills/ppt-master/references/executor-base.md`, `skills/ppt-master/references/shared-standards.md`, `skills/ppt-master/scripts/consulting_content_lock.py`, `skills/ppt-master/scripts/pptx_quality_check.py`, `skills/ppt-master/scripts/icon_sync.py`, `skills/ppt-master/scripts/README.md`, `skills/ppt-master/SKILL.md`, `AGENTS.md`, `docs/claude-reference.md`, `README.md`, `docs/change-log.md`
 - **Reason**: 吸收 CyberPPT 源码审计中适合 DeepPPT 的咨询证据链、SCR 备选、可编辑信息层、PPTX post-export 结构 QA 和图标搜索能力，同时保持 DeepPPT 的 SVG -> DrawingML 主线

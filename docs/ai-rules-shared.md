@@ -1,6 +1,6 @@
 # DeepPPT — Shared AI Agent Rules
 
-> **Single source of truth** for rules common to all AI coding assistants (Cursor, Copilot, Amazon Q, Kiro, etc.). Tool-specific configs reference this file and add only their own extras.
+> Shared lightweight baseline for AI coding assistants (Cursor, Copilot, Amazon Q, Kiro, etc.). This file is a summary, not a higher authority: `AGENTS.md`, `skills/ppt-master/SKILL.md`, and the owning workflow file win on conflicts.
 
 ## Project
 
@@ -25,17 +25,18 @@ Read `skills/ppt-master/SKILL.md` before any PPT generation task or repository m
 
 ## Deep Research
 
-When the user asks to make a PPT with only a topic (no source files), first run `skills/ppt-master/workflows/deep-research.md`, then proceed with the main pipeline. Do not replace `deep-research` with ordinary built-in WebSearch; WebSearch is only a fallback inside the `deep-research` workflow.
+When the user asks to make a PPT with only a topic and no source material, first run `skills/ppt-master/workflows/ppt-briefing.md`, stop for explicit user confirmation, then run `skills/ppt-master/workflows/deep-research.md` before the main pipeline. Do not replace `deep-research` with ordinary built-in WebSearch; WebSearch is only a fallback inside the `deep-research` workflow.
 
 ## Dashboard Observability
 
 After Step 2 creates the project directory and imports sources, start or reuse the unified read-only Dashboard:
 
 ```bash
-python3 skills/ppt-master/scripts/dashboard/server.py <project_path> --daemon --no-browser
+python3 skills/ppt-master/scripts/dashboard/server.py <project_path> --daemon
 ```
 
 - Default port: `8765`; if occupied, the launcher advances to the next safe port.
+- Default local behavior may open the browser. Add `--no-browser` only for headless/remote sessions or when the user explicitly asks not to pop a window.
 - Log path: `<project_path>/dashboard/dashboard.log`.
 - Report the actual Dashboard URL and log path to the user/developer.
 - Launch failure is non-fatal. Print the warning and continue the PPT workflow.
@@ -60,7 +61,7 @@ If the request is ambiguous, ask whether page count/order and wording must be pr
 
 ### Other Common Boundaries
 
-- Topic-only with no source material: run `skills/ppt-master/workflows/deep-research.md` first; do not substitute ordinary WebSearch.
+- Topic-only with no source material: run `skills/ppt-master/workflows/ppt-briefing.md` first, wait for confirmation, then run `skills/ppt-master/workflows/deep-research.md`; do not substitute ordinary WebSearch.
 - Animation: page transitions are on by default; per-element entrance animations are off by default. Use `skills/ppt-master/workflows/customize-animations.md` only for object-level order / effect / timing requests.
 - Live preview: Step 6 starts live preview automatically. Do not apply submitted annotations during generation; the annotation-application window opens after Step 7 via `skills/ppt-master/workflows/live-preview.md`.
 - Visual review: follow the current `skills/ppt-master/SKILL.md` rule. As of this file, `visual-review` is recommended by default after quality gates and is skipped only by explicit opt-out.
