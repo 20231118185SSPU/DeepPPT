@@ -274,6 +274,65 @@ def _build_catalogs() -> dict:
     return data
 
 
+def _template_route(project_path: Path) -> dict:
+    """Return read-only template route/discovery data for the confirm page."""
+    dashboard_dir = _SCRIPTS_DIR / "dashboard"
+    if str(dashboard_dir) not in sys.path:
+        sys.path.insert(0, str(dashboard_dir))
+    try:
+        from state_reader import template_route_state  # noqa: E402
+        return template_route_state(project_path)
+    except Exception as exc:
+        logger.warning("template route unavailable: %s", exc)
+        return {
+            "route": "unknown",
+            "label": "Template route unavailable",
+            "reason": "Could not read template route state.",
+            "applied": None,
+            "pending_selection": None,
+            "library": {"entries": {}, "counts": {}, "total": 0, "note": "Unavailable."},
+        }
+
+
+def _layout_preview(project_path: Path, limit: int = 12) -> dict:
+    path = project_path / 'detailed_outline.json'
+    if not path.is_file():
+        return {
+            'available': False,
+            'source': 'detailed_outline.json',
+            'pages': [],
+            'total_pages': None,
+        }
+    try:
+        data = json.loads(path.read_text(encoding='utf-8'))
+    except (OSError, json.JSONDecodeError):
+        return {
+            'available': False,
+            'source': 'detailed_outline.json',
+            'pages': [],
+            'total_pages': None,
+        }
+    pages = data.get('pages') if isinstance(data, dict) else data
+    if not isinstance(pages, list):
+        pages = []
+    preview = []
+    for page in pages[:limit]:
+        if not isinstance(page, dict):
+            continue
+        preview.append({
+            'page_number': page.get('page_number'),
+            'page_type': page.get('page_type') or '',
+            'layout_suggestion': page.get('layout_suggestion') or '',
+            'core_argument': page.get('core_argument') or '',
+        })
+    return {
+        'available': True,
+        'source': 'detailed_outline.json',
+        'pages': preview,
+        'total_pages': len(pages),
+    }
+
+
 # --- app --------------------------------------------------------------------
 
 def create_app(
@@ -353,6 +412,8 @@ def create_app(
             return jsonify({'error': f'invalid recommendations.json: {exc}'}), 400
         result_file = confirm_dir / RESULT_NAME
         data['_already_confirmed'] = result_file.exists()
+        data['template_route'] = _template_route(project_path)
+        data['layout_preview'] = _layout_preview(project_path)
         if data.get('tier') == 2 and result_file.exists():
             _merge_confirmed_anchors(data, result_file)
         resp = jsonify(data)

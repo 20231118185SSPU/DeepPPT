@@ -8,6 +8,8 @@ description: Opt-in spec-refinement loop between the Eight Confirmations and Ima
 
 This workflow is **conditional**, same shape as the split-mode choice: it never fires on its own and the default path is unchanged. The Eight Confirmations settle design directions up front as abstract recommendations; this pass lets the user revise the **concrete spec** the Strategist produced from them. It is most valuable for a zero-background user, who can judge a finished spec far better than the up-front recommendations — and the spec's content outline (`§IX`) is usually what they most want to adjust.
 
+**Boundary**: this workflow is the pre-generation review of `design_spec.md` / `spec_lock.md`. Step 8a Spec Review is post-export workflow learning and does not approve page layouts before generation.
+
 ## When to Run
 
 The user **explicitly asks** to refine / review / revise the spec before generation. Recognize any of:
@@ -34,7 +36,7 @@ Run the default Strategist output exactly as SKILL.md Step 4 specifies: write `d
 
 Present the produced spec to the user and **wait for explicit revision or approval before doing anything else**. This is a conditional BLOCKING point that exists only on this opt-in path; the default pipeline keeps its "auto-proceed after the Eight Confirmations" discipline untouched.
 
-The user may revise **any part of the spec**, not just the outline — content outline, color, typography, layout, icon plan, image strategy, page rhythm. Discuss in **prose**; do not emit a scored rubric or per-axis grades (mechanical scorecards are against project convention). When useful, point out things worth a second look — but let the user drive.
+The user may revise **any part of the spec**, not just the outline — content outline, page count, page order, per-page `layout_suggestion` / `page_layouts`, color, typography, icon plan, image strategy, page rhythm. Discuss in **prose**; do not emit a scored rubric or per-axis grades (mechanical scorecards are against project convention). When useful, point out things worth a second look — but let the user drive.
 
 **Reference — review lenses, not a checklist or score**: raise these in plain language to surface what is worth discussing. They name a *direction*, never a number — never convert any into HEX values, px sizes, ratios, page quotas, or grades.
 

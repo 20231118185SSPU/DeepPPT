@@ -23,6 +23,30 @@
 
 ## Log
 
+### 2026-07-02 — Dashboard default browser behavior alignment
+- **Files**: `skills/ppt-master/scripts/project_manager.py`, `skills/ppt-master/scripts/dashboard/state_reader.py`, `skills/ppt-master/scripts/docs/project.md`, `docs/change-log.md`
+- **Reason**: 最终整合复查发现 `AGENTS.md` / `SKILL.md` 已要求 Dashboard 默认本地自动打开浏览器，但 `project_manager.py` 与项目工具文档仍输出 `--no-browser` 默认提示；同时包方式导入 `dashboard.state_reader` 时缺少 dashboard 模块路径
+- **Before**: `project_manager.py validate` 提示 `dashboard/server.py <project> --daemon --no-browser`；`--start-dashboard` 默认不打开浏览器；`scripts/docs/project.md` 仍按旧默认记录；外部导入 `dashboard.state_reader` 可能找不到 `artifact_registry`
+- **After**: `project_manager.py` 默认提示和启动均使用 `--daemon`，`--no-browser` 仅作为显式无窗口选项；项目工具文档同步该边界；`state_reader.py` 同时注入 `scripts/` 和 `scripts/dashboard/` 到 `sys.path`
+- **Risk**: low（只收敛 Dashboard 辅助入口和只读状态读取，不改变 PPT 生成、Confirm UI、Live Preview、质量门或导出语义）
+- **Human reviewed**: pending
+
+### 2026-07-01 — Rendered visual gate for quality reliability
+- **Files**: `skills/ppt-master/scripts/rendered_layout_check.py`, `skills/ppt-master/SKILL.md`, `skills/ppt-master/workflows/visual-review.md`, `skills/ppt-master/scripts/README.md`, `skills/ppt-master/scripts/docs/svg-pipeline.md`, `QUALITY_GAP_ANALYSIS.md`, `docs/change-log.md`
+- **Reason**: 修复 mini deck 暴露的质量体系缺口：静态脚本和 quick harness 通过但真实渲染 PPT 存在重叠、踩线、异常留白和修 warning 后视觉退化风险
+- **Before**: `svg_quality_checker.py` / `harness_gate.py --quick` 主要代表 XML / spec / 静态规则，`e2e_validate.py` 只验证 PPTX 包结构；主流程没有本地渲染截图门禁或改后视觉确认机制
+- **After**: 新增 `rendered_layout_check.py`，读取 `svg_output/` 与 `.preview/`，可通过 `--render` 调用本地 Playwright 渲染，报告跨栏文字侵入、文本踩线、容器贴边、过度留白和 revision snapshot 后的人工确认需求；Step 6 文档明确 static pass 不等于 visual pass，导出前必须通过 rendered visual gate 或显式人工确认
+- **Risk**: medium（新增导出前阻塞型质量门禁；规则设计为硬故障自动拦截、主观/启发式问题人工复核，避免为清 warning 破坏视觉）
+- **Human reviewed**: pending
+
+### 2026-07-01 — Standard pre-merge regression checklist
+- **Files**: `skills/ppt-master/scripts/README.md`, `docs/change-log.md`
+- **Reason**: 沉淀端到端验证链修复后确认有效的标准回归命令，避免后续维护误把 quick gate 当作完整 E2E 通过
+- **Before**: 脚本 README 只有单条 aggregated quality gate 示例和 `--read-only` 副作用说明，没有合并前可复制的 smoke / full E2E / quick static 回归清单
+- **After**: 新增从仓库根目录运行的 pre-merge / post-fix regression checklist，明确区分 smoke import/help check、full E2E gate、full E2E validation 和 quick static gate，并说明 `harness_gate.py --quick` 会跳过 e2e，不能代表完整端到端通过
+- **Risk**: low（仅文档补充，不修改脚本逻辑、测试结构或生成流程）
+- **Human reviewed**: pending
+
 ### 2026-07-01 — Harness gate read-only validation mode
 - **Files**: `skills/ppt-master/scripts/harness_gate.py`, `skills/ppt-master/scripts/e2e_validate.py`, `skills/ppt-master/scripts/README.md`, `docs/change-log.md`
 - **Reason**: 消除最终回归中发现的验证副作用风险，并修正数字前缀 notes 文件被误报缺失的问题
@@ -400,7 +424,4 @@
 - **Smoke check**: 38 passed, 0 failed, 3 skipped / 41 checks；专项 `py_compile` 覆盖 `scripts/research/browse_ai.py` 和 `scripts/research/sync_research_outputs.py`
 - **Risk**: medium（修改新研究流程脚本和 manifest 结构；主 PPT 生成流程未改）
 - **Human reviewed**: pending
-
-
-
 

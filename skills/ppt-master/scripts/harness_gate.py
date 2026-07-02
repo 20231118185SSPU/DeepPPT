@@ -4,6 +4,7 @@ PPT Master - Harness Gate (Aggregated Quality Gate)
 
 Runs three upstream check scripts and produces a unified PASS/FAIL report.
 Designed to be called before Step 7 Post-process to block不合格 output.
+In --quick mode, this is a static gate: e2e validation is explicitly skipped.
 
 Usage:
     python3 scripts/harness_gate.py <project_path>
@@ -79,6 +80,10 @@ def run_harness_gate(project_path: str, quick: bool = False) -> dict:
             "svg_quality": "PASS" | "FAIL",
             "e2e": "PASS" | "FAIL" | "SKIP",
             "overall": "PASS" | "FAIL",
+            "mode": "quick" | "full",
+            "scope": "static" | "full",
+            "e2e_skipped": bool,
+            "summary": "...",
             "details": [...]
         }
     """
@@ -101,7 +106,7 @@ def run_harness_gate(project_path: str, quick: bool = False) -> dict:
             "label": "e2e",
             "passed": True,
             "skipped": True,
-            "stdout": "Skipped (--quick mode)",
+            "stdout": "E2E skipped by --quick; run without --quick for full gate.",
             "stderr": "",
             "returncode": 0,
             "command": [],
@@ -119,6 +124,16 @@ def run_harness_gate(project_path: str, quick: bool = False) -> dict:
             report[check["label"]] = "PASS" if check["passed"] else "FAIL"
 
     report["overall"] = "PASS" if all(c["passed"] for c in checks) else "FAIL"
+    report["mode"] = "quick" if quick else "full"
+    report["scope"] = "static" if quick else "full"
+    report["e2e_skipped"] = quick
+    if quick:
+        report["summary"] = (
+            f"STATIC {report['overall']} (E2E skipped by --quick; "
+            "run without --quick for full gate.)"
+        )
+    else:
+        report["summary"] = f"FULL {report['overall']}"
     report["details"] = checks
     report["checked_at"] = datetime.now(tz=timezone.utc).isoformat()
 
@@ -182,7 +197,11 @@ def print_report(report: dict) -> None:
     print("-" * 60)
     overall = report["overall"]
     icon = "✅" if overall == "PASS" else "❌"
-    print(f"  {icon} {'OVERALL':<20s} {overall}")
+    if report.get("mode") == "quick":
+        print(f"  {icon} {'OVERALL STATIC':<20s} {overall}")
+        print("  E2E skipped by --quick; run without --quick for full gate.")
+    else:
+        print(f"  {icon} {'OVERALL':<20s} {overall}")
     print("=" * 60)
 
     # Print details for any failures

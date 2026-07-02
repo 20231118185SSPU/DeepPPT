@@ -4,7 +4,7 @@ description: 确保 AI 生图和网络素材搜索指令包含对应页面的文
 
 # 图文联动工作流（Image-Text Linking）
 
-> 确保 AI 生图（`image_gen.py --manifest`）和网络素材搜索（`image_search.py --batch`）指令包含对应页面的文字内容上下文，保证图文语义一致。读取 `detailed_outline.json` 为每张图片注入 `core_argument` 和 `content_bullets`，替换通用关键词。
+> 确保 AI 生图（`image_gen.py --manifest`）和网络素材搜索（`image_search.py --batch`）指令包含对应页面的文字内容上下文，保证图文语义一致。读取 `detailed_outline.json` 为每张图片注入 `core_argument`、`content_bullets` 和 source routing 字段，替换通用关键词。
 
 This workflow is **transversal**: it does not run as a standalone step but modifies the image acquisition preparation inside the Strategist and Image_Generator phases. It reads `detailed_outline.json` (from `detailed-outline.md`) and enforces content-aware prompt assembly for all image acquisition methods.
 
@@ -44,6 +44,14 @@ For each included page, create a context entry with:
 | `image_slot_size` | `pages[i].visual_need.image_slot_size` — target dimensions from layout |
 | `reference_image_required` | `pages[i].visual_need.reference_image_required` |
 | `asset_file` | `pages[i].visual_need.asset_file` |
+| `source_pack` | `pages[i].visual_need.source_pack` |
+| `preferred_sources` | `pages[i].visual_need.preferred_sources` |
+| `disabled_providers` | `pages[i].visual_need.disabled_providers` |
+| `allow_generic_stock` | `pages[i].visual_need.allow_generic_stock` |
+| `discovery_only` | `pages[i].visual_need.discovery_only` |
+| `needs_manual_review` | `pages[i].visual_need.needs_manual_review` |
+| `copyright_risk` | `pages[i].visual_need.copyright_risk` |
+| `selection_reason` | `pages[i].visual_need.selection_reason` |
 
 **1.3 Output format**
 
@@ -55,26 +63,42 @@ The context map is an in-memory structure (not written to disk). It is consumed 
 
 When generating `image_prompts.json` for `image_gen.py --manifest`, every prompt MUST incorporate the page's content context.
 
-**2.1 Prompt template (4-part mandatory structure)**
+**2.1 Prompt template (6-part mandatory structure)**
 
 Each AI image prompt MUST follow this template:
 
 ```
-{image_description}。风格：{deck_rendering}。版式尺寸：{image_slot_size.width}×{image_slot_size.height}。场景：{core_argument 具体化}。页面要点：{content_bullets 摘要}。文字呼应：{text_image_link}
+{image_description}。视觉目标：{image_intent}。风格：{deck_rendering}。版式尺寸：{image_slot_size.width}×{image_slot_size.height}。页面依据：{core_argument 具体化 + content_bullets 摘要 + content_density}。文字/图像关系：{text_image_link + SVG/图片文字分工}。失败兜底：{fallback_plan}
 ```
 
 | Part | Source | Purpose |
 |---|---|---|
 | `{image_description}` | `visual_need.image_description` | What the image shows |
+| `{image_intent}` | page strategy | Why the page needs this image |
 | `{deck_rendering}` | `spec_lock.md` rendering lock | Visual style consistency (e.g., "扁平矢量、蓝绿渐变配色") |
 | `{image_slot_size}` | `detailed_outline.json` | Prevents generating images that are later cropped |
-| `{core_argument 具体化}` | `core_argument` made concrete | Grounds the image in the page's specific message |
-| `{content_bullets 摘要}` | `content_bullets` | Ensures image and slide text express the same point |
-| `{text_image_link}` | `visual_need.text_image_link` | Explains how the image supports the page text |
+| `{core_argument + content_bullets + content_density}` | page content context | Grounds the image in the page's information structure |
+| `{text_image_link + SVG/图片文字分工}` | `visual_need.text_image_link` + layout plan | Explains whether image text is embedded, overlaid, or kept beside the image |
+| `{fallback_plan}` | page strategy | Records the non-reference or non-AI path if generation fails |
 
 **2.2 Minimum length**
 
 Every assembled prompt MUST be ≥80 characters after template assembly. Shorter prompts lack sufficient context for meaningful image generation.
+
+**2.2a Manifest audit fields**
+
+For every `items[]` entry in `image_prompts.json`, write these fields outside the prompt as well:
+
+| Field | Required value |
+|---|---|
+| `image_intent` | The page-level communication job |
+| `page_evidence` | `core_argument`, relevant `content_bullets`, density, and layout reason |
+| `text_image_relationship` | Editable SVG text vs in-image text ownership |
+| `fallback_plan` | Text-to-image, native SVG, web, placeholder, or manual fallback |
+| `reference_image_policy` | Required only when `reference_image` is present |
+| `source_routing` | Required when prompt depends on concrete reference images or fallback web sourcing |
+
+**Source routing for references**: when an AI prompt needs a concrete reference image for a person, IP, product, place, event, historical artifact, or academic figure, carry the same source-pack fields used by web rows. Browser / Google results are discovery-only and cannot become `reference_image` without manual review and source-page provenance.
 
 **2.3 Forbidden patterns**
 
@@ -84,7 +108,7 @@ Every assembled prompt MUST be ≥80 characters after template assembly. Shorter
 | Style-only prompts | "水彩风格插画" | Describes rendering, not content |
 | Page number without argument | "第三页配图" | No semantic link to the page's message |
 | Duplicate prompts across pages | Same prompt for pages 5 and 8 | Violates one-image-per-claim principle |
-| Missing required reference | People/product/object/IP image with no `reference_image` | Breaks visual fidelity and consistency |
+| Unreviewed reference image | Person/place/event image with `reference_image` but no source, semantic match, confidence, or fallback | Risks same-name misidentification and img2img drift |
 
 **2.4 Good vs bad examples**
 
@@ -123,11 +147,13 @@ All AI image prompts within one deck MUST reference a common set of style anchor
 | No two prompts use conflicting lighting directions | 0 conflicts | Unify to the deck's chosen direction |
 | No prompt contradicts the deck's color temperature | 0 conflicts | Rewrite temperature-specific language |
 | Same subject across pages uses consistent reference images | 100% | Link all depictions to the same `reference_image` |
+| Reference image policy exists for every `reference_image` | 100% | Add source, semantic match, confidence, approval, and fallback |
 
 **Forbidden**:
 - Prompts that omit the deck's locked rendering style
 - Contradictory visual language across pages (one page "watercolor pastel" while another "sharp vector illustration")
 - Different reference images for the same character/product across pages
+- Using high-ambiguity person/place/event references from weak web search results; omit `reference_image` and use a symbolic or text-to-image fallback instead
 
 ---
 
@@ -165,7 +191,14 @@ Each entry in the **advisory** `image_queries.json` (produced by this workflow a
   "page_number": 5,
   "keywords": ["关键词组合1", "关键词组合2", "关键词组合3"],
   "context": "core_argument 原文",
-  "preferred_sources": ["wikimedia", "pexels"]
+  "source_pack": "academic_science",
+  "preferred_sources": ["wikimedia", "institutional_report"],
+  "disabled_providers": ["pexels", "pixabay", "unsplash"],
+  "allow_generic_stock": false,
+  "discovery_only": false,
+  "needs_manual_review": false,
+  "copyright_risk": "medium",
+  "selection_reason": "Scientific/academic visual should use authoritative or open-license sources."
 }
 ```
 
@@ -182,11 +215,21 @@ For web rows, include target dimensions and the planned page context in the auth
   "orientation": "landscape",
   "min_width": 928,
   "min_height": 340,
+  "source_pack": "data_report_capture",
+  "preferred_sources": ["official_report", "data_portal"],
+  "disabled_providers": ["pexels", "pixabay", "unsplash"],
+  "allow_generic_stock": false,
+  "discovery_only": true,
+  "needs_manual_review": true,
+  "copyright_risk": "medium",
+  "selection_reason": "Data chart should come from source report or be redrawn as SVG.",
   "status": "Pending"
 }
 ```
 
 The `context` field carries the `core_argument` verbatim — search providers may use it for relevance ranking.
+
+**Hard rule**: For web rows, preserve source routing fields from `detailed_outline.json.visual_need`. Do not replace them with provider guesses. `generic_atmosphere` is the only default route that may enable generic stock providers.
 
 ---
 
@@ -201,6 +244,8 @@ The `context` field carries the `core_argument` verbatim — search providers ma
 | No duplicate prompts across pages | 0 duplicates | Each page gets a unique prompt reflecting its specific `core_argument` |
 | Required reference images present | 100% | Any `reference_image_required=true` AI row must include a real local path or URL |
 | Target dimensions carried into image manifests/queries | 100% | Every AI/web row includes slot width/height or min dimensions |
+| Source routing carried into web queries | 100% | Every web row includes `source_pack`, risk, review, and provider policy when available |
+| Discovery-only not treated as cleared final asset | 100% | Browser / Google rows carry `discovery_only: true` and `needs_manual_review` when high-risk |
 
 ---
 
@@ -212,6 +257,7 @@ The `context` field carries the `core_argument` verbatim — search providers ma
 | **Reads from** | `<project>/spec_lock.md` | Deck-wide rendering style for `{deck_rendering}` segment |
 | **Feeds into** | `references/image-generator.md` §4 (Prompt Assembly) | Enhanced prompt template and constraints |
 | **Feeds into** | `references/image-searcher.md` §5 (Batch Queries) | Content-aware keyword extraction rules |
+| **Feeds into** | `references/image-source-routing.md` | Source pack, provider policy, discovery-only, risk, and review fields |
 | **Consumed by** | `image_gen.py --manifest` | Reads `<project>/images/image_prompts.json` with enhanced prompts |
 | **Consumed by** | `image_search.py --batch` | Reads `<project>/images/image_queries.json` with enhanced keywords |
 
@@ -224,6 +270,6 @@ This workflow does not produce a standalone artifact. It modifies the **content*
 | File | Enhancement |
 |---|---|
 | `<project>/images/image_prompts.json` | Every `prompt` field follows the 4-part template with page context |
-| `<project>/images/image_queries.json` | Every `keywords` array is derived from `content_bullets`, not generic terms |
+| `<project>/images/image_queries.json` | Every `keywords` / `query` value is derived from `content_bullets`, not generic terms; web rows preserve source routing fields |
 
 These files are written by the Image_Generator role as usual — this workflow only constrains *how* their content is assembled.

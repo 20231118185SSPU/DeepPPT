@@ -74,12 +74,12 @@ IMAGE_ASSET_SUFFIXES = {
     ".emf", ".wmf", ".svg",
 }
 DASHBOARD_COMMAND = "python3 skills/ppt-master/scripts/dashboard/server.py"
-DASHBOARD_NO_BROWSER_DEFAULT = True
+DASHBOARD_NO_BROWSER_DEFAULT = False
 
 
 def dashboard_command(project_path: str | Path, port: int = DASHBOARD_DEFAULT_PORT) -> str:
     """Return the Dashboard daemon command shown to agents and users."""
-    command = f"{DASHBOARD_COMMAND} {project_path} --daemon --no-browser"
+    command = f"{DASHBOARD_COMMAND} {project_path} --daemon"
     if port != DASHBOARD_DEFAULT_PORT:
         command += f" --port {port}"
     return command
@@ -92,6 +92,7 @@ def print_dashboard_hint(project_path: str | Path, port: int = DASHBOARD_DEFAULT
     print(f"  {dashboard_command(project_path, port)}")
     print(f"  Default port: {DASHBOARD_DEFAULT_PORT}")
     print(f"  Log: {log_path}")
+    print("  Default local behavior auto-opens the browser; add --no-browser for headless runs.")
     print("  Launch failure is non-fatal; continue the PPT workflow.")
     print("  Dashboard is read-only and does not replace Confirm UI, Live Preview,")
     print("  quality gates, post-processing, or export.")
@@ -137,7 +138,7 @@ def add_dashboard_options(parser: argparse.ArgumentParser) -> None:
         "--no-browser",
         action="store_true",
         default=DASHBOARD_NO_BROWSER_DEFAULT,
-        help="Do not open the browser when --start-dashboard is used (default)",
+        help="Do not open the browser when --start-dashboard is used",
     )
     parser.add_argument(
         "--dashboard-port",
@@ -1104,7 +1105,7 @@ def build_parser() -> argparse.ArgumentParser:
         formatter_class=argparse.RawDescriptionHelpFormatter,
         epilog="""Examples:
   python3 scripts/project_manager.py init demo --format ppt169
-  python3 scripts/project_manager.py init demo --format ppt169 --start-dashboard --no-browser
+  python3 scripts/project_manager.py init demo --format ppt169 --start-dashboard
   python3 scripts/project_manager.py import-sources projects/demo file.md
   python3 scripts/project_manager.py validate projects/demo
   python3 scripts/project_manager.py info projects/demo

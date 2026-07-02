@@ -1,4 +1,4 @@
-> See [`image-generator.md`](./image-generator.md) and [`image-searcher.md`](./image-searcher.md) for path-specific behavior.
+> See [`image-generator.md`](./image-generator.md), [`image-searcher.md`](./image-searcher.md), and [`image-source-routing.md`](./image-source-routing.md) for path-specific behavior and source-pack routing.
 
 # Image Acquisition Common Reference
 
@@ -21,13 +21,15 @@ Active when at least one resource list row has `Acquire Via: ai` or `Acquire Via
 
 Defined in `design_spec.md §VIII`. Status enum: see [`svg-image-embedding.md`](svg-image-embedding.md).
 
-| Filename | Dimensions | Purpose | Type | Acquire Via | Status | Reference |
-|---|---|---|---|---|---|---|
-| cover.png | 1280x720 | Cover background | Background | `ai` | Pending | Modern tech abstract, deep blue gradient #0A2540 |
-| team.jpg | 800x600 | Team photo | Photography | `web` | Pending | Diverse engineering team in modern office |
-| formula_001.png | 736x168 | Block equation on P03 | Latex Formula | `formula` | Rendered | `E = mc^2` |
+| Filename | Dimensions | Purpose | Type | Acquire Via | Status | Reference | Source pack | Copyright risk | Selection reason |
+|---|---|---|---|---|---|---|---|---|---|
+| cover.png | 1280x720 | Cover background | Background | `ai` | Pending | Modern tech abstract, deep blue gradient #0A2540 | — | — | — |
+| team.jpg | 800x600 | Team photo | Photography | `web` | Pending | Diverse engineering team in modern office | `generic_atmosphere` | low | Generic workplace mood image |
+| formula_001.png | 736x168 | Block equation on P03 | Latex Formula | `formula` | Rendered | `E = mc^2` | — | — | — |
 
 **Required per non-skipped row**: `Acquire Via`, `Status`, `Reference`.
+
+**Required per web row**: `Source pack`, `Copyright risk`, and `Selection reason`. Source pack definitions live in [`image-source-routing.md`](./image-source-routing.md).
 
 ---
 
@@ -52,8 +54,9 @@ For each row with `Status: Pending`:
 Before processing any row:
 
 1. `read_file <project_path>/design_spec.md` — extract color scheme, canvas format, target audience
-2. Group resource list rows by `Acquire Via`
-3. Confirm `project/images/` exists
+2. Read [`image-source-routing.md`](./image-source-routing.md) if any `web` row exists or any `ai` row needs a concrete reference image
+3. Group resource list rows by `Acquire Via`
+4. Confirm `project/images/` exists
 
 ---
 
@@ -65,6 +68,7 @@ After all rows reach terminal status:
 - No `Pending` rows remain
 - `image_prompts.json` exists when ≥1 ai row processed; every entry has `status ∈ {Generated, Failed, Needs-Manual}` (no `Pending` remaining)
 - `image_sources.json` exists when ≥1 web row processed; every entry has `license_tier ∈ {no-attribution, attribution-required}`
+- New web rows carry routing provenance when available: `source_pack`, `selection_reason`, `copyright_risk`, and manual review/discovery fields from [`image-source-routing.md`](./image-source-routing.md) §6.3
 
 > `Needs-Manual` is a legitimate terminal state for ai rows — Step 7 entry waits for the user to place the file. See [`image-generator.md`](./image-generator.md) §3.2 Offline Manual Mode.
 
@@ -108,6 +112,22 @@ The `Reference` field is **intent**, not a query. Strategist writes free-form in
 |---|---|
 | `"Diverse engineering team in modern office, natural light"` | `"team office light"` |
 | `"Abstract digital waves, deep navy gradient #0A2540"` | `"use openverse, search 'waves'"` |
+
+**Source routing handoff**: For `Acquire Via: web`, Strategist also writes `Source pack`, `Copyright risk`, and `Selection reason` in §VIII. For high-ambiguity subjects, mark the eventual query row with `needs_manual_review: true` and `discovery_only: true`. See [`image-source-routing.md`](./image-source-routing.md) §6.
+
+### 8.1 Per-page image decision audit
+
+Before writing any `ai` or `web` row, Strategist decides whether the page needs an external image at all.
+
+| Page condition | Default image choice |
+|---|---|
+| Dense explanation / comparison / timeline / data page | Use an informational AI diagram/infographic or native SVG; avoid decorative atmosphere images |
+| Sparse title / transition / ending / cover page | Use hero, atmosphere, concept, or auxiliary imagery with editable SVG text |
+| Mostly structured data / tables / charts | Prefer native SVG visualization; external image only for context or texture |
+| Real person / place / event with ambiguous references | Do not use img2img by default; use text-to-image symbolic support, native SVG, or manually verified assets |
+| Named IP / product / historical / academic subject | Route through source packs; generic stock is allowed only for atmosphere/background support |
+
+Every `image_prompts.json` item records `image_intent`, `page_evidence`, `text_image_relationship`, and `fallback_plan`. These fields are audit metadata: they explain why the page has that image, how the prompt relates to the page text, and what happens when the chosen acquisition path fails.
 
 ---
 

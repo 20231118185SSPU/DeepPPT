@@ -249,12 +249,12 @@ Catalog read: 71 templates
 
 ## VIII. Image Resource List (if needed)
 
-| Filename | Dimensions | Ratio | Purpose | Type | Layout pattern | Acquire Via | Status | Reference | text_policy | page_role |
-| -------- | --------- | ----- | ------- | ---- | -------------- | ----------- | ------ | --------- | ----------- | --------- |
-| cover_bg.png | {canvas_info['dimensions']} | [ratio] | Atmospheric cover backdrop — SVG title overlays the calm region | Background | #1 full-bleed background with floating title + #29 two-stop scrim | ai | Pending | [subject + intent + composition, no style/HEX] | none | hero_page |
-| deepdive_side.png | 370×500 | 3:4 | Left-side image for deep-dive card pages (P05-P09) | Illustration | #42 side image + card columns | ai | Pending | [subject matching the deep-dive page's claim] | none | local |
-| gallery_thumb.png | 370×170 | ~2:1 | Gallery grid thumbnail | Photography | #38 gallery cell | web | Pending | [project representative page screenshot] | none | local |
-| formula_001.png | [actual dimensions from formula manifest / image_analysis] | [ratio] | Block equation on P03 | Latex Formula | formula-block | formula | Rendered | `E = mc^2` — energy-mass equation | | |
+| Filename | Dimensions | Ratio | Purpose | Type | Layout pattern | Acquire Via | Status | Reference | text_policy | page_role | Image decision audit |
+| -------- | --------- | ----- | ------- | ---- | -------------- | ----------- | ------ | --------- | ----------- | --------- | -------------------- |
+| cover_bg.png | {canvas_info['dimensions']} | [ratio] | Atmospheric cover backdrop — SVG title overlays the calm region | Background | #1 full-bleed background with floating title + #29 two-stop scrim | ai | Pending | [subject + intent + composition, no style/HEX] | none | hero_page | intent=[cover hook]; evidence=[P01 low density + cover impact]; relation=[SVG title overlays calm area]; fallback=[text-to-image atmosphere] |
+| deepdive_side.png | 370×500 | 3:4 | Left-side image for deep-dive card pages (P05-P09) | Diagram | #42 side image + card columns | ai | Pending | [subject matching the deep-dive page's claim] | embedded | local | intent=[explain dense comparison]; evidence=[core_argument + bullets]; relation=[image structure + SVG text]; fallback=[native SVG cards] |
+| gallery_thumb.png | 370×170 | ~2:1 | Gallery grid thumbnail | Photography | #38 gallery cell | web | Pending | [project representative page screenshot] | none | local | intent=[show real product/context]; evidence=[page claim requiring real-world view]; relation=[caption below]; fallback=[placeholder or manual screenshot] |
+| formula_001.png | [actual dimensions from formula manifest / image_analysis] | [ratio] | Block equation on P03 | Latex Formula | formula-block | formula | Rendered | `E = mc^2` — energy-mass equation | | | |
 
 > **Dimensions MUST come from SVG layout slots (HARD rule)**. Before filling this table, Strategist MUST determine each image's target SVG layout region (from the page's template SVG or the planned free-design layout) and write the exact pixel dimensions in the Dimensions column. Derivation rules:
 > - Cover / ending / transition background → canvas dimensions (1280×720 for PPT 16:9)
@@ -271,6 +271,8 @@ Catalog read: 71 templates
 > - **Type B (讲解配图)**: informational, data-rich, contains specific content. Used for deep-dive/comparison/data/timeline pages. Prompt describes "what does it show?"
 >
 > The Type column in the table above encodes this: `Background` = Type A, `Diagram`/`Photography`/`Illustration` with informational content = Type B. Type B images are preferably web-sourced (`Acquire Via: web`), not AI-generated. Only when web sources are unavailable should Type B use AI generation with informational prompts.
+
+> **Image decision audit (HARD rule for AI rows)**: every `ai` row must be convertible into `image_prompts.json` fields `image_intent`, `page_evidence`, `text_image_relationship`, and `fallback_plan`. Use the table cell to record these four values compactly. When `reference_image` is used, also write `reference_image_policy` in `image_prompts.json` with approval, source/provenance, semantic match, confidence, subject risk, and fallback. For high-ambiguity people, places, or events, default to no `reference_image` unless the source is authoritative and confidence is high.
 
 > **Layout pattern column is MANDATORY** — for non-formula rows, value is one or more `#<id> <name>` joined by ` + ` drawn verbatim from [`references/image-layout-patterns.md`](../references/image-layout-patterns.md) (Primary + optional Modifiers). Empty cells, paraphrased names, or invented ids invalidate the row. Formula rows are the only exception; use `formula-inline` or `formula-block`. See `strategist.md §h` GATE for the three-layer requirement (read → produce → image-as-canvas coverage).
 
@@ -309,6 +311,8 @@ Catalog read: 71 templates
 - `hero_page` — image is the page's main voice; SVG overlay is minimal or empty. Use on covers, chapter dividers, mood transitions, single-number data heroes, closing quotes. Same rendering and palette as the rest of the deck regardless
 
 **Reference grammar** (`ai` rows): write **subject + intent + composition** only. Do NOT repeat style words ("flat design", "modern") or HEX values — both are already locked deck-wide by `design_spec §III AI Image Strategy` (rendering + palette) and `§III Color Scheme` (HEX triplet). Image_Generator's prompt assembler injects them.
+
+**Reference-image safety**: `reference_image` is not a search keyword and not a vague description. Use it only for a verified local file or URL. Same-name web results for people, places, and events are not enough; omit the reference and use a symbolic/text-to-image prompt when confidence is weak.
 
 ---
 

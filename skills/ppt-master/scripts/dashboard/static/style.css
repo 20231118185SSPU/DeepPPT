@@ -881,6 +881,7 @@ pre {
   }
   .summary-grid,
   .detail-grid,
+  .template-route-grid,
   .status-layout {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
@@ -917,6 +918,7 @@ pre {
   .step-grid,
   .step-grid.dense,
   .detail-grid,
+  .template-route-grid,
   .status-layout {
     grid-template-columns: 1fr;
   }
@@ -1158,6 +1160,59 @@ pre {
   border: 0;
   background: linear-gradient(180deg, #ffffff 0%, #f8fafc 100%);
   box-shadow: inset 0 0 0 1px #e1e7ef;
+}
+
+.template-route-panel {
+  margin-top: 14px;
+}
+
+.template-route-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 10px;
+}
+
+.template-route-grid > div,
+.template-pending-note {
+  min-width: 0;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: var(--panel-soft);
+  padding: 10px 12px;
+}
+
+.template-route-grid strong,
+.template-pending-note strong {
+  display: block;
+  color: var(--ink);
+  font-size: 12px;
+  font-weight: 850;
+}
+
+.template-route-grid span,
+.template-pending-note span {
+  display: block;
+  margin-top: 5px;
+  color: var(--ink);
+  font-size: 14px;
+  font-weight: 800;
+  overflow-wrap: anywhere;
+}
+
+.template-route-grid small,
+.template-pending-note small {
+  display: block;
+  margin-top: 5px;
+  color: var(--muted);
+  font-size: 12px;
+  line-height: 1.4;
+  overflow-wrap: anywhere;
+}
+
+.template-pending-note {
+  margin-top: 10px;
+  border-color: #e3b86a;
+  background: #fff9ea;
 }
 
 .workbench-grid {

@@ -9,6 +9,14 @@
 
 [View Design Spec Reference](./design_spec_reference.md)
 
+## Discovery vs Application
+
+Template indexes are discovery aids. Dashboard / Confirm UI may list brand,
+layout, and deck templates so the user can see what exists, but selection from a
+list is only a pending Step 3 action. A template is applied only when the
+explicit directory path is run through `SKILL.md` Step 3 and the Step 4
+recommendations / spec are regenerated. The default route remains Free design.
+
 ## Page Layout Templates
 
 The `layouts/` directory contains pre-built page layout templates organized by design style:

@@ -25,6 +25,7 @@ Read the following files:
 
 | File | Purpose |
 |---|---|
+| `<project>/ppt_brief.json` | Topic-only creative brief; provides narrative frame, material strategy, source strategy, and risk constraints when present |
 | `<project>/content_selection.json` | Selected dimensions, suggested page count, density scores |
 | `<project>/sources/research_report.md` | Full research narrative — only the sections matching selected dimensions are used |
 | `design_spec.md` (§I–VIII, if already written) | Template/brand constraints from Eight Confirmations (may not exist yet — this workflow runs before Confirmations) |
@@ -33,6 +34,8 @@ Read the following files:
 **1.1 Filter research content**
 
 From `research_report.md`, extract only the content belonging to the dimensions listed in `content_selection.json.selected_dimensions`. Each dimension's content becomes a **content block** — the raw material for one or more PPT pages.
+
+**Brief inheritance**: when `ppt_brief.json` exists, every page plan must respect its `narrative_frame`, `content_boundary`, `material_strategy`, `source_strategy`, `copyright_and_risk`, and `acceptance_criteria`.
 
 **1.2 Determine page count**
 
@@ -146,6 +149,8 @@ For each page in the target page count, generate a structured plan with the foll
 > - `summary` — 复杂材料收束为行动
 
 > **命名约定说明**: `layout_suggestion` 使用 `03_content_*` 格式（匹配 SVG 文件名），而 content_pages JSON 中的 `layout_type` 字段使用描述性名称（如 `data_cards_left_text_right`）。两者是同一版式的不同标识符：Strategist 输出 `layout_suggestion`，Executor 通过 `layout_type` 读取 JSON 配置。
+>
+> **边界说明**: `layout_suggestion` 是逐页结构建议，不是 SKILL.md Step 3 的模板包应用状态。Step 3 只在用户给出明确模板目录路径时触发；逐页 layout 调整应在 `refine_spec` 的 `design_spec.md` / `spec_lock.md` 审阅阶段完成。
 
 **3.2 `visual_need` sub-object**
 
@@ -160,8 +165,18 @@ Every content and chapter page must include a `visual_need` object:
 | `reference_image_required` | bool | `true` when the image depicts people / products / objects / places / IP-specific subjects |
 | `reference_image_query` | string | Concrete query for collecting the reference image |
 | `asset_file` | string | Existing web asset filename for information pages, or empty before acquisition |
+| `source_pack` | string | Source pack from [`image-source-routing.md`](../references/image-source-routing.md) when `image_type = "stock_search"` or a concrete reference image is required |
+| `preferred_sources` | string[] | Domain source classes inherited from Brief / routing matrix |
+| `disabled_providers` | string[] | Providers to exclude for the image subject |
+| `allow_generic_stock` | bool | `true` only for atmosphere/background/commercial scene rows |
+| `discovery_only` | bool | `true` when browser / Google-style search can only discover source pages |
+| `needs_manual_review` | bool | `true` for high-ambiguity or high-copyright-risk subjects |
+| `copyright_risk` | enum | `low` \| `medium` \| `high` |
+| `selection_reason` | string | Why this source pack fits the visual need |
 
 For cover and ending pages, `visual_need` may use `ai_generated` with a thematic description.
+
+**Hard rule**: If `visual_need` describes a named person, IP character, product, historical artifact/event, academic/scientific figure, report screenshot, or recent event, fill the routing fields above. Generic stock is not allowed unless the image is explicitly atmosphere/background rather than the specific subject.
 
 **3.3 `layout_plan` sub-object**
 
@@ -248,7 +263,15 @@ Write `<project>/detailed_outline.json`:
         "image_slot_size": {"width": 1160, "height": 425},
         "reference_image_required": false,
         "reference_image_query": "",
-        "asset_file": ""
+        "asset_file": "",
+        "source_pack": "data_report_capture",
+        "preferred_sources": ["official_report", "data_portal"],
+        "disabled_providers": ["pexels", "pixabay", "unsplash"],
+        "allow_generic_stock": false,
+        "discovery_only": true,
+        "needs_manual_review": true,
+        "copyright_risk": "medium",
+        "selection_reason": "Report/data figure should come from authoritative report or be redrawn as SVG."
       },
       "layout_plan": {
         "template": "03_content_chart_bar",
@@ -336,6 +359,8 @@ The Strategist reads `narrative_function` values and assigns page rhythm labels:
 | Every image page has `layout_plan.image_area` before prompt generation | 100% | Fill layout first |
 | No consecutive pages share the same `narrative_function` | 0 violations | Swap adjacent pages or reassign functions |
 | `visual_need.image_type = "chart"` requires `image_description` to include chart type + data source | 100% | Add chart type (e.g., "柱状图") and data source to description |
+| `stock_search` or concrete-reference pages have source routing fields | 100% | Fill `source_pack`, provider policy, risk, and reason from `image-source-routing.md` |
+| High-ambiguity visual subjects set `needs_manual_review` | 100% | Mark `needs_manual_review: true`; use discovery-only unless final source license is verified |
 | `content_bullets` count per page | 3–5 (each ≤60 chars) | Merge thin bullets or split dense ones |
 | `core_argument` length | ≤50 chars | Compress; use abbreviations if needed |
 | Every content page has `page_description` | 100% | Fill from core_argument + layout_plan |
@@ -362,9 +387,11 @@ The Strategist reads `narrative_function` values and assigns page rhythm labels:
 | Direction | Target | Data |
 |---|---|---|
 | **Reads from** | `<project>/content_selection.json` | Selected dimensions, page count, density scores |
+| **Reads from** | `<project>/ppt_brief.json` | Narrative frame, material strategy, source strategy, risk, and acceptance criteria |
 | **Reads from** | `<project>/sources/research_report.md` | Research content for selected dimensions |
 | **Feeds into** | Eight Confirmations | Content basis (page count, outline structure) for confirmation decisions |
 | **Feeds into** | Strategist (design_spec.md §IX) | Per-page content outline |
 | **Feeds into** | Strategist (design_spec.md §VIII) | Image acquisition table |
 | **Feeds into** | Strategist (spec_lock.md) | Page rhythm labels |
 | **Feeds into** | `image-text-linking.md` workflow | Page context for prompt enhancement |
+| **Feeds into** | `image-source-routing.md` contract | Per-page source pack, provider policy, risk, and review fields |

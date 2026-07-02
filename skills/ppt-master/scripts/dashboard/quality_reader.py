@@ -15,10 +15,15 @@ Dependencies:
 from __future__ import annotations
 
 import json
+import sys
 from dataclasses import dataclass
 from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any, Optional
+
+_DASHBOARD_DIR = Path(__file__).resolve().parent
+if str(_DASHBOARD_DIR) not in sys.path:
+    sys.path.insert(0, str(_DASHBOARD_DIR))
 
 from artifact_registry import latest_pptx
 
@@ -57,6 +62,11 @@ _CHECK_FILES = {
         ".review/visual_review.json",
         ".review/brand_review.json",
     ),
+    "rendered_visual": (
+        "quality/rendered_visual_gate.json",
+        "rendered_visual_gate.json",
+        "analysis/rendered_visual_gate.json",
+    ),
 }
 
 _CHECK_LABELS = {
@@ -64,11 +74,12 @@ _CHECK_LABELS = {
     "svg_quality": "SVG Quality",
     "e2e": "E2E Validation",
     "visual_review": "Visual Review",
+    "rendered_visual": "Rendered Visual Gate",
     "harness": "Harness Gate",
     "integrated_review": "Integrated Review",
 }
 
-_SUMMARY_CHECKS = ("spec_compliance", "svg_quality", "e2e", "visual_review")
+_SUMMARY_CHECKS = ("spec_compliance", "svg_quality", "e2e", "rendered_visual", "visual_review")
 _ISSUE_GROUPS = ("must_fix", "should_fix", "accepted_risks")
 _STATUS_RANK = {"fail": 3, "warn": 2, "unknown": 1, "pass": 0}
 
@@ -216,9 +227,9 @@ def _has_count(value: Any) -> bool:
 
 
 def _overall_status(checks: list[dict[str, Any]], harness: ReportFile | None) -> str:
-    if harness and harness.data:
-        return _normalize_status(harness.data, harness.parse_warning)
     present_statuses = [item["status"] for item in checks if item["status"] != "unknown"]
+    if harness and (harness.data or harness.parse_warning):
+        present_statuses.append(_normalize_status(harness.data, harness.parse_warning))
     if not present_statuses:
         return "unknown"
     return max(present_statuses, key=lambda status: _STATUS_RANK.get(status, 1))
@@ -247,7 +258,7 @@ def _group_for_severity(severity: str) -> str:
     normalized = str(severity or "").lower()
     if normalized in {"error", "fail", "failed", "must_fix", "critical", "hard"}:
         return "must_fix"
-    if normalized in {"warn", "warning", "should_fix", "medium"}:
+    if normalized in {"warn", "warning", "should_fix", "medium", "needs_human_review"}:
         return "should_fix"
     return "accepted_risks"
 
@@ -377,6 +388,24 @@ def _issues_from_report(report: ReportFile) -> dict[str, list[dict[str, str]]]:
                 path=page_path,
                 file=str(page_name),
             )
+            page_issues = page_report.get("issues")
+            if isinstance(page_issues, list):
+                for item in page_issues:
+                    if not isinstance(item, dict):
+                        continue
+                    group = _group_for_severity(str(item.get("severity") or ""))
+                    issues[group].append(
+                        _base_issue(
+                            group=group,
+                            check=check,
+                            source_file=report.source_file,
+                            message=item,
+                            severity=str(item.get("severity") or ""),
+                            path=page_path,
+                            file=str(page_name),
+                            recommendation=str(item.get("recommendation") or item.get("message") or ""),
+                        )
+                    )
 
     results = data.get("results")
     if isinstance(results, list):
@@ -570,22 +599,48 @@ def _check_entry(check: str, report: ReportFile | None) -> dict[str, Any]:
     }
 
 
+def _apply_harness_statuses(
+    checks: list[dict[str, Any]],
+    harness: ReportFile | None,
+) -> list[dict[str, Any]]:
+    """Fill missing per-check statuses from the aggregate harness report."""
+    if not harness or not harness.data:
+        return checks
+    data = harness.data
+    for item in checks:
+        if item.get("status") != "unknown":
+            continue
+        raw_status = data.get(str(item.get("id") or ""))
+        normalized = _normalize_status({"status": raw_status}) if raw_status else "unknown"
+        if normalized == "unknown":
+            continue
+        item["status"] = normalized
+        item["source_file"] = harness.source_file
+        item["updated_at"] = harness.updated_at
+        item["derived_from"] = "harness"
+    return checks
+
+
 def _legacy_harness(
     reports: dict[str, ReportFile],
     checks: list[dict[str, Any]],
     overall: str,
 ) -> dict[str, Any]:
     harness = reports.get("harness")
+    statuses = {item["id"]: _legacy_status(item["status"]) for item in checks}
     if harness and harness.data:
         data = dict(harness.data)
-        data.setdefault("overall", _legacy_status(_normalize_status(harness.data)))
+        for key, status in statuses.items():
+            if status != "SKIP":
+                data[key] = status
+        data["overall"] = _legacy_status(overall)
         return data
 
-    statuses = {item["id"]: _legacy_status(item["status"]) for item in checks}
     return {
         "spec_compliance": statuses.get("spec_compliance", "SKIP"),
         "svg_quality": statuses.get("svg_quality", "SKIP"),
         "e2e": statuses.get("e2e", "SKIP"),
+        "rendered_visual": statuses.get("rendered_visual", "SKIP"),
         "visual_review": statuses.get("visual_review", "SKIP"),
         "overall": _legacy_status(overall),
         "details": [],
@@ -602,7 +657,10 @@ def normalize_quality_report(project: Path) -> Optional[dict]:
     if not reports:
         return None
 
-    checks = [_check_entry(check, reports.get(check)) for check in _SUMMARY_CHECKS]
+    checks = _apply_harness_statuses(
+        [_check_entry(check, reports.get(check)) for check in _SUMMARY_CHECKS],
+        reports.get("harness"),
+    )
     overall = _overall_status(checks, reports.get("harness"))
     if overall == "unknown" and reports.get("integrated_review"):
         integrated = reports["integrated_review"]
@@ -634,6 +692,9 @@ def normalize_quality_report(project: Path) -> Optional[dict]:
             reports.get("integrated_review").data if reports.get("integrated_review") else None
         ),
         "visual_review": reports.get("visual_review").data if reports.get("visual_review") else None,
+        "rendered_visual": (
+            reports.get("rendered_visual").data if reports.get("rendered_visual") else None
+        ),
     }
 
 
@@ -673,6 +734,7 @@ def quality_summary(project: Path) -> dict | None:
         "spec_compliance": harness.get("spec_compliance", "SKIP"),
         "svg_quality": harness.get("svg_quality", "SKIP"),
         "e2e": harness.get("e2e", "SKIP"),
+        "rendered_visual": harness.get("rendered_visual", "SKIP"),
         "visual_review": harness.get("visual_review", "SKIP"),
         "overall": harness.get("overall", "SKIP"),
         "checked_at": report.get("checked_at") or _now(),

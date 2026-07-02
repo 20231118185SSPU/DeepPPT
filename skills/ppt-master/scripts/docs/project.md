@@ -12,8 +12,8 @@ Main entry point for project setup and validation.
 python3 scripts/project_manager.py init <project_name> --format ppt169
 python3 scripts/project_manager.py import-sources <project_path> <source1> [<source2> ...]
 python3 scripts/project_manager.py validate <project_path>
-python3 scripts/project_manager.py validate <project_path> --start-dashboard --no-browser
-python3 scripts/dashboard/server.py <project_path> --daemon --no-browser
+python3 scripts/project_manager.py validate <project_path> --start-dashboard
+python3 scripts/dashboard/server.py <project_path> --daemon
 python3 scripts/project_manager.py info <project_path>
 ```
 
@@ -33,10 +33,12 @@ Notes:
 
 Dashboard:
 - After Step 2 project setup/import, start or reuse the read-only Dashboard with
-  `python3 scripts/dashboard/server.py <project_path> --daemon --no-browser`.
+  `python3 scripts/dashboard/server.py <project_path> --daemon`.
 - `init`, `import-sources`, and `validate` accept `--start-dashboard`,
   `--no-browser`, and `--dashboard-port 8765` for explicit best-effort startup.
   Without `--start-dashboard`, they only print the Dashboard hint.
+- Default local behavior auto-opens the browser; add `--no-browser` only for
+  headless/remote sessions or explicit no-window runs.
 - Default port: `8765`; log path: `<project_path>/dashboard/dashboard.log`.
 - Launch failure is non-fatal; continue the PPT workflow.
 - Dashboard is observability only. It does not replace Confirm UI, Live Preview,

@@ -663,6 +663,7 @@ function renderPipeline(app) {
       ${metric('页面 / SVG', `${p.page_count ?? '-'} / ${p.svg_count ?? 0}`)}
       ${metric('质量状态', p.quality_summary?.overall || '待生成')}
     </div>
+    ${templateRoutePanel(p.template_route)}
     <div class="panel premium-panel">
       <div class="panel-head">
         <div>
@@ -711,6 +712,7 @@ function renderStep(app, stepNo) {
       ${metric('子步骤', `${completedSubSteps(step)} / ${(step.sub_steps || []).length}`)}
       ${metric('相关产物', artifacts.length)}
     </div>
+    ${step.step === 3 ? templateRoutePanel(state.pipeline.template_route) : ''}
     <div class="workbench-grid">
       <div class="panel premium-panel">
         <span class="eyebrow">Gate</span>
@@ -750,9 +752,10 @@ function renderConfirm(app) {
     <div class="summary-grid premium">
       ${metric('确认状态', p.confirm_status || '待确认')}
       ${metric('生成模式', p.generation_mode || '待定')}
+      ${metric('模板路线', templateRouteLabel(p.template_route))}
       ${metric('Confirm UI', serviceStatusText(p.confirm_ui))}
-      ${metric('Spec Lock', p.spec_lock_digest ? '已生成' : '未生成')}
     </div>
+    ${templateRoutePanel(p.template_route)}
     <div class="status-layout premium-layout">
       <div class="panel premium-panel service-panel-large">
         <span class="eyebrow">服务状态</span>
@@ -1061,6 +1064,56 @@ function timelineStep(step) {
     </a>
   `;
 }
+
+function templateRouteLabel(route) {
+  const key = route?.route || 'free_design';
+  if (key === 'template_applied') return 'Template applied';
+  if (key === 'template_expected_missing') return 'Template expected but missing';
+  return 'Free design';
+}
+
+function templateRoutePanel(route) {
+  if (!route) return '';
+  const library = route.library || {};
+  const counts = library.counts || {};
+  const applied = route.applied || {};
+  const pending = route.pending_selection;
+  return `
+    <div class="panel premium-panel template-route-panel">
+      <div class="panel-head">
+        <div>
+          <span class="eyebrow">Template Option</span>
+          <h2>${escapeHtml(templateRouteLabel(route))}</h2>
+          <p>${escapeHtml(route.reason || '')}</p>
+        </div>
+        ${stateLabel(route.route === 'template_expected_missing' ? 'failed' : (route.route === 'template_applied' ? 'completed' : 'skipped'))}
+      </div>
+      <div class="template-route-grid">
+        <div>
+          <strong>当前路线</strong>
+          <span>${escapeHtml(templateRouteLabel(route))}</span>
+          ${applied.path ? `<small>${escapeHtml(applied.kind || 'template')} · ${escapeHtml(applied.path)}</small>` : '<small>未应用模板包，系统按自由设计生成。</small>'}
+        </div>
+        <div>
+          <strong>模板发现</strong>
+          <span>${escapeHtml(String(library.total || 0))} 个可用候选</span>
+          <small>Brand ${counts.brand || 0} · Layout ${counts.layout || 0} · Deck ${counts.deck || 0}</small>
+        </div>
+        <div>
+          <strong>逐页 layout</strong>
+          <span>不等同于 Step 3 模板包</span>
+          <small>layout suggestion 来自 detailed_outline / design_spec / spec_lock；生成前调整走 refine_spec。</small>
+        </div>
+      </div>
+      ${pending ? `<div class="template-pending-note">
+        <strong>待处理模板选择</strong>
+        <span>${escapeHtml(pending.kind || '')} · ${escapeHtml(pending.path || pending.id || '')}</span>
+        <small>必须重新执行 Step 3/4 后才能继续；不会静默套用到当前 spec。</small>
+      </div>` : ''}
+    </div>
+  `;
+}
+
 function gateListHtml(gate) {
   if (!gate?.requirements?.length) return '<div class="empty small">没有 Gate 要求。</div>';
   return `

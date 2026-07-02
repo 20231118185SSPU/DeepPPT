@@ -44,7 +44,7 @@ python3 scripts/update_repo.py
 |------|-----------------|---------------|
 | Conversion | `source_to_md/pdf_to_md.py`, `source_to_md/doc_to_md.py`, `source_to_md/excel_to_md.py`, `source_to_md/ppt_to_md.py`, `source_to_md/web_to_md.py`, `pptx_intake.py` | [docs/conversion.md](./docs/conversion.md) |
 | Project management | `project_manager.py`, `batch_validate.py`, `generate_examples_index.py`, `error_helper.py`, `pptx_template_import.py`, `template_fill_pptx.py` | [docs/project.md](./docs/project.md) |
-| SVG pipeline | `finalize_svg.py`, `svg_to_pptx.py`, `total_md_split.py`, `svg_quality_checker.py`, `extract_svg_assets.py`, `animation_config.py`, `notes_to_audio.py` | [docs/svg-pipeline.md](./docs/svg-pipeline.md) |
+| SVG pipeline | `finalize_svg.py`, `svg_to_pptx.py`, `total_md_split.py`, `svg_quality_checker.py`, `rendered_layout_check.py`, `extract_svg_assets.py`, `animation_config.py`, `notes_to_audio.py` | [docs/svg-pipeline.md](./docs/svg-pipeline.md) |
 | Spec maintenance | `update_spec.py` | [docs/update_spec.md](./docs/update_spec.md) |
 | Image tools | `image_gen.py`, `latex_render.py`, `analyze_images.py`, `gemini_watermark_remover.py` | [docs/image.md](./docs/image.md) |
 | Research gates | `research/browse_ai.py`, `research/research_gate.py`, `research/asset_gate.py`, `research/sync_research_outputs.py`, `confirm_ui_gate.py` | Deep-research and Step 4/5 gate docs in `../workflows/` |
@@ -136,6 +136,40 @@ By default, `harness_gate.py` writes `<project_path>/quality/harness.json` and a
 result. Add `--read-only` (alias: `--no-write`) for regression checks that must not
 modify project files.
 
+Pre-merge / post-fix regression checklist (run from repository root):
+
+```powershell
+# Smoke import/help check: verifies script imports without running the full help suite.
+python skills/ppt-master/scripts/smoke_check.py --skip-help
+
+# Full E2E gate: runs spec compliance, SVG quality, and e2e validation for the exported test deck.
+python skills/ppt-master/scripts/harness_gate.py projects/e2e_smoke_test_ppt169_20260701
+
+# Full E2E validation: verifies page count, notes, image completeness, and PPTX integrity.
+python skills/ppt-master/scripts/e2e_validate.py projects/e2e_smoke_test_ppt169_20260701 --pptx projects/e2e_smoke_test_ppt169_20260701/exports/e2e_smoke_test_20260701_151710.pptx
+
+# Quick static gate: runs static project gates only; it skips e2e validation.
+python skills/ppt-master/scripts/harness_gate.py examples/ppt169_kubernetes_blueprint_2026 --quick
+```
+
+`harness_gate.py --quick` is a static gate shortcut: it runs spec compliance and
+SVG quality checks, marks e2e as skipped, and does not prove the deck passed the
+complete end-to-end export validation. Use the full E2E gate plus
+`e2e_validate.py --pptx ...` before treating a fix as end-to-end validated.
+
+Rendered visual gate:
+
+```bash
+python3 scripts/rendered_layout_check.py <project_path> --render
+python3 scripts/rendered_layout_check.py <project_path> --accept-current-render
+```
+
+`rendered_layout_check.py` uses local PNG screenshots plus SVG layout heuristics
+to flag collision, text-line contact, abnormal whitespace, stale renders, and
+revision-regression review needs. It complements `svg_quality_checker.py`; it
+does not replace human visual judgment. A static script pass is not a visual
+pass until this gate passes or a human accepts the current rendered screenshots.
+
 Post-processing and export:
 
 ```bash
@@ -144,6 +178,10 @@ python3 scripts/total_md_split.py <project_path>
 python3 scripts/finalize_svg.py <project_path>
 python3 scripts/svg_to_pptx.py <project_path>
 ```
+
+SVG page filenames may use either the recommended `P<NN>_<slug>.svg` form or
+legacy numeric prefixes such as `01_cover.svg`; pipeline tools normalize both to
+the same spec page IDs (`P01`, `P02`, ...). See [SVG Pipeline Tools](./docs/svg-pipeline.md).
 
 Image generation:
 

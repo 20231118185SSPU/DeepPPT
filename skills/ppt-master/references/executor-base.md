@@ -690,6 +690,23 @@ Used for: deep-dive side images, data page illustrations, comparison page visual
 - Line height: **1.5x–1.6x** (not default tight spacing)
 - Text-to-image visual weight ratio: 1:3 to 1:4 (text must not look tiny next to a large image)
 
+### 14.2a Card Density & Readability
+
+**Hard rule**: card count, card size, font size, line height, and text density MUST be solved together. A large card with tiny text and unused lower space is a layout failure, even when the page passes safe-margin checks.
+
+| Card scenario | Required layout response | Minimum readable type |
+|---|---|---|
+| 1-2 cards with short content | Enlarge the core metric / claim, add a short interpretation line, or replace cards with a split callout. Do not leave >35% of each card visually empty. | Body / explanation ≥ 20px; labels ≥ 16px |
+| 3 cards with one idea each | Use compact equal-height cards or one emphasized card plus two supporting panels. Each card's text stack should occupy 45-70% of card height. | Body ≥ 18px; card heading ≥ 20px |
+| 4+ agenda / summary cards | Prefer shorter cards, a stepped list, or a two-row rhythm. If each card has only 2-3 bullets, use stronger section numbers / headings rather than tall empty panels. | Body bullets ≥ 18px; headings ≥ 22px |
+| Data cards / KPI cards | Let numbers dominate, but the explanation must still read from projection distance. If narrative text is needed, use fewer rows or split the explanation below the KPIs. | KPI label ≥ 16px; narrative body ≥ 18px |
+
+**Validation**:
+- Card inner padding should be 20-32px; padding above 36px is allowed only for deliberate hero-number cards.
+- Multi-card grids should reserve at least 55% of each card's height for visible content or purposeful visual structure.
+- If content uses less than 45% of a card's height, enlarge text / numbers, reduce card height, reduce card count, or convert the layout away from cards.
+- Do not shrink card body text below the deck body size to preserve a chosen grid. Recompose the hierarchy first.
+
 ### 14.3 Centering discipline
 - All text inside content boxes must be horizontally centered (`text-anchor="middle"`)
 - Multi-line text blocks: left-align content, center the block within its container

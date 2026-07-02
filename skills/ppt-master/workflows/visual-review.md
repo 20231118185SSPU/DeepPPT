@@ -14,6 +14,8 @@ description: Per-page rubric-based visual self-review via parallel subagents. Ru
 
 This is a **recommended quality step**, on by default after quality gates pass. It catches visual issues (hierarchy, rhythm, image treatment, collision) that structural checks cannot detect.
 
+**Rendered gate boundary**: `rendered_layout_check.py` is the local screenshot gate that runs before export and can block on collision, text-line contact, excessive whitespace signals, stale/missing PNG renders, or revision-regression confirmation needs. This workflow is the rubric/human-review layer above it. `svg_quality_checker.py` / `harness_gate.py --quick` passing does not mean visual pass.
+
 **Skip**: explicit user opt-out via "--skip-vision", "skip visual review", "跳过视觉自检", or `skip_visual_review: true` in confirm_ui result.json.
 
 **Token cost**: each batch subagent re-reads the rubric + `design_spec.md` + `spec_lock.md` and processes K SVG+PNG pairs. For a 20-page deck with K=5, expect on the order of 100–150K additional input tokens on top of the main generation run.
@@ -61,6 +63,7 @@ When neither the main model nor any external API can check images:
 
 - Executor (SKILL.md Step 6) has finished all pages
 - `svg_quality_checker.py` has passed
+- `rendered_layout_check.py` has produced current PNG screenshots and either passed or listed `needs_human_review` items for explicit human decision
 - Post-processing (`finalize_svg.py`, `svg_to_pptx.py`) has **not** yet run
 
 For decks containing data charts, run [`verify-charts`](./verify-charts.md) first — visual-review focuses on visual rhythm / collision / alignment, not chart coordinate math.
@@ -168,6 +171,7 @@ For each row in the table:
 - `needs_human` — read the page's JSON `needs_human_items[].suggested_fix_summary`, decide with the user whether to apply or defer
 - `render_failed` — re-run `visual_review.py` for that page only (`--pages <token>`); if it persists, hand off to manual review
 - `prereq_failed` — go back and run `svg_quality_checker.py`
+- `rendered_layout_check.py` reported `must_fix` — fix the SVG and re-render before this workflow can clear the deck
 
 If `brand_review.json` is non-empty, that's a single decision applied across the deck (e.g., bump footer text color from `#6E7681` to `#8B949E` — one change, every page benefits). Do this once, then optionally re-run visual-review for the affected pages only.
 

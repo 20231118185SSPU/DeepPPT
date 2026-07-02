@@ -32,6 +32,59 @@ except ImportError:
 URL_RE = re.compile(r"^https?://", re.IGNORECASE)
 IMAGE_EXTENSIONS = {".jpg", ".jpeg", ".png", ".webp", ".bmp", ".gif", ".tif", ".tiff"}
 INFO_PAGE_TYPES = {"deep_dive", "comparison", "data", "timeline"}
+REFERENCE_CONFIDENCE_THRESHOLD = 0.75
+HIGH_RISK_REFERENCE_CONFIDENCE_THRESHOLD = 0.85
+HIGH_AMBIGUITY_TERMS = (
+    "person",
+    "people",
+    "portrait",
+    "named person",
+    "real person",
+    "celebrity",
+    "founder",
+    "speaker",
+    "character",
+    "place",
+    "landmark",
+    "event",
+    "人物",
+    "真人",
+    "名人",
+    "创始人",
+    "角色",
+    "地点",
+    "地标",
+    "事件",
+)
+STRONG_REFERENCE_MATCH_VALUES = {
+    "exact",
+    "strong",
+    "verified",
+    "high",
+    "same-subject",
+    "same_subject",
+}
+SOURCE_PROVENANCE_FIELDS = (
+    "source_pack",
+    "selection_reason",
+    "copyright_risk",
+    "manual_review_status",
+    "discovery_source",
+    "source_page_url",
+)
+HIGH_RISK_SOURCE_PACKS = {
+    "anime_game_ip",
+    "official_product",
+    "real_person",
+    "news_recent_event",
+}
+DISCOVERY_SOURCE_TOKENS = ("browser", "google", "bing", "yandex")
+APPROVED_REVIEW_STATUSES = {
+    "approved",
+    "reviewed",
+    "cleared",
+    "accepted",
+}
 
 
 @dataclass
@@ -198,12 +251,77 @@ class AssetGate:
                         "Provide a local reference file or HTTP(S) URL before generation.",
                     )
             elif _looks_concrete_subject(item) and not _valid_ref_value(item.get("reference_image"), self.project):
-                self._error(
+                self._warn(
                     f"{label} appears to depict a concrete subject but lacks reference_image.",
                     "Step 5",
-                    "Add reference_image or explicitly mark concrete_subject=false for abstract concept art.",
+                    "Add a vetted reference_image, or record reference_mode=text-to-image with a fallback_plan for abstract/concept use.",
                 )
+            self._check_ai_prompt_strategy_fields(item, label)
             self._check_file_against_slot(filename, target, label, "Step 5")
+
+    def _check_ai_prompt_strategy_fields(self, item: dict[str, Any], label: str) -> None:
+        prompt = str(item.get("prompt") or "")
+        if len(prompt.strip()) < 120:
+            self._warn(
+                f"{label} prompt is short for page-grounded image generation.",
+                "Step 5",
+                "Include page evidence, visual goal, text-image relationship, and composition details.",
+            )
+        if not str(item.get("image_intent") or "").strip():
+            self._warn(
+                f"{label} lacks image_intent.",
+                "Step 5",
+                "Record what communication job the image performs on the page.",
+            )
+        if not str(item.get("page_evidence") or item.get("page_basis") or "").strip():
+            self._warn(
+                f"{label} lacks page_evidence/page_basis.",
+                "Step 5",
+                "Record the core_argument, content_bullets, or page claim that shaped the prompt.",
+            )
+        if not str(item.get("text_image_relationship") or item.get("text_image_link") or "").strip():
+            self._warn(
+                f"{label} lacks text_image_relationship.",
+                "Step 5",
+                "State whether text overlays the image, sits beside it, or is explained inside the image.",
+            )
+        if not str(item.get("fallback_plan") or "").strip():
+            self._warn(
+                f"{label} lacks fallback_plan.",
+                "Step 5",
+                "Record how to proceed if AI generation or reference matching fails.",
+            )
+
+        if _valid_ref_value(item.get("reference_image"), self.project):
+            self._check_reference_review(item, label)
+        self._check_fallback_provenance(item, label)
+
+    def _check_reference_review(self, item: dict[str, Any], label: str) -> None:
+        policy = _reference_policy(item)
+        confidence = _as_float(policy.get("confidence"))
+        high_risk = _is_high_ambiguity_subject(item, policy)
+        threshold = (
+            HIGH_RISK_REFERENCE_CONFIDENCE_THRESHOLD
+            if high_risk
+            else REFERENCE_CONFIDENCE_THRESHOLD
+        )
+        missing: list[str] = []
+        if not _as_bool(policy.get("approved")):
+            missing.append("approved=true")
+        if not _has_reference_source(policy):
+            missing.append("source/provenance")
+        if not _reference_match_is_strong(policy):
+            missing.append("strong semantic_match")
+        if confidence is None:
+            missing.append("confidence")
+        elif confidence < threshold:
+            missing.append(f"confidence>={threshold:.2f}")
+        if missing:
+            self._warn(
+                f"{label} has reference_image but incomplete/weak review: {', '.join(missing)}.",
+                "Step 5",
+                "Do not use img2img unless the manifest records approved source, strong semantic match, confidence, and fallback_plan.",
+            )
 
     def _check_web_queries(self, queries: dict[str, Any]) -> None:
         for item in _manifest_items(queries):
@@ -213,6 +331,7 @@ class AssetGate:
             label = filename or str(item.get("slide") or item.get("page_id") or "web query")
             target = _target_size(item, width_keys=("min_width", "target_width", "width"), height_keys=("min_height", "target_height", "height"))
             status = str(item.get("status") or "")
+            self._check_query_routing_fields(item, label)
             if filename and status in {"Sourced", "Generated", ""}:
                 self._check_file_against_slot(filename, target, label, "Step 5")
 
@@ -224,7 +343,64 @@ class AssetGate:
             self._planned_files.add(_basename(filename))
             target = _target_size(item)
             label = filename
+            self._check_source_provenance(item, label)
             self._check_file_against_slot(filename, target, label, "Step 5")
+
+    def _check_query_routing_fields(self, item: dict[str, Any], label: str) -> None:
+        missing = [
+            field for field in (
+                "source_pack",
+                "selection_reason",
+                "copyright_risk",
+            )
+            if not _has_text(item, field)
+        ]
+        if missing:
+            self._warn(
+                f"{label} lacks source-routing fields: {', '.join(missing)}.",
+                "Image Source Routing",
+                "Run image_source_router.py for new projects; legacy manifests remain compatible.",
+            )
+
+    def _check_source_provenance(self, item: dict[str, Any], label: str) -> None:
+        missing = [field for field in SOURCE_PROVENANCE_FIELDS if not _has_text(item, field)]
+        if missing:
+            self._warn(
+                f"{label} lacks provenance fields: {', '.join(missing)}.",
+                "Step 5",
+                "Keep legacy projects reproducible; for new sourcing, rerun image_search.py or add provenance manually.",
+            )
+
+        if _is_fallback_source(item) and not _fallback_has_required_provenance(item):
+            self._warn(
+                f"{label} appears to be a fallback/browser result without complete source, keyword, reason, and risk records.",
+                "Step 5",
+                "Record search_query, source_page_url, selection_reason, copyright_risk, and discovery_source before relying on it.",
+            )
+
+        if _is_high_risk_source(item) and not _manual_review_cleared(item):
+            self._warn(
+                f"{label} is high-risk or browser/Google discovery material but manual review is not cleared.",
+                "Step 5",
+                "Set manual_review_status=approved/reviewed only after verifying subject identity, source page, and license/usage rights.",
+            )
+
+    def _check_fallback_provenance(self, item: dict[str, Any], label: str) -> None:
+        fallback = item.get("fallback")
+        if not isinstance(fallback, dict):
+            return
+        if not _fallback_has_required_provenance(fallback):
+            self._warn(
+                f"{label} web fallback lacks complete source, keyword, selection reason, or copyright risk.",
+                "Step 5",
+                "Fallback records must include query, source_page_url, selection_reason, copyright_risk, and discovery_source/provider.",
+            )
+        if _is_high_risk_source(fallback) and not _manual_review_cleared(fallback):
+            self._warn(
+                f"{label} web fallback is high-risk or browser/Google discovery material but manual review is not cleared.",
+                "Step 5",
+                "Verify provenance and set manual_review_status=approved/reviewed before using it in an external deck.",
+            )
 
     def _check_search_assets(self, manifest: dict[str, Any]) -> None:
         for item in _as_list(manifest.get("asset_manifest")):
@@ -471,6 +647,158 @@ def _looks_concrete_subject(item: dict[str, Any]) -> bool:
         "真实场景",
     ]
     return any(term.lower() in text.lower() for term in concrete_terms)
+
+
+def _as_bool(value: Any) -> bool:
+    if isinstance(value, bool):
+        return value
+    if isinstance(value, str):
+        return value.strip().lower() in {"1", "true", "yes", "y", "approved"}
+    return False
+
+
+def _as_float(value: Any) -> float | None:
+    if isinstance(value, (int, float)):
+        return float(value)
+    if isinstance(value, str):
+        text = value.strip().rstrip("%")
+        try:
+            parsed = float(text)
+        except ValueError:
+            return None
+        return parsed / 100 if parsed > 1 else parsed
+    return None
+
+
+def _has_text(item: dict[str, Any], key: str) -> bool:
+    value = item.get(key)
+    if isinstance(value, bool):
+        return True
+    if isinstance(value, (int, float)):
+        return True
+    return bool(str(value or "").strip())
+
+
+def _is_fallback_source(item: dict[str, Any]) -> bool:
+    stage = str(item.get("stage") or "").lower()
+    purpose = str(item.get("purpose") or "").lower()
+    acquisition = str(item.get("acquisition") or "").lower()
+    return (
+        "fallback" in stage
+        or "fallback" in purpose
+        or "fallback" in acquisition
+        or isinstance(item.get("fallback"), dict)
+    )
+
+
+def _fallback_has_required_provenance(item: dict[str, Any]) -> bool:
+    has_query = _has_text(item, "search_query") or _has_text(item, "query")
+    has_source = _has_text(item, "source_page_url") or _has_text(item, "download_url")
+    has_discovery = _has_text(item, "discovery_source") or _has_text(item, "provider")
+    return (
+        has_query
+        and has_source
+        and has_discovery
+        and _has_text(item, "selection_reason")
+        and _has_text(item, "copyright_risk")
+    )
+
+
+def _is_high_risk_source(item: dict[str, Any]) -> bool:
+    risk = str(item.get("copyright_risk") or "").lower()
+    source_pack = str(item.get("source_pack") or "").strip()
+    provider = str(item.get("provider") or "").lower()
+    discovery = str(item.get("discovery_source") or "").lower()
+    license_tier = str(item.get("license_tier") or "").lower()
+    if source_pack in HIGH_RISK_SOURCE_PACKS:
+        return True
+    if "high" in risk or "unknown" in risk:
+        return True
+    if license_tier.startswith("browser"):
+        return True
+    if provider == "browser":
+        return True
+    return any(token in discovery for token in DISCOVERY_SOURCE_TOKENS)
+
+
+def _manual_review_cleared(item: dict[str, Any]) -> bool:
+    status = str(item.get("manual_review_status") or "").strip().lower()
+    if status in APPROVED_REVIEW_STATUSES:
+        return True
+    if _as_bool(item.get("manual_review_approved")) or _as_bool(item.get("manual_reviewed")):
+        return True
+    review = item.get("manual_review")
+    if isinstance(review, dict):
+        review_status = str(review.get("status") or "").strip().lower()
+        if review_status in APPROVED_REVIEW_STATUSES:
+            return True
+        return _as_bool(review.get("approved"))
+    return False
+
+
+def _reference_policy(item: dict[str, Any]) -> dict[str, Any]:
+    policy = item.get("reference_image_policy")
+    normalized = dict(policy) if isinstance(policy, dict) else {}
+    provenance = item.get("reference_provenance")
+    if isinstance(provenance, dict):
+        normalized.setdefault("provenance", provenance)
+    aliases = {
+        "approved": ("reference_approved", "approved"),
+        "confidence": ("reference_confidence", "reference_match_confidence"),
+        "semantic_match": (
+            "reference_semantic_match",
+            "semantic_match",
+            "subject_match",
+        ),
+        "fallback": ("reference_fallback", "fallback_plan"),
+        "source_url": ("reference_source_url", "source_url", "source_page_url"),
+    }
+    for target, keys in aliases.items():
+        for key in keys:
+            if item.get(key) is not None and normalized.get(target) is None:
+                normalized[target] = item.get(key)
+                break
+    return normalized
+
+
+def _has_reference_source(policy: dict[str, Any]) -> bool:
+    if _as_bool(policy.get("user_provided")):
+        return True
+    source_keys = (
+        "reference_source",
+        "reference_source_url",
+        "reference_url",
+        "source_url",
+        "source_page_url",
+        "source_title",
+        "source_path",
+    )
+    if any(str(policy.get(key) or "").strip() for key in source_keys):
+        return True
+    provenance = policy.get("provenance")
+    if isinstance(provenance, dict):
+        return any(str(provenance.get(key) or "").strip() for key in source_keys)
+    return False
+
+
+def _reference_match_is_strong(policy: dict[str, Any]) -> bool:
+    value = policy.get("semantic_match")
+    if isinstance(value, bool):
+        return value
+    return str(value or "").strip().lower() in STRONG_REFERENCE_MATCH_VALUES
+
+
+def _is_high_ambiguity_subject(item: dict[str, Any], policy: dict[str, Any]) -> bool:
+    if _as_bool(item.get("high_ambiguity_subject")) or _as_bool(policy.get("high_ambiguity")):
+        return True
+    risk = str(item.get("subject_risk") or policy.get("subject_risk") or "").strip().lower()
+    if risk in {"high", "ambiguous", "identity", "person", "place", "event"}:
+        return True
+    text = " ".join(
+        str(item.get(key) or "")
+        for key in ("prompt", "subject", "purpose", "description", "reference")
+    ).lower()
+    return any(term.lower() in text for term in HIGH_AMBIGUITY_TERMS)
 
 
 def build_parser() -> argparse.ArgumentParser:

@@ -1,5 +1,5 @@
 ---
-description: Deep research orchestrator — coordinates 7 independent research steps (outline → search plan → per-page search → consolidation → analysis → narrative → visual strategy). Produces structured research artifacts that feed the main PPT pipeline. Run for all topic-only and content-quality-first requests.
+description: Deep research orchestrator — coordinates 7 independent research steps (outline → search plan → per-page search → consolidation → analysis → narrative → visual strategy). Produces structured research artifacts that feed the main PPT pipeline. Run after confirmed PPT Briefing for topic-only requests, and for content-quality-first requests.
 ---
 
 # Deep Research Workflow (Orchestrator)
@@ -8,7 +8,11 @@ description: Deep research orchestrator — coordinates 7 independent research s
 
 This workflow is the **single entry point** for all research. The former `topic-research.md` (quick mode) has been removed — all inputs go through this unified flow.
 
-**Hard rule**: Topic-only PPT requests MUST enter this workflow before SKILL.md Step 1. Do not satisfy the research phase with the agent's built-in WebSearch alone. Built-in WebSearch is only a recorded fallback after the browser-AI / Agent-Reach / platform-specific routes fail or return low-quality output.
+**Hard rule**: Topic-only PPT requests MUST complete [`ppt-briefing`](./ppt-briefing.md) before this workflow. `ppt_brief.md` and `ppt_brief.json` are required upstream artifacts for every topic-only project, and the user must explicitly confirm them before Step 0 or Step 1 starts.
+
+**Hard rule**: This workflow consumes `ppt_brief.json` when present. Step 1 and Step 2 must read its goal, target audience, usage context, narrative frame, content boundary, material strategy, source strategy, copyright risk, and acceptance criteria before drafting the outline or search plan.
+
+**Hard rule**: Do not satisfy the research phase with the agent's built-in WebSearch alone. Built-in WebSearch is only a recorded fallback after the browser-AI / Agent-Reach / platform-specific routes fail or return low-quality output.
 
 **Hard rule**: The seven steps are separate deliverables. Do not merge consolidation, analysis, narrative construction, and visual strategy into one writing pass. Each step writes its own artifact and passes a quality gate before the next step starts.
 
@@ -33,7 +37,7 @@ If any metric fails, return to Step 2 or Step 3 and fill the gap before entering
 
 | User-supplied input | Action |
 |---|---|
-| Topic only (no files) | Run full 7-step flow |
+| Topic only (no files) | Run `ppt-briefing` first; after confirmed `ppt_brief.json`, run full 7-step flow |
 | Topic + "深度调研" / "deep research" / "内容质量优先" | Run full 7-step flow |
 | Topic + complex, multi-perspective subject matter | Run full 7-step flow |
 | Source file attached (PDF / DOCX / URL / Markdown) | Run Step 1 (convert + outline), skip Step 3 only when the source already satisfies the depth contract; otherwise run targeted search for gaps, then run Steps 4-7 |
@@ -47,6 +51,8 @@ All research artifacts reside inside `_research/` within the canonical project d
 
 ```
 projects/<project_slug>/
+├── ppt_brief.md                     ← Confirmed topic-only creative brief
+├── ppt_brief.json                   ← Machine-readable brief consumed by research
 ├── _research/                        ← All research artifacts
 │   ├── step1_outline/                ← outline.md + outline.json
 │   ├── step2_search_plan/            ← search_plan.json
@@ -72,6 +78,8 @@ projects/<project_slug>/
 
 ## Step 0: Initialize Project
 
+For topic-only projects, Step 0 may already be complete because [`ppt-briefing`](./ppt-briefing.md) created the project directory. Reuse that canonical project path and do not create a sibling project.
+
 ```bash
 python3 ${SKILL_DIR}/scripts/project_manager.py init <project_name> --format <format>
 mkdir -p <project>/_research/{step1_outline,step2_search_plan,step3_search,step4_consolidated,step5_analysis,step6_narrative,step7_visual}
@@ -87,7 +95,7 @@ mkdir -p <project>/_research/step7_visual/ref
 
 | Item | Detail |
 |------|--------|
-| Input | User topic + background docs (if any) + source files (if any) |
+| Input | Confirmed `ppt_brief.json` (topic-only) + user topic + background docs (if any) + source files (if any) |
 | Output | `_research/step1_outline/outline.md` + `outline.json` |
 | Executor | Main AI (Claude) |
 | Blocking | ⛔ YES — user must confirm outline before proceeding |
@@ -107,7 +115,7 @@ python3 ${SKILL_DIR}/scripts/source_to_md/web_to_md.py <url>     # URL
 
 | Item | Detail |
 |------|--------|
-| Input | `_research/step1_outline/outline.json` |
+| Input | `_research/step1_outline/outline.json` + confirmed `ppt_brief.json` when present |
 | Output | `_research/step2_search_plan/search_plan.json` |
 | Executor | Main AI (Claude) |
 | Blocking | ⛔ YES — show the search plan and source strategy before executing |

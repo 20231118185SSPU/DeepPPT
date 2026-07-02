@@ -86,10 +86,20 @@ PROVIDER_MODULES: dict[str, str] = {
     "browser": "image_sources.provider_browser",
 }
 
-# Providers that work without configuration. ``image_search.py`` defaults
-# to these so a fresh clone can search immediately.
+# Providers that work without configuration. The conservative default chain
+# starts with domain/commons providers so configured stock keys do not override
+# subject-specific sourcing.
 ZERO_CONFIG_PROVIDERS: tuple[str, ...] = ("openverse", "wikimedia", "nasa", "smithsonian")
+CONSERVATIVE_PROVIDERS: tuple[str, ...] = ("wikimedia", "nasa", "smithsonian", "openverse")
 KEYED_PROVIDERS: tuple[str, ...] = ("pexels", "pixabay", "unsplash", "flickr")
+GENERIC_STOCK_PROVIDERS: tuple[str, ...] = ("pexels", "pixabay", "unsplash", "flickr")
+GENERIC_ATMOSPHERE_PACK = "generic_atmosphere"
+DISCOVERY_ONLY_PACKS: tuple[str, ...] = (
+    "anime_game_ip",
+    "official_product",
+    "real_person",
+    "news_recent_event",
+)
 # Browser provider: Playwright-based fallback when API providers fail.
 # Requires: pip install playwright && python -m playwright install chromium
 BROWSER_PROVIDER: str = "browser"
@@ -119,6 +129,21 @@ SEARCH_VALID_STATUSES = {
 # (see image-searcher.md §8); only Pending/Failed rows are retried on re-run.
 SEARCH_RETRYABLE_STATUSES = {SEARCH_STATUS_PENDING, SEARCH_STATUS_FAILED}
 SEARCH_REQUIRED_ITEM_FIELDS = ("filename", "query", "status")
+
+ROUTING_MANIFEST_FIELDS = (
+    "source_pack",
+    "preferred_sources",
+    "preferred_providers",
+    "disabled_providers",
+    "allow_generic_stock",
+    "discovery_only",
+    "needs_manual_review",
+    "copyright_risk",
+    "manual_review_status",
+    "selection_reason",
+    "discovery_source",
+    "source_page_url",
+)
 
 
 # ---------------------------------------------------------------------------
@@ -400,6 +425,11 @@ def _candidate_to_manifest_item(
         width, height = actual_dimensions
     else:
         width, height = candidate.width, candidate.height
+    source_page_url = (
+        getattr(args, "source_page_url", None)
+        or candidate.source_page_url
+        or candidate.download_url
+    )
 
     item = {
         "filename": args.filename,
@@ -411,7 +441,7 @@ def _candidate_to_manifest_item(
         "stage": stage,
         "title": candidate.title,
         "author": candidate.author,
-        "source_page_url": candidate.source_page_url,
+        "source_page_url": source_page_url,
         "download_url": candidate.download_url,
         "license_name": candidate.license_name,
         "license_url": candidate.license_url,
@@ -422,6 +452,12 @@ def _candidate_to_manifest_item(
         "attribution_text": build_attribution_text(args.filename, candidate),
         "status": "sourced",
     }
+
+    for field in ROUTING_MANIFEST_FIELDS:
+        value = getattr(args, field, None)
+        if value not in (None, "", [], {}):
+            item[field] = value
+    _apply_provenance_defaults(item, candidate)
 
     # Only carry upstream-claimed dimensions when they differ — this flags
     # cases where the provider returned a preview rather than the original.
@@ -438,6 +474,77 @@ def _candidate_to_manifest_item(
         }
 
     return item
+
+
+def _apply_provenance_defaults(item: dict, candidate: AssetCandidate) -> None:
+    """Fill provenance and review fields required by the asset gate."""
+    provider = str(item.get("provider") or "").strip()
+    stage = str(item.get("stage") or "").strip()
+    browser_discovery = provider == BROWSER_PROVIDER
+
+    item.setdefault("source_pack", "legacy_unspecified")
+    if not str(item.get("selection_reason") or "").strip():
+        if browser_discovery:
+            item["selection_reason"] = (
+                "API/open-license providers returned no usable match; browser image "
+                "search supplied a discovery candidate that requires source-page and "
+                "license review before public use."
+            )
+        else:
+            item["selection_reason"] = (
+                f"Selected highest-scoring candidate from {provider or 'configured provider'} "
+                f"for query {item.get('search_query')!r}."
+            )
+
+    if not str(item.get("discovery_source") or "").strip():
+        item["discovery_source"] = _candidate_discovery_source(candidate, provider, stage)
+
+    if browser_discovery:
+        item["needs_manual_review"] = True
+        item["discovery_only"] = True
+        item["copyright_risk"] = (
+            item.get("copyright_risk")
+            or "high: browser/Google/Bing/Yandex discovery is not a license-safe source"
+        )
+    elif not str(item.get("copyright_risk") or "").strip():
+        tier = str(item.get("license_tier") or "")
+        if tier == "no-attribution":
+            item["copyright_risk"] = (
+                "low: provider metadata indicates no on-slide attribution; "
+                "verify before external distribution"
+            )
+        elif tier == "attribution-required":
+            item["copyright_risk"] = (
+                "medium: license requires on-slide attribution from attribution_text"
+            )
+        else:
+            item["copyright_risk"] = "high: license tier is unknown; manual review required"
+            item["needs_manual_review"] = True
+
+    if not str(item.get("manual_review_status") or "").strip():
+        item["manual_review_status"] = (
+            "pending" if item.get("needs_manual_review") else "not_required"
+        )
+
+
+def _candidate_discovery_source(
+    candidate: AssetCandidate,
+    provider: str,
+    stage: str,
+) -> str:
+    """Return a concise source label for manifest provenance."""
+    if provider != BROWSER_PROVIDER:
+        return provider or stage or "unknown"
+    text = " ".join([candidate.title or "", candidate.author or ""]).lower()
+    if "google" in text:
+        return "google_images"
+    if "bing" in text:
+        return "bing_images"
+    if "yandex" in text:
+        return "yandex_images"
+    if stage == "url-capture":
+        return "browser_url_capture"
+    return "browser_image_search"
 
 
 def _read_existing_manifest(path: Path) -> dict:
@@ -668,20 +775,35 @@ def _search_one_item(
     )
 
     pinned = item.get("provider") or default_provider
-    providers = [pinned] if pinned else _default_provider_chain()
+    providers = _providers_for_item(item, default_provider)
     output_path = output_dir / item["filename"]
 
-    candidate, provider_name, stage = search_and_download(
-        providers,
-        request,
-        output_path=output_path,
-        strict_no_attribution=strict,
-        save_candidates=save_candidates,
-        max_candidates=max_candidates,
-    )
+    candidate = None
+    provider_name = None
+    stage = None
+    if _is_discovery_only_item(item) and providers == [BROWSER_PROVIDER]:
+        return (
+            None,
+            "discovery-only row cannot auto-adopt browser/Google result as final asset",
+        )
+    if providers:
+        candidate, provider_name, stage = search_and_download(
+            providers,
+            request,
+            output_path=output_path,
+            strict_no_attribution=strict,
+            save_candidates=save_candidates,
+            max_candidates=max_candidates,
+        )
 
     # --- Browser fallback for batch items ---
     if candidate is None and pinned != BROWSER_PROVIDER:
+        if _is_discovery_only_item(item):
+            return (
+                None,
+                "discovery-only row requires source-page/manual review; "
+                "not auto-adopting browser/Google result as final asset",
+            )
         try:
             from image_sources.provider_browser import search as browser_search
             browser_candidates = browser_search(request, search_engines=search_engines)
@@ -714,6 +836,8 @@ def _search_one_item(
         query=item["query"],
         orientation=orientation,
     )
+    for field in ROUTING_MANIFEST_FIELDS:
+        setattr(item_args, field, item.get(field))
     manifest_item = _candidate_to_manifest_item(
         candidate,
         item_args,
@@ -799,6 +923,9 @@ def run_search_manifest(
                     item["status"] = SEARCH_STATUS_SOURCED
                     item["provider"] = manifest_item.get("provider", "")
                     item["license_tier"] = manifest_item.get("license_tier", "")
+                    for field in ROUTING_MANIFEST_FIELDS:
+                        if field in manifest_item:
+                            item[field] = manifest_item[field]
                     item.pop("last_error", None)
                     sourced_count += 1
                     print(f"  [OK]   {item['filename']} ({item['provider']})")
@@ -854,8 +981,9 @@ def build_parser() -> argparse.ArgumentParser:
         choices=ALL_PROVIDERS,
         default=None,
         help=(
-            "Pin one provider. Default: try zero-config providers (openverse, "
-            "wikimedia) plus any keyed provider whose API key is set."
+            "Pin one provider. Highest priority. Default: use conservative "
+            "Commons/science/archive providers unless batch source routing "
+            "enables generic stock."
         ),
     )
     parser.add_argument(
@@ -967,20 +1095,82 @@ def build_parser() -> argparse.ArgumentParser:
     return parser
 
 
-def _default_provider_chain() -> list[str]:
-    """Keyed high-quality providers first; zero-config providers as fallback.
-    This is the search order when ``--provider`` is unset."""
+def _configured_generic_stock_chain() -> list[str]:
+    """Return configured generic stock providers in preferred atmosphere order."""
     chain: list[str] = []
     if os.environ.get("PEXELS_API_KEY"):
         chain.append("pexels")
-    if os.environ.get("PIXABAY_API_KEY"):
-        chain.append("pixabay")
     if os.environ.get("UNSPLASH_ACCESS_KEY"):
         chain.append("unsplash")
+    if os.environ.get("PIXABAY_API_KEY"):
+        chain.append("pixabay")
     if os.environ.get("FLICKR_API_KEY"):
         chain.append("flickr")
-    chain.extend(ZERO_CONFIG_PROVIDERS)
     return chain
+
+
+def _dedupe_providers(providers: list[str]) -> list[str]:
+    seen: set[str] = set()
+    out: list[str] = []
+    for provider in providers:
+        if provider not in ALL_PROVIDERS or provider in seen:
+            continue
+        seen.add(provider)
+        out.append(provider)
+    return out
+
+
+def _default_provider_chain() -> list[str]:
+    """Conservative default when ``--provider`` and source-pack routing are unset."""
+    return list(CONSERVATIVE_PROVIDERS)
+
+
+def _source_pack_provider_chain(item: dict) -> list[str]:
+    """Build the provider chain for a batch row from source-routing fields."""
+    source_pack = str(item.get("source_pack") or "").strip()
+    allow_generic_stock = bool(item.get("allow_generic_stock", False))
+    preferred = [
+        p for p in item.get("preferred_providers", []) or []
+        if isinstance(p, str)
+    ]
+    disabled = {
+        p for p in item.get("disabled_providers", []) or []
+        if isinstance(p, str)
+    }
+
+    if source_pack == GENERIC_ATMOSPHERE_PACK or allow_generic_stock:
+        chain = _configured_generic_stock_chain() + ["openverse"]
+        if "flickr" not in chain and os.environ.get("FLICKR_API_KEY"):
+            chain.append("flickr")
+    elif source_pack == "academic_science":
+        chain = ["wikimedia", "nasa", "openverse"]
+    elif source_pack == "historical_culture":
+        chain = ["wikimedia", "smithsonian", "openverse"]
+    elif source_pack in DISCOVERY_ONLY_PACKS or item.get("discovery_only"):
+        chain = []
+    else:
+        chain = _default_provider_chain()
+
+    if preferred:
+        chain = preferred + chain
+    chain = [provider for provider in chain if provider not in disabled]
+    return _dedupe_providers(chain)
+
+
+def _providers_for_item(item: dict, default_provider: Optional[str]) -> list[str]:
+    """Resolve a batch row's provider chain.
+
+    Explicit CLI ``--provider`` or per-item ``provider`` has highest priority.
+    """
+    pinned = item.get("provider") or default_provider
+    if pinned:
+        return [pinned]
+    return _source_pack_provider_chain(item)
+
+
+def _is_discovery_only_item(item: dict) -> bool:
+    source_pack = str(item.get("source_pack") or "").strip()
+    return bool(item.get("discovery_only")) or source_pack in DISCOVERY_ONLY_PACKS
 
 
 def main(argv: Optional[list[str]] = None) -> int:

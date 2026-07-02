@@ -394,6 +394,10 @@ Selections may be mixed at the row level — e.g. a deck can use C for hero illu
 {
   "filename": "P05_deepdive.png",
   "prompt": "...",
+  "image_intent": "Explain the page's three-part contrast as a compact visual system.",
+  "page_evidence": "P05 core_argument + content_bullets from detailed_outline.json; dense comparison page.",
+  "text_image_relationship": "Image carries visual structure; SVG title, bullets, and data callouts stay editable.",
+  "fallback_plan": "If AI generation fails, draw the comparison as native SVG cards with icons.",
   "target_width": 370,
   "target_height": 500,
   "aspect_ratio": "3:4",
@@ -403,6 +407,31 @@ Selections may be mixed at the row level — e.g. a deck can use C for hero illu
 ```
 
 `image_gen.py` reads `target_width`/`target_height` and maps to the backend's nearest supported size. If the backend produces a larger image, it is center-cropped to the target dimensions.
+
+#### h.5b Per-page image decision and reference safety
+
+**Hard rule**: every image row must be justified by the page's density, information type, and layout. Do not create images merely because the deck selected image usage.
+
+| Page condition | Strategy |
+|---|---|
+| High text density, explanation, comparison, timeline, or data | Prefer Type B explanatory diagram / infographic, or native SVG if the content must stay editable |
+| Low text density, cover, transition, ending, quote, or chapter page | Use Type A hero / atmosphere / concept imagery that leaves SVG text readable |
+| Existing chart/table/structured metric page | Prefer native SVG chart or cards; external image is supporting context only |
+| Weak visual need | Omit the image row and spend layout space on text hierarchy / icons |
+
+**Reference-image safety**: for people, named characters, real places, and events, default to **no img2img reference** unless the reference is authoritative and reviewed. Web image search results are not authoritative by name match alone.
+
+| Required manifest field | Meaning |
+|---|---|
+| `image_intent` | What the image does for this page |
+| `page_evidence` | Core argument / bullets / density / layout reason |
+| `text_image_relationship` | Overlay, side-by-side, image-owned labels, SVG-owned labels, or no interaction |
+| `fallback_plan` | Text-to-image, native SVG, web search, placeholder, or manual asset fallback |
+| `reference_image_policy` | Required only when `reference_image` is present: approval, source/provenance, semantic match, confidence, subject risk, fallback |
+
+**High-risk default**: if the subject is a person, named character, real place, or event and no authoritative reference exists, omit `reference_image`, set `high_ambiguity_subject: true`, and describe a symbolic/non-likeness visual in the prompt. This prevents a same-name search hit from steering img2img toward the wrong subject.
+
+**Source routing for concrete subjects**: for web rows and any AI row that depends on a concrete reference image, apply [`image-source-routing.md`](./image-source-routing.md). Named IP, real people, products, historical/cultural subjects, academic/scientific figures, report screenshots, and recent events must not default to generic stock providers. Mark high-ambiguity rows with `needs_manual_review: true`.
 
 #### h.5 AI Image Strategy — lock rendering + palette (only when C is selected)
 
@@ -591,8 +620,21 @@ After the user picks a candidate, scan the outline and surface any pages where t
 | **Acquire Via** | `ai` / `web` / `user` / `formula` / `placeholder` — only `ai` and `web` drive Step 5 dispatch |
 | Status | Initial status must be `Pending`, `Existing`, `Rendered`, or `Placeholder`; see [`svg-image-embedding.md`](svg-image-embedding.md) for the full status enum |
 | **Reference** | Free-form **intent description** (NOT a search query); feeds Image_Generator (ai) or Image_Searcher (web) |
+| `Source pack` (required for `web`) | Source routing id from [`image-source-routing.md`](./image-source-routing.md), e.g. `generic_atmosphere`, `academic_science`, `official_product` |
+| `Preferred sources` (required for `web`) | Domain source classes such as official site, Wikimedia, museum archive, press kit, institutional report |
+| `Disabled providers` (required for `web` when any provider is excluded) | Provider ids excluded for the subject, e.g. `pexels`, `pixabay`, `unsplash` |
+| `Allow generic stock` (required for `web`) | `true` only for generic atmosphere / background / commercial scene rows |
+| `Discovery only` (required for browser / Google-style discovery) | `true` when search may find source pages but cannot auto-clear final license |
+| `Manual review` (required for high ambiguity) | `required`, `not_required`, or `pending`; high-risk rows default to `required` |
+| `Copyright risk` (required for `web`) | `low` / `medium` / `high` |
+| `Selection reason` (required for `web`) | Why this source pack and provider policy fit the row |
 | `text_policy` (optional, `ai` rows only) | `none` (no text in image) or `embedded` (text is part of the artwork). Leave blank when Image_Generator should decide per row. Long body / data / lists stay in SVG. |
 | `page_role` (optional, `ai` rows only) | `local` (image is a region block on an SVG page) or `hero_page` (image is the page's main voice). Leave blank when Image_Generator should decide per row. |
+| `image_intent` (required in `image_prompts.json`) | The page-level communication job for the image. |
+| `page_evidence` (required in `image_prompts.json`) | Core argument / content bullets / density / layout evidence that shaped the prompt. |
+| `text_image_relationship` (required in `image_prompts.json`) | How raster image and editable SVG text divide ownership. |
+| `fallback_plan` (required in `image_prompts.json`) | What to do when generation fails or a reference is rejected. |
+| `reference_image_policy` (required when `reference_image` is present) | Source/provenance, semantic match, confidence, approval, subject risk, and fallback. |
 
 **No-crop flag (exception only)**: most images are croppable — Executor defaults to `preserveAspectRatio="xMidYMid slice"`. When an image must NOT lose pixels (data screenshots, charts, certificates, contracts, dense diagrams), append `no-crop` to its `spec_lock.md images` entry. Executor will then size the container to the native ratio and use `meet`. Don't tag the rest.
 
@@ -610,9 +652,27 @@ After the user picks a candidate, scan the outline and surface any pages where t
 
 | Acquire Via | Reference pattern |
 |---|---|
-| `ai` | **Subject + intent + composition** only. Do NOT repeat style words ("flat design", "modern", "vector") or HEX values — both are already locked deck-wide by h.5 (rendering + palette) and `design_spec §III` (colors). Image_Generator's prompt assembler injects them automatically. |
+| `ai` | **Subject + intent + composition + page role** only. Do NOT repeat style words ("flat design", "modern", "vector") or HEX values — both are already locked deck-wide by h.5 (rendering + palette) and `design_spec §III` (colors). Image_Generator's prompt assembler injects them automatically. |
 | `web` | Concrete subject/place/object first, then 1-3 quality descriptors |
 | `formula` | Original LaTeX plus short placement intent, e.g. `formula_001: block energy-mass equation for P03` |
+
+**Reference-image rule**: write `reference_image` only when the source is clear and the semantic match is already reviewed. For high-ambiguity people/places/events, do not hand off a web-search hit as a reference; write a text-to-image fallback plan instead.
+
+**Source pack rule**: write provider mechanics only in the source-routing columns, never inside `Reference`. `Reference` remains visual intent; source-pack fields decide where the web path may search.
+
+| Subject | Source pack |
+|---|---|
+| Generic business atmosphere, office, abstract mood, background | `generic_atmosphere` |
+| Open-license educational / geographic / encyclopedia visual | `open_licensed_commons` |
+| Academic, science, space, medical, technical concept | `academic_science` |
+| Historical event, artifact, museum, archive, art / culture | `historical_culture` |
+| Named anime / game / IP character or official art | `anime_game_ip` |
+| Product, software UI, logo, press render, official screenshot | `official_product` |
+| Named real person / portrait | `real_person` |
+| Recent event, policy, launch, news trend | `news_recent_event` |
+| Report figure, dashboard, market chart, table screenshot | `data_report_capture` |
+
+**Hard rule**: Google Images / browser search is discovery-only unless a final source page and license are verified. Do not describe browser or Google results as license-safe final assets in §VIII.
 
 **Allowed web quality descriptors**:
 

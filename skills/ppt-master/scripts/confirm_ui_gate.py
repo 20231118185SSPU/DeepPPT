@@ -104,6 +104,23 @@ def main(argv: list[str] | None = None) -> int:
     errors: list[str] = []
     if result.get("status") != "confirmed":
         errors.append("result.json status must be 'confirmed'. Fix: confirm in the UI or write chat fallback status=confirmed.")
+    if result.get("stage") != "final":
+        errors.append("result.json stage must be 'final'. Fix: finish Tier 2 in the UI or write an equivalent chat fallback result.")
+
+    template_selection = result.get("template_selection")
+    if isinstance(template_selection, dict) and template_selection.get("action") == "apply_template":
+        path = template_selection.get("path") or template_selection.get("id") or "<unknown>"
+        errors.append(
+            "result.json contains a pending template selection. "
+            f"Fix: apply the explicit template path through SKILL.md Step 3, then regenerate Step 4 recommendations/spec. Path: {path}"
+        )
+
+    is_fallback = bool(result.get("fallback_confirmed"))
+    if not is_fallback and rec.get("tier") != 2:
+        errors.append(
+            "browser confirmation must be based on a Tier-2 recommendations.json payload (tier=2). "
+            "Fix: start Step 4 with tier=1, wait for stage=tier1, rewrite recommendations.json with tier=2, then run --wait-only."
+        )
 
     confirmed_at = _parse_time(result.get("confirmed_at"))
     if confirmed_at is None:
@@ -122,7 +139,7 @@ def main(argv: list[str] | None = None) -> int:
                 "result.json is older than recommendations.json. Fix: re-confirm after the latest recommendations were written."
             )
 
-    if result.get("fallback_confirmed") and not args.allow_fallback:
+    if is_fallback and not args.allow_fallback:
         errors.append(
             "result.json records chat fallback confirmation. Fix: rerun with --allow-fallback only when the user confirmed in chat."
         )

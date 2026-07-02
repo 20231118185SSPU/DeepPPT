@@ -16,13 +16,19 @@ Usage:
 """
 
 import argparse
+import asyncio
 import json
 import re
 import sys
 import time
+from concurrent.futures import ThreadPoolExecutor
 from dataclasses import dataclass, field
 from datetime import datetime
 from pathlib import Path
+if hasattr(sys.stdout, "reconfigure"):
+    sys.stdout.reconfigure(encoding="utf-8")
+if hasattr(sys.stderr, "reconfigure"):
+    sys.stderr.reconfigure(encoding="utf-8")
 
 try:
     from playwright.sync_api import sync_playwright, TimeoutError as PwTimeout
@@ -447,6 +453,31 @@ def _try_ai_once(ai: str, prompt: str, chrome_profile: str | None, timeout: int,
             pass
 
 
+def _has_running_event_loop() -> bool:
+    """Return True when called inside an active asyncio loop."""
+    try:
+        asyncio.get_running_loop()
+    except RuntimeError:
+        return False
+    return True
+
+
+def _try_ai_once_isolated(
+    ai: str,
+    prompt: str,
+    chrome_profile: str | None,
+    timeout: int,
+    cdp_port: int | None,
+) -> SearchAttempt:
+    """Run sync Playwright in a clean thread when the caller already has asyncio."""
+    if not _has_running_event_loop():
+        return _try_ai_once(ai, prompt, chrome_profile, timeout, cdp_port)
+
+    with ThreadPoolExecutor(max_workers=1) as executor:
+        future = executor.submit(_try_ai_once, ai, prompt, chrome_profile, timeout, cdp_port)
+        return future.result()
+
+
 def search_single_result(
     ai: str,
     prompt: str,
@@ -489,7 +520,7 @@ def search_single_result(
         for attempt_index in range(max_attempts):
             if attempt_index == 1:
                 print(f"  Retrying {AI_SERVICES[candidate]['name']} after low-quality result...")
-            attempt = _try_ai_once(candidate, prompt, chrome_profile, timeout, cdp_port)
+            attempt = _try_ai_once_isolated(candidate, prompt, chrome_profile, timeout, cdp_port)
             text = attempt.text
             attempt.text = ""
             result.attempts.append(attempt)
@@ -678,7 +709,39 @@ def _merge_plan_metadata(item: dict, result: dict, existing: dict | None = None)
             merged["quality_gap"] = "result below search quality threshold"
         else:
             merged["quality_gap"] = ""
+    _attach_execution_metadata(merged, item)
     return merged
+
+
+def _attach_execution_metadata(merged: dict, item: dict) -> None:
+    """Record why Step 3 searched or skipped this page and which route handled it."""
+    skip = bool(item.get("skip_search"))
+    reason = str(item.get("reason") or "").strip()
+    merged["search_triggered"] = not skip
+    if skip:
+        merged["trigger_reason"] = reason or "skip_search=true in search_plan"
+        merged["skip_reason"] = reason or "search_plan marked this page as skipped"
+        merged["execution_route"] = "skipped"
+        return
+
+    merged["trigger_reason"] = "skip_search=false in search_plan"
+    ai_used = str(merged.get("ai_used") or "").lower()
+    fallback_reason = str(merged.get("fallback_reason") or "").lower()
+    if merged.get("needs_manual_websearch"):
+        merged["execution_route"] = "manual_websearch_required"
+    elif (
+        merged.get("attempts")
+        and any(attempt.get("status") == "success" for attempt in merged.get("attempts", []))
+        and ai_used != "manual_websearch"
+    ):
+        merged["execution_route"] = "browser_ai"
+        if ai_used and ai_used == str(merged.get("ai_target") or "").lower():
+            merged["fallback"] = False
+            merged["fallback_reason"] = ""
+    elif ai_used == "manual_websearch" or "manual_websearch" in fallback_reason or "manual web" in fallback_reason:
+        merged["execution_route"] = "manual_websearch_completed"
+    else:
+        merged["execution_route"] = "unknown"
 
 
 def _safe_filename(value: str, fallback: str) -> str:
@@ -700,6 +763,74 @@ def _attempts_for_manifest(attempts: list[SearchAttempt]) -> list[dict[str, obje
         }
         for attempt in attempts
     ]
+
+
+def _manifest_summary(results: list[dict[str, object]], total: int) -> dict[str, object]:
+    """Build consistent top-level counters from per-page results."""
+    success = sum(1 for item in results if item.get("status") == "success")
+    skipped = sum(1 for item in results if item.get("status") == "skipped")
+    manual = sum(1 for item in results if item.get("needs_manual_websearch"))
+    fallback_used = sum(1 for item in results if item.get("fallback") and item.get("status") == "success")
+    browser_ai_success = sum(
+        1 for item in results
+        if item.get("execution_route") == "browser_ai" and item.get("status") == "success"
+    )
+    manual_completed = sum(1 for item in results if item.get("execution_route") == "manual_websearch_completed")
+    return {
+        "total_pages": total,
+        "total_searched": total - skipped,
+        "total_skipped": skipped,
+        "successful": success,
+        "fallback_used": fallback_used,
+        "needs_manual_websearch": manual,
+        "execution_summary": {
+            "browser_ai_success": browser_ai_success,
+            "manual_websearch_completed": manual_completed,
+            "manual_websearch_required": manual,
+            "skipped": skipped,
+        },
+    }
+
+
+def refresh_manifest_metadata(batch_file: str, output_dir: str) -> None:
+    """Refresh search_manifest trigger/route metadata without running searches."""
+    plan_path = Path(batch_file)
+    if not plan_path.exists():
+        print(f"ERROR: Batch file not found: {batch_file}")
+        sys.exit(1)
+
+    plan = json.loads(plan_path.read_text(encoding="utf-8"))
+    items = plan if isinstance(plan, list) else plan.get("pages", plan.get("items", []))
+    out_dir = Path(output_dir)
+    manifest_path = out_dir / "search_manifest.json"
+    existing_by_page, existing_asset_manifest = _existing_manifest_by_page(manifest_path)
+    if not manifest_path.exists():
+        print(f"ERROR: search_manifest.json not found: {manifest_path}")
+        sys.exit(1)
+
+    results: list[dict[str, object]] = []
+    for index, item in enumerate(items):
+        if not isinstance(item, dict):
+            continue
+        page_id = str(item.get("page_id", f"p{index+1:02d}"))
+        existing = existing_by_page.get(page_id, {})
+        if not existing:
+            existing = {
+                "page_id": page_id,
+                "topic": item.get("topic", item.get("title", "")),
+                "status": "missing",
+                "quality": "failed",
+            }
+        results.append(_merge_plan_metadata(item, {}, existing))
+
+    existing_manifest = json.loads(manifest_path.read_text(encoding="utf-8"))
+    manifest = dict(existing_manifest)
+    manifest.update(_manifest_summary(results, len(items)))
+    manifest["metadata_refreshed_at"] = datetime.now().isoformat(timespec="seconds")
+    manifest["asset_manifest"] = existing_asset_manifest
+    manifest["results"] = results
+    manifest_path.write_text(json.dumps(manifest, ensure_ascii=False, indent=2), encoding="utf-8")
+    print(f"Refreshed metadata in {manifest_path}")
 
 
 def search_batch(batch_file: str, output_dir: str, chrome_profile: str | None, timeout: int, cdp_port: int | None = None):
@@ -784,18 +915,9 @@ def search_batch(batch_file: str, output_dir: str, chrome_profile: str | None, t
         if i < total - 1:
             time.sleep(3)
 
-    success = sum(1 for item in results if item.get("status") == "success")
-    skipped = sum(1 for item in results if item.get("status") == "skipped")
-    manual = sum(1 for item in results if item.get("needs_manual_websearch"))
-    fallback_used = sum(1 for item in results if item.get("fallback") and item.get("status") == "success")
     manifest = {
         "completed_at": datetime.now().isoformat(timespec="seconds"),
-        "total_pages": total,
-        "total_searched": total - skipped,
-        "total_skipped": skipped,
-        "successful": success,
-        "fallback_used": fallback_used,
-        "needs_manual_websearch": manual,
+        **_manifest_summary(results, total),
         "quality_rule": {
             "min_chars": MIN_QUALITY_CHARS,
             "requires_source_url": True,
@@ -813,7 +935,10 @@ def search_batch(batch_file: str, output_dir: str, chrome_profile: str | None, t
 
     manifest_path.write_text(json.dumps(manifest, ensure_ascii=False, indent=2), encoding="utf-8")
     print(f"\nManifest saved to {manifest_path}")
-    print(f"Done: {success}/{total - skipped} successful searches; {manual} need manual WebSearch")
+    print(
+        f"Done: {manifest['successful']}/{manifest['total_searched']} successful searches; "
+        f"{manifest['needs_manual_websearch']} need manual WebSearch"
+    )
 
 def validate_selectors(cdp_port: int | None = None, chrome_profile: str | None = None):
     """Test if CSS selectors for each AI service still work.
@@ -955,6 +1080,11 @@ def main():
     parser.add_argument("--output", "-o", help="Output file path")
     parser.add_argument("--batch", help="Batch search plan JSON file")
     parser.add_argument("--output-dir", help="Output directory for batch mode")
+    parser.add_argument(
+        "--refresh-manifest",
+        action="store_true",
+        help="Refresh search_manifest trigger/route metadata without running searches",
+    )
     parser.add_argument("--cdp-port", type=int,
                         default=int(hermes_env.get("HERMES_CHROME_PORT", "0")) or None,
                         help="CDP port to connect to running Chrome (default: from .hermes-chrome.env or none)")
@@ -970,6 +1100,14 @@ def main():
 
     if args.validate:
         validate_selectors(args.cdp_port, args.chrome_profile)
+        return
+
+    if args.refresh_manifest:
+        if not args.batch:
+            parser.error("--refresh-manifest requires --batch")
+        if not args.output_dir:
+            args.output_dir = str(Path(args.batch).parent.parent / "step3_search")
+        refresh_manifest_metadata(args.batch, args.output_dir)
         return
 
     if args.batch:

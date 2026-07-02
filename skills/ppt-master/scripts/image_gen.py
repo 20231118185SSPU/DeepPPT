@@ -43,13 +43,15 @@ Usage:
   python3 image_gen.py --list-backends
 """
 
+import argparse
 import concurrent.futures
 import json
 import os
+import re
 import sys
-import argparse
 import threading
 import time
+from datetime import datetime, timezone
 from pathlib import Path
 
 from config import load_prefixed_env_file, resolve_env_path
@@ -375,7 +377,208 @@ def _validate_reference_image(value, item_label: str) -> str | None:
     return None
 
 
+REFERENCE_CONFIDENCE_THRESHOLD = 0.75
+HIGH_RISK_REFERENCE_CONFIDENCE_THRESHOLD = 0.85
+REFERENCE_STRONG_MATCH_VALUES = {
+    "exact",
+    "strong",
+    "verified",
+    "high",
+    "same-subject",
+    "same_subject",
+}
+REFERENCE_SOURCE_FIELDS = (
+    "reference_source",
+    "reference_source_url",
+    "reference_url",
+    "source_url",
+    "source_page_url",
+    "source_title",
+    "source_path",
+)
+HIGH_AMBIGUITY_TERMS = (
+    "person",
+    "people",
+    "portrait",
+    "named person",
+    "real person",
+    "celebrity",
+    "founder",
+    "speaker",
+    "character",
+    "place",
+    "landmark",
+    "event",
+    "人物",
+    "真人",
+    "名人",
+    "创始人",
+    "角色",
+    "地点",
+    "地标",
+    "事件",
+)
+
+
+def _as_bool(value) -> bool:
+    """Interpret common manifest truth values."""
+    if isinstance(value, bool):
+        return value
+    if isinstance(value, str):
+        return value.strip().lower() in {"1", "true", "yes", "y", "approved"}
+    return False
+
+
+def _as_float(value) -> float | None:
+    """Convert a manifest confidence value to float when possible."""
+    if isinstance(value, (int, float)):
+        return float(value)
+    if isinstance(value, str):
+        text = value.strip().rstrip("%")
+        try:
+            parsed = float(text)
+        except ValueError:
+            return None
+        return parsed / 100 if parsed > 1 else parsed
+    return None
+
+
+def _reference_policy(item: dict) -> dict:
+    """Normalize reference-image review fields from current and legacy manifests."""
+    policy = item.get("reference_image_policy")
+    if isinstance(policy, dict):
+        normalized = dict(policy)
+    else:
+        normalized = {}
+
+    provenance = item.get("reference_provenance")
+    if isinstance(provenance, dict):
+        normalized.setdefault("provenance", provenance)
+        for key in REFERENCE_SOURCE_FIELDS:
+            if provenance.get(key) and not normalized.get(key):
+                normalized[key] = provenance.get(key)
+
+    field_aliases = {
+        "approved": ("reference_approved", "approved"),
+        "confidence": ("reference_confidence", "reference_match_confidence"),
+        "semantic_match": (
+            "reference_semantic_match",
+            "semantic_match",
+            "subject_match",
+        ),
+        "fallback": ("reference_fallback", "fallback_plan"),
+    }
+    for target, aliases in field_aliases.items():
+        for alias in aliases:
+            if item.get(alias) is not None and normalized.get(target) is None:
+                normalized[target] = item.get(alias)
+                break
+    for key in REFERENCE_SOURCE_FIELDS:
+        if item.get(key) and not normalized.get(key):
+            normalized[key] = item.get(key)
+    return normalized
+
+
+def _has_reference_source(policy: dict) -> bool:
+    """Return true when the manifest records where the reference came from."""
+    if _as_bool(policy.get("user_provided")):
+        return True
+    for key in REFERENCE_SOURCE_FIELDS:
+        if str(policy.get(key) or "").strip():
+            return True
+    provenance = policy.get("provenance")
+    if isinstance(provenance, dict):
+        return any(str(provenance.get(key) or "").strip() for key in REFERENCE_SOURCE_FIELDS)
+    return False
+
+
+def _reference_match_is_strong(policy: dict) -> bool:
+    """Return true when semantic match was explicitly reviewed as strong."""
+    value = policy.get("semantic_match")
+    if isinstance(value, bool):
+        return value
+    text = str(value or "").strip().lower()
+    return text in REFERENCE_STRONG_MATCH_VALUES
+
+
+def _is_high_ambiguity_subject(item: dict, policy: dict) -> bool:
+    """Identify rows where a wrong reference image can easily mislead img2img."""
+    if _as_bool(item.get("high_ambiguity_subject")) or _as_bool(policy.get("high_ambiguity")):
+        return True
+    risk = str(item.get("subject_risk") or policy.get("subject_risk") or "").strip().lower()
+    if risk in {"high", "ambiguous", "identity", "person", "place", "event"}:
+        return True
+    text = " ".join(
+        str(item.get(key) or "")
+        for key in ("prompt", "purpose", "subject", "description", "reference")
+    ).lower()
+    return any(term.lower() in text for term in HIGH_AMBIGUITY_TERMS)
+
+
+def _reference_image_for_generation(item: dict, item_label: str) -> str | None:
+    """Return a vetted reference image path/URL, or downgrade to text-to-image."""
+    raw_value = item.get("reference_image")
+    if not raw_value:
+        return None
+
+    policy = _reference_policy(item)
+    validated = _validate_reference_image(raw_value, item_label)
+    confidence = _as_float(policy.get("confidence"))
+    high_risk = _is_high_ambiguity_subject(item, policy)
+    threshold = (
+        HIGH_RISK_REFERENCE_CONFIDENCE_THRESHOLD
+        if high_risk
+        else REFERENCE_CONFIDENCE_THRESHOLD
+    )
+    reasons: list[str] = []
+
+    if not validated:
+        reasons.append("reference_image is not a valid local file or HTTP(S) URL")
+    if not _as_bool(policy.get("approved")):
+        reasons.append("reference_image_policy.approved is not true")
+    if not _has_reference_source(policy):
+        reasons.append("reference source/provenance is missing")
+    if not _reference_match_is_strong(policy):
+        reasons.append("semantic match is not explicitly strong/exact/verified")
+    if confidence is None:
+        reasons.append("reference confidence is missing")
+    elif confidence < threshold:
+        reasons.append(f"reference confidence {confidence:.2f} is below {threshold:.2f}")
+
+    review = {
+        "used": not reasons,
+        "checked_at": _utc_now(),
+        "high_ambiguity_subject": high_risk,
+        "required_confidence": threshold,
+        "recorded_confidence": confidence,
+        "semantic_match": policy.get("semantic_match", ""),
+        "approved": _as_bool(policy.get("approved")),
+        "source_recorded": _has_reference_source(policy),
+    }
+    if reasons:
+        review["decision"] = "text-to-image"
+        review["skip_reasons"] = reasons
+        fallback = policy.get("fallback") or item.get("fallback_plan")
+        review["fallback"] = fallback or (
+            "Generate from the page-grounded prompt without img2img reference guidance."
+        )
+        item["reference_image_review"] = review
+        print(
+            f"  [REF]  {item_label}: skipping img2img reference; "
+            + "; ".join(reasons),
+            file=sys.stderr,
+        )
+        return None
+
+    review["decision"] = "img2img"
+    item["reference_image_review"] = review
+    return validated
+
+
 DEFAULT_MANIFEST_CONCURRENCY = 3
+DEFAULT_FALLBACK_FAILURE_THRESHOLD = 2
+DEFAULT_FALLBACK_CONSECUTIVE_THRESHOLD = 2
+DEFAULT_ITEM_ATTEMPTS = 1
 
 STATUS_PENDING = "Pending"
 STATUS_GENERATED = "Generated"
@@ -445,19 +648,245 @@ def save_manifest(path: str, data: dict) -> None:
     atomic_write_json(path, data)
 
 
+def _utc_now() -> str:
+    """Return an ISO-8601 UTC timestamp for manifest audit events."""
+    return datetime.now(timezone.utc).isoformat().replace("+00:00", "Z")
+
+
+def _append_manifest_event(manifest: dict, event: dict) -> None:
+    """Append a bounded audit event to the manifest."""
+    events = manifest.setdefault("events", [])
+    if not isinstance(events, list):
+        events = []
+        manifest["events"] = events
+    payload = {"at": _utc_now(), **event}
+    events.append(payload)
+    del events[:-200]
+
+
+def _fallback_query_for_item(item: dict) -> str:
+    """Build a keyword query for web image fallback from an AI prompt row."""
+    explicit = (
+        item.get("fallback_query")
+        or item.get("web_search_query")
+        or item.get("search_query")
+    )
+    if explicit:
+        return str(explicit).strip()
+
+    try:
+        from image_sources.provider_common import simplify_query
+        return simplify_query(str(item.get("prompt") or ""), max_words=4)
+    except ImportError:
+        words = re.findall(r"[A-Za-z][A-Za-z0-9-]{2,}", str(item.get("prompt") or ""))
+        return " ".join(words[:4]) or str(item.get("prompt") or "").strip()
+
+
+def _orientation_from_aspect_ratio(aspect_ratio: str) -> str:
+    """Map a manifest aspect ratio to image_search.py's coarse orientation."""
+    try:
+        left, right = aspect_ratio.split(":", 1)
+        width = float(left)
+        height = float(right)
+    except (ValueError, AttributeError):
+        return "any"
+    if width > height:
+        return "landscape"
+    if height > width:
+        return "portrait"
+    return "square"
+
+
+def _copyright_risk_for_source(source_item: dict | None) -> str:
+    """Summarize downstream license risk for a sourced fallback image."""
+    if not source_item:
+        return "unknown: no provider source record was written; manual review required"
+    tier = str(source_item.get("license_tier") or "")
+    if tier == "no-attribution":
+        return (
+            "low: provider metadata says no on-slide attribution is required; "
+            "manual license review still recommended for external delivery"
+        )
+    if tier == "attribution-required":
+        return "medium: license requires on-slide attribution using image_sources.json attribution_text"
+    return "high: license tier is unknown; verify rights before external delivery"
+
+
+def _fallback_search_one(
+    item: dict,
+    manifest_path: str,
+    *,
+    output_dir: str,
+    trigger: str,
+    backend_name: str,
+    search_concurrency: int,
+    save_candidates: bool,
+    max_candidates: int,
+) -> tuple[bool, str | None]:
+    """Source one failed AI row through image_search.py and annotate provenance."""
+    from image_search import (
+        default_manifest_path,
+        run_search_manifest,
+    )
+    from json_utils import load_json
+
+    out_dir = Path(output_dir)
+    query = _fallback_query_for_item(item)
+    target_w = int(item.get("target_width") or 0)
+    target_h = int(item.get("target_height") or 0)
+    queries_path = Path(manifest_path).with_name("image_fallback_queries.json")
+    sources_path = default_manifest_path(str(out_dir))
+    fallback_manifest = load_json(queries_path, default={"items": []}) or {"items": []}
+    rows = [row for row in fallback_manifest.get("items", []) if row.get("filename") != item["filename"]]
+    rows.append({
+        "filename": item["filename"],
+        "query": query,
+        "status": "Pending",
+        "slide": item.get("slide") or item.get("page_id") or "",
+        "purpose": item.get("purpose") or "ai-generation-fallback",
+        "orientation": _orientation_from_aspect_ratio(item.get("aspect_ratio", "")),
+        "min_width": target_w or 1200,
+        "min_height": target_h or 800,
+        "trigger": trigger,
+        "source_ai_prompt": item.get("prompt", ""),
+        "source_pack": item.get("source_pack") or "open_licensed_commons",
+        "selection_reason": (
+            "Fallback from failed AI image generation; choose the best downloadable "
+            "candidate from routed web image search and keep provenance for review."
+        ),
+        "copyright_risk": "pending: fallback search has not completed",
+        "manual_review_status": "pending",
+        "needs_manual_review": bool(item.get("needs_manual_review")),
+    })
+    fallback_manifest["items"] = rows
+    fallback_manifest["generated_from"] = str(Path(manifest_path).name)
+    fallback_manifest["updated_at"] = _utc_now()
+    save_manifest(str(queries_path), fallback_manifest)
+
+    item["fallback"] = {
+        "mode": "web-image-search",
+        "trigger": trigger,
+        "backend": backend_name,
+        "query": query,
+        "queries_manifest": str(queries_path),
+        "sources_manifest": str(sources_path),
+        "selection_reason": (
+            "AI generation failed repeatedly; selected the highest-scoring downloadable "
+            "open-license candidate from image_search.py's provider chain."
+        ),
+        "copyright_risk": "pending: fallback search has not completed",
+        "started_at": _utc_now(),
+    }
+
+    sourced, needs_manual, _ = run_search_manifest(
+        fallback_manifest,
+        str(queries_path),
+        output_dir=out_dir,
+        sources_manifest_path=sources_path,
+        concurrency=max(1, search_concurrency),
+        save_candidates=save_candidates,
+        max_candidates=max_candidates,
+        default_provider=None,
+        default_strict=False,
+        default_min_width=target_w or 1200,
+        default_min_height=target_h or 800,
+    )
+
+    latest_sources = load_json(sources_path, default={"items": []}) or {"items": []}
+    source_item = next(
+        (
+            source
+            for source in reversed(latest_sources.get("items", []))
+            if source.get("filename") == item["filename"]
+        ),
+        None,
+    )
+    fallback = item.setdefault("fallback", {})
+    fallback["finished_at"] = _utc_now()
+    fallback["copyright_risk"] = _copyright_risk_for_source(source_item)
+
+    if sourced and source_item:
+        item["status"] = STATUS_GENERATED
+        item["acquisition"] = "web-fallback"
+        item["source_type"] = "web"
+        item["fallback_status"] = "Sourced"
+        item.pop("last_error", None)
+        fallback.update({
+            "provider": source_item.get("provider", ""),
+            "stage": source_item.get("stage", ""),
+            "title": source_item.get("title", ""),
+            "author": source_item.get("author", ""),
+            "source_page_url": source_item.get("source_page_url", ""),
+            "download_url": source_item.get("download_url", ""),
+            "source_pack": source_item.get("source_pack", ""),
+            "selection_reason": source_item.get("selection_reason", ""),
+            "discovery_source": source_item.get("discovery_source", ""),
+            "manual_review_status": source_item.get("manual_review_status", ""),
+            "license_name": source_item.get("license_name", ""),
+            "license_url": source_item.get("license_url", ""),
+            "license_tier": source_item.get("license_tier", ""),
+            "attribution_required": bool(source_item.get("attribution_required")),
+            "attribution_text": source_item.get("attribution_text", ""),
+        })
+        return True, None
+
+    item["status"] = STATUS_NEEDS_MANUAL
+    item["fallback_status"] = "Needs-Manual"
+    error = "web image fallback found no acceptable candidate"
+    if needs_manual:
+        refreshed = load_json(queries_path, default={"items": []}) or {"items": []}
+        row = next(
+            (
+                row for row in refreshed.get("items", [])
+                if row.get("filename") == item["filename"]
+            ),
+            None,
+        )
+        error = str((row or {}).get("last_error") or error)
+    item["last_error"] = error
+    return False, error
+
+
+def _should_trigger_fallback(
+    *,
+    fallback_enabled: bool,
+    backend_failures: int,
+    consecutive_failures: int,
+    failure_threshold: int,
+    consecutive_threshold: int,
+) -> bool:
+    """Decide whether AI generation should stop and web fallback should take over."""
+    if not fallback_enabled:
+        return False
+    return (
+        backend_failures >= max(1, failure_threshold)
+        or consecutive_failures >= max(1, consecutive_threshold)
+    )
+
+
 def _run_manifest(manifest: dict, manifest_path: str, backend_module, *,
                   initial_concurrency: int,
                   image_size: str,
                   output_dir: str,
-                  model: str | None) -> tuple[int, int, int]:
+                  model: str | None,
+                  backend_name: str = "",
+                  fallback_enabled: bool = True,
+                  fallback_failure_threshold: int = DEFAULT_FALLBACK_FAILURE_THRESHOLD,
+                  fallback_consecutive_threshold: int = DEFAULT_FALLBACK_CONSECUTIVE_THRESHOLD,
+                  item_attempts: int = DEFAULT_ITEM_ATTEMPTS,
+                  fallback_search_concurrency: int = 1,
+                  fallback_save_candidates: bool = True,
+                  fallback_max_candidates: int = 8) -> tuple[int, int, int]:
     """Run Pending/Failed items through the backend with adaptive concurrency.
 
     Strategy:
       - Start at `initial_concurrency` workers per batch.
       - On any rate-limit error in a batch, halve concurrency (min 1) and
         requeue the rate-limited items.
-      - Per-item failures are recorded as `status: Failed` + `last_error`
-        and not retried within this run.
+      - Per-item failures are retried up to `item_attempts` manifest-level
+        attempts. Backend modules may also have their own bounded retries.
+      - When a backend crosses the failure threshold, unfinished rows switch
+        to image_search.py web fallback and keep provenance in the manifest.
       - Status is written back to the manifest file after each completion;
         a Ctrl-C in the middle still preserves done items.
       - `Needs-Manual` items are skipped (user processes them externally).
@@ -488,52 +917,136 @@ def _run_manifest(manifest: dict, manifest_path: str, backend_module, *,
     queue: list[int] = list(pending_idx)
     ok_count = 0
     fail_count = 0
+    fallback_count = 0
     current = max(1, initial_concurrency)
+    backend_failures = 0
+    consecutive_failures = 0
+    failed_for_fallback: list[int] = []
     state_lock = threading.Lock()
+
+    manifest["fallback_policy"] = {
+        "enabled": bool(fallback_enabled),
+        "failure_threshold": max(1, fallback_failure_threshold),
+        "consecutive_threshold": max(1, fallback_consecutive_threshold),
+        "item_attempts": max(1, item_attempts),
+        "backend": backend_name,
+        "fallback": "image_search.py provider chain; no deprecated websearch API",
+        "updated_at": _utc_now(),
+    }
 
     def _one(idx: int):
         item = items[idx]
-        try:
-            ref_image = _validate_reference_image(
-                item.get("reference_image"), item.get("filename", f"items[{idx}]")
-            )
-            saved_path = backend_module.generate(
-                prompt=item["prompt"],
-                aspect_ratio=item["aspect_ratio"],
-                image_size=item.get("image_size", image_size),
-                output_dir=output_dir,
-                filename=Path(item["filename"]).stem,
-                model=item.get("model", model),
-                reference_image=ref_image,
-            )
-            # Layout-driven resize: crop to target dimensions if specified
-            target_w = item.get("target_width")
-            target_h = item.get("target_height")
-            if target_w and target_h and saved_path:
-                try:
-                    from PIL import Image as PILImage
-                    img = PILImage.open(saved_path)
-                    cur_w, cur_h = img.size
-                    if abs(cur_w - target_w) > target_w * 0.05 or abs(cur_h - target_h) > target_h * 0.05:
-                        # Scale to cover target, then center-crop
-                        scale = max(target_w / cur_w, target_h / cur_h)
-                        new_w = int(cur_w * scale)
-                        new_h = int(cur_h * scale)
-                        img = img.resize((new_w, new_h), PILImage.LANCZOS)
-                        left = (new_w - target_w) // 2
-                        top = (new_h - target_h) // 2
-                        img = img.crop((left, top, left + target_w, top + target_h))
-                        img.save(saved_path)
-                        print(f"  [CROP] {item['filename']}: {cur_w}x{cur_h} -> {target_w}x{target_h}")
-                except ImportError:
-                    pass  # Pillow not available, skip resize
-                except (OSError, ValueError) as crop_exc:
-                    print(f"  [WARN] {item['filename']}: crop failed: {crop_exc}")
-            return idx, saved_path, None
-        except Exception as exc:  # noqa: BLE001 — backend raises arbitrary types
-            return idx, None, exc
+        max_attempts = max(1, int(item.get("max_attempts") or item_attempts))
+        last_exc = None
+        for attempt in range(1, max_attempts + 1):
+            item["attempt_count"] = int(item.get("attempt_count") or 0) + 1
+            item["last_attempt_at"] = _utc_now()
+            item["backend"] = backend_name
+            try:
+                ref_image = _reference_image_for_generation(
+                    item, item.get("filename", f"items[{idx}]")
+                )
+                saved_path = backend_module.generate(
+                    prompt=item["prompt"],
+                    aspect_ratio=item["aspect_ratio"],
+                    image_size=item.get("image_size", image_size),
+                    output_dir=output_dir,
+                    filename=Path(item["filename"]).stem,
+                    model=item.get("model", model),
+                    reference_image=ref_image,
+                )
+                # Layout-driven resize: crop to target dimensions if specified
+                target_w = item.get("target_width")
+                target_h = item.get("target_height")
+                if target_w and target_h and saved_path:
+                    try:
+                        from PIL import Image as PILImage
+                        img = PILImage.open(saved_path)
+                        cur_w, cur_h = img.size
+                        if abs(cur_w - target_w) > target_w * 0.05 or abs(cur_h - target_h) > target_h * 0.05:
+                            # Scale to cover target, then center-crop
+                            scale = max(target_w / cur_w, target_h / cur_h)
+                            new_w = int(cur_w * scale)
+                            new_h = int(cur_h * scale)
+                            img = img.resize((new_w, new_h), PILImage.LANCZOS)
+                            left = (new_w - target_w) // 2
+                            top = (new_h - target_h) // 2
+                            img = img.crop((left, top, left + target_w, top + target_h))
+                            img.save(saved_path)
+                            print(f"  [CROP] {item['filename']}: {cur_w}x{cur_h} -> {target_w}x{target_h}")
+                    except ImportError:
+                        pass  # Pillow not available, skip resize
+                    except (OSError, ValueError) as crop_exc:
+                        print(f"  [WARN] {item['filename']}: crop failed: {crop_exc}")
+                return idx, saved_path, None
+            except Exception as exc:  # noqa: BLE001 — backend raises arbitrary types
+                last_exc = exc
+                if attempt < max_attempts:
+                    delay = min(10, 2 * attempt)
+                    print(
+                        f"  [WARN] {item['filename']}: manifest attempt "
+                        f"{attempt}/{max_attempts} failed: {exc}; retrying in {delay}s"
+                    )
+                    time.sleep(delay)
+        return idx, None, last_exc
 
     while queue:
+        if _should_trigger_fallback(
+            fallback_enabled=fallback_enabled,
+            backend_failures=backend_failures,
+            consecutive_failures=consecutive_failures,
+            failure_threshold=fallback_failure_threshold,
+            consecutive_threshold=fallback_consecutive_threshold,
+        ):
+            trigger = (
+                f"backend_failures={backend_failures}, "
+                f"consecutive_failures={consecutive_failures}"
+            )
+            seen_remaining: set[int] = set()
+            remaining: list[int] = []
+            for candidate_idx in failed_for_fallback + queue:
+                if candidate_idx in seen_remaining:
+                    continue
+                if items[candidate_idx]["status"] not in RETRYABLE_STATUSES:
+                    continue
+                seen_remaining.add(candidate_idx)
+                remaining.append(candidate_idx)
+            queue.clear()
+            failed_for_fallback.clear()
+            print(
+                f"\n  [FALLBACK] AI backend '{backend_name}' crossed threshold "
+                f"({trigger}). Switching {len(remaining)} item(s) to web search.\n"
+            )
+            _append_manifest_event(
+                manifest,
+                {
+                    "type": "fallback-triggered",
+                    "backend": backend_name,
+                    "trigger": trigger,
+                    "remaining": len(remaining),
+                },
+            )
+            for idx in remaining:
+                item = items[idx]
+                ok, error = _fallback_search_one(
+                    item,
+                    manifest_path,
+                    output_dir=output_dir,
+                    trigger=trigger,
+                    backend_name=backend_name,
+                    search_concurrency=fallback_search_concurrency,
+                    save_candidates=fallback_save_candidates,
+                    max_candidates=fallback_max_candidates,
+                )
+                if ok:
+                    fallback_count += 1
+                    ok_count += 1
+                    print(f"  [WEB]  {item['filename']} — sourced fallback")
+                else:
+                    print(f"  [MANUAL] {item['filename']} — {error}")
+                save_manifest(manifest_path, manifest)
+            break
+
         batch_size = min(current, len(queue))
         batch_idx = queue[:batch_size]
         queue = queue[batch_size:]
@@ -552,19 +1065,55 @@ def _run_manifest(manifest: dict, manifest_path: str, backend_module, *,
                 with state_lock:
                     if exc is None:
                         item["status"] = STATUS_GENERATED
+                        item["acquisition"] = "ai-generated"
                         item.pop("last_error", None)
                         ok_count += 1
+                        consecutive_failures = 0
                         print(f"  [OK]   {item['filename']}")
                     elif is_rate_limit_error(exc):
                         rate_limited = True
                         queue.append(idx)
+                        backend_failures += 1
+                        consecutive_failures += 1
+                        item["last_error"] = str(exc)[:500]
+                        item["failure_kind"] = "rate-limit"
                         print(f"  [RATE] {item['filename']} — requeued")
                     else:
                         item["status"] = STATUS_FAILED
                         item["last_error"] = str(exc)[:500]
+                        item["failure_kind"] = exc.__class__.__name__
+                        item["failed_at"] = _utc_now()
                         fail_count += 1
+                        backend_failures += 1
+                        consecutive_failures += 1
+                        if fallback_enabled:
+                            failed_for_fallback.append(idx)
                         print(f"  [FAIL] {item['filename']}: {exc}")
+                    _append_manifest_event(
+                        manifest,
+                        {
+                            "type": "image-result",
+                            "filename": item["filename"],
+                            "status": item["status"],
+                            "backend": backend_name,
+                            "failure_kind": item.get("failure_kind", ""),
+                            "error": item.get("last_error", ""),
+                            "backend_failures": backend_failures,
+                            "consecutive_failures": consecutive_failures,
+                        },
+                    )
                     save_manifest(manifest_path, manifest)
+
+        if _should_trigger_fallback(
+            fallback_enabled=fallback_enabled,
+            backend_failures=backend_failures,
+            consecutive_failures=consecutive_failures,
+            failure_threshold=fallback_failure_threshold,
+            consecutive_threshold=fallback_consecutive_threshold,
+        ) and failed_for_fallback:
+            queue = failed_for_fallback + queue
+            failed_for_fallback = []
+            continue
 
         if rate_limited and current > 1:
             new_current = max(1, current // 2)
@@ -577,11 +1126,19 @@ def _run_manifest(manifest: dict, manifest_path: str, backend_module, *,
         elif queue:
             time.sleep(2)
 
+    final_failed = sum(
+        1
+        for item in items
+        if item.get("status") in {STATUS_FAILED, STATUS_NEEDS_MANUAL}
+    )
+    final_ok = sum(1 for item in items if item.get("status") == STATUS_GENERATED)
+
     print(
-        f"\n[Manifest] Done: {ok_count} ok / {fail_count} failed "
+        f"\n[Manifest] Done: {final_ok} ok / {final_failed} failed "
+        f"/ {fallback_count} web-fallback "
         f"({skipped} pre-skipped). Manifest written to {manifest_path}"
     )
-    return ok_count, fail_count, skipped
+    return final_ok, final_failed, skipped
 
 
 def _resolve_concurrency(cli_value: int | None) -> int:
@@ -592,6 +1149,14 @@ def _resolve_concurrency(cli_value: int | None) -> int:
     if env_val.isdigit():
         return max(1, int(env_val))
     return DEFAULT_MANIFEST_CONCURRENCY
+
+
+def _resolve_positive_int_env(name: str, default: int) -> int:
+    """Return a positive integer from env, or the provided default."""
+    env_val = os.environ.get(name, "").strip()
+    if env_val.isdigit():
+        return max(1, int(env_val))
+    return max(1, default)
 
 
 def render_manifest_md(manifest: dict) -> str:
@@ -645,6 +1210,38 @@ def render_manifest_md(manifest: dict) -> str:
                 lines.append(f"| {label} | {value} |")
         if item.get("last_error"):
             lines.append(f"| Last error | {item['last_error']} |")
+        if item.get("image_intent"):
+            lines.append(f"| Image intent | {item['image_intent']} |")
+        if item.get("page_evidence"):
+            lines.append(f"| Page evidence | {item['page_evidence']} |")
+        if item.get("fallback_plan"):
+            lines.append(f"| Fallback plan | {item['fallback_plan']} |")
+        policy = _reference_policy(item)
+        if item.get("reference_image"):
+            lines.append(f"| Reference image | {item['reference_image']} |")
+            if policy:
+                lines.append(f"| Reference approved | {_as_bool(policy.get('approved'))} |")
+                confidence = _as_float(policy.get("confidence"))
+                if confidence is not None:
+                    lines.append(f"| Reference confidence | {confidence:.2f} |")
+                if policy.get("semantic_match"):
+                    lines.append(f"| Reference semantic match | {policy['semantic_match']} |")
+                source = next(
+                    (
+                        str(policy.get(key))
+                        for key in REFERENCE_SOURCE_FIELDS
+                        if str(policy.get(key) or "").strip()
+                    ),
+                    "",
+                )
+                if source:
+                    lines.append(f"| Reference source | {source} |")
+            review = item.get("reference_image_review")
+            if isinstance(review, dict):
+                lines.append(f"| Reference decision | {review.get('decision', '')} |")
+                reasons = review.get("skip_reasons")
+                if isinstance(reasons, list) and reasons:
+                    lines.append(f"| Reference skip reasons | {'; '.join(str(r) for r in reasons)} |")
         lines.append("")
         lines.append("**Prompt**:")
         lines.append("")
@@ -739,6 +1336,63 @@ def main() -> None:
             "an HTTP(S) URL. When provided, the backend uses its img2img endpoint."
         ),
     )
+    parser.add_argument(
+        "--disable-web-fallback",
+        action="store_true",
+        help=(
+            "Disable automatic image_search.py fallback after repeated AI "
+            "backend failures. By default fallback is enabled in --manifest mode."
+        ),
+    )
+    parser.add_argument(
+        "--fallback-failure-threshold",
+        type=int,
+        default=None,
+        help=(
+            "Switch remaining manifest rows to web image search after this many "
+            "AI backend failures. Defaults to IMAGE_FALLBACK_FAILURE_THRESHOLD "
+            f"or {DEFAULT_FALLBACK_FAILURE_THRESHOLD}."
+        ),
+    )
+    parser.add_argument(
+        "--fallback-consecutive-threshold",
+        type=int,
+        default=None,
+        help=(
+            "Switch to web image search after this many consecutive failed AI "
+            "rows. Defaults to IMAGE_FALLBACK_CONSECUTIVE_THRESHOLD or "
+            f"{DEFAULT_FALLBACK_CONSECUTIVE_THRESHOLD}."
+        ),
+    )
+    parser.add_argument(
+        "--item-attempts",
+        type=int,
+        default=None,
+        help=(
+            "Manifest-level attempts per item before counting it failed. "
+            f"Defaults to IMAGE_ITEM_ATTEMPTS or {DEFAULT_ITEM_ATTEMPTS}."
+        ),
+    )
+    parser.add_argument(
+        "--fallback-search-concurrency",
+        type=int,
+        default=None,
+        help=(
+            "Max concurrent searches for fallback rows. Defaults to "
+            "IMAGE_FALLBACK_SEARCH_CONCURRENCY or 1."
+        ),
+    )
+    parser.add_argument(
+        "--fallback-no-candidates",
+        action="store_true",
+        help="Do not save candidate pools when web fallback runs.",
+    )
+    parser.add_argument(
+        "--fallback-max-candidates",
+        type=int,
+        default=8,
+        help="Max web fallback candidates to save per image (default: 8).",
+    )
 
     args = parser.parse_args()
 
@@ -791,6 +1445,42 @@ def main() -> None:
                 image_size=args.image_size,
                 output_dir=args.output or str(Path(args.manifest).parent),
                 model=args.model,
+                backend_name=backend_name,
+                fallback_enabled=not args.disable_web_fallback,
+                fallback_failure_threshold=(
+                    max(1, args.fallback_failure_threshold)
+                    if args.fallback_failure_threshold is not None
+                    else _resolve_positive_int_env(
+                        "IMAGE_FALLBACK_FAILURE_THRESHOLD",
+                        DEFAULT_FALLBACK_FAILURE_THRESHOLD,
+                    )
+                ),
+                fallback_consecutive_threshold=(
+                    max(1, args.fallback_consecutive_threshold)
+                    if args.fallback_consecutive_threshold is not None
+                    else _resolve_positive_int_env(
+                        "IMAGE_FALLBACK_CONSECUTIVE_THRESHOLD",
+                        DEFAULT_FALLBACK_CONSECUTIVE_THRESHOLD,
+                    )
+                ),
+                item_attempts=(
+                    max(1, args.item_attempts)
+                    if args.item_attempts is not None
+                    else _resolve_positive_int_env(
+                        "IMAGE_ITEM_ATTEMPTS",
+                        DEFAULT_ITEM_ATTEMPTS,
+                    )
+                ),
+                fallback_search_concurrency=(
+                    max(1, args.fallback_search_concurrency)
+                    if args.fallback_search_concurrency is not None
+                    else _resolve_positive_int_env(
+                        "IMAGE_FALLBACK_SEARCH_CONCURRENCY",
+                        1,
+                    )
+                ),
+                fallback_save_candidates=not args.fallback_no_candidates,
+                fallback_max_candidates=max(1, args.fallback_max_candidates),
             )
         except KeyboardInterrupt:
             print("\n\nInterrupted by user. Partial progress preserved in manifest.")

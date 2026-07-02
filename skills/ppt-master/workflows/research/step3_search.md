@@ -269,6 +269,17 @@ perplexity 不可用/低质量 → perplexity 重试 → grok → kimi → deeps
 
 **降级记录**: 在 `search_manifest.json` 中记录 `ai_target`、`ai_used`、`fallback`、`fallback_chain`、`status`、`char_count`、`quality`、`output_file`、`image_suggestions`、`needs_manual_websearch`、`fallback_reason`、`quality_gap`。每页结果还必须保留 Step 2 的 `dimension_ids`、`search_rounds`、`source_targets`、`asset_requirements`；`browse_ai.py` 会从计划中带入这些字段，并在重跑时保留手工补充字段。
 
+**触发记录**: 每个 `results[]` 条目必须写入 `search_triggered`、`trigger_reason`、`skip_reason`（仅跳过页）、`execution_route`。`execution_route` 只能使用 `browser_ai` / `manual_websearch_required` / `manual_websearch_completed` / `skipped` / `unknown`。顶层 `execution_summary` 必须汇总各路线数量；逐页结果与顶层汇总不一致时，`research_gate.py` FAIL。
+
+手工补搜或历史项目修复后，只刷新记录元数据，不重新联网：
+
+```bash
+python3 ${SKILL_DIR}/scripts/research/browse_ai.py \
+  --batch <project>/_research/step2_search_plan/search_plan.json \
+  --output-dir <project>/_research/step3_search/ \
+  --refresh-manifest
+```
+
 **质量失败自动补搜**：任一页面出现以下情况，必须补搜该页，不能进入 Step 4：
 
 | 失败项 | 阈值 |

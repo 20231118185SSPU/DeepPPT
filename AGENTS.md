@@ -10,9 +10,9 @@ PPT Master is an AI-driven presentation generation system. Multi-role collaborat
 
 **Core Pipeline**: `Source Document → Create Project + Dashboard → [Template] → Strategist Eight Confirmations → [Image_Generator] → Executor Live Preview → Quality Check → Post-processing → Export PPTX`
 
-> Topic-only requests with no source material: run the [`deep-research`](skills/ppt-master/workflows/deep-research.md) orchestrator before SKILL.md Step 1 to gather web materials (7-step research flow with multi-AI browser automation).
+> Topic-only requests with no source material: first run the [`ppt-briefing`](skills/ppt-master/workflows/ppt-briefing.md) workflow to create `ppt_brief.md` and `ppt_brief.json`, then stop for explicit user confirmation. Only after the user confirms the Brief may the agent run the [`deep-research`](skills/ppt-master/workflows/deep-research.md) orchestrator before SKILL.md Step 1. This route is: `Topic → PPT Briefing → user confirmation → deep-research`.
 >
-> Dashboard observability: after Step 2 creates the project directory and imports sources, start or reuse the unified read-only Dashboard with `python3 skills/ppt-master/scripts/dashboard/server.py <project_path> --daemon --no-browser` (default port `8765`; occupied ports auto-advance). Report the actual URL and `<project_path>/dashboard/dashboard.log`; if launch fails, report the warning and continue the PPT workflow. Dashboard is for status/artifacts/quality/log/bridge visibility only — it does not replace Confirm UI, Live Preview, quality gates, post-processing, or export commands.
+> Dashboard observability: after Step 2 creates the project directory and imports sources, start or reuse the unified read-only Dashboard with `python3 skills/ppt-master/scripts/dashboard/server.py <project_path> --daemon` (default port `8765`; occupied ports auto-advance). This auto-opens the browser in normal local runs; add `--no-browser` only for headless/remote sessions or when the user explicitly does not want a window. Report the actual URL and `<project_path>/dashboard/dashboard.log`; if launch fails, report the warning and continue the PPT workflow. Dashboard is for status/artifacts/quality/log/bridge visibility only — it does not replace Confirm UI, Live Preview, quality gates, post-processing, or export commands.
 >
 > Template fill: when the user provides an existing `.pptx` template plus text materials or a topic and asks to reuse the original PPT design or fill content back into it (for example, "fill this deck with the new content", "fill this back into the template", or "reuse this deck's design"), run the standalone [`template-fill-pptx`](skills/ppt-master/workflows/template-fill-pptx.md) workflow. This route edits PPTX directly and must not enter the SVG generation pipeline.
 >
@@ -74,7 +74,8 @@ python3 skills/ppt-master/scripts/project_manager.py import-sources <project_pat
 python3 skills/ppt-master/scripts/project_manager.py validate <project_path>
 
 # Unified read-only workflow dashboard — start/reuse after Step 2 project setup
-python3 skills/ppt-master/scripts/dashboard/server.py <project_path> --daemon --no-browser
+python3 skills/ppt-master/scripts/dashboard/server.py <project_path> --daemon
+# Add --no-browser only for headless/remote sessions or explicit no-window runs.
 
 # Icon selection — copy chosen library icons into <project>/icons/ (missing names reported + non-zero = re-pick)
 python3 skills/ppt-master/scripts/icon_sync.py <project_path> <lib/name> [<lib/name>...]

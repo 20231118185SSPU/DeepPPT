@@ -182,8 +182,16 @@ class ResearchGate:
                 "Search those pages or mark them skip_search=true with a source-sufficient reason in Step 2.",
             )
 
+        self._check_search_manifest_summary(manifest)
+
         for page_id in sorted(planned_ids & set(result_map)):
             item = result_map[page_id]
+            if "search_triggered" not in item or "execution_route" not in item:
+                self._warn(
+                    f"{page_id} lacks explicit Step 3 trigger/execution metadata.",
+                    "Step 3",
+                    "Re-run browse_ai.py so search_manifest.json records trigger_reason, skip_reason, and execution_route.",
+                )
             if item.get("fallback") or item.get("needs_manual_websearch") or item.get("quality") in {"low", "failed"}:
                 if not item.get("fallback_reason"):
                     self._fail(
@@ -204,6 +212,56 @@ class ResearchGate:
                         "Step 3",
                         "Re-run browse_ai.py or add empty strings for successful non-fallback results.",
                     )
+
+    def _check_search_manifest_summary(self, manifest: dict[str, Any]) -> None:
+        results = [item for item in _as_list(manifest.get("results")) if isinstance(item, dict)]
+        actual_skipped = sum(1 for item in results if item.get("status") == "skipped")
+        actual_manual_required = sum(1 for item in results if item.get("needs_manual_websearch"))
+        actual_fallback_success = sum(
+            1 for item in results if item.get("fallback") and item.get("status") == "success"
+        )
+        expected = {
+            "total_skipped": actual_skipped,
+            "needs_manual_websearch": actual_manual_required,
+            "fallback_used": actual_fallback_success,
+        }
+        for key, actual in expected.items():
+            recorded = manifest.get(key)
+            if recorded is not None and recorded != actual:
+                self._fail(
+                    f"search_manifest.json summary {key}={recorded}, but results[] imply {actual}.",
+                    "Step 3",
+                    "Regenerate search_manifest.json with browse_ai.py or fix the summary after manual repair.",
+                )
+
+        execution_summary = manifest.get("execution_summary")
+        if execution_summary is None:
+            self._warn(
+                "search_manifest.json lacks execution_summary.",
+                "Step 3",
+                "Re-run browse_ai.py so logs show browser-AI, manual WebSearch, and skipped counts.",
+            )
+        elif isinstance(execution_summary, dict):
+            actual_manual_completed = sum(
+                1 for item in results if item.get("execution_route") == "manual_websearch_completed"
+            )
+            recorded_manual_completed = execution_summary.get("manual_websearch_completed")
+            if (
+                recorded_manual_completed is not None
+                and recorded_manual_completed != actual_manual_completed
+            ):
+                self._fail(
+                    "search_manifest.json execution_summary.manual_websearch_completed="
+                    f"{recorded_manual_completed}, but results[] imply {actual_manual_completed}.",
+                    "Step 3",
+                    "Regenerate search_manifest.json after browser/manual fallback repair.",
+                )
+        else:
+            self._fail(
+                "search_manifest.json execution_summary must be an object.",
+                "Step 3",
+                "Rewrite execution_summary with route counts or re-run browse_ai.py.",
+            )
 
     def _check_sources(self, manifest: dict[str, Any], report_text: str) -> None:
         urls: set[str] = set(URL_RE.findall(report_text or ""))

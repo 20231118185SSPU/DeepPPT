@@ -40,8 +40,26 @@
             sec_icons: "Icon usage",
             sec_type: "Typography",
             sec_images: "Image usage",
+            sec_template: "Template route",
             sec_mode: "Generation mode",
             sec_refine: "Refine spec first",
+            template_free_title: "Free design",
+            template_applied_title: "Template applied",
+            template_missing_title: "Template expected but missing",
+            template_library_title: "Available templates",
+            template_library_note: "Discovery only. Choosing one records a pending Step 3 action; it is not silently applied to this spec.",
+            template_pick: "Choose for Step 3",
+            template_selected: "Pending selection",
+            template_clear: "Clear template selection",
+            template_apply_warning: "Choosing a template requires re-running Step 3 and regenerating Step 4 recommendations/spec. It will not be applied to the current spec.",
+            template_kind_brand: "Brand",
+            template_kind_layout: "Layout",
+            template_kind_deck: "Deck",
+            layout_visibility_title: "Per-page layout suggestions",
+            layout_visibility_hint_present: "A detailed outline exists. Layout suggestions come from detailed_outline.json and can be reviewed before SVG generation by turning on refine spec.",
+            layout_visibility_hint_future: "Per-page layout suggestions are produced in detailed_outline/design_spec/spec_lock after content structure is known. Turn on refine spec to review or edit them before SVG generation.",
+            spec_boundaries_title: "Spec review boundary",
+            spec_boundaries_hint: "Refine spec is pre-generation review of design_spec/spec_lock. Step 8a Spec Review is post-export learning; it is not the place to approve page layouts before generation.",
             sub_mode: "Narrative mode",
             sub_visual: "Visual style",
             sub_divergence: "Material divergence (how freely to reshape vs. stay close to the source)",
@@ -98,8 +116,8 @@
             style_preview_body: "· rough feel only, not the actual slide layout",
             mode_continuous_desc: "Generate the whole deck in one pass.",
             mode_split_desc: "Stop after the spec; resume SVG generation in a fresh window.",
-            refine_off_desc: "Spec is written in one go; the pipeline auto-proceeds.",
-            refine_on_desc: "Stop after the spec for review/revision before any generation.",
+            refine_off_desc: "Spec is written in one go; the pipeline auto-proceeds to generation.",
+            refine_on_desc: "Generate design_spec/spec_lock first, then stop so page count, per-page layouts, rhythm, charts, images, color, and typography can be reviewed before SVG generation.",
             off_default: "Off",
             on: "On",
             option_prefix: "Option",
@@ -125,8 +143,26 @@
             sec_icons: "图标使用",
             sec_type: "字体方案",
             sec_images: "图片使用",
+            sec_template: "模板路线",
             sec_mode: "生成模式",
             sec_refine: "先精修设计规范",
+            template_free_title: "自由设计",
+            template_applied_title: "已应用模板包",
+            template_missing_title: "期望模板但未成功落盘",
+            template_library_title: "可用模板",
+            template_library_note: "这里只做发现。选择模板会记录一个待处理的 Step 3 动作，不会静默套用到当前 spec。",
+            template_pick: "选择并回到 Step 3",
+            template_selected: "待处理选择",
+            template_clear: "清除模板选择",
+            template_apply_warning: "选择模板需要重新执行 Step 3，并重新生成 Step 4 recommendations/spec；不会套到当前 spec 上。",
+            template_kind_brand: "品牌",
+            template_kind_layout: "版式",
+            template_kind_deck: "整套 deck",
+            layout_visibility_title: "逐页 layout 建议",
+            layout_visibility_hint_present: "当前项目已有 detailed_outline.json。逐页 layout 建议来自它；开启 refine spec 后，可在 SVG 生成前审阅和调整。",
+            layout_visibility_hint_future: "逐页 layout 建议会在内容结构明确后进入 detailed_outline/design_spec/spec_lock。开启 refine spec 可在 SVG 生成前审阅或修改。",
+            spec_boundaries_title: "Spec Review 边界",
+            spec_boundaries_hint: "refine spec 是生成前审阅 design_spec/spec_lock；Step 8a Spec Review 是导出后的复盘沉淀，不用于生成前确认页面版式。",
             sub_mode: "叙事模式",
             sub_visual: "视觉风格",
             sub_divergence: "材料发散度（多大程度重塑，还是贴近源材料）",
@@ -183,8 +219,8 @@
             style_preview_body: "· 仅大致形象，非实际版式",
             mode_continuous_desc: "一次性连续生成整份演示文稿。",
             mode_split_desc: "写完设计规范后停止，另开窗口继续生成页面。",
-            refine_off_desc: "设计规范一次写完，流程自动继续。",
-            refine_on_desc: "写完设计规范后停下供你审阅或修改，再开始生成。",
+            refine_off_desc: "设计规范一次写完，流程自动继续生成。",
+            refine_on_desc: "先生成 design_spec/spec_lock 并停下；你可在 SVG 生成前审阅页数、逐页 layout、节奏、图表/图片策略、配色和字体。",
             off_default: "关",
             on: "开",
             option_prefix: "方案",
@@ -460,6 +496,114 @@
         input.placeholder = t(placeholderKey);
         input.addEventListener("input", function () { setVal(input.value); });
         parent.appendChild(input);
+    }
+
+    function templateKindLabel(kind) {
+        return t("template_kind_" + kind) || kind;
+    }
+
+    function templateRouteTitle(route) {
+        if (route === "template_applied") return t("template_applied_title");
+        if (route === "template_expected_missing") return t("template_missing_title");
+        return t("template_free_title");
+    }
+
+    function renderTemplateRoute(host) {
+        var sec = section("T", "sec_template");
+        var route = (REC && REC.template_route) || {};
+        var current = route.route || "free_design";
+        var applied = route.applied || {};
+        var status = el("div", "template-route-card " + current);
+        status.appendChild(el("div", "template-route-title", templateRouteTitle(current)));
+        status.appendChild(el("div", "template-route-detail", route.reason || ""));
+        if (applied.path) {
+            status.appendChild(el(
+                "div",
+                "template-route-path",
+                (applied.kind ? templateKindLabel(applied.kind) + " · " : "") + applied.path
+            ));
+        }
+        sec.appendChild(status);
+
+        var library = route.library || {};
+        var entries = library.entries || {};
+        var total = library.total || 0;
+        var libraryPanel = el("div", "template-library");
+        libraryPanel.appendChild(el("div", "subfield-label", t("template_library_title") + " · " + total));
+        libraryPanel.appendChild(el("div", "template-library-note", t("template_library_note")));
+
+        ["brand", "layout", "deck"].forEach(function (kind) {
+            var items = entries[kind] || [];
+            if (!items.length) return;
+            libraryPanel.appendChild(el("div", "group-label", templateKindLabel(kind)));
+            var grid = el("div", "template-grid");
+            items.forEach(function (item) {
+                var card = el("div", "template-card");
+                if (STATE.template_selection && STATE.template_selection.path === item.path) {
+                    card.classList.add("selected");
+                }
+                card.appendChild(el("div", "template-card-title", item.name || item.id));
+                if (item.description) card.appendChild(el("div", "template-card-desc", item.description));
+                card.appendChild(el("div", "template-card-path", item.path || ""));
+                if (item.scope) card.appendChild(el("div", "template-card-scope", item.scope));
+                var btn = el("button", "template-pick", STATE.template_selection && STATE.template_selection.path === item.path ? t("template_selected") : t("template_pick"));
+                btn.type = "button";
+                btn.addEventListener("click", function () {
+                    STATE.template_selection = {
+                        action: "apply_template",
+                        id: item.id,
+                        name: item.name,
+                        kind: item.kind,
+                        path: item.path,
+                        status: "pending_step3",
+                        warning: t("template_apply_warning")
+                    };
+                    renderAll();
+                });
+                card.appendChild(btn);
+                grid.appendChild(card);
+            });
+            libraryPanel.appendChild(grid);
+        });
+        sec.appendChild(libraryPanel);
+
+        if (STATE.template_selection) {
+            var pending = el("div", "template-pending");
+            pending.appendChild(el("strong", "", t("template_selected") + ": " + (STATE.template_selection.name || STATE.template_selection.id || "")));
+            pending.appendChild(el("span", "", t("template_apply_warning")));
+            var clear = el("button", "template-clear", t("template_clear"));
+            clear.type = "button";
+            clear.addEventListener("click", function () {
+                delete STATE.template_selection;
+                renderAll();
+            });
+            pending.appendChild(clear);
+            sec.appendChild(pending);
+        }
+
+        var hasOutline = !!(REC && REC.layout_preview && REC.layout_preview.available);
+        var layout = el("div", "template-info-box");
+        layout.appendChild(el("strong", "", t("layout_visibility_title")));
+        layout.appendChild(el("span", "", hasOutline ? t("layout_visibility_hint_present") : t("layout_visibility_hint_future")));
+        if (hasOutline && REC.layout_preview && REC.layout_preview.pages && REC.layout_preview.pages.length) {
+            var rows = el("div", "layout-preview-list");
+            REC.layout_preview.pages.forEach(function (page) {
+                var text = "P" + String(page.page_number || "").padStart(2, "0") + " · " +
+                    (page.page_type || "-") + " · " + (page.layout_suggestion || "free design");
+                var row = el("div", "layout-preview-row");
+                row.appendChild(el("span", "", text));
+                row.appendChild(el("small", "", page.core_argument || ""));
+                rows.appendChild(row);
+            });
+            layout.appendChild(rows);
+        }
+        sec.appendChild(layout);
+
+        var boundary = el("div", "template-info-box");
+        boundary.appendChild(el("strong", "", t("spec_boundaries_title")));
+        boundary.appendChild(el("span", "", t("spec_boundaries_hint")));
+        sec.appendChild(boundary);
+        host.appendChild(sec);
     }
 
     function normPalette(c) {
@@ -1386,6 +1530,7 @@
                 renderAudience(host);
                 renderStyle(host);
             }
+            renderTemplateRoute(host);
             renderPages(host);
             // Group the preview with the three sections it reflects so its sticky
             // scope ends when typography scrolls past — it does not linger over the

@@ -1,4 +1,4 @@
-> See [`image-base.md`](./image-base.md) for the common framework. Technical SVG/PPT constraints are in [`shared-standards.md`](./shared-standards.md).
+> See [`image-base.md`](./image-base.md) for the common framework and [`image-source-routing.md`](./image-source-routing.md) for source-pack routing. Technical SVG/PPT constraints are in [`shared-standards.md`](./shared-standards.md).
 
 # Image_Searcher Reference Manual
 
@@ -41,6 +41,10 @@ Strict:  provider chain, license filter = cc0,pdm,pexels,pixabay
 
 `--strict-no-attribution` is opt-in. Use it only when the deck cannot tolerate any on-slide credit (corporate template, full-bleed hero).
 
+**Hard rule**: Source-pack routing controls provider eligibility before scoring. Generic stock providers are enabled by default only for `generic_atmosphere` rows or rows with `allow_generic_stock: true`. For IP, people, products, historical, academic, and recent-event rows, follow [`image-source-routing.md`](./image-source-routing.md) and disable or downgrade Pexels / Pixabay / Unsplash unless the row is explicitly atmospheric.
+
+**Discovery-only rule**: Browser / Google-style search is a discovery path. It may find official source pages and candidate pools, but a discovery-only result is not a license-cleared final asset until the original source page and license are verified.
+
 ---
 
 ## 3. Providers
@@ -57,17 +61,25 @@ Strict:  provider chain, license filter = cc0,pdm,pexels,pixabay
 | Flickr | recommended: `FLICKR_API_KEY` (free, [signup](https://www.flickr.com/services/apps/create/)) | massive CC-licensed photo library |
 | **Browser (Playwright)** | `pip install playwright && python -m playwright install chromium` | **Fallback**: multi-engine search (Google/Bing/Yandex) when API providers fail. Also provides URL screenshot capture. |
 
-Default chain (when `--provider` is unset):
+Conservative default chain (when `--provider` is unset and no source pack enables stock providers):
 
 ```
-openverse → wikimedia → nasa → smithsonian → pexels (if PEXELS_API_KEY set) → pixabay (if PIXABAY_API_KEY set) → unsplash (if UNSPLASH_ACCESS_KEY set) → flickr (if FLICKR_API_KEY set) → browser (automatic fallback)
+wikimedia → nasa → smithsonian → openverse → browser discovery
 ```
 
-Keyed providers without an API key are silently skipped — not an error.
+`generic_atmosphere` chain:
 
-**Browser fallback**: when all API providers return no results, the system automatically falls back to Playwright-based browser search across multiple search engines. This is transparent to the user — no additional flags needed. The browser provider uses multi-dimensional query expansion and CLIP-based semantic filtering (when available) to find relevant images.
+```
+pexels (if PEXELS_API_KEY set) → unsplash (if UNSPLASH_ACCESS_KEY set) → pixabay (if PIXABAY_API_KEY set) → openverse → flickr (if FLICKR_API_KEY set) → browser discovery
+```
+
+Keyed providers without an API key are silently skipped — not an error. Configured keys do not by themselves make generic stock providers highest priority for every row.
+
+**Browser fallback**: when all API providers return no results, the system may fall back to Playwright-based browser search across multiple search engines. Treat browser results as lower-confidence discovery candidates, not authoritative identity or license references. They are acceptable for atmosphere, generic stock-like support, URL capture, and manual candidate pools; they are not enough to drive img2img for people, products, IP characters, places, or events.
 
 **Validation**: For polished visual decks, configure at least one keyed provider before using `Acquire Via: web`.
+
+**Forbidden — weak websearch as reference**: do not promote browser fallback / generic web search results into `image_prompts.json reference_image` for high-ambiguity subjects. Same-name people, characters, locations, and events require authoritative provenance and confidence per [`image-generator.md`](./image-generator.md) §3.2.
 
 ---
 
@@ -154,6 +166,22 @@ python3 scripts/image_search.py --batch <project_path>/images/image_queries.json
 
 Required per item: `filename`, `query`, `status` (`Pending`). Optional per-item overrides: `slide`, `purpose`, `orientation`, `provider`, `strict_no_attribution`, `min_width`, `min_height`.
 
+Routing fields from [`image-source-routing.md`](./image-source-routing.md) are also accepted in the authoritative batch schema:
+
+| Field | Behavior |
+|---|---|
+| `source_pack` | Selects domain routing policy |
+| `preferred_sources` | Records non-provider source classes such as official site, museum archive, press kit |
+| `preferred_providers` | Preferred script providers when allowed |
+| `disabled_providers` | Providers excluded for this row |
+| `allow_generic_stock` | Enables Pexels / Pixabay / Unsplash for stock-appropriate rows |
+| `discovery_only` | Browser / Google results are candidate/source-page discovery, not auto-cleared final assets |
+| `needs_manual_review` | Row requires human review before final public use |
+| `copyright_risk` | `low` / `medium` / `high` |
+| `selection_reason` | Why this source pack was selected |
+
+For high-ambiguity subjects, add `needs_manual_review: true` and use the web result as a candidate asset only. Do not pipe it automatically into AI img2img.
+
 The runner searches all `Pending` / `Failed` rows concurrently, appends each success to `image_sources.json` (the credit source of truth, idempotent on `filename`), and writes status back into `image_queries.json` — `Sourced` on success, `Needs-Manual` when the full provider/stage chain is exhausted. Status is saved after each completion, so an interrupted run preserves finished rows; re-running skips terminal rows. A single `web` row may still use single-query mode above.
 
 **Pacing**: free providers (Wikimedia/Openverse) are rate-sensitive, so batch concurrency defaults to a modest **3** (`--concurrency N`, or `IMAGE_SEARCH_CONCURRENCY` env). Use `--concurrency 1` to restore strict one-at-a-time pacing. Single-query mode is one request at a time by nature.
@@ -211,6 +239,11 @@ Every successful download appends or replaces one entry keyed on `filename`:
       "license_name": "CC0",
       "license_url": "https://creativecommons.org/publicdomain/zero/1.0/",
       "license_tier": "no-attribution",
+      "source_pack": "generic_atmosphere",
+      "selection_reason": "Generic workplace image for background mood.",
+      "copyright_risk": "low",
+      "manual_review_status": "not_required",
+      "discovery_source": "",
       "attribution_required": false,
       "width": 1024,
       "height": 683,
@@ -231,6 +264,11 @@ Every successful download appends or replaces one entry keyed on `filename`:
 | `width` / `height` | Measured from the file actually saved to disk. Use these for layout. |
 | `metadata_dimensions` | Present only when upstream-claimed size differs from the saved file (preview vs original). Informational only. |
 | `license_tier` | Drives Executor's attribution decision. Only `no-attribution` / `attribution-required`. |
+| `source_pack` | Domain routing pack from [`image-source-routing.md`](./image-source-routing.md). Missing on legacy projects is a warning, not a failure. |
+| `selection_reason` | Why this asset/source path was chosen for the row. |
+| `copyright_risk` | `low` / `medium` / `high`; high-risk rows require manual review status. |
+| `manual_review_status` | `not_required` / `pending` / `approved` / `rejected`; required for `needs_manual_review`. |
+| `discovery_source` | Search/discovery path such as `google_images`, `bing_images`, `browser_search`, or empty for direct provider results. |
 | `attribution_required` | Boolean alias of `license_tier == "attribution-required"`. |
 | `attribution_text` | Pre-rendered canonical credit string. **Use as-is; do not regenerate.** |
 | `stage` | `all` by default, or `no-attribution-only` when strict mode is used. |

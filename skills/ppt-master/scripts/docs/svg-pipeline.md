@@ -14,6 +14,24 @@ python3 scripts/finalize_svg.py <project_path>
 python3 scripts/svg_to_pptx.py <project_path>
 ```
 
+## SVG Page Filename Compatibility
+
+Validators, exporters, checkers, dashboards, and E2E gates MUST scan project SVG
+directories as `*.svg` and normalize supported page prefixes to spec page IDs.
+They MUST NOT rely on only `P*.svg`.
+
+| SVG filename | Normalized page ID |
+|---|---|
+| `01_cover.svg` | `P01` |
+| `P01_cover.svg` | `P01` |
+
+Recommended naming for newly authored project pages is `P<NN>_<slug>.svg`, matching
+`spec_lock.md` page keys such as `P01`. Compatibility with legacy numeric-prefix
+projects (`01_*.svg`, `02_*.svg`, ...) is a hard requirement; do not require
+bulk renaming of existing projects or examples. If two files normalize to the
+same page ID, treat that as a duplicate-page condition rather than choosing one
+implicitly.
+
 ## `finalize_svg.py`
 
 Unified post-processing entry point. This is the preferred way to run SVG cleanup.
@@ -129,6 +147,30 @@ Checks include:
 - banned elements
 - width/height consistency
 - line-break structure
+
+This is a static SVG/XML/spec compliance gate. Passing it does not mean the
+rendered slide is visually acceptable.
+
+## `rendered_layout_check.py`
+
+Run the rendered visual gate after static SVG checks and before post-processing:
+
+```bash
+python3 scripts/rendered_layout_check.py <project_path> --render
+python3 scripts/rendered_layout_check.py <project_path>
+python3 scripts/rendered_layout_check.py <project_path> --accept-current-render
+```
+
+Behavior:
+- `--render` calls `visual_review.py` to refresh `<project>/.preview/*.png` via the live-preview server.
+- The gate reads `svg_output/*.svg` and `.preview/*.png`, then writes `quality/rendered_visual_gate.json`.
+- `must_fix` blocks export for deterministic layout failures such as cross-column text intrusion or text touching long rules.
+- `needs_human_review` blocks export until a human confirms the rendered screenshot, covering close-fit text, abnormal whitespace, missing/stale renders, and revision-regression checks.
+- `--accept-current-render` writes `quality/rendered_visual_acceptance.json` for the current SVG/PNG hashes after human review.
+
+Role boundary: `rendered_layout_check.py` is not a replacement for
+`visual-review.md` rubric review. It is the local screenshot gate that prevents
+"script checks passed, but the slide looks broken" from reaching export unseen.
 
 ## `svg_position_calculator.py`
 

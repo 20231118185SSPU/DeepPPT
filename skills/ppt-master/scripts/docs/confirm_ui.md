@@ -29,6 +29,7 @@ pip install flask
 
 ## Two kinds of field
 
+- **Read-only route / discovery** — template route and template-library discovery. The server injects `template_route` into `/api/recommendations`; it is not authored by Strategist and does not change the Eight Confirmations. It distinguishes `Free design`, `Template applied`, and `Template expected but missing`, then lists brand / layout / deck templates from the library indexes. Selecting a listed template writes `template_selection` to `result.json` as a **pending Step 3 action**; it is not an applied template and must block spec writing until Step 3/4 are rerun.
 - **Enumerable + custom** — canvas / mode / visual_style / icons / image usage. The page lists common options from `static/catalogs.json`, badges the AI's recommendation, and still offers a Custom box for edge cases (custom canvas size, bespoke narrative mode, mixed image plan, self-provided icon system, etc.). `visual_style` additionally honors an optional `visual_style_spectrum` that badges a 3-pick personality spectrum (safe / shifted / bold, each with a temperament tag + analogy) in place of the single recommendation — see the schema below.
 - **Closed enumerable** — formula policy / generation mode / refine spec, plus AI source only when image usage may include `ai`. These have no Custom box; out-of-catalog values snap back to the recommended option. Use pipeline vocabulary: icon ids are actual library ids such as `tabler-outline`, or `emoji` for system emoji; image usage labels mirror Strategist terminology: `ai` = AI-generated, `web` = Web-sourced, `provided` = User-provided, `placeholder` = Placeholder, `none` = No images. Use custom prose only when several sources are mixed.
 - **Generative (open)** — color, typography, generated-image style. No finite catalog; the AI authors **≥3 candidates** the page renders as cards (never a single option — creative fields must offer real choice; fewer than 3 only on the honest-shortfall exception). `page_count`, `audience`, and `content_divergence` are free inputs (`content_divergence` is a free-text intent shown under audience in §c, not a fixed-option field).
@@ -49,6 +50,7 @@ Both files live under `<project_path>/confirm_ui/`.
 
 ```json
 {
+  "tier": 1,
   "lang": "zh",
   "recommend": {
     "canvas": "ppt169",
@@ -109,6 +111,7 @@ Both files live under `<project_path>/confirm_ui/`.
 
 > Each `candidates` array above shows **one** entry for brevity — the creative fields (`color`, `typography`, `image_strategy`) must each carry **≥3** in a real file (see the rule above); `selected` indexes the recommended default.
 
+- Top-level `tier` is required for new Step 4 runs. Start with `tier: 1` so the page shows anchor choices first; after `result.json` records `stage: "tier1"`, the AI overwrites this file with `tier: 2` and re-derived realization candidates. Missing `tier` is accepted only as a legacy single-pass compatibility path and must not be used by the current pipeline.
 - `recommend.*` names the recommended `id` for each enumerable field (must match a `catalogs.json` id, or be a free string for a recommended custom value). The page badges and pre-selects it. **Guarantee**: if a `recommend.*` is omitted, the page falls back to the first catalog option so every enumerable field always shows one badged recommendation — but the AI should still set them for a meaningful default. Legacy aliases are accepted for old files (`line` → `tabler-outline`, `filled` → `tabler-filled`, `monochrome` → `chunk-filled`, `search` → `web`, `default` → `auto`, `builtin` → `host-native`), but new files should write canonical ids. For `recommend.image_usage`, do not write bare `"custom"`; if several image sources are mixed, write the concrete prose plan directly, such as `"封面用 AI 生成，产品页用用户素材，行业页用网络来源"` / `"AI cover + user product assets + web industry images"`.
 - When `recommend.image_usage` is `ai` or a custom plan that includes AI, also set `recommend.image_ai_path` to one of `auto` / `api` / `host-native` / `manual`; the page presents these as explicit choices.
 - For a custom image plan, the page treats "may include AI" as true only when the recommendation includes `recommend.image_ai_path` or `image_strategy.candidates`; a custom plan without those signals is handled as non-AI and omits AI controls / fields.
@@ -119,6 +122,8 @@ Both files live under `<project_path>/confirm_ui/`.
 - **Generated image style candidates** live in `image_strategy.candidates` and are shown only when `image_usage` is `ai` or a custom image plan may include generated images. Each candidate records `rendering`, `palette`, and short `visual` / `color` / `mood` lines from Strategist h.5. The chosen value is written to `result.json.image_strategy`; it is omitted when generated images are not part of the plan.
 - **`visual_style_spectrum`** (optional) lets the AI surface the deck's aesthetic as a **personality spectrum** instead of one badged style. Each entry is `{ "id", "tag_zh"/"tag_en", "note_zh"/"note_en" }` where `id` is a real `visual_styles` catalog id; the page badges those chips with their temperament `tag` (replacing the single ★) and appends the `note` (a real-world analogy) inline. The full grouped style list and Custom box stay visible below, and `recommend.visual_style` is still the pre-selected default (it should equal the spectrum's safe pick). Author **≥3** spanning safe / shifted / bold (mirrors h.5; honest-shortfall exception applies — fewer only when the constraints genuinely cannot yield 3). The user's pick still writes back to `result.json.visual_style` as a plain id; the spectrum is presentation-only. Omit the field to fall back to the single-recommendation badge.
 - `recommend.generation_mode` and `refine_spec` mirror the two mandatory notes in SKILL.md Step 4. Confirmed `generation_mode: "split"` / `refine_spec: true` are explicit user choices, equivalent to opting in through chat.
+- `template_route` is injected by `server.py` at response time. It contains `{ route, label, reason, applied, pending_selection, library }`. Route values are `free_design`, `template_applied`, `template_expected_missing`, or `unknown`. `library.entries.brand/layout/deck` is discovery-only and each entry has `name`, `kind`, `path`, `description`, and `scope`. The page may display and let the user choose a candidate, but choosing writes `template_selection` only; it does not mutate `template_route.applied`.
+- `layout_preview` is injected by `server.py` when `<project>/detailed_outline.json` exists. It shows a short page list (`page_number`, `page_type`, `layout_suggestion`, `core_argument`) so users can see where per-page layout suggestions are coming from. If absent, the page explains that full per-page layout review happens after `design_spec.md` / `spec_lock.md` are produced by the `refine_spec` workflow.
 - `content_divergence` is a **free-text** field shown right under the audience box in §c — the user states in their own words how closely to follow the source vs how freely to reshape it (e.g. "stick closely to the document" / "freely restructure and expand within the source"). It is **not** a fixed-option field; blank means a balanced default. Whatever the level, facts stay sourced — reshaping develops what is in the source, never imports facts from outside it. The Strategist consumes the prose when authoring the §IX outline and records it in `design_spec.md §I`; it is **not** written to `spec_lock.md` (the Executor never reads it). It carries no page-count coupling and no source-signal recommendation — it is purely the user's stated intent. Beautify / template-fill keep content verbatim and do not surface this field.
 - `lang` is a soft default; an explicit user language choice in the page (persisted to `localStorage`) wins.
 
@@ -140,12 +145,22 @@ Both files live under `<project_path>/confirm_ui/`.
   "image_strategy": { "name": "方案 A", "rendering": "vector-illustration", "palette": "cool-corporate", "visual": "...", "color": "...", "mood": "..." },
   "generation_mode": "continuous",
   "refine_spec": false,
+  "template_selection": {
+    "action": "apply_template",
+    "id": "academic_defense",
+    "name": "academic_defense",
+    "kind": "layout",
+    "path": "skills/ppt-master/templates/layouts/academic_defense/",
+    "status": "pending_step3",
+    "warning": "Choosing a template requires re-running Step 3 and regenerating Step 4 recommendations/spec. It will not be applied to the current spec."
+  },
   "status": "confirmed",
   "confirmed_at": "2026-06-15T11:44:44"
 }
 ```
 
 - Any option field may instead hold a **free-text custom string** (the user picked **Custom**); `color` / `typography` custom entries set `name: "custom"`. Image usage custom values must be concrete prose plans, not the literal string `"custom"`. The AI interprets custom text against the canonical references.
+- `template_selection` is optional and appears only when the user selected a template from the discovery list. It is a blocking pending action, not a confirmed design input. `confirm_ui_gate.py` fails when this object has `action: "apply_template"`; the agent must apply the explicit `path` through SKILL.md Step 3, regenerate recommendations, and re-confirm.
 - `image_ai_path` and `image_strategy` are omitted from `result.json` unless `image_usage` is `ai` or a custom image plan that may include generated images. Both are honored downstream as confirmed choices — and the page is only a convenience surface over the **canonical chat channel**: the same choices made in chat are honored identically when no `result.json` exists. `image_ai_path` drives the Step 5 generation path (`image-generator.md` §7 — `host-native` forces the host tool even when `IMAGE_BACKEND` is set); the chosen `image_strategy` candidate is locked verbatim by Strategist h.5 (no re-pick).
 - After the user clicks **Confirm**, the page saves `result.json` and shuts the server down (auto-close). In the default `--daemon --wait` flow, the waiting command returns and the AI reads `result.json` immediately; no second chat confirmation is required. Chat confirmation remains the fallback when the page cannot be used. Either way, Step 4 ends with a `--shutdown` cleanup so a never-confirmed page cannot keep holding port 5050 ahead of the Step 6 live preview.
 

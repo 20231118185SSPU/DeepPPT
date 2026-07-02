@@ -66,7 +66,7 @@
           "description": "Fractional progress 0.0-1.0. Null when indeterminate."
         },
         "detail":   { "type": ["string", "null"], "description": "Free-text status line, e.g. 'Converting PDF page 3/12'." },
-        "started_at":   { "$ref": "#/definitions/ISOTimestamp" },
+        "started_at":   { "oneOf": [{ "$ref": "#/definitions/ISOTimestamp" }, { "type": "null" }] },
         "completed_at": { "oneOf": [{ "$ref": "#/definitions/ISOTimestamp" }, { "type": "null" }] }
       }
     },
@@ -113,6 +113,47 @@
       }
     },
 
+    "TemplateRoute": {
+      "type": "object",
+      "required": ["route", "label", "reason", "library"],
+      "additionalProperties": false,
+      "properties": {
+        "route": {
+          "type": "string",
+          "enum": ["free_design", "template_applied", "template_expected_missing", "unknown"],
+          "description": "Step 3 route: default free design, applied explicit template, or incomplete template state."
+        },
+        "label": { "type": "string" },
+        "reason": { "type": "string" },
+        "applied": {
+          "oneOf": [
+            {
+              "type": "object",
+              "additionalProperties": true,
+              "properties": {
+                "kind": { "type": ["string", "null"] },
+                "path": { "type": "string" },
+                "source": { "type": "string" }
+              }
+            },
+            { "type": "null" }
+          ]
+        },
+        "pending_selection": {
+          "oneOf": [
+            { "type": "object", "additionalProperties": true },
+            { "type": "null" }
+          ],
+          "description": "Confirm UI pending selection; not an applied template."
+        },
+        "library": {
+          "type": "object",
+          "additionalProperties": true,
+          "description": "Discovery-only template index summary."
+        }
+      }
+    },
+
     "PipelineState": {
       "type": "object",
       "required": ["project_name", "project_path", "canvas_format", "current_step", "steps", "derived_at"],
@@ -148,6 +189,10 @@
           "enum": ["pending", "tier1-confirmed", "confirmed", null],
           "description": "Eight Confirmations status. Null before Step 4."
         },
+        "template_route": {
+          "$ref": "#/definitions/TemplateRoute",
+          "description": "Step 3 Template Option route and discovery data."
+        },
         "spec_lock_digest": {
           "type": ["string", "null"],
           "description": "SHA-256 digest of spec_lock.md. Null before Step 4."
@@ -159,6 +204,10 @@
         "quality_summary": {
           "oneOf": [{ "$ref": "#/definitions/QualitySummary" }, { "type": "null" }],
           "description": "Aggregate quality gate results. Null before quality checks."
+        },
+        "image_provenance": {
+          "type": ["object", "null"],
+          "description": "Image source-pack, copyright-risk, and manual-review summary derived from images/image_sources.json."
         },
         "page_count": {
           "type": ["integer", "null"],
@@ -194,6 +243,10 @@
             "pid":     { "type": ["integer", "null"] }
           }
         },
+        "health_summary": {
+          "type": ["object", "null"],
+          "description": "Dashboard health summary derived from the current pipeline state."
+        },
         "derived_at": {
           "$ref": "#/definitions/ISOTimestamp",
           "description": "When this state snapshot was computed."
@@ -203,12 +256,14 @@
 
     "QualitySummary": {
       "type": "object",
-      "required": ["spec_compliance", "svg_quality", "e2e", "overall"],
+      "required": ["spec_compliance", "svg_quality", "e2e", "rendered_visual", "visual_review", "overall"],
       "additionalProperties": false,
       "properties": {
         "spec_compliance": { "$ref": "#/definitions/QualityGate" },
         "svg_quality":     { "$ref": "#/definitions/QualityGate" },
         "e2e":             { "$ref": "#/definitions/QualityGate" },
+        "rendered_visual": { "$ref": "#/definitions/QualityGate" },
+        "visual_review":   { "$ref": "#/definitions/QualityGate" },
         "overall":         { "$ref": "#/definitions/QualityGate" },
         "checked_at":      { "$ref": "#/definitions/ISOTimestamp" }
       }
@@ -351,6 +406,11 @@
         "svg_quality":     { "$ref": "#/definitions/QualityGate" },
         "e2e":             { "$ref": "#/definitions/QualityGate" },
         "overall":         { "$ref": "#/definitions/QualityGate" },
+        "mode":            { "type": "string", "enum": ["quick", "full"] },
+        "scope":           { "type": "string", "enum": ["static", "full"] },
+        "e2e_skipped":     { "type": "boolean" },
+        "summary":         { "type": "string" },
+        "checked_at":      { "$ref": "#/definitions/ISOTimestamp" },
         "details": {
           "type": "array",
           "items": {
@@ -576,7 +636,9 @@
         "svg_quality":     { "oneOf": [{ "$ref": "#/definitions/SVGQualityReport" }, { "type": "null" }] },
         "spec_compliance": { "oneOf": [{ "$ref": "#/definitions/ComplianceReport" }, { "type": "null" }] },
         "e2e":             { "oneOf": [{ "$ref": "#/definitions/E2EValidateResult" }, { "type": "null" }] },
+        "rendered_visual": { "type": ["object", "null"] },
         "integrated_review": { "oneOf": [{ "$ref": "#/definitions/IntegratedReview" }, { "type": "null" }] },
+        "visual_review":   { "type": ["object", "null"] },
         "checked_at":      { "$ref": "#/definitions/ISOTimestamp" }
       }
     },
@@ -586,7 +648,7 @@
       "required": ["check", "status", "checked_at"],
       "additionalProperties": false,
       "properties": {
-        "check":      { "type": "string", "enum": ["svg_quality", "spec_compliance", "e2e", "harness", "integrated_review"] },
+        "check":      { "type": "string", "enum": ["svg_quality", "spec_compliance", "e2e", "rendered_visual", "harness", "integrated_review", "visual_review"] },
         "status":     { "$ref": "#/definitions/QualityGate" },
         "checked_at": { "$ref": "#/definitions/ISOTimestamp" },
         "data": {
@@ -596,7 +658,8 @@
             { "$ref": "#/definitions/ComplianceReport" },
             { "$ref": "#/definitions/E2EValidateResult" },
             { "$ref": "#/definitions/HarnessGateReport" },
-            { "$ref": "#/definitions/IntegratedReview" }
+            { "$ref": "#/definitions/IntegratedReview" },
+            { "type": "object" }
           ]
         }
       }
