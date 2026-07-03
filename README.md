@@ -252,6 +252,19 @@ DeepPPT/
 
 ## 更新日志
 
+### 2026-07-03 — 仓库介绍与治理工具对齐
+
+**文档对齐：**
+- README、SETUP、FAQ、getting-started、AI browser setup、Agent 入口摘要和脚本 README 对齐当前真实工作流。
+- 仅给主题时统一为 `ppt-briefing → 用户确认 → deep-research → 主流程`，不再描述为直接进入 deep-research。
+- Dashboard 默认行为统一为 `--daemon`，本地运行会自动打开浏览器；`--no-browser` 仅用于 headless / remote / 用户明确要求。
+- 模板和品牌应用明确要求显式目录路径；裸名称只用于发现，不会自动套用。
+
+**治理与发现：**
+- 新增 `governance_drift_check.py`，用于检查 topic-only 路由、Dashboard 默认命令、docs/rules 状态和路径漂移。
+- 模板索引和模板 `design_spec.md` 补齐 `summary_zh`，支持 Dashboard / Confirm UI 双语摘要和预览发现。
+- 更新日志已同步到 [docs/change-log.md](docs/change-log.md)。
+
 ### 2026-07-02 — 咨询证据链 + PPTX 结构 QA + 图标搜索
 
 **工作流增强：**
