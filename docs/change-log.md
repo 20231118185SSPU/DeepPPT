@@ -23,6 +23,14 @@
 
 ## Log
 
+### 2026-07-03 — Repository documentation and governance tooling alignment
+- **Files**: `AGENTS.md`, `.clinerules`, `.windsurfrules`, `CLAUDE.md`, `hermes.md`, `README.md`, `SETUP.md`, `docs/ai-browser-setup.md`, `docs/claude-reference.md`, `docs/faq.md`, `docs/getting-started.md`, `docs/roadmap.md`, `docs/windows-installation.md`, `docs/zh/*`, `docs/rules/*`, `docs/spec-review-template.md`, `skills/ppt-master/SKILL.md`, `skills/ppt-master/references/template-designer.md`, `skills/ppt-master/workflows/create-template.md`, `skills/ppt-master/workflows/img2img-support.md`, `skills/ppt-master/workflows/live-preview.md`, `skills/ppt-master/scripts/README.md`, `skills/ppt-master/scripts/governance_drift_check.py`, `skills/ppt-master/scripts/dashboard/**`, `skills/ppt-master/scripts/confirm_ui/**`, `skills/ppt-master/scripts/image_backends/**`, `skills/ppt-master/scripts/image_sources/**`, `skills/ppt-master/scripts/*`, `skills/ppt-master/templates/brands/brands_index.json`, `skills/ppt-master/templates/decks/**/design_spec.md`, `skills/ppt-master/templates/decks/decks_index.json`, `skills/ppt-master/templates/layouts/**/design_spec.md`, `skills/ppt-master/templates/layouts/layouts_index.json`
+- **Reason**: 仓库级审计发现入口文档、AI Agent 规则摘要、用户文档、脚本 README、模板发现元数据和实际工作流 / 脚本能力存在漂移；同步上一轮审计后的对齐修复，并补齐可重复运行的治理漂移检查脚本
+- **Before**: 多个介绍文档仍可读成 topic-only 直接进入 `deep-research`；AI 浏览器自动化平台描述停留在旧的 ChatGPT / Grok / Perplexity 分工；Dashboard / Confirm UI / Live Preview 的默认端口、日志和浏览器打开行为在不同入口不一致；元素级动画容易被误解为默认启用；模板应用边界未充分强调显式路径；模板索引缺少统一的 `summary_zh` 发现字段；缺少脚本化检查来防止这些治理漂移复发
+- **After**: 入口文档统一为 `Topic -> ppt-briefing -> user confirmation -> deep-research`；AI 浏览器 / Agent-Reach / fallback 描述与当前脚本和工作流边界一致；Dashboard 默认 `--daemon`、本地自动打开浏览器、失败 non-fatal、实际 URL/port/log 报告在入口摘要和脚本说明中一致；导出默认保留页面转场、元素级动画保持 opt-in；模板 / 品牌应用必须由显式目录路径触发，裸名称只用于发现；Dashboard / Confirm UI 可展示双语模板摘要和预览；新增 `governance_drift_check.py` 覆盖 topic-only、Dashboard 默认、docs/rules 状态和路径漂移检查
+- **Risk**: medium（跨入口文档、`SKILL.md` 摘要、workflow 说明、脚本帮助、Dashboard/Confirm UI 辅助行为和模板索引；主要为对齐与治理增强，不改变 SVG 手写、质量门、post-processing 或默认 PPTX 导出路线）
+- **Human reviewed**: pending
+
 ### 2026-07-02 — Documentation governance P0 alignment
 - **Files**: `docs/routing.md`, `docs/ai-rules-shared.md`, `skills/ppt-master/workflows/batch-review.md`, `docs/rules/README.md`, `docs/rules/agent-governance.md`, `docs/rules/documentation-style.md`, `docs/rules/workflow-style.md`, `docs/rules/change-management.md`
 - **Reason**: 对齐文档治理审计发现的 P0/P1 问题：topic-only 路由摘要、Dashboard 默认命令、shared rules 权威措辞、batch-review 触发边界，以及 docs/rules 治理草案索引
