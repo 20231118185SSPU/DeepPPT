@@ -6,7 +6,7 @@
   </defs>
 
   <!-- Full-bleed background image -->
-  <image href="images/P07_trans2_bg.png" x="0" y="0" width="1280" height="720" clip-path="url(#trans2Clip)" preserveAspectRatio="xMidYMid slice"/>
+  <image href="../images/P07_trans2_bg.png" x="0" y="0" width="1280" height="720" clip-path="url(#trans2Clip)" preserveAspectRatio="xMidYMid slice"/>
 
   <!-- Dark overlay -->
   <rect x="0" y="0" width="1280" height="720" fill="#2D2D3D" fill-opacity="0.35"/>

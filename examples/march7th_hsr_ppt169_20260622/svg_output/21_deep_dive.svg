@@ -4,7 +4,7 @@
   <rect x="0" y="0" width="1280" height="720" fill="#F8F4F0"/>
 
   <!-- Right 35% image -->
-  <image href="images/web_assets/dd_p21_community.png" x="832" y="0" width="448" height="720" preserveAspectRatio="xMidYMid slice"/>
+  <image href="../images/web_assets/dd_p21_community.png" x="832" y="0" width="448" height="720" preserveAspectRatio="xMidYMid slice"/>
   <rect x="832" y="0" width="448" height="720" fill="#F8F4F0" fill-opacity="0.3"/>
 
   <!-- Left text area centered at x=400 -->

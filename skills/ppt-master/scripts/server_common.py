@@ -30,14 +30,23 @@ def find_free_port(preferred: int, host: str = '127.0.0.1', span: int = 50) -> i
     ``preferred`` if the whole span is taken (let the caller's bind surface it).
     """
     for port in range(preferred, preferred + span):
-        with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as probe:
-            probe.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
-            try:
-                probe.bind((host, port))
-                return port
-            except OSError:
-                continue
+        if _port_available(host, port):
+            return port
     return preferred
+
+
+def _port_available(host: str, port: int) -> bool:
+    """Return True when no listener owns ``host:port`` and a bind succeeds."""
+    with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as probe:
+        probe.settimeout(0.2)
+        if probe.connect_ex((host, port)) == 0:
+            return False
+    with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as probe:
+        try:
+            probe.bind((host, port))
+            return True
+        except OSError:
+            return False
 
 
 def process_alive(pid: int) -> bool:

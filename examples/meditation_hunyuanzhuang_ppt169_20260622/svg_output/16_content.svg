@@ -3,7 +3,7 @@
   <rect x="0" y="0" width="1280" height="720" fill="#F5F0E6"/>
 
   <!-- Top 40%: background image -->
-  <image href="images/P16_content_bg.png" x="0" y="0" width="1280" height="288" preserveAspectRatio="xMidYMid slice"/>
+  <image href="../images/P16_content_bg.png" x="0" y="0" width="1280" height="288" preserveAspectRatio="xMidYMid slice"/>
   <rect x="0" y="0" width="1280" height="288" fill="#F5F0E6" fill-opacity="0.3"/>
 
   <!-- Title -->

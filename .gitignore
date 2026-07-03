@@ -73,6 +73,8 @@ tramp
 *.swo
 *~.nib
 *.log
+/.tmp/
+/.codex-tmp/
 
 # Project Specific
 # Generated SVG files (uncomment if you don't want to commit generated files)

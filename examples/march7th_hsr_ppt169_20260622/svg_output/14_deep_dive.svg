@@ -4,7 +4,7 @@
   <rect x="0" y="0" width="1280" height="720" fill="#F8F4F0"/>
 
   <!-- Left 40% image -->
-  <image href="images/web_assets/dd_p14_combat.png" x="0" y="0" width="512" height="720" preserveAspectRatio="xMidYMid slice"/>
+  <image href="../images/web_assets/dd_p14_combat.png" x="0" y="0" width="512" height="720" preserveAspectRatio="xMidYMid slice"/>
   <rect x="0" y="0" width="512" height="720" fill="#F8F4F0" fill-opacity="0.3"/>
 
   <!-- Right text area centered at x=900 -->

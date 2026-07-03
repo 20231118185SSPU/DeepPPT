@@ -1,6 +1,6 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1280 720" width="1280" height="720">
   <rect width="1280" height="720" fill="#F5F0E6"/>
-  <image href="images/P02_toc_bg.png" x="0" y="0" width="1280" height="720" preserveAspectRatio="xMidYMid slice"/>
+  <image href="../images/P02_toc_bg.png" x="0" y="0" width="1280" height="720" preserveAspectRatio="xMidYMid slice"/>
   <rect x="0" y="0" width="1280" height="720" fill="#F5F0E6" fill-opacity="0.75"/>
 
   <text x="100" y="100" font-family="SimSun, Georgia, serif" font-size="44" font-weight="bold" fill="#425066">目录</text>

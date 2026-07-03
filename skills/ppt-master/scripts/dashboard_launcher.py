@@ -19,6 +19,7 @@ Dependencies:
 from __future__ import annotations
 
 import argparse
+import json
 import os
 import socket
 import subprocess
@@ -50,16 +51,25 @@ def find_safe_port(preferred: int, host: str = "127.0.0.1", span: int = 50) -> i
     for port in range(preferred, upper):
         if port in UNSAFE_PORTS:
             continue
-        with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as probe:
-            probe.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
-            try:
-                probe.bind((host, port))
-                return port
-            except OSError:
-                continue
+        if _port_available(host, port):
+            return port
     if preferred in UNSAFE_PORTS:
         return preferred + 1
     return preferred
+
+
+def _port_available(host: str, port: int) -> bool:
+    """Return True when no listener owns ``host:port`` and a bind succeeds."""
+    with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as probe:
+        probe.settimeout(0.2)
+        if probe.connect_ex((host, port)) == 0:
+            return False
+    with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as probe:
+        try:
+            probe.bind((host, port))
+            return True
+        except OSError:
+            return False
 
 
 def launch_dashboard_daemon(
@@ -78,12 +88,20 @@ def launch_dashboard_daemon(
     lock_file = project / LOCK_FILE_NAME
     existing = read_lock(lock_file)
     if existing and process_alive(int(existing.get("pid", 0) or 0)):
-        url = _lock_url(existing)
-        print(f"Dashboard already running: {url}")
-        if not no_browser:
-            _open_browser(url)
-        return 0
-    if existing:
+        if not lock_matches_project(existing, project):
+            url = _lock_url(existing)
+            print(
+                f"Warning: ignoring dashboard lock for a different project: {url}",
+                file=sys.stderr,
+            )
+            _remove_stale_lock(lock_file)
+        else:
+            url = _lock_url(existing)
+            print(f"Dashboard already running: {url}")
+            if not no_browser:
+                _open_browser(url)
+            return 0
+    elif existing:
         _remove_stale_lock(lock_file)
 
     dashboard_dir = project / DASHBOARD_DIR_NAME
@@ -130,14 +148,14 @@ def launch_dashboard_daemon(
         print(f"Warning: Dashboard log path: {log_path}")
         return 0
 
-    url = _wait_for_dashboard(lock_file, proc, expected_url)
+    url = _wait_for_dashboard(lock_file, proc, expected_url, project)
     if proc.poll() is not None:
         print(
             f"Warning: Dashboard process exited during startup "
             f"(code {proc.returncode}); see {log_path}"
         )
         return 0
-    if not _url_ready(url):
+    if not _url_ready_for_project(url, project):
         print(f"Warning: Dashboard may still be starting: {url} (log: {log_path})")
     else:
         print(f"Dashboard: {url}")
@@ -147,7 +165,53 @@ def launch_dashboard_daemon(
     return 0
 
 
-def _wait_for_dashboard(lock_file: Path, proc: subprocess.Popen, fallback_url: str) -> str:
+def lock_matches_project(lock: dict, project: Path) -> bool:
+    """Return True only when a dashboard lock serves ``project``.
+
+    Older locks did not always record ``project_path``. In that case, query the
+    running dashboard's config endpoint before reusing the URL; this prevents a
+    copied/stale lock from opening a previous deck's dashboard.
+    """
+    raw_project = str(lock.get("project_path") or "").strip()
+    if raw_project and _same_project_path(raw_project, project):
+        return True
+
+    config_project = _dashboard_config_project(lock)
+    if config_project and _same_project_path(config_project, project):
+        return True
+
+    return False
+
+
+def _same_project_path(raw_path: str, project: Path) -> bool:
+    try:
+        return Path(raw_path).resolve() == project.resolve()
+    except OSError:
+        return False
+
+
+def _dashboard_config_project(lock: dict) -> str | None:
+    url = _lock_url(lock)
+    config_url = f"{url.rstrip('/')}/api/config"
+    try:
+        with urllib.request.urlopen(config_url, timeout=1.2) as response:
+            if response.status >= 500:
+                return None
+            payload = json.loads(response.read().decode("utf-8"))
+    except (OSError, TimeoutError, json.JSONDecodeError, UnicodeDecodeError):
+        return None
+    if isinstance(payload, dict):
+        raw = payload.get("project_path")
+        return str(raw) if raw else None
+    return None
+
+
+def _wait_for_dashboard(
+    lock_file: Path,
+    proc: subprocess.Popen,
+    fallback_url: str,
+    project: Path,
+) -> str:
     deadline = time.time() + READY_TIMEOUT_SECONDS
     last_url = fallback_url
     while time.time() < deadline:
@@ -156,9 +220,9 @@ def _wait_for_dashboard(lock_file: Path, proc: subprocess.Popen, fallback_url: s
         current = read_lock(lock_file)
         if current:
             last_url = _lock_url(current)
-            if _url_ready(last_url):
+            if _url_ready_for_project(last_url, project):
                 return last_url
-        elif _url_ready(last_url):
+        elif _url_ready_for_project(last_url, project):
             return last_url
         time.sleep(0.2)
     return last_url
@@ -170,6 +234,13 @@ def _url_ready(url: str) -> bool:
             return response.status < 500
     except (urllib.error.URLError, TimeoutError, OSError):
         return False
+
+
+def _url_ready_for_project(url: str, project: Path) -> bool:
+    config_project = _dashboard_config_project({"url": url})
+    if config_project:
+        return _same_project_path(config_project, project)
+    return False
 
 
 def _lock_url(lock: dict) -> str:

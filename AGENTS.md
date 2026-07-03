@@ -45,6 +45,7 @@ PPT Master is an AI-driven presentation generation system. Multi-role collaborat
 
 - **Repo-wide style rules** — when editing prompt files under [`skills/ppt-master/references/`](skills/ppt-master/references/), Python under [`skills/ppt-master/scripts/`](skills/ppt-master/scripts/), or any other code/prose in the repo, follow the matching style rule in [`docs/rules/`](docs/rules/).
 - **Markdown language consistency** — Markdown files under `skills/ppt-master/workflows/`, `skills/ppt-master/references/`, and `docs/` are currently single-language per directory. New files mirror the language of their siblings; do not mix English scaffolding with Chinese paragraphs (or vice versa) inside one file. Chat replies are unaffected.
+- **Temporary development artifacts** — `projects/` is the user PPT workspace, not a general scratch area. Development experiments, smoke outputs, logs, and validation folders must follow [`docs/rules/agent-governance.md`](docs/rules/agent-governance.md) §5 and use a gitignored repo-local temp area by default.
 
 ## Compatibility Boundary
 
@@ -52,6 +53,7 @@ PPT Master is an AI-driven presentation generation system. Multi-role collaborat
 - Do NOT assume generic-project conventions like `.worktrees/`, `tests/`, or mandatory branch setup unless the user explicitly requests them.
 - On conflict with a generic coding skill, prioritize [`skills/ppt-master/SKILL.md`](skills/ppt-master/SKILL.md) inside this repository.
 - For local Codex work, keep the project boundary at `C:/Users/FUTIAN/Desktop/DeepPPT`; do not write outside this repository unless the user explicitly approves it.
+- Do not create temporary test projects directly under `projects/` unless the code under test requires a valid PPT project layout. If required, use a disposable prefix (`_smoke_`, `_tmp_`, or `_agent_`), stop services, and remove the directory before finishing unless the final response explicitly lists why it was retained.
 - Treat `.env`, local browser/session files, credentials, and production deployment settings as sensitive; never print, modify, or move them unless the user explicitly asks.
 - Do not run publish, deploy, destructive cleanup, commit, or push commands without explicit user approval.
 

@@ -59,3 +59,25 @@ When editing a summary document:
 | Audit reports | Read for findings and migration plans; do not treat recommendations as already approved |
 
 **Required status**: new design drafts should declare `Status`, `Authority`, and `Implemented in` in the first screen.
+
+---
+
+## 5. Temporary Development Artifacts
+
+`projects/` is a user workspace first. Agents must not use it as a general scratch directory for code experiments, Dashboard / Confirm UI smoke runs, validation logs, or one-off reproduction folders.
+
+**Default location**: use a gitignored repository-local temporary directory such as `.tmp/` or `.codex-tmp/` for development artifacts that do not require the PPT project layout. Do not write temporary files outside the repository unless the user explicitly approves it.
+
+**Allowed `projects/` exception**: use `projects/_smoke_*`, `projects/_tmp_*`, or `projects/_agent_*` only when the code under test requires a valid PPT project structure or project-relative behavior. The prefix marks the folder as disposable; it does not make cleanup optional.
+
+**Hard rules**:
+
+1. Never create an agent-only temporary project with an unprefixed user-looking name.
+2. Every temporary directory created by an agent must use one of these disposable basenames: `_smoke_*`, `_tmp_*`, or `_agent_*`.
+3. Before finishing, stop any Dashboard, Confirm UI, live preview, local HTTP server, or other service started for validation.
+4. Before finishing, remove the temporary directories and logs the agent created.
+5. If a temporary directory must be retained to reproduce a bug, the final response must list its absolute path, why it is retained, and the exact cleanup command.
+6. Never delete a project directory unless its resolved absolute path is inside this repository and its basename starts with `_smoke_`, `_tmp_`, or `_agent_`.
+7. Never bulk-clean `projects/`; report suspicious temporary directories and ask for user confirmation before deleting historical folders.
+
+**Safe deletion check**: before deleting any temporary project, resolve the absolute path and verify both conditions are true: it is under `<repo>/projects/`, and the basename starts with an approved disposable prefix. If either check fails, stop.

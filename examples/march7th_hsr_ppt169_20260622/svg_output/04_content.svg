@@ -19,7 +19,7 @@
     <line x1="60" y1="98" x2="360" y2="98" stroke="#D4789C" stroke-width="2" stroke-opacity="0.3" />
 
     <!-- 核心视觉区：内容页专属 AI 图 -->
-    <image href="images/P04_content_bg.png" x="60" y="115" width="1160" height="425" preserveAspectRatio="xMidYMid slice" />
+    <image href="../images/P04_content_bg.png" x="60" y="115" width="1160" height="425" preserveAspectRatio="xMidYMid slice" />
 
     <!-- 图片下方补充说明文字 -->
     <text x="60" y="570" fill="#6B6B80" font-family="&quot;Microsoft YaHei&quot;, Arial, sans-serif"

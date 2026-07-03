@@ -127,13 +127,31 @@ def _wait_for_result(
         time.sleep(0.5)
 
 
-def _result_stage(result_file: Path) -> Optional[str]:
-    """Return the ``stage`` field of result.json (``tier1`` / ``final``), or None."""
+def _result_stage(result_file: Path, *, min_mtime: Optional[float] = None) -> Optional[str]:
+    """Return the ``stage`` field of a fresh result.json, or None."""
+    if min_mtime is not None:
+        try:
+            if result_file.stat().st_mtime < min_mtime:
+                return None
+        except OSError:
+            return None
     try:
         data = json.loads(result_file.read_text(encoding='utf-8'))
     except (OSError, json.JSONDecodeError):
         return None
     return data.get('stage') if isinstance(data, dict) else None
+
+
+def _recommendations_tier(rec_file: Path) -> Optional[int]:
+    """Return the recommendations tier, or None when unavailable."""
+    try:
+        data = json.loads(rec_file.read_text(encoding='utf-8'))
+    except (OSError, json.JSONDecodeError):
+        return None
+    if not isinstance(data, dict):
+        return None
+    tier = data.get('tier')
+    return tier if isinstance(tier, int) else None
 
 
 _ANCHOR_RECOMMEND_KEYS = ('canvas', 'mode', 'visual_style', 'delivery_purpose')
@@ -160,30 +178,67 @@ def _merge_confirmed_anchors(data: dict, result_file: Path) -> None:
             data[key] = {'value': res.get(key) or ''}
 
 
+def _write_confirm_lock(lock_file: Path, project_path: Path, port: int) -> None:
+    """Record runtime metadata for Dashboard bridges and cleanup commands."""
+    try:
+        lock_file.write_text(
+            json.dumps({
+                'pid': os.getpid(),
+                'port': port,
+                'url': f'http://localhost:{port}',
+                'project_path': str(project_path.resolve()),
+                'started_at': time.strftime('%Y-%m-%dT%H:%M:%S'),
+            }),
+            encoding='utf-8',
+        )
+    except OSError:
+        pass
+
+
 def _wait_only_for_result(
     result_file: Path,
     lock_file: Path,
+    rec_file: Path,
     timeout: int,
 ) -> int:
     """Attach to an already-running confirm server and wait for the **final**
     (tier-2) result.json — the second leg of the two-tier flow."""
     logger.info('waiting for tier-2 browser confirmation...')
+    try:
+        min_mtime = rec_file.stat().st_mtime
+    except OSError:
+        logger.error(
+            '%s not found — write tier-2 recommendations.json before --wait-only',
+            rec_file,
+        )
+        return 1
+    if _recommendations_tier(rec_file) != 2:
+        logger.error(
+            '%s is not a tier-2 recommendations payload — rewrite it with '
+            'tier=2 before running --wait-only',
+            rec_file,
+        )
+        return 1
     deadline = None if timeout <= 0 else time.time() + timeout
     while True:
-        if _result_stage(result_file) == 'final':
+        if _result_stage(result_file, min_mtime=min_mtime) == 'final':
             logger.info('tier-2 confirmation received: %s', result_file)
             return 0
 
         lock = _read_lock(lock_file)
         pid = int((lock or {}).get('pid', 0) or 0)
         if not pid or not _process_alive(pid):
-            logger.error('confirm server is no longer running before tier 2 was confirmed')
+            logger.error(
+                'confirm server is no longer running before a fresh tier-2 '
+                'confirmation was written; restart Step 4 or use chat fallback'
+            )
             return 1
 
         if deadline is not None and time.time() >= deadline:
             logger.error(
                 'timed out waiting for tier-2 confirmation — the page may still '
-                'be open; re-check %s before falling back to chat', result_file,
+                'be open; re-check %s before falling back to chat, then run '
+                '--shutdown to clear the Step 4 service', result_file,
             )
             return 124
 
@@ -352,6 +407,8 @@ def create_app(
 
     @app.before_request
     def _update_activity():
+        if request.path == '/api/recommendations' and request.args.get('poll') == 'tier2':
+            return
         app.config['LAST_REQUEST_TIME'] = time.time()
 
     def _exit_with_lock_release(code: int = 0) -> None:
@@ -510,6 +567,7 @@ def main(argv: Optional[list[str]] = None) -> int:
         return _wait_only_for_result(
             project_path / CONFIRM_DIR_NAME / RESULT_NAME,
             project_path / LOCK_FILE_NAME,
+            project_path / CONFIRM_DIR_NAME / RECOMMENDATIONS_NAME,
             args.wait_timeout,
         )
 
@@ -588,6 +646,7 @@ def main(argv: Optional[list[str]] = None) -> int:
             existing_pid, existing_port, existing_port, existing_pid,
         )
         return 1
+    _write_confirm_lock(lock_file, project_path, args.port)
     atexit.register(_release_lock, lock_file)
 
     def _on_sigterm(signum: int, _frame) -> None:

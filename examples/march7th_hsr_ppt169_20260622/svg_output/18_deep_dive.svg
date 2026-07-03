@@ -4,7 +4,7 @@
   <rect x="0" y="0" width="1280" height="720" fill="#F8F4F0"/>
 
   <!-- Top 35% image -->
-  <image href="images/web_assets/dd_p18_timeline.png" x="0" y="0" width="1280" height="252" preserveAspectRatio="xMidYMid slice"/>
+  <image href="../images/web_assets/dd_p18_timeline.png" x="0" y="0" width="1280" height="252" preserveAspectRatio="xMidYMid slice"/>
   <rect x="0" y="0" width="1280" height="252" fill="#F8F4F0" fill-opacity="0.4"/>
 
   <!-- Bottom text area (y=300-680) -->

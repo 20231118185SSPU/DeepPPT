@@ -42,7 +42,11 @@ if str(_DASHBOARD_DIR) not in sys.path:
     sys.path.insert(0, str(_DASHBOARD_DIR))
 
 from console_encoding import configure_utf8_stdio  # noqa: E402
-from dashboard_launcher import find_safe_port, launch_dashboard_daemon  # noqa: E402
+from dashboard_launcher import (  # noqa: E402
+    find_safe_port,
+    launch_dashboard_daemon,
+    lock_matches_project,
+)
 from server_common import (  # noqa: E402
     claim_lock,
     process_alive,
@@ -387,10 +391,26 @@ def main(argv: Optional[list[str]] = None) -> int:
     port = find_safe_port(args.port, args.host)
     existing = claim_lock(lock_file, port)
     if existing:
-        running_port = existing.get("port")
-        running_url = existing.get("url") or f"http://127.0.0.1:{running_port}/"
-        print(f"Dashboard already running: {running_url}", file=sys.stderr)
-        return 1
+        if not lock_matches_project(existing, project):
+            try:
+                lock_file.unlink(missing_ok=True)
+            except OSError:
+                pass
+            existing = claim_lock(lock_file, port)
+        if existing and lock_matches_project(existing, project):
+            running_port = existing.get("port")
+            running_url = existing.get("url") or f"http://127.0.0.1:{running_port}/"
+            print(f"Dashboard already running: {running_url}", file=sys.stderr)
+            return 1
+        if existing:
+            running_port = existing.get("port")
+            running_url = existing.get("url") or f"http://127.0.0.1:{running_port}/"
+            print(
+                "Dashboard lock points at a different project and could not be replaced. "
+                f"Existing URL: {running_url}",
+                file=sys.stderr,
+            )
+            return 1
 
     bus = EventBus()
     app = create_app(project, bus)

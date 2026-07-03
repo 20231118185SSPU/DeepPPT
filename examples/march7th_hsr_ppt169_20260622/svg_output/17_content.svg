@@ -22,7 +22,7 @@
 
     <!-- 核心视觉区：带边框变体 -->
     <rect x="56" y="116" width="1168" height="418" fill="none" stroke="#D0C8D8" stroke-width="1" stroke-opacity="0.3" rx="6" />
-    <image href="images/P17_content_bg.png" x="60" y="120" width="1160" height="410" preserveAspectRatio="xMidYMid slice" />
+    <image href="../images/P17_content_bg.png" x="60" y="120" width="1160" height="410" preserveAspectRatio="xMidYMid slice" />
 
     <!-- 图片下方补充说明文字 -->
     <text x="60" y="565" fill="#6B6B80" font-family="&quot;Microsoft YaHei&quot;, Arial, sans-serif"

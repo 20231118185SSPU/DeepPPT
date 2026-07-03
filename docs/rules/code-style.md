@@ -267,7 +267,7 @@ def classify_license(
 
 - Inline smoke commands via `python3 -c "..."` against real project samples; show the output in the conversation / PR description
 - Manual verification steps in the runbook
-- Live-API smoke runs against `projects/_smoke_*` directories (gitignored)
+- Development smoke artifacts use `.tmp/` or `.codex-tmp/` by default; live-API smoke may use `projects/_smoke_*` only when a valid PPT project layout is required. Clean up anything created before finishing, following [`agent-governance.md`](./agent-governance.md) §5.
 
 This is a deliberate project convention. When external contributors include tests, ask them to remove tests in PR review (see [`docs/rules/prompt-style.md`](./prompt-style.md) §11 for the parallel rule on reference docs).
 

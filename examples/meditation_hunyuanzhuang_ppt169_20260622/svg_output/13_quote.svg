@@ -1,6 +1,6 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1280 720" width="1280" height="720">
   <rect width="1280" height="720" fill="#F5F0E6"/>
-  <image href="images/P13_quote_bg.png" x="0" y="0" width="1280" height="720" preserveAspectRatio="xMidYMid slice"/>
+  <image href="../images/P13_quote_bg.png" x="0" y="0" width="1280" height="720" preserveAspectRatio="xMidYMid slice"/>
   <rect x="0" y="0" width="1280" height="720" fill="#F5F0E6" fill-opacity="0.82"/>
   <line x1="540" y1="250" x2="740" y2="250" stroke="#789262" stroke-width="1.5"/>
   <text x="640" y="290" text-anchor="middle" font-family="KaiTi, Georgia, serif" font-size="36" fill="#2D2D2D">无听之以耳而听之以心，</text>

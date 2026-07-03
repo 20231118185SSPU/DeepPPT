@@ -141,10 +141,11 @@ def check_help(script_path: Path, python: str) -> tuple[bool, str]:
 
 
 def dashboard_e2e_smoke(scripts_dir: Path) -> tuple[bool, str]:
-    """Create a temporary project, start Dashboard, read state, then shut down."""
+    """Start two project dashboards and verify each URL serves its own project."""
     repo_root = scripts_dir.parents[2]
     projects_dir = repo_root / "projects"
-    project = None
+    projects: list[Path] = []
+    urls: list[str] = []
     stage = "init"
     try:
         from project_manager import ProjectManager
@@ -152,52 +153,77 @@ def dashboard_e2e_smoke(scripts_dir: Path) -> tuple[bool, str]:
 
         projects_dir.mkdir(parents=True, exist_ok=True)
         stamp = datetime.now().strftime("%Y%m%d_%H%M%S")
-        name = f"_smoke_dashboard_{stamp}_{uuid.uuid4().hex[:6]}"
         manager = ProjectManager(projects_dir)
-        project = Path(manager.init_project(name, "ppt169")).resolve()
+        for suffix in ("a", "b"):
+            name = f"_smoke_dashboard_{stamp}_{suffix}_{uuid.uuid4().hex[:6]}"
+            projects.append(Path(manager.init_project(name, "ppt169")).resolve())
 
         stage = "launch"
-        result = launch_dashboard_daemon(project, port=8765, no_browser=True)
-        if result != 0:
-            return False, f"launch returned {result}; project={project}"
+        for project in projects:
+            result = launch_dashboard_daemon(project, port=8765, no_browser=True)
+            if result != 0:
+                return False, f"launch returned {result}; project={project}"
 
         stage = "lock"
-        lock = _wait_for_lock(project / ".dashboard.lock")
-        if not lock:
-            return False, f"dashboard lock not found; project={project}; log={_dashboard_log(project)}"
-        port = int(lock.get("port", 0) or 0)
-        url = str(lock.get("url") or f"http://127.0.0.1:{port}/")
-        if not port:
-            return False, f"dashboard lock missing port; project={project}; log={_dashboard_log(project)}"
+        for project in projects:
+            lock = _wait_for_lock(project / ".dashboard.lock")
+            if not lock:
+                return False, f"dashboard lock not found; project={project}; log={_dashboard_log(project)}"
+            port = int(lock.get("port", 0) or 0)
+            url = str(lock.get("url") or f"http://127.0.0.1:{port}/")
+            if not port:
+                return False, f"dashboard lock missing port; project={project}; log={_dashboard_log(project)}"
+            urls.append(url)
+        if urls[0].rstrip("/") == urls[1].rstrip("/"):
+            return False, f"dashboards reused one URL for two projects: {urls[0]}"
 
         stage = "state"
-        state = _get_json(f"{url.rstrip('/')}/api/state")
-        missing = [
-            key for key in (
-                "project_name",
-                "project_path",
-                "canvas_format",
-                "steps",
-                "current_step",
-                "confirm_ui",
-                "live_preview",
-            )
-            if key not in state
-        ]
-        if missing:
-            return False, f"/api/state missing {missing}; url={url}; log={_dashboard_log(project)}"
+        for project, url in zip(projects, urls):
+            config = _get_json(f"{url.rstrip('/')}/api/config")
+            if Path(str(config.get("project_path") or "")).resolve() != project:
+                return False, f"/api/config project mismatch; url={url}; project={project}"
+            state = _get_json(f"{url.rstrip('/')}/api/state")
+            missing = [
+                key for key in (
+                    "project_name",
+                    "project_path",
+                    "canvas_format",
+                    "steps",
+                    "current_step",
+                    "confirm_ui",
+                    "live_preview",
+                )
+                if key not in state
+            ]
+            if missing:
+                return False, f"/api/state missing {missing}; url={url}; log={_dashboard_log(project)}"
+            if Path(str(state.get("project_path") or "")).resolve() != project:
+                return False, f"/api/state project mismatch; url={url}; project={project}"
 
         stage = "shutdown"
-        _post_json(f"{url.rstrip('/')}/api/shutdown")
-        if not _wait_for_down(f"{url.rstrip('/')}/api/state"):
-            return False, f"dashboard still responds after shutdown; url={url}; log={_dashboard_log(project)}"
+        for project, url in zip(projects, urls):
+            _post_json(f"{url.rstrip('/')}/api/shutdown")
+            if not _wait_for_down(f"{url.rstrip('/')}/api/state"):
+                return False, f"dashboard still responds after shutdown; url={url}; log={_dashboard_log(project)}"
 
         stage = "cleanup"
-        if project.name.startswith("_smoke_dashboard_"):
+        for project in projects:
             shutil.rmtree(project)
-        return True, f"PASS dashboard-e2e url={url} log={_dashboard_log(project)}"
+        return True, f"PASS dashboard-e2e urls={', '.join(urls)}"
     except Exception as exc:
-        return False, f"dashboard-e2e failed at {stage}: {type(exc).__name__}: {exc}; project={project}"
+        return False, f"dashboard-e2e failed at {stage}: {type(exc).__name__}: {exc}; projects={projects}"
+    finally:
+        for url in urls:
+            try:
+                _post_json(f"{url.rstrip('/')}/api/shutdown", timeout=1.0)
+            except (urllib.error.URLError, TimeoutError, OSError):
+                pass
+        for project in projects:
+            if project.name.startswith("_smoke_dashboard_") and project.exists():
+                try:
+                    shutil.rmtree(project)
+                except OSError:
+                    pass
 
 
 def _wait_for_lock(lock_path: Path, timeout: float = 10.0) -> dict | None:

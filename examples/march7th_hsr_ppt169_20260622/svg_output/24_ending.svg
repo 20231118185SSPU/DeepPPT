@@ -1,6 +1,6 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1280 720">
   <!-- Full-bleed background -->
-  <image href="images/P24_ending_bg.png" x="0" y="0" width="1280" height="720"/>
+  <image href="../images/P24_ending_bg.png" x="0" y="0" width="1280" height="720"/>
   <!-- Overlay -->
   <rect x="0" y="0" width="1280" height="720" fill="#2D2D3D" fill-opacity="0.25"/>
 

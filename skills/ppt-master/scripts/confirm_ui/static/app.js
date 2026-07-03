@@ -1683,7 +1683,7 @@
     // Poll the recommendations endpoint (no-store) until the AI overwrites it with
     // the re-derived Tier 2, then render Tier 2 in the same session.
     function pollForTier2() {
-        fetch("/api/recommendations", { cache: "no-store" })
+        fetch("/api/recommendations?poll=tier2&ts=" + Date.now(), { cache: "no-store" })
             .then(function (r) { if (!r.ok) throw new Error("poll failed"); return r.json(); })
             .then(function (data) {
                 if (data && data.tier === 2) { enterTier2(data); }
