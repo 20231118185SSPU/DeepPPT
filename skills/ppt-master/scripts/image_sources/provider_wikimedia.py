@@ -1,13 +1,30 @@
 """Wikimedia Commons provider.
 
-Zero-config (no API key required). Strong on educational, scientific,
-geographic, and historical imagery; weaker on contemporary stock-style
-photography and people.
+Purpose:
+    Search Wikimedia Commons through ``image_search.py`` for educational,
+    scientific, geographic, and historical imagery. Contemporary stock-style
+    photography and people are usually weaker matches.
 
-Uses the MediaWiki API's ``generator=search`` mode to combine fulltext
-search with imageinfo/extmetadata in a single round trip.
+License policy:
+    Accepts CC0/Public Domain as ``no-attribution`` and CC BY/CC BY-SA as
+    ``attribution-required``. Rejects noncommercial, no-derivatives,
+    all-rights-reserved, and unknown licenses via shared classification.
 
-API docs: https://www.mediawiki.org/wiki/API:Search
+Configuration/API keys:
+    None.
+
+Dependencies:
+    ``requests`` plus shared provider primitives.
+
+Public API:
+    ``search`` and ``parse_results``.
+
+Special notes:
+    Uses the MediaWiki API's ``generator=search`` mode to combine fulltext
+    search with imageinfo/extmetadata in a single round trip.
+
+API docs:
+    https://www.mediawiki.org/wiki/API:Search
 """
 
 from __future__ import annotations

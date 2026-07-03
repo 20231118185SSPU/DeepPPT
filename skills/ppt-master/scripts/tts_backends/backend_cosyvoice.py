@@ -1,4 +1,25 @@
-"""Alibaba CosyVoice backend for narration audio generation."""
+"""Alibaba CosyVoice backend for narration audio generation.
+
+Purpose:
+    Generate PPT narration audio through DashScope CosyVoice and download the
+    returned audio asset.
+
+Used by:
+    ``notes_to_audio.py`` when the ``cosyvoice`` narration backend is selected.
+
+Configuration:
+    Reads the caller-provided key variable, ``COSYVOICE_API_KEY``, or
+    ``DASHSCOPE_API_KEY``. ``COSYVOICE_TTS_BASE_URL`` or a direct ``base_url``
+    argument may override the default endpoint.
+
+Dependencies:
+    Standard library plus shared helpers from ``tts_backends.backend_common``.
+
+Public API:
+    ``DEFAULT_ENDPOINT``, ``DEFAULT_MODEL``, ``output_extension``,
+    ``read_cosyvoice_api_key``, ``resolve_url``, ``generate``, and
+    ``print_voices``.
+"""
 
 from __future__ import annotations
 

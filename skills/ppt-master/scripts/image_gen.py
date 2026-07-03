@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-Unified Image Generation Tool
+PPT Master - Image Generation Tool
 
 Dispatches to the appropriate backend based on explicit provider configuration.
 
@@ -41,7 +41,17 @@ Usage:
   python3 image_gen.py "prompt" --aspect_ratio 16:9 --image_size 1K -o images/
   python3 image_gen.py --manifest project/images/image_prompts.json -o project/images/
   python3 image_gen.py --list-backends
+
+Examples:
+  python3 scripts/image_gen.py "product render on white" --aspect_ratio 16:9 -o projects/demo/images
+  python3 scripts/image_gen.py --manifest projects/demo/images/image_prompts.json
+
+Dependencies:
+  requests and the configured image backend dependencies; provider SDKs are
+  loaded lazily by backend modules when required.
 """
+
+from __future__ import annotations
 
 import argparse
 import concurrent.futures

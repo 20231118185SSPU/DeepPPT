@@ -23,6 +23,10 @@ Examples:
     python3 scripts/finalize_svg.py projects/my_project
     python3 scripts/finalize_svg.py examples/ppt169_demo --only embed-icons
 
+Dependencies:
+    Standard library and internal svg_finalize helpers; Pillow is required by
+    the image alignment/embed helper.
+
 Processing options:
     embed-icons   - Replace <use data-icon="..."/> with actual icon SVG
     align-images  - Align (slice/meet) and Base64-embed all <image> in one pass.
@@ -33,6 +37,8 @@ Processing options:
     fix-rounded   - Convert <rect rx="..."/> to <path> (for PPT shape conversion)
     fix-layout    - Auto-fix text overflow by reducing font-size (up to 2 passes)
 """
+
+from __future__ import annotations
 
 import os
 import sys

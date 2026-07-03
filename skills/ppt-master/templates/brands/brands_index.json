@@ -1,14 +1,17 @@
 {
   "anthropic": {
     "summary": "Anthropic brand identity — AI/LLM tech talks, developer conferences, technical training, product launches",
+    "summary_zh": "Anthropic 品牌识别：适合 AI/LLM 技术分享、开发者大会、技术培训和产品发布。",
     "primary_color": "#D97757"
   },
   "event_presentation": {
     "summary": "Event / launch presentation — dark dramatic keynote style. Product launches, press events, stage presentations, demo days. Apple WWDC / Google I/O inspired.",
+    "summary_zh": "发布会/活动演示品牌：深色舞台感 keynote 风格，适合产品发布、媒体活动、Demo Day 和大型舞台演讲。",
     "primary_color": "#58A6FF"
   },
   "google": {
     "summary": "Google brand identity — multi-product corporate decks, developer events (Google I/O style), education and training in the Google ecosystem",
+    "summary_zh": "Google 品牌识别：适合多产品企业介绍、开发者活动、Google I/O 风格演示和生态培训。",
     "primary_color": "#4285F4"
   }
 }

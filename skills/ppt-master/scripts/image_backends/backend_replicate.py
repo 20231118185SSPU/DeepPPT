@@ -2,11 +2,28 @@
 """
 Replicate image generation backend.
 
-Configuration keys:
-  REPLICATE_API_KEY / REPLICATE_API_TOKEN   (required)
-  REPLICATE_BASE_URL                        (optional)
-  REPLICATE_MODEL                           (optional)
+Purpose:
+    Submit PPT Master image prompts to Replicate model predictions and download
+    the completed output image.
+
+Used by:
+    image_gen.py when the selected image backend is "replicate".
+
+Configuration:
+    REPLICATE_API_KEY / REPLICATE_API_TOKEN  Required API key.
+    REPLICATE_BASE_URL                       Optional API base URL override.
+    REPLICATE_MODEL                          Optional owner/name model override.
+
+Dependencies:
+    requests; image_backends.backend_common.
+
+Public API:
+    generate(prompt, aspect_ratio="1:1", image_size="1K", output_dir=None,
+             filename=None, model=None, max_retries=MAX_RETRIES,
+             reference_image=None) -> str
 """
+
+from __future__ import annotations
 
 import sys
 

@@ -1,4 +1,24 @@
-"""MiniMax T2A backend for narration audio generation."""
+"""MiniMax T2A backend for narration audio generation.
+
+Purpose:
+    Generate PPT narration audio through MiniMax T2A v2 and decode the returned
+    hex audio payload into an MP3 or WAV file.
+
+Used by:
+    ``notes_to_audio.py`` when the ``minimax`` narration backend is selected.
+
+Configuration:
+    Callers choose the API-key environment variable. ``MINIMAX_TTS_BASE_URL`` or
+    a direct ``base_url`` argument may override the default endpoint.
+
+Dependencies:
+    Standard library plus shared helpers from ``tts_backends.backend_common``.
+
+Public API:
+    ``DEFAULT_ENDPOINT``, ``DEFAULT_MODEL``, ``output_extension``,
+    ``read_minimax_api_key``, ``resolve_url``, ``generate``, and
+    ``print_voices``.
+"""
 
 from __future__ import annotations
 

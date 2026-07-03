@@ -2,6 +2,7 @@
 layout_id: psychology_attachment
 kind: layout
 summary: Psychotherapy training, academic lectures, counseling case analysis, professional sharing.
+summary_zh: 心理咨询培训、学术讲座、咨询案例分析和专业分享；温和人文取向。
 canvas_format: ppt169
 page_count: 5
 page_types: [cover, toc, chapter, content, ending]

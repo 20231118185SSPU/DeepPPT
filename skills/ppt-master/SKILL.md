@@ -23,7 +23,7 @@ description: >
 > 3. **NO CROSS-PHASE BUNDLING** — Cross-phase bundling is FORBIDDEN. (Note: the Eight Confirmations in Step 4 are ⛔ BLOCKING — the AI MUST present recommendations and wait for explicit user confirmation before proceeding. Once the user confirms, all subsequent non-BLOCKING steps — design spec output, SVG generation, speaker notes, and post-processing — may proceed automatically without further user confirmation)
 > 4. **GATE BEFORE ENTRY** — Each Step has prerequisites (🚧 GATE) listed at the top; these MUST be verified before starting that Step
 > 5. **NO SPECULATIVE EXECUTION** — "Pre-preparing" content for subsequent Steps is FORBIDDEN (e.g., writing SVG code during the Strategist phase)
-> 6. **NO SUB-AGENT SVG GENERATION** — Executor Step 6 SVG generation is context-dependent and MUST be completed by the current main agent end-to-end. Delegating page SVG generation to sub-agents is FORBIDDEN
+> 6. **NO SUB-AGENT SVG GENERATION** — Executor Step 6 initial per-page SVG authoring is context-dependent and MUST be completed by the current main agent end-to-end. Delegating page SVG generation to sub-agents is FORBIDDEN. The later `visual-review` workflow may still perform its own constrained review / atomic-fix protocol when that workflow explicitly calls for it
 > 7. **SEQUENTIAL PAGE GENERATION ONLY** — In Executor Step 6, after the global design context is confirmed, SVG pages MUST be generated sequentially page by page in one continuous pass. Grouped page batches (for example, 5 pages at a time) are FORBIDDEN
 > 8. **SPEC_LOCK RE-READ PER PAGE** — Before generating each SVG page, Executor MUST `read_file <project_path>/spec_lock.md`. All colors / fonts / icons / images MUST come from this file — no values from memory or invented on the fly. Executor MUST also look up the current page's `page_rhythm` (`anchor` / `dense` / `breathing`), `page_layouts` (which template SVG to inherit, if any), and `page_charts` (which chart template to adapt, if any). Empty / absent entries are intentional Strategist signals — see executor-base.md §2.1. Also see executor-base.md §2.1a for narrative restatement. This rule exists to resist context-compression drift on long decks and to break the uniform "every page is a card grid" default
 > 9. **SVG MUST BE HAND-WRITTEN, NOT SCRIPT-GENERATED** — Every SVG page is written by the main agent directly, one page at a time (see rules 6 and 7). Writing or running a Python / Node / shell script that produces the SVG files in batch — looping over pages, templating from data, or emitting them via a generator — is FORBIDDEN, including under "save tokens", "quick draft", or "user is in a hurry" pretexts. The script-generation path was tried on a feature branch and abandoned: cross-page visual consistency depends on per-page authoring with full upstream context, which a generator script cannot reproduce
@@ -58,7 +58,7 @@ description: >
 | `${SKILL_DIR}/scripts/latex_render.py` | LaTeX formula rendering (manifest-driven PNG assets) |
 | `${SKILL_DIR}/scripts/image_gen.py` | AI image generation (multi-provider) |
 | `${SKILL_DIR}/scripts/image_search.py` | Web image search (batch mode for deep-dive page assets) |
-| `${SKILL_DIR}/scripts/research/research_gate.py` | Deep-research depth gate — run after Step 7 before sync |
+| `${SKILL_DIR}/scripts/research/research_gate.py` | Deep-research depth gate — run after deep-research Step 7 before sync |
 | `${SKILL_DIR}/scripts/research/asset_gate.py` | Research/image asset gate — run after image acquisition before Executor |
 | `${SKILL_DIR}/scripts/dashboard/server.py` | Unified read-only Dashboard — project status, artifacts, quality reports, trace, Confirm / Live Preview bridges |
 | `${SKILL_DIR}/scripts/confirm_ui/server.py` | Step 4 Eight Confirmations — interactive visual confirmation page |
@@ -100,6 +100,8 @@ For complete tool documentation, see `${SKILL_DIR}/scripts/README.md`.
 | Visualization templates | `${SKILL_DIR}/templates/charts/charts_index.json` | Query available visualization SVG templates (charts, infographics, diagrams, frameworks) |
 | Icon library | `${SKILL_DIR}/templates/icons/` | See `${SKILL_DIR}/templates/icons/README.md`; search icons on demand with `ls templates/icons/<library>/ \| grep <keyword>` |
 
+Discovery quality contract: every new global `layout` / `deck` template must provide `summary` and `summary_zh` in `design_spec.md` frontmatter, register those fields into the JSON index, and ship at least one root-level `.svg` preview page. Dashboard / Confirm UI depend on these fields for bilingual summaries and clickable template previews. Identity-only `brand` presets should also provide `summary_zh`; SVG logo previews are optional.
+
 ## Standalone Workflows
 
 | Workflow | Path | Purpose |
@@ -113,6 +115,7 @@ For complete tool documentation, see `${SKILL_DIR}/scripts/README.md`.
 | `resume-execute` | `workflows/resume-execute.md` | Phase B entry — resume execution in a fresh chat after Phase A (Step 1–5) completed in another session (split mode) |
 | `verify-charts` | `workflows/verify-charts.md` | Chart coordinate calibration — run after SVG generation if the deck contains data charts |
 | `customize-animations` | `workflows/customize-animations.md` | Object-level PPTX animation customization — run only when the user explicitly asks to tune animation order/effects/timing |
+| `generate-audio` | `workflows/generate-audio.md` | Recorded narration / video export — run after post-processing when the user asks for narrated or video output |
 | `live-preview` | `workflows/live-preview.md` | Browser-based live preview — auto-started during generation and re-enterable any time the user mentions "live preview", "preview", "看效果", or wants to click/select a slide element |
 | `visual-review` | `workflows/visual-review.md` | Per-page rubric-based visual self-check — recommended by default after quality gates pass (between Executor and post-processing). Skip with explicit user opt-out ("跳过视觉自检" / "skip visual review"). |
 | `batch-review` | `workflows/batch-review.md` | Optional batch-by-batch generation with intermediate user visual feedback. Activate: "分批审阅" / "batch review". |
@@ -144,7 +147,7 @@ Ambiguous requests such as "make this PPT more professional" or "optimize this d
 
 🚧 **GATE**: User has provided source material (PDF / DOCX / EPUB / URL / Markdown file / text description / conversation content — any form is acceptable).
 
-> **No source content?** When the user supplies only a topic name or requirements without any file or substantive description, run [`ppt-briefing`](workflows/ppt-briefing.md) first. It creates `ppt_brief.md` and `ppt_brief.json` in the project root and is ⛔ BLOCKING: wait for explicit user confirmation before any research. After the Brief is confirmed, run the [`deep-research`](workflows/deep-research.md) orchestrator (7-step research flow) with `ppt_brief.json` as upstream constraint, then return here with its products as input. Source files (PDF/DOCX/URL) also go through deep-research — the search steps are skipped only when the source already satisfies the research depth contract; analysis/narrative/visual strategy still run.
+> **No source content?** When the user supplies only a topic name or requirements without any file or substantive description, run [`ppt-briefing`](workflows/ppt-briefing.md) first. It creates `ppt_brief.md` and `ppt_brief.json` in the project root and is ⛔ BLOCKING: wait for explicit user confirmation before any research. After the Brief is confirmed, run the [`deep-research`](workflows/deep-research.md) orchestrator (7-step research flow) with `ppt_brief.json` as upstream constraint, then return here with its products as input. The briefing-created project folder remains the canonical `<project_path>` for the rest of the pipeline; do not initialize a second project for the same topic-only route. Source files (PDF/DOCX/URL) also go through deep-research — the search steps are skipped only when the source already satisfies the research depth contract; analysis/narrative/visual strategy still run.
 >
 > **Hard rule**: Do not replace `deep-research` with the agent's built-in WebSearch. Built-in WebSearch is only a recorded fallback inside `deep-research` Step 3 after planned browser / platform / Agent-Reach search paths fail or return low-quality output.
 
@@ -226,9 +229,9 @@ python3 ${SKILL_DIR}/scripts/dashboard/server.py <project_path> --daemon
 - Default local behavior is to auto-open the browser. Add `--no-browser` only for headless/remote sessions or when the user explicitly asks not to pop a window.
 - If a Dashboard is already running for this project, the launcher reuses the existing lock URL and does not start a duplicate service.
 - Logs are written to `<project_path>/dashboard/dashboard.log`.
-- Report the actual Dashboard URL and log path in the Step 2 checkpoint. If the browser cannot auto-open, still print the URL for the user/developer to open manually.
+- Report the actual Dashboard URL, port, project path, and log path in the Step 2 checkpoint. If the browser cannot auto-open, still print the URL for the user/developer to open manually. Never rely on the default `8765` assumption in chat.
 - Launch failure is non-fatal: print the warning and continue the PPT pipeline. Dashboard availability must never block Step 4 confirmation, Step 6 SVG generation, quality gates, post-processing, or export.
-- Dashboard remains read-only by default. It must not auto-confirm, auto-generate, auto-export, or apply annotations; Confirm UI, Live Preview, and quality actions still require their own workflow gates and explicit user action.
+- Dashboard remains read-only by default. It is the unified visibility and bridge entry for service status, actual URLs/ports, logs, template previews, Confirm UI, and Live Preview. It must not auto-confirm, auto-generate, auto-export, or apply annotations; Confirm UI, Live Preview, and quality actions still require their own workflow gates and explicit user action.
 
 **✅ Checkpoint — Confirm project structure created successfully, `sources/` contains all source files, converted materials are ready, and Dashboard URL/log path were reported (or a non-fatal launch warning was reported).**
 
@@ -305,6 +308,9 @@ The architecture has three independent reference bundles. Full schema in [`docs/
 
 ```bash
 TEMPLATE_DIR=<user-supplied path>
+# POSIX shell example (`bash`, Git Bash, WSL). In Windows PowerShell, use the
+# equivalent Copy-Item / Get-ChildItem / Move-Item operations with literal paths;
+# keep the same split: bitmaps to images/, non-image template assets to templates/.
 # Bitmaps join the project's single runtime image pool (images/, referenced as
 # ../images/); the spec + template SVGs + other non-image assets stay in
 # templates/ as design reference the Strategist/Executor read but never render.
@@ -418,16 +424,16 @@ Read references/strategist.md
    ```bash
    python3 ${SKILL_DIR}/scripts/confirm_ui/server.py <project_path> --daemon --wait
    ```
-   Page opens at `http://localhost:5050` — the **same port as the Step 6 live preview** (they never run at once: this page shuts down at the end of Step 4, freeing the port). If another project already holds 5050, the launcher **auto-advances to the next free port** (5051, …) and serves this project there — read the actual URL from the launch log and report that.
+   Page opens at `http://localhost:5050` — the **same port as the Step 6 live preview** (they never run at once: this page shuts down at the end of Step 4, freeing the port). If another project already holds 5050, the launcher **auto-advances to the next free port** (5051, …) and serves this project there — read the actual URL, port, project path, and `<project_path>/confirm_ui/server.log` from the launch output and report them before asking the user to use the page.
    
-   **Two-tier confirmation flow**: the page presents confirmations in two tiers. **Tier 1 (Anchors)**: Canvas · Audience · Mode · Visual_style. When the user clicks **Next**, the `--wait` command returns with `result.json` containing `stage: "tier1"`, `status: "tier1-confirmed"`. The AI immediately re-derives Tier-2 candidates (color, typography, image strategy, page count, icons, formula policy, generation mode, refine-spec) based on the user's actual Tier-1 choices, overwrites `recommendations.json` with `tier: 2`, and launches the second wait:
+   **Two-tier confirmation flow**: the page presents confirmations in two tiers. **Tier 1 (Anchors)**: Canvas · Audience · Mode · Visual_style. When the user clicks **Next**, the `--wait` command returns with `result.json` containing `stage: "tier1"`, `status: "tier1-confirmed"`. The page shows an in-browser transition state while it waits for Tier 2. The AI immediately re-derives Tier-2 candidates (color, typography, image strategy, page count, icons, formula policy, generation mode, refine-spec, template/design-expectation preview) based on the user's actual Tier-1 choices, overwrites `recommendations.json` with `tier: 2`, and launches the second wait:
    ```bash
    python3 ${SKILL_DIR}/scripts/confirm_ui/server.py <project_path> --wait-only
    ```
-   The page polls `/api/recommendations` until the re-derived Tier-2 payload arrives, then renders the realization sections. When the user clicks **Confirm**, the `--wait-only` command returns with `result.json` containing `stage: "final"`, `status: "confirmed"`. 
+   The page polls `/api/recommendations` until the re-derived Tier-2 payload arrives, then renders the realization sections with a visible return path to Tier 1. When the user clicks **Confirm**, the `--wait-only` command returns with `result.json` containing `stage: "final"`, `status: "confirmed"`.
    
    **Launch or wait failure is non-fatal**: if it fails or times out (flask missing, port blocked, no GUI / remote / web host, browser never confirms in time), do **NOT** troubleshoot. The detached page stays open, so a slow user may confirm after the wait returns — therefore **on any non-zero exit, re-check `<project_path>/confirm_ui/result.json` once (a fresh `status: confirmed` or `status: tier1-confirmed`) before** dropping to the chat-summary fallback below.
-3. **Always also print the eight recommendations as a short summary in chat, with the actual URL from the launch log.** This keeps the chat fallback valid whether or not the browser opened. If the page never appears, the user simply confirms or edits in chat as before. If the launch command was not attempted, do not proceed; write `recommendations.json` and launch or explicitly honor a user opt-out.
+3. **Always also print the eight recommendations as a short summary in chat, with the actual URL, port, project path, and log path from the launch output.** This keeps the chat fallback valid whether or not the browser opened. If the page never appears, the user simply confirms or edits in chat as before. If the launch command was not attempted, do not proceed; write `recommendations.json` and launch or explicitly honor a user opt-out.
 4. This is the ⛔ BLOCKING wait. Preferred page path: the `--wait` / `--wait-only` commands return after the page writes a fresh `<project_path>/confirm_ui/result.json` with `stage: "final"`; immediately read that file and use its values. On a non-zero exit, re-check `result.json` once (per step 2) — a fresh `status: confirmed` still wins. Chat fallback path: only if no fresh result exists (page didn't open, wait timed out with no confirmation, or the user replies in chat with edits) take the chat values directly and write an equivalent `<project_path>/confirm_ui/result.json` with `status: "confirmed"`, `stage: "final"`, `confirmed_at`, `fallback_confirmed: true`, and the same fields the UI would have returned. Either path converges. A confirmed `result.json` is an explicit user choice: `generation_mode: "split"` means split mode was chosen; `refine_spec: true` means the refine-spec workflow was chosen. If `template_selection.action == "apply_template"`, stop here: apply the selected explicit path through Step 3, regenerate Step 4 recommendations, and re-confirm. Do not write `design_spec.md` from the current confirmation.
 5. **Close the confirm page (Mandatory cleanup — every path).** Once you have the confirmed values (page **or** chat), shut the confirm server down before leaving Step 4 so it cannot keep holding port 5050 (which Step 6 live preview reuses):
    ```bash
@@ -621,7 +627,7 @@ Read references/visual-styles/<locked-style>.md   # aesthetic (spec_lock.md `vis
 ```bash
 python3 ${SKILL_DIR}/scripts/svg_editor/server.py <project_path> --live
 ```
-- Start it immediately when Executor begins; `svg_output/` may be empty. Editor opens at `http://localhost:5050`; if another project already holds it, the launcher **auto-advances to the next free port** — read the actual URL from the launch log and report that.
+- Start it immediately when Executor begins; `svg_output/` may be empty. Editor opens at `http://localhost:5050`; if another project already holds it, the launcher **auto-advances to the next free port** — read the actual URL, port, project path, and `<project_path>/live_preview/server.log` from the launch output and report them before generating the first SVG.
 - Run it as a long-running side process/session; do not wait for it to exit before generating SVG pages. Do not wait for user confirmation after startup.
 - **Service must keep running** until one of: (a) the user clicks **Exit preview** in the browser, or (b) the user explicitly asks in chat to stop it. Generation continues even if the user closes the editor.
 - **Do NOT read or apply submitted annotations during generation.** Users may annotate at any time, but Executor proceeds without touching them. The window to apply annotations opens only after Step 7 completes — see [`workflows/live-preview.md`](workflows/live-preview.md).
@@ -635,22 +641,19 @@ python3 ${SKILL_DIR}/scripts/svg_editor/server.py <project_path> --live
 
 > ⚠️ **Main-agent only**: SVG generation MUST stay in the current main agent — page design depends on full upstream context. Do NOT delegate to sub-agents.
 > ⚠️ **Generation rhythm**: generate pages sequentially, one at a time, in the same continuous context. Do NOT batch (e.g., 5 per group).
+> ⚠️ **Needs-Manual dependency check**: if Step 5 left any `Needs-Manual` image row and the planned SVG layout depends on that file, pause before authoring the dependent SVG and wait for the user to place the file in `project/images/<filename>`. The Step 7 image readiness gate is only a final fallback for unresolved manual assets, not the normal time to discover a broken dependency.
 
 **Visual Construction Phase**: generate SVG pages sequentially, one at a time, in one continuous pass → `<project_path>/svg_output/`
 
 **Quality Check Gate (Mandatory)** — after all SVGs, BEFORE annotation handling and speaker notes:
 
-> **Auto-gates (run before presenting to user)**: Static gates MUST pass first; rendered visual gate or an explicit human visual confirmation is also required before export.
+> **Canonical auto-gate sequence (run before presenting to user)**: Static gates MUST pass first; rendered visual gate or an explicit human visual confirmation is also required before export. Run exactly these four commands, in this order:
 > If any fails, fix before presenting to user.
 > 1. `python3 ${SKILL_DIR}/scripts/spec_compliance_check.py <project_path>`
 > 2. `python3 ${SKILL_DIR}/scripts/svg_quality_checker.py <project_path>`
 > 3. `python3 ${SKILL_DIR}/scripts/harness_gate.py <project_path> --quick`
 > 4. `python3 ${SKILL_DIR}/scripts/rendered_layout_check.py <project_path> --render`
 
-```bash
-python3 ${SKILL_DIR}/scripts/svg_quality_checker.py <project_path>
-python3 ${SKILL_DIR}/scripts/spec_compliance_check.py <project_path>
-```
 - **svg_quality_checker**: XML structure, banned features, viewBox, spec_lock drift (undeclared colors/fonts/sizes).
 - **spec_compliance_check**: semantic compliance — unused declared colors, missing templates, icon inventory, image usage. Complements the structural checker with inverse-direction validation.
 - **harness_gate --quick**: aggregated static shortcut — spec compliance + SVG quality; e2e is skipped.
@@ -662,7 +665,7 @@ python3 ${SKILL_DIR}/scripts/spec_compliance_check.py <project_path>
 
 **Logic Construction Phase**: generate speaker notes → `<project_path>/notes/total.md`
 
-**✅ Checkpoint — Confirm all SVGs and notes are fully generated and quality-checked. Proceed directly to Step 7 post-processing**:
+**✅ Checkpoint — Confirm all SVGs and notes are fully generated and quality-checked, then complete the chart / visual-review interlocks below before Step 7 post-processing**:
 ```markdown
 ## ✅ Executor Phase Complete
 - [x] Live preview started and kept available at the reported URL

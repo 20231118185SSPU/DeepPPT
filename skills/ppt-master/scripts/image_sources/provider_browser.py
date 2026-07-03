@@ -1,17 +1,35 @@
 """Browser-based image search provider using Playwright.
 
-Falls back when API providers (Openverse / Wikimedia / Pexels / Pixabay) fail
-or return poor-quality candidates. Also provides URL screenshot capture for
-deep-dive product/page slides.
+Purpose:
+    Provide the fallback search path for ``image_search.py`` when API
+    providers fail or return poor-quality candidates. Also captures URL
+    screenshots for deep-dive product/page slides.
 
-Features:
-  - Multi-engine search: Google Images, Bing Images, Yandex
-  - Multi-dimensional query expansion from rich reference text
-  - CLIP-based semantic filtering (graceful fallback when unavailable)
-  - URL screenshot capture for specific product pages
-  - Stealth headers to avoid bot detection
-  - 3-second render wait for JS-heavy pages
-  - Output: 1920x1080 JPEG, ≤300KB after compression
+License policy:
+    Browser results are marked as
+    ``Browser License (verify before public use)`` because search-engine
+    image results do not provide a reliable reusable license. Captured URL
+    screenshots inherit the source page's rights and must be verified before
+    public use.
+
+Configuration/API keys:
+    No API keys. Optional search engines are Google Images, Bing Images, and
+    Yandex. Specific URL screenshot targets are passed by the caller.
+
+Dependencies:
+    Requires Playwright with Chromium installed. Uses ``requests`` and
+    ``Pillow`` for image validation/compression. Optionally uses
+    ``transformers`` and ``torch`` for CLIP relevance scoring; falls back to
+    metadata scoring when unavailable.
+
+Public API:
+    ``search``, ``capture_url_screenshots``, ``expand_query_dimensions``,
+    ``score_image_relevance``, ``SUPPORTED_ENGINES``, and
+    ``LICENSE_TIER_BROWSER``.
+
+Special notes:
+    Applies stealth headers, waits for JavaScript-heavy pages to render, and
+    emits 1920x1080-or-smaller JPEG assets compressed toward 300KB.
 """
 
 from __future__ import annotations

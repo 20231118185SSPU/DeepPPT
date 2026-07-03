@@ -55,14 +55,15 @@ Full guide → [Templates Guide](./templates-guide.md)
 The whole loop is three steps. Install first — you only need Python; see [Quick Start](../README.md#quick-start).
 
 1. **Drop your source material** into `projects/` — a PDF, DOCX, Markdown file, a URL, or just text you'll paste.
-2. **Tell the AI in chat** what to turn into a deck (add a template path if you set one up above; otherwise it's free design):
+2. **Tell the AI in chat** what to turn into a deck (add a template path if you set one up above; otherwise it's free design). If you only provide a topic, the AI first writes a PPT Brief and waits for your confirmation before research:
    ```
    You: Make a deck from projects/q3-report/sources/report.pdf
    You: 把这份内容做成 PPT：<paste your text>
+   You: Make a deck about the commercialization outlook for quantum computing
    ```
 3. **Get an editable `.pptx`** at `exports/<name>_<timestamp>.pptx` — real DrawingML shapes, text boxes, and charts you can click and edit in PowerPoint, Keynote, WPS, or LibreOffice.
 
-Before it starts, the AI confirms a short design spec (template, format, page count, …); from there it handles content analysis, layout, image acquisition, SVG generation, and export — the core loop everything else builds on.
+Before generation, the AI runs the Eight Confirmations (Confirm UI by default, chat fallback if needed) to lock template, format, page count, visual direction, image strategy, and related choices. From there it handles content analysis, layout, image acquisition, SVG generation, quality gates, and export — the core loop everything else builds on.
 
 ---
 

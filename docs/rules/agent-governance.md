@@ -1,7 +1,7 @@
 # AI Agent Governance Rules
 
 > Scope: AI entry files, routing summaries, and design-draft boundaries. Applies to `AGENTS.md`, `docs/routing.md`, `docs/ai-rules-shared.md`, `docs/ai-router-design.md`, and `docs/design/*`.
-> Status: draft governance rule. It guides low-risk documentation work but does not override `AGENTS.md`, `SKILL.md`, or owning workflow files.
+> Status: active repository rule adopted by `AGENTS.md` for AI entry summaries and governance work. It does not override `AGENTS.md`, `SKILL.md`, or owning workflow files.
 
 These rules govern where agent-facing behavior may be stated. They do not replace `AGENTS.md`, `skills/ppt-master/SKILL.md`, or the owning workflow files.
 

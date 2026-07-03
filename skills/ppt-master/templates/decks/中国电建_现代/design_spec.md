@@ -2,6 +2,7 @@
 deck_id: 中国电建_现代
 kind: deck
 summary: Major engineering reports, international market promotion, technology achievement showcases, high-end business negotiations.
+summary_zh: 重大工程汇报、国际市场推广、科技成果展示和高端商务谈判；现代化工程蓝风格。
 canvas_format: ppt169
 page_count: 5
 primary_color: "#00418D"

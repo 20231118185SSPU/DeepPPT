@@ -11,6 +11,13 @@ Usage:
     python3 scripts/memory_manager.py reset <project_path> --intent academic
     python3 scripts/memory_manager.py reset <project_path> --force
     python3 scripts/memory_manager.py export <project_path> -o output.json
+
+Examples:
+    python3 scripts/memory_manager.py show projects/demo_ppt169_20260101
+    python3 scripts/memory_manager.py consolidate projects/demo_ppt169_20260101
+
+Dependencies:
+    Standard library and the internal memory package.
 """
 
 from __future__ import annotations
@@ -36,7 +43,7 @@ from memory.profile_store import ProfileStore  # noqa: E402
 
 def _load_store(project_path: Path) -> MemoryStore | None:
     """Attempt to load the memory store; return *None* if absent."""
-    return ProfileStore.load(project_path)
+    return ProfileStore(project_path).load()
 
 
 def _ts_display(ts: str | None) -> str:
@@ -64,8 +71,13 @@ def _confirm_reset_all() -> None:
 def _cmd_show(args: argparse.Namespace) -> int:
     """Display all intent profiles in the memory store."""
     project_path = Path(args.project_path)
-    store = _load_store(project_path)
-    if store is None or not store.profiles:
+    ps = ProfileStore(project_path)
+    if not ps.exists():
+        print('No memory found. Run a PPT generation first.')
+        return 0
+
+    summary = ps.get_intent_summary()
+    if not summary:
         print('No memory found. Run a PPT generation first.')
         return 0
 
@@ -76,24 +88,21 @@ def _cmd_show(args: argparse.Namespace) -> int:
     print(sep)
 
     # Sort by last_used descending (most recent first)
-    sorted_profiles = sorted(
-        store.profiles.values(),
-        key=lambda p: p.last_used or '',
+    sorted_summary = sorted(
+        summary,
+        key=lambda r: r["last_used"] or '',
         reverse=True,
     )
-    for profile in sorted_profiles:
-        job_count = len(profile.jobs)
-        last = _ts_display(profile.last_used)
-        # Collect top 3 preference keys from the most recent job (if any)
-        top_prefs = ''
-        if profile.preferences:
-            keys = list(profile.preferences.keys())[:3]
-            top_prefs = ', '.join(keys)
-        print(f'{profile.intent:<20} {job_count:>5}  {last:<16}  {top_prefs}')
+    for row in sorted_summary:
+        intent = row["intent"]
+        job_count = row["job_count"]
+        last = _ts_display(row["last_used"])
+        top_prefs = ", ".join(row["top_prefs"])
+        print(f'{intent:<20} {job_count:>5}  {last:<16}  {top_prefs}')
 
     print(sep)
-    total = sum(len(p.jobs) for p in store.profiles.values())
-    print(f'Total intents: {len(store.profiles)}, total jobs: {total}')
+    total = sum(row["job_count"] for row in summary)
+    print(f'Total intents: {len(summary)}, total jobs: {total}')
     return 0
 
 
@@ -101,7 +110,7 @@ def _cmd_load(args: argparse.Namespace) -> int:
     """Load and display a specific intent profile and its memory prompt."""
     project_path = Path(args.project_path)
     store = _load_store(project_path)
-    if store is None or not store.profiles:
+    if store is None or not store.intents:
         print('No memory found. Run a PPT generation first.')
         return 0
 
@@ -109,7 +118,7 @@ def _cmd_load(args: argparse.Namespace) -> int:
     if not intent:
         # Pick the most recently used profile
         sorted_profiles = sorted(
-            store.profiles.values(),
+            store.intents.values(),
             key=lambda p: p.last_used or '',
             reverse=True,
         )
@@ -119,9 +128,9 @@ def _cmd_load(args: argparse.Namespace) -> int:
         intent = sorted_profiles[0].intent
         print(f'(No --intent specified; showing most recent: {intent})\n')
 
-    profile = store.profiles.get(intent)
+    profile = store.intents.get(intent)
     if profile is None:
-        available = ', '.join(sorted(store.profiles.keys())) or '(none)'
+        available = ', '.join(sorted(store.intents.keys())) or '(none)'
         print(f'No profile found for intent "{intent}".', file=sys.stderr)
         print(f'Available intents: {available}', file=sys.stderr)
         return 1
@@ -129,13 +138,26 @@ def _cmd_load(args: argparse.Namespace) -> int:
     # Print profile details
     print(f'Intent:     {profile.intent}')
     print(f'Last used:  {_ts_display(profile.last_used)}')
-    print(f'Jobs:       {len(profile.jobs)}')
-    print(f'Preferences ({len(profile.preferences)}):')
-    for key, pref in profile.preferences.items():
-        val = pref.value if hasattr(pref, 'value') else pref
-        conf = pref.confidence if hasattr(pref, 'confidence') else ''
-        conf_str = f'  (confidence: {conf})' if conf else ''
-        print(f'  {key}: {val}{conf_str}')
+    print(f'Jobs:       {profile.job_count}')
+
+    # Flatten and print preferences from all categories
+    user_profile = profile.profile
+    prefs_list = []
+    for attr in ("theme", "content", "layout", "visual", "general"):
+        pref = getattr(user_profile, attr)
+        if not pref.values:
+            continue
+        for key, val in pref.values.items():
+            if isinstance(val, list):
+                val_str = ", ".join(str(v) for v in val)
+            else:
+                val_str = str(val)
+            conf_str = f'  (confidence: {pref.confidence})' if pref.confidence else ''
+            prefs_list.append((key, f'{val_str}{conf_str}'))
+
+    print(f'Preferences ({len(prefs_list)}):')
+    for key, val_str in prefs_list:
+        print(f'  {key}: {val_str}')
 
     # Print the memory prompt
     try:
@@ -194,7 +216,7 @@ def _cmd_consolidate(args: argparse.Namespace) -> int:
     intent = confirmations.get('intent') or confirmations.get('mode') or 'general'
 
     try:
-        updated = consolidate(project_path, intent, confirmations)
+        updated = consolidate(project_path, intent)
     except Exception as exc:
         print(f'Error during consolidation: {exc}', file=sys.stderr)
         return 1
@@ -213,7 +235,7 @@ def _cmd_reset(args: argparse.Namespace) -> int:
     project_path = Path(args.project_path)
     store = _load_store(project_path)
 
-    if store is None or not store.profiles:
+    if store is None or not store.intents:
         print('No memory found. Nothing to reset.')
         return 0
 
@@ -224,21 +246,21 @@ def _cmd_reset(args: argparse.Namespace) -> int:
         if not args.force:
             _confirm_reset_all()
             return 1
-        store.profiles.clear()
+        store.intents.clear()
         store.version = 1
-        ProfileStore.save(project_path, store)
+        ProfileStore(project_path).save(store)
         print('All memory profiles have been reset.')
         return 0
 
     # Single-intent reset
-    if intent not in store.profiles:
-        available = ', '.join(sorted(store.profiles.keys())) or '(none)'
+    if intent not in store.intents:
+        available = ', '.join(sorted(store.intents.keys())) or '(none)'
         print(f'No profile found for intent "{intent}".', file=sys.stderr)
         print(f'Available intents: {available}', file=sys.stderr)
         return 1
 
-    del store.profiles[intent]
-    ProfileStore.save(project_path, store)
+    del store.intents[intent]
+    ProfileStore(project_path).save(store)
     print(f'Profile for intent "{intent}" has been reset.')
     return 0
 
@@ -248,7 +270,7 @@ def _cmd_export(args: argparse.Namespace) -> int:
     project_path = Path(args.project_path)
     store = _load_store(project_path)
 
-    if store is None or not store.profiles:
+    if store is None or not store.intents:
         print('No memory found. Nothing to export.')
         return 0
 
@@ -264,9 +286,9 @@ def _cmd_export(args: argparse.Namespace) -> int:
         # Last resort: build a plain dict manually
         data = {
             'version': store.version,
-            'profiles': {
+            'intents': {
                 intent: _profile_to_dict(p)
-                for intent, p in store.profiles.items()
+                for intent, p in store.intents.items()
             },
         }
 

@@ -2,6 +2,7 @@
 layout_id: pixel_retro
 kind: layout
 summary: Tech talks, programming tutorials, game introductions, geek-style showcases.
+summary_zh: 技术分享、编程教程、游戏介绍和极客风展示；像素复古视觉。
 canvas_format: ppt169
 page_count: 5
 page_types: [cover, toc, chapter, content, ending]

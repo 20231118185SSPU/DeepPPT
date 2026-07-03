@@ -1,4 +1,22 @@
-"""edge-tts backend for narration audio generation."""
+"""edge-tts backend for narration audio generation.
+
+Purpose:
+    Generate MP3 narration with Microsoft Edge neural voices via ``edge-tts``.
+
+Used by:
+    ``notes_to_audio.py`` when the ``edge`` narration backend is selected.
+
+Configuration:
+    Callers provide ``voice`` and ``rate``. No API key is required.
+
+Dependencies:
+    Optional third-party package ``edge-tts`` is imported lazily by generation
+    and voice-listing helpers.
+
+Public API:
+    ``edge_output_extension``, ``normalize_rate``, ``generate``,
+    ``print_common_voices``, and ``print_voices``.
+"""
 
 from __future__ import annotations
 

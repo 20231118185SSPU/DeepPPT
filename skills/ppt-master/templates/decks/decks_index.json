@@ -1,48 +1,56 @@
 {
   "中国电信": {
     "summary": "China Telecom related briefings, 政企数字化方案, 转型规划, 内部汇报.",
+    "summary_zh": "中国电信相关汇报、政企数字化方案、转型规划和内部汇报；红色品牌导向。",
     "canvas_format": "ppt169",
     "page_count": 5,
     "primary_color": "#C00000"
   },
   "中国电建_常规": {
     "summary": "Engineering project reports, technical proposal presentations, business negotiations, corporate promotion, annual summaries.",
+    "summary_zh": "工程项目汇报、技术方案、商务谈判、企业宣传和年度总结；稳健工程蓝风格。",
     "canvas_format": "ppt169",
     "page_count": 5,
     "primary_color": "#00418D"
   },
   "中国电建_现代": {
     "summary": "Major engineering reports, international market promotion, technology achievement showcases, high-end business negotiations.",
+    "summary_zh": "重大工程汇报、国际市场推广、科技成果展示和高端商务谈判；现代化工程蓝风格。",
     "canvas_format": "ppt169",
     "page_count": 5,
     "primary_color": "#00418D"
   },
   "中汽研_商务": {
     "summary": "Product certification display, evaluation presentations, technology promotion, high-end business reporting.",
+    "summary_zh": "产品认证展示、测评汇报、技术推广和高端商务汇报；偏商务展示。",
     "canvas_format": "ppt169",
     "page_count": 5,
     "primary_color": "#003366"
   },
   "中汽研_常规": {
     "summary": "Product certification display, evaluation presentations, technology promotion, business visits.",
+    "summary_zh": "产品认证展示、测评汇报、技术推广和商务参访；常规企业汇报风格。",
     "canvas_format": "ppt169",
     "page_count": 5,
     "primary_color": "#004098"
   },
   "中汽研_现代": {
     "summary": "Forward-looking technology showcases, strategic releases, high-end business reporting.",
+    "summary_zh": "前瞻技术展示、战略发布和高端商务汇报；现代深色科技感。",
     "canvas_format": "ppt169",
     "page_count": 5,
     "primary_color": "#001529"
   },
   "招商银行": {
     "summary": "交易银行产品介绍、销售收款方案汇报、客户案例拆解、分行培训材料.",
+    "summary_zh": "交易银行产品介绍、销售收款方案汇报、客户案例拆解和分行培训材料；招行红黑品牌风格。",
     "canvas_format": "ppt169",
     "page_count": 5,
     "primary_color": "#C8152D"
   },
   "重庆大学": {
     "summary": "Academic defense, research reports, teaching presentations, scholarly exchange.",
+    "summary_zh": "学术答辩、研究报告、教学展示和学术交流；重庆大学品牌风格。",
     "canvas_format": "ppt169",
     "page_count": 5,
     "primary_color": "#006BB7"

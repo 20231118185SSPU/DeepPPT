@@ -1,4 +1,7 @@
+#!/usr/bin/env python3
 """
+PPT Master - Layout Capacity Check
+
 Estimate whether planned slide copy can fit standard layout zones.
 
 Lightweight pre-check: reads detailed_outline.json and spec_lock.md,
@@ -8,7 +11,15 @@ BEFORE Executor begins SVG generation.
 Adapted from PPT Hell's estimate_layout_capacity.py for DeepPPT's schema.
 
 Usage:
-  python layout_capacity_check.py <project_path> [--output <path>] [--format json|text]
+    python3 scripts/layout_capacity_check.py <project_path> [--output <path>]
+    python3 scripts/layout_capacity_check.py <project_path> --format json
+
+Examples:
+    python3 scripts/layout_capacity_check.py projects/demo_deck
+    python3 scripts/layout_capacity_check.py projects/demo_deck --output quality/layout_capacity.json
+
+Dependencies:
+    None (only uses standard library)
 """
 
 import argparse

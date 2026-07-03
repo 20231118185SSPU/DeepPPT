@@ -2,11 +2,28 @@
 """
 SiliconFlow image generation backend.
 
-Configuration keys:
-  SILICONFLOW_API_KEY   (required)
-  SILICONFLOW_BASE_URL  (optional)
-  SILICONFLOW_MODEL     (optional)
+Purpose:
+    Generate PPT Master image assets through SiliconFlow image generation
+    endpoints.
+
+Used by:
+    image_gen.py when the selected image backend is "siliconflow".
+
+Configuration:
+    SILICONFLOW_API_KEY   Required API key.
+    SILICONFLOW_BASE_URL  Optional API base URL override.
+    SILICONFLOW_MODEL     Optional model override.
+
+Dependencies:
+    requests; image_backends.backend_common.
+
+Public API:
+    generate(prompt, aspect_ratio="1:1", image_size="1K", output_dir=None,
+             filename=None, model=None, max_retries=MAX_RETRIES,
+             reference_image=None) -> str
 """
+
+from __future__ import annotations
 
 import sys
 

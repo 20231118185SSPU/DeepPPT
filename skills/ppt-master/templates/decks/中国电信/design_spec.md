@@ -2,6 +2,7 @@
 deck_id: 中国电信
 kind: deck
 summary: China Telecom related briefings, 政企数字化方案, 转型规划, 内部汇报.
+summary_zh: 中国电信相关汇报、政企数字化方案、转型规划和内部汇报；红色品牌导向。
 canvas_format: ppt169
 page_count: 5
 primary_color: "#C00000"

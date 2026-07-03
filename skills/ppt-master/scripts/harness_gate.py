@@ -11,7 +11,16 @@ Usage:
     python3 scripts/harness_gate.py <project_path> --quick
     python3 scripts/harness_gate.py <project_path> --quick --read-only
     python3 scripts/harness_gate.py <project_path> --json
+
+Examples:
+    python3 scripts/harness_gate.py projects/demo_deck --quick
+    python3 scripts/harness_gate.py projects/demo_deck --json
+
+Dependencies:
+    Local dashboard trace_writer.py and sibling gate scripts; otherwise standard library.
 """
+
+from __future__ import annotations
 
 import argparse
 import json

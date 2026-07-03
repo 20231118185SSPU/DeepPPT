@@ -36,6 +36,7 @@ from flask import Flask, Response, jsonify, request, send_from_directory
 
 _DASHBOARD_DIR = Path(__file__).resolve().parent
 _SCRIPTS_DIR = _DASHBOARD_DIR.parent
+_SKILL_DIR = _DASHBOARD_DIR.parents[1]
 if str(_SCRIPTS_DIR) not in sys.path:
     sys.path.insert(0, str(_SCRIPTS_DIR))
 if str(_DASHBOARD_DIR) not in sys.path:
@@ -56,7 +57,7 @@ from server_common import (  # noqa: E402
 
 from artifact_registry import list_artifacts  # noqa: E402
 from actions import command_preview, get_action, run_action  # noqa: E402
-from bridge import confirm_ui_status, live_preview_status  # noqa: E402
+from bridge import dashboard_status, confirm_ui_status, live_preview_status  # noqa: E402
 from content_viewer import artifact_detail, resolve_project_file  # noqa: E402
 from event_bus import EventBus, stream_events  # noqa: E402
 from quality_reader import load_check, quality_report  # noqa: E402
@@ -163,6 +164,27 @@ def create_app(project_path: Path, bus: EventBus) -> Flask:
         except FileNotFoundError:
             return jsonify({"error": "artifact not found"}), 404
         return send_from_directory(path.parent, path.name)
+
+    @app.route("/template-file/<kind>/<template_id>/<path:filename>")
+    def template_file(kind: str, template_id: str, filename: str):
+        base_dirs = {
+            "brand": _SKILL_DIR / "templates" / "brands",
+            "layout": _SKILL_DIR / "templates" / "layouts",
+            "deck": _SKILL_DIR / "templates" / "decks",
+        }
+        base = base_dirs.get(kind)
+        if base is None:
+            return jsonify({"error": "invalid template kind"}), 400
+        root = (base / template_id).resolve()
+        target = (root / filename).resolve()
+        try:
+            target.relative_to(root)
+        except ValueError:
+            return jsonify({"error": "path escapes template directory"}), 400
+        if not target.is_file() or target.suffix.lower() != ".svg":
+            return jsonify({"error": "template preview not found"}), 404
+        return send_from_directory(target.parent, target.name)
+
     @app.route("/api/log")
     def api_log():
         step = request.args.get("step")
@@ -198,6 +220,7 @@ def create_app(project_path: Path, bus: EventBus) -> Flask:
             },
             "sse_url": "/api/events",
             "refresh_interval": 5000,
+            "dashboard": dashboard_status(project),
             "catalogs": None,
         })
 
@@ -336,6 +359,7 @@ def _open_browser(url: str) -> None:
 
 
 def _write_runtime_lock(lock_file: Path, project: Path, port: int, url: str) -> None:
+    log_path = project / "dashboard" / "dashboard.log"
     try:
         lock_file.write_text(
             json.dumps({
@@ -343,6 +367,7 @@ def _write_runtime_lock(lock_file: Path, project: Path, port: int, url: str) -> 
                 "port": port,
                 "url": url,
                 "project_path": str(project),
+                "log_path": str(log_path),
                 "started_at": time.strftime("%Y-%m-%dT%H:%M:%S"),
             }),
             encoding="utf-8",
@@ -420,6 +445,9 @@ def main(argv: Optional[list[str]] = None) -> int:
     url = f"http://{display_host}:{port}/"
     _write_runtime_lock(lock_file, project, port, url)
     print(f"Dashboard: {url}")
+    print(f"Dashboard port: {port}")
+    print(f"Dashboard project: {project}")
+    print(f"Dashboard log: {project / 'dashboard' / 'dashboard.log'}")
     if not args.no_browser:
         _open_browser(url)
     try:

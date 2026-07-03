@@ -2,6 +2,7 @@
 layout_id: government_red
 kind: layout
 summary: Government briefings, policy interpretation, work summaries, project introductions, investment promotion.
+summary_zh: 政府简报、政策解读、工作总结、项目介绍和招商推介；红色政务风格。
 canvas_format: ppt169
 page_count: 5
 page_types: [cover, toc, chapter, content, ending]

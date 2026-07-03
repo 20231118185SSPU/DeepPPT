@@ -21,8 +21,8 @@ Shared rules live in `docs/ai-rules-shared.md`; routing details live in `docs/ro
 2. SVG pages are hand-written by the agent, one at a time. Script-generated batch SVGs are forbidden.
 3. Before each SVG page, re-read `spec_lock.md` for colors/fonts/icons/images.
 4. Never directly read/open image files (.jpg, .png). Use `analyze_images.py` output.
-5. Topic-only request (no source file)? → Read `skills/ppt-master/workflows/deep-research.md` first. Do not replace it with ordinary WebSearch.
-6. After Step 2, start or reuse the read-only Dashboard with `python3 skills/ppt-master/scripts/dashboard/server.py <project_path> --daemon --no-browser`; default port `8765`, log `<project_path>/dashboard/dashboard.log`, failure non-fatal.
+5. Topic-only request (no source file)? → Run `skills/ppt-master/workflows/ppt-briefing.md` first, wait for explicit user confirmation, then run `skills/ppt-master/workflows/deep-research.md`. Do not replace deep-research with ordinary WebSearch.
+6. After Step 2, start or reuse the read-only Dashboard with `python3 skills/ppt-master/scripts/dashboard/server.py <project_path> --daemon`; add `--no-browser` only for headless/remote sessions or explicit user request. Default port `8765`, log `<project_path>/dashboard/dashboard.log`, failure non-fatal.
 
 ## Routing Guardrails
 
@@ -39,7 +39,8 @@ Shared rules live in `docs/ai-rules-shared.md`; routing details live in `docs/ro
 python3 skills/ppt-master/scripts/project_manager.py init <name> --format ppt169
 
 # Dashboard observability after Step 2
-python3 skills/ppt-master/scripts/dashboard/server.py <path> --daemon --no-browser
+python3 skills/ppt-master/scripts/dashboard/server.py <path> --daemon
+# Add --no-browser only for headless/remote sessions or explicit user request.
 
 # Eight Confirmations (interactive UI)
 python3 skills/ppt-master/scripts/confirm_ui/server.py <path> --daemon --wait

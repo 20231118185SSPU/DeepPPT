@@ -1,9 +1,25 @@
 """Openverse provider.
 
-Zero-config (no API key required). Indexes openly licensed images across
-Wikimedia, Flickr, museums, and other sources.
+Purpose:
+    Search Openverse through ``image_search.py`` for openly licensed image
+    candidates aggregated from Wikimedia, Flickr, museums, and other sources.
 
-API docs: https://api.openverse.org/v1/
+License policy:
+    Accepts CC0/Public Domain Mark as ``no-attribution`` and CC BY/CC BY-SA
+    as ``attribution-required``. Rejects noncommercial, no-derivatives,
+    all-rights-reserved, and unknown licenses via shared classification.
+
+Configuration/API keys:
+    None.
+
+Dependencies:
+    ``requests`` plus shared provider primitives.
+
+Public API:
+    ``search`` and ``parse_results``.
+
+API docs:
+    https://api.openverse.org/v1/
 """
 
 from __future__ import annotations

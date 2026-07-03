@@ -2,6 +2,7 @@
 deck_id: 中汽研_常规
 kind: deck
 summary: Product certification display, evaluation presentations, technology promotion, business visits.
+summary_zh: 产品认证展示、测评汇报、技术推广和商务参访；常规企业汇报风格。
 canvas_format: ppt169
 page_count: 5
 primary_color: "#004098"

@@ -2,11 +2,28 @@
 """
 Ideogram image generation backend.
 
-Configuration keys:
-  IDEOGRAM_API_KEY   (required)
-  IDEOGRAM_BASE_URL  (optional)
-  IDEOGRAM_MODEL     (optional)
+Purpose:
+    Submit PPT Master image prompts to the Ideogram generation API and download
+    the returned image URL.
+
+Used by:
+    image_gen.py when the selected image backend is "ideogram".
+
+Configuration:
+    IDEOGRAM_API_KEY   Required API key.
+    IDEOGRAM_BASE_URL  Optional API base URL override.
+    IDEOGRAM_MODEL     Optional model override.
+
+Dependencies:
+    requests; image_backends.backend_common.
+
+Public API:
+    generate(prompt, aspect_ratio="1:1", image_size="1K", output_dir=None,
+             filename=None, model=None, max_retries=MAX_RETRIES,
+             reference_image=None) -> str
 """
+
+from __future__ import annotations
 
 import sys
 

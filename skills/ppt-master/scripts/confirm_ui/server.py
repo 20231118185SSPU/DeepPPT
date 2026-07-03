@@ -47,6 +47,7 @@ from flask import Flask, jsonify, request, send_from_directory
 
 # Local — sys.path injection for sibling module (code-style.md §3)
 _SCRIPTS_DIR = Path(__file__).resolve().parent.parent
+_SKILL_DIR = _SCRIPTS_DIR.parent
 if str(_SCRIPTS_DIR) not in sys.path:
     sys.path.insert(0, str(_SCRIPTS_DIR))
 
@@ -187,6 +188,7 @@ def _write_confirm_lock(lock_file: Path, project_path: Path, port: int) -> None:
                 'port': port,
                 'url': f'http://localhost:{port}',
                 'project_path': str(project_path.resolve()),
+                'log_path': str((project_path / CONFIRM_DIR_NAME / 'server.log').resolve()),
                 'started_at': time.strftime('%Y-%m-%dT%H:%M:%S'),
             }),
             encoding='utf-8',
@@ -379,6 +381,10 @@ def _layout_preview(project_path: Path, limit: int = 12) -> dict:
             'page_type': page.get('page_type') or '',
             'layout_suggestion': page.get('layout_suggestion') or '',
             'core_argument': page.get('core_argument') or '',
+            'zones': _preview_zones(
+                str(page.get('page_type') or ''),
+                str(page.get('layout_suggestion') or ''),
+            ),
         })
     return {
         'available': True,
@@ -386,6 +392,40 @@ def _layout_preview(project_path: Path, limit: int = 12) -> dict:
         'pages': preview,
         'total_pages': len(pages),
     }
+
+
+def _preview_zones(page_type: str, suggestion: str) -> list[dict]:
+    """Return coarse layout zones for pre-generation expectation previews."""
+    text = f'{page_type} {suggestion}'.lower()
+    if any(token in text for token in ('chart', 'data', 'dashboard', '图表', '数据')):
+        return [
+            {'kind': 'title', 'label': 'Title', 'x': 7, 'y': 7, 'w': 48, 'h': 10},
+            {'kind': 'text', 'label': 'Text', 'x': 7, 'y': 22, 'w': 28, 'h': 62},
+            {'kind': 'chart', 'label': 'Chart', 'x': 40, 'y': 20, 'w': 53, 'h': 64},
+        ]
+    if any(token in text for token in ('image', 'hero', 'photo', '图片', '配图')):
+        return [
+            {'kind': 'title', 'label': 'Title', 'x': 7, 'y': 7, 'w': 42, 'h': 10},
+            {'kind': 'image', 'label': 'Image', 'x': 52, 'y': 10, 'w': 41, 'h': 74},
+            {'kind': 'text', 'label': 'Text', 'x': 7, 'y': 25, 'w': 38, 'h': 56},
+        ]
+    if any(token in text for token in ('timeline', 'process', 'roadmap', '步骤', '时间线', '流程')):
+        return [
+            {'kind': 'title', 'label': 'Title', 'x': 7, 'y': 7, 'w': 54, 'h': 10},
+            {'kind': 'flow', 'label': 'Flow', 'x': 8, 'y': 38, 'w': 84, 'h': 24},
+            {'kind': 'text', 'label': 'Notes', 'x': 10, 'y': 70, 'w': 80, 'h': 13},
+        ]
+    if any(token in text for token in ('comparison', 'table', 'compare', '对比', '表格')):
+        return [
+            {'kind': 'title', 'label': 'Title', 'x': 7, 'y': 7, 'w': 54, 'h': 10},
+            {'kind': 'text', 'label': 'A', 'x': 8, 'y': 24, 'w': 39, 'h': 58},
+            {'kind': 'text', 'label': 'B', 'x': 53, 'y': 24, 'w': 39, 'h': 58},
+        ]
+    return [
+        {'kind': 'title', 'label': 'Title', 'x': 7, 'y': 7, 'w': 54, 'h': 10},
+        {'kind': 'text', 'label': 'Text', 'x': 8, 'y': 24, 'w': 84, 'h': 18},
+        {'kind': 'text', 'label': 'Blocks', 'x': 8, 'y': 50, 'w': 84, 'h': 34},
+    ]
 
 
 # --- app --------------------------------------------------------------------
@@ -445,6 +485,26 @@ def create_app(
     @app.route('/')
     def index():
         return send_from_directory(app.static_folder, 'index.html')
+
+    @app.route('/template-file/<kind>/<template_id>/<path:filename>')
+    def template_file(kind: str, template_id: str, filename: str):
+        base_dirs = {
+            'brand': _SKILL_DIR / 'templates' / 'brands',
+            'layout': _SKILL_DIR / 'templates' / 'layouts',
+            'deck': _SKILL_DIR / 'templates' / 'decks',
+        }
+        base = base_dirs.get(kind)
+        if base is None:
+            return jsonify({'error': 'invalid template kind'}), 400
+        root = (base / template_id).resolve()
+        target = (root / filename).resolve()
+        try:
+            target.relative_to(root)
+        except ValueError:
+            return jsonify({'error': 'path escapes template directory'}), 400
+        if not target.is_file() or target.suffix.lower() != '.svg':
+            return jsonify({'error': 'template preview not found'}), 404
+        return send_from_directory(target.parent, target.name)
 
     @app.route('/api/catalogs')
     def get_catalogs():
@@ -628,7 +688,11 @@ def main(argv: Optional[list[str]] = None) -> int:
             )
         url = f'http://localhost:{port}'
         logger.info('started confirm UI in background: %s (pid=%s)', url, proc.pid)
+        print(f'Confirm UI URL: {url}')
+        print(f'Confirm UI port: {port}')
+        print(f'Confirm UI project: {project_path}')
         logger.info('log: %s', log_path)
+        print(f'Confirm UI log: {log_path}')
         if args.wait:
             return _wait_for_result(result_file, proc, started_at, args.wait_timeout)
         return 0

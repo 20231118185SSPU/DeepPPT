@@ -1,10 +1,23 @@
 """Pixabay provider.
 
-Requires ``PIXABAY_API_KEY`` in the environment. Pixabay's Content License
-allows commercial use without attribution, so all returned candidates are
-classified as ``no-attribution``.
+Purpose:
+    Search Pixabay through ``image_search.py`` for stock-photo candidates.
 
-API docs: https://pixabay.com/api/docs/
+License policy:
+    Treats Pixabay's Content License as ``no-attribution`` for returned
+    candidates.
+
+Configuration/API keys:
+    Requires ``PIXABAY_API_KEY`` in the environment.
+
+Dependencies:
+    ``requests`` plus shared provider primitives.
+
+Public API:
+    ``search`` and ``parse_results``.
+
+API docs:
+    https://pixabay.com/api/docs/
 """
 
 from __future__ import annotations

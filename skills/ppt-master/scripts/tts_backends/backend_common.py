@@ -1,4 +1,23 @@
-"""Shared helpers for TTS backends."""
+"""Shared helpers for TTS narration backends.
+
+Purpose:
+    Centralize environment-variable lookup, small HTTP JSON helpers, audio
+    downloads, and supported audio-extension validation for provider modules.
+
+Used by:
+    ``notes_to_audio.py`` through the provider modules in ``tts_backends``.
+
+Configuration:
+    Reads API keys from caller-provided environment variable names. Network
+    endpoints and payloads are owned by each provider backend.
+
+Dependencies:
+    Standard library only.
+
+Public API:
+    ``read_api_key``, ``post_json``, ``get_bytes``, ``download_audio``,
+    ``extension_from_format``, and ``read_http_error``.
+"""
 
 from __future__ import annotations
 

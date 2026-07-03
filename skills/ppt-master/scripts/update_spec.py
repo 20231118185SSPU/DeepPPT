@@ -1,10 +1,20 @@
 #!/usr/bin/env python3
-"""Propagate a spec_lock.md value change to both the lock file and svg_output/*.svg.
+"""
+PPT Master - Spec Update Tool
+
+Propagates a supported spec_lock.md value change to both the lock file and
+svg_output/*.svg.
+
+Usage:
+    python3 scripts/update_spec.py <project_path> <key=value> [--dry-run]
 
 Examples:
-    python3 update_spec.py <project_path> primary=#0066AA
-    python3 update_spec.py <project_path> colors.text=#111111
-    python3 update_spec.py <project_path> typography.font_family='"PingFang SC", "Microsoft YaHei", sans-serif'
+    python3 scripts/update_spec.py <project_path> primary=#0066AA
+    python3 scripts/update_spec.py <project_path> colors.text=#111111
+    python3 scripts/update_spec.py <project_path> typography.font_family='"PingFang SC", "Microsoft YaHei", sans-serif'
+
+Dependencies:
+    None (only uses standard library)
 
 v2 scope:
 - `colors.*` — HEX value replacement across svg_output/*.svg (case-insensitive match).

@@ -82,7 +82,7 @@ DeepPPT 为以下 13 个主流 AI Agent 平台提供了项目级配置：
 
 | 平台 | 使用方式 |
 |------|---------|
-| **Claude Code** | 直接打开项目目录，自动读取 `CLAUDE.md`。输入 `/ppt-deep-research` 触发完整流程 |
+| **Claude Code** | 直接打开项目目录，自动读取 `CLAUDE.md`。描述 PPT 需求即可；仅主题输入会先进入 PPT Briefing 确认 |
 | **Cursor** | 打开项目，`.cursor/rules/deep-ppt.md` 自动生效。在 Chat 或 Composer 中描述 PPT 需求 |
 | **Windsurf** | 打开项目，`.windsurfrules` 自动生效。在 Cascade 中描述 PPT 需求 |
 | **GitHub Copilot** | 在 VS Code 中打开项目，`.github/copilot-instructions.md` 自动加载到 Copilot Chat |
@@ -117,8 +117,9 @@ DeepPPT 为以下 13 个主流 AI Agent 平台提供了项目级配置：
 ### 只有主题（无源文件）
 
 1. 用任意 Agent 打开项目
-2. 发送：`做一个关于XX的PPT` / `/ppt-deep-research`
-3. Agent 先执行深度调研，再走主管线
+2. 发送：`做一个关于XX的PPT`
+3. Agent 先运行 `ppt-briefing`，生成 `ppt_brief.md` / `ppt_brief.json` 并等待你确认
+4. 你确认 Brief 后，Agent 才进入 `deep-research`，再回到 SKILL.md 主管线
 
 ### 继续之前的项目（Split Mode）
 
@@ -127,7 +128,7 @@ DeepPPT 为以下 13 个主流 AI Agent 平台提供了项目级配置：
 
 ## 浏览器自动化设置（深度调研多 AI 搜索）
 
-深度调研工作流支持通过浏览器自动化调用 ChatGPT / Grok / Perplexity 进行搜索。需要先启动 CDP Chrome。
+深度调研工作流支持通过浏览器自动化调用 Grok / Kimi / DeepSeek / 通义千问 / ChatGLM / Perplexity 进行搜索。需要先启动 CDP Chrome。
 
 ### 1. 配置 Chrome 路径
 
@@ -163,7 +164,7 @@ bash scripts/start-hermes-chrome.sh
 
 ### 3. 登录 AI 服务
 
-在 CDP Chrome 中登录 ChatGPT / Grok / Perplexity。登录状态会持久保存，重启后无需重新登录。
+在 CDP Chrome 中登录你计划使用的服务（Grok / Kimi / DeepSeek / 通义千问 / ChatGLM / Perplexity）。登录状态会持久保存，重启后无需重新登录。
 
 ### 4. 验证连接
 
@@ -179,9 +180,10 @@ python skills/ppt-master/scripts/research/browse_ai.py --list
 
 | 内容类型 | AI 工具 | 说明 |
 |---------|---------|------|
-| 技术/数据 | ChatGPT | 统计数据、技术参数、对比表 |
+| 技术/数据 | Kimi / DeepSeek | 统计数据、技术参数、对比表 |
 | 新闻/趋势 | Grok | 最新动态、市场趋势 |
 | 学术/深度 | Perplexity | 学术观点、深度分析 |
+| 中文本土材料 | DeepSeek / 通义千问 | 中文语境、国内机构与本地资料 |
 
 详见 [`docs/ai-browser-setup.md`](docs/ai-browser-setup.md)。
 

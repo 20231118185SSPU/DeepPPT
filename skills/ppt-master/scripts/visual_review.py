@@ -16,6 +16,13 @@ Usage:
     python3 scripts/visual_review.py <project_path> --pages 02 03
     python3 scripts/visual_review.py <project_path> --server-url http://localhost:5050
 
+Examples:
+    python3 scripts/visual_review.py projects/demo_deck
+    python3 scripts/visual_review.py projects/demo_deck --pages page_01 page_02
+
+Dependencies:
+    Playwright with Chromium for rendering; Pillow for blank-render detection.
+
 Exit codes (per references/visual-review.md §7):
     0 — all requested pages rendered
     2 — live-preview server not reachable for this project

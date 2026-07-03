@@ -10,7 +10,7 @@ Almost anything: **PDF**, **DOCX**, **PPTX**, **EPUB**, **HTML**, **LaTeX**, **R
 
 ## Q: Can I generate a deck with just a topic, no source materials?
 
-Yes. Tell the AI your topic or scenario (e.g. "make a PPT about Hayao Miyazaki", "introduce our new product"). The AI will trigger the **deep-research workflow** — a 7-step research flow (outline → search plan → per-page search via multi-AI browser automation → consolidation → analysis → narrative → visual strategy), producing structured research artifacts that feed into the main pipeline.
+Yes. Tell the AI your topic or scenario (e.g. "make a PPT about Hayao Miyazaki", "introduce our new product"). With no source material, the AI first runs **ppt-briefing**, writes `ppt_brief.md` / `ppt_brief.json`, and waits for your explicit confirmation. Only after you confirm the brief does it enter **deep-research** — a 7-step research flow (outline → search plan → per-page search → consolidation → analysis → narrative → visual strategy), producing structured research artifacts that feed into the main pipeline.
 
 Quality depends on what's on the open web. If you already have specialized material (papers, internal docs), giving those files to the AI directly produces better results than web research alone.
 

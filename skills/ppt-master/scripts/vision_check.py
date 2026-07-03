@@ -1,5 +1,7 @@
 #!/usr/bin/env python3
 """
+PPT Master - Vision Check
+
 External vision check for PPT slides when the main model lacks multimodal capability.
 
 Sends rendered PNG slides to an external vision-capable model (via OpenAI-compatible
@@ -18,6 +20,14 @@ Usage:
   python vision_check.py <project_path> --format openai \\
     --base-url https://api.siliconflow.cn/v1 \\
     --model Qwen/Qwen2.5-VL-72B-Instruct                      # Custom endpoint
+
+Examples:
+  python3 scripts/vision_check.py projects/demo_deck --rubric quick
+  python3 scripts/vision_check.py projects/demo_deck/.preview/page_01.png --format openai
+
+Dependencies:
+  Local vision_backends package; optional python-dotenv; configured vision API
+  credentials for the selected backend.
 
 Environment variables:
   VISION_OPENAI_API_KEY / OPENAI_API_KEY       — For OpenAI-format endpoints

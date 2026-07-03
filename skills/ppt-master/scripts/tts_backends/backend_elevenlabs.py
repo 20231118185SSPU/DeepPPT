@@ -1,4 +1,25 @@
-"""ElevenLabs backend for narration audio generation."""
+"""ElevenLabs backend for narration audio generation.
+
+Purpose:
+    Generate PPT narration audio through ElevenLabs text-to-speech and list
+    available ElevenLabs voices for a configured account.
+
+Used by:
+    ``notes_to_audio.py`` when the ``elevenlabs`` narration backend is selected.
+
+Configuration:
+    Callers choose the API-key environment variable passed to
+    ``read_elevenlabs_api_key`` and provide voice, model, output format, and
+    optional voice settings.
+
+Dependencies:
+    Standard library plus ``read_api_key`` from
+    ``tts_backends.backend_common``.
+
+Public API:
+    ``API_BASE``, ``read_elevenlabs_api_key``, ``output_extension``,
+    ``generate``, and ``print_voices``.
+"""
 
 from __future__ import annotations
 

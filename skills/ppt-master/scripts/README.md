@@ -25,7 +25,7 @@ python3 scripts/source_to_md/ppt_to_md.py <deck.pptx>
 python3 scripts/source_to_md/excel_to_md.py <workbook.xlsx>
 python3 scripts/project_manager.py init <project_name> --format ppt169
 python3 scripts/project_manager.py import-sources <project_path> <source_files...>
-python3 scripts/project_manager.py validate <project_path> --start-dashboard --no-browser
+python3 scripts/project_manager.py validate <project_path> --start-dashboard
 python3 scripts/total_md_split.py <project_path>
 python3 scripts/finalize_svg.py <project_path>
 python3 scripts/animation_config.py scaffold <project_path>  # optional object-level animation overrides
@@ -76,21 +76,21 @@ Leave `import-sources` unflagged by default. Add `--move` only when intentionall
 After Step 2 project setup/import, start or reuse the read-only Dashboard:
 
 ```bash
-python3 scripts/dashboard/server.py <project_path> --daemon --no-browser
+python3 scripts/dashboard/server.py <project_path> --daemon
 ```
 
 Or ask `project_manager.py` to do the same best-effort startup after a successful
 project command:
 
 ```bash
-python3 scripts/project_manager.py init <project_name> --format ppt169 --start-dashboard --no-browser
-python3 scripts/project_manager.py import-sources <project_path> <source_files...> --start-dashboard --no-browser
-python3 scripts/project_manager.py validate <project_path> --start-dashboard --no-browser
+python3 scripts/project_manager.py init <project_name> --format ppt169 --start-dashboard
+python3 scripts/project_manager.py import-sources <project_path> <source_files...> --start-dashboard
+python3 scripts/project_manager.py validate <project_path> --start-dashboard
 ```
 
 Without `--start-dashboard`, project commands only print the Dashboard hint.
 
-Default port: `8765`; log: `<project_path>/dashboard/dashboard.log`. Launch failure is non-fatal. Dashboard shows status, artifacts, quality, trace, and bridge state only; it does not replace Confirm UI, Live Preview, quality gates, post-processing, or export.
+Default port: `8765`; log: `<project_path>/dashboard/dashboard.log`. The default local launch may open a browser; add `--no-browser` only for headless/remote sessions or when the user explicitly asks for no window. Launch failure is non-fatal. Dashboard shows status, artifacts, quality, trace, and bridge state only; it does not replace Confirm UI, Live Preview, quality gates, post-processing, or export.
 
 Template source import:
 
@@ -230,4 +230,4 @@ python3 scripts/update_repo.py --skip-pip
 - [Troubleshooting](./docs/troubleshooting.md)
 - [Skill Entry](../SKILL.md)
 
-_Last updated: 2026-04-09_
+_Last updated: 2026-07-03_

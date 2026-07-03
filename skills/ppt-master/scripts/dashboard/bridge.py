@@ -2,11 +2,11 @@
 """
 PPT Master - Dashboard UI Bridges
 
-Read the existing Confirm UI and Live Preview lock files and expose their
-runtime status to the dashboard.
+Read the existing Dashboard, Confirm UI, and Live Preview lock files and expose
+their runtime status to the dashboard.
 
 Usage:
-    from bridge import confirm_ui_status, live_preview_status
+    from bridge import dashboard_status, confirm_ui_status, live_preview_status
 
 Dependencies:
     None (only uses standard library)
@@ -80,7 +80,7 @@ def _status_from_lock(project: Path, lock_path: Path, lock: dict | None, bridge:
     return {
         "bridge": bridge,
         "running": running,
-        "url": f"http://localhost:{port}" if running else None,
+        "url": str((lock or {}).get("url") or f"http://localhost:{port}") if running else None,
         "port": port if running else None,
         "pid": pid if running else None,
         "lock_path": str(lock_path) if lock_exists else None,
@@ -93,6 +93,19 @@ def _status_from_lock(project: Path, lock_path: Path, lock: dict | None, bridge:
             or None
         ),
     }
+
+
+def dashboard_status(project: Path) -> dict:
+    """Return existing Dashboard status from ``.dashboard.lock``."""
+    lock_path = project / ".dashboard.lock"
+    status = _status_from_lock(project, lock_path, read_lock(lock_path), "dashboard")
+    log_file = _file_info(project, "dashboard/dashboard.log")
+    status.update({
+        "log_file": log_file,
+        "log_path": str((project / "dashboard" / "dashboard.log").resolve()),
+        "next_action": "open_dashboard" if status.get("running") else "start_dashboard",
+    })
+    return status
 
 
 def _confirm_next_action(status: dict, result_file: dict | None, recommendations_file: dict | None) -> str:
@@ -123,6 +136,7 @@ def confirm_ui_status(project: Path) -> dict:
     status = _status_from_lock(project, lock_path, read_lock(lock_path), "confirm")
     result_file = _latest_file(project, ["confirm_ui/result.json"])
     recommendations_file = _latest_file(project, ["confirm_ui/recommendations.json"])
+    log_file = _file_info(project, "confirm_ui/server.log")
     status.update({
         "last_result_file": result_file,
         "last_result_mtime": result_file.get("mtime") if result_file else None,
@@ -130,6 +144,8 @@ def confirm_ui_status(project: Path) -> dict:
         "last_recommendations_mtime": (
             recommendations_file.get("mtime") if recommendations_file else None
         ),
+        "log_file": log_file,
+        "log_path": str((project / "confirm_ui" / "server.log").resolve()),
     })
     status["next_action"] = _confirm_next_action(status, result_file, recommendations_file)
     return status
@@ -157,11 +173,14 @@ def live_preview_status(project: Path) -> dict:
 
     annotation_file = _latest_file(project, ["live_preview/annotations.jsonl"])
     edit_file = _latest_file(project, ["live_preview/edits.jsonl", "live_preview/edit_log.jsonl"])
+    log_file = _file_info(project, "live_preview/server.log")
     status.update({
         "last_annotation_file": annotation_file,
         "last_annotation_mtime": annotation_file.get("mtime") if annotation_file else None,
         "last_update_file": edit_file,
         "last_update_mtime": edit_file.get("mtime") if edit_file else None,
+        "log_file": log_file,
+        "log_path": str((project / "live_preview" / "server.log").resolve()),
     })
     status["next_action"] = _preview_next_action(status, annotation_file, edit_file)
     return status

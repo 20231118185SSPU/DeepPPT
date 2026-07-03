@@ -73,4 +73,4 @@ List any values that should be added to or modified in `spec_lock.md` templates.
 - **Persisted (spec/workflow updated)**: N
 - **Flagged for next round**: N
 
-> After completing this review, execute the persist actions immediately (update spec_lock templates, workflow files, or references). Do not defer — the next generation should benefit from this review.
+> After completing this review, treat each persistence item as a proposed change and classify its risk with [`change-management.md`](rules/change-management.md) before editing. Low- or medium-risk updates may proceed only when covered by the user's request and scoped to the owning files. High-risk changes such as `AGENTS.md`, `SKILL.md`, workflow gates, BLOCKING behavior, export rules, or quality rules require explicit user confirmation before execution.

@@ -20,7 +20,7 @@ Shared rules live in `docs/ai-rules-shared.md`; routing details live in `docs/ro
 ## Key Scripts
 
 - `project_manager.py init <name> --format ppt169` — Create project
-- `dashboard/server.py <path> --daemon --no-browser` — Start/reuse read-only Dashboard after Step 2 (default port 8765; log `<path>/dashboard/dashboard.log`; failure non-fatal)
+- `python3 skills/ppt-master/scripts/dashboard/server.py <path> --daemon` — Start/reuse read-only Dashboard after Step 2 (default port 8765; log `<path>/dashboard/dashboard.log`; failure non-fatal; add `--no-browser` only for headless/remote sessions or explicit user request)
 - `confirm_ui/server.py <path> --daemon --wait` — Eight Confirmations
 - `image_gen.py --manifest <path>/images/image_prompts.json` — AI images
 - `svg_quality_checker.py <path>` — Quality check
@@ -28,7 +28,7 @@ Shared rules live in `docs/ai-rules-shared.md`; routing details live in `docs/ro
 
 ## Deep Research
 
-Topic only (no source)? → `skills/ppt-master/workflows/deep-research.md` first. Do not replace it with ordinary WebSearch.
+Topic only (no source)? → run `skills/ppt-master/workflows/ppt-briefing.md` first, wait for explicit user confirmation, then run `skills/ppt-master/workflows/deep-research.md`. Do not replace deep-research with ordinary WebSearch.
 
 ## Routing Guardrails
 

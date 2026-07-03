@@ -2,6 +2,7 @@
 layout_id: story_driven
 kind: layout
 summary: Deep research presentations, narrative-driven content decks, knowledge exploration, educational storytelling, topic deep-dives.
+summary_zh: 深度研究、叙事型内容、知识探索、教育讲述和主题深挖；适合故事线驱动的长内容。
 canvas_format: ppt169
 page_count: 6
 page_types: [cover, toc, chapter, content, content_alt, ending]

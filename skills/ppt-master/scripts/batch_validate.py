@@ -9,7 +9,16 @@ Usage:
     python3 scripts/batch_validate.py projects
     python3 scripts/batch_validate.py --all
     python3 scripts/batch_validate.py examples projects
+
+Examples:
+    python3 scripts/batch_validate.py examples --export
+    python3 scripts/batch_validate.py projects --output-dir validation_reports
+
+Dependencies:
+    Local project_utils.py; otherwise uses only the standard library.
 """
+
+from __future__ import annotations
 
 import argparse
 import sys

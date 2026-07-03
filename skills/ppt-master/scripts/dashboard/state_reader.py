@@ -31,7 +31,7 @@ from project_utils import CANVAS_FORMATS, get_project_info  # noqa: E402
 from update_spec import parse_lock  # noqa: E402
 
 from artifact_registry import latest_pptx  # noqa: E402
-from bridge import confirm_ui_status, live_preview_status  # noqa: E402
+from bridge import dashboard_status, confirm_ui_status, live_preview_status  # noqa: E402
 from health_reader import health_summary  # noqa: E402
 from quality_reader import quality_summary  # noqa: E402
 
@@ -129,10 +129,19 @@ def _template_index_entries(limit_per_kind: int = 20) -> dict:
             entry = {
                 "id": str(template_id),
                 "name": str(meta.get("name") or template_id),
+                "name_zh": str(meta.get("name_zh") or meta.get("name") or template_id),
                 "kind": kind,
                 "path": f"skills/ppt-master/{base_dir}/{template_id}/",
                 "description": str(meta.get("summary") or meta.get("description") or ""),
+                "description_zh": str(
+                    meta.get("summary_zh")
+                    or meta.get("description_zh")
+                    or meta.get("summary")
+                    or meta.get("description")
+                    or ""
+                ),
                 "scope": str(meta.get("scope") or meta.get("canvas_format") or ""),
+                "preview_files": _template_preview_files(kind, str(template_id)),
             }
             if meta.get("page_count") is not None:
                 entry["scope"] = (entry["scope"] + f"; {meta.get('page_count')} pages").strip("; ")
@@ -148,6 +157,22 @@ def _template_index_entries(limit_per_kind: int = 20) -> dict:
             "templates are applied only after the explicit path is rerun through Step 3/4."
         ),
     }
+
+
+def _template_preview_files(kind: str, template_id: str, limit: int = 6) -> list[dict]:
+    """Return existing SVG preview candidates for a template library entry."""
+    base_dir = _SKILL_DIR / _TEMPLATE_DIRS.get(kind, "") / template_id
+    if not base_dir.is_dir():
+        return []
+    previews = []
+    for path in sorted(base_dir.glob("*.svg"))[:limit]:
+        rel = path.relative_to(_SKILL_DIR).as_posix()
+        previews.append({
+            "name": path.name,
+            "path": f"skills/ppt-master/{rel}",
+            "url": f"/template-file/{kind}/{template_id}/{path.name}",
+        })
+    return previews
 
 
 def template_route_state(project: Path) -> dict:
@@ -597,6 +622,7 @@ def read_pipeline_state(project: Path) -> dict:
         "page_count": page_count,
         "svg_count": svg_count,
         "export_path": latest_pptx(project),
+        "dashboard": dashboard_status(project),
         "live_preview": live_preview_status(project),
         "confirm_ui": confirm_ui_status(project),
         "derived_at": _now(),

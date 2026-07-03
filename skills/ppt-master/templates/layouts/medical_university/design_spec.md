@@ -2,6 +2,7 @@
 layout_id: medical_university
 kind: layout
 summary: Medical academic reports, case discussions, research presentations, hospital work reports, medical education and training.
+summary_zh: 医学学术报告、病例讨论、科研展示、医院工作汇报和医学培训场景。
 canvas_format: ppt169
 page_count: 5
 page_types: [cover, toc, chapter, content, ending]

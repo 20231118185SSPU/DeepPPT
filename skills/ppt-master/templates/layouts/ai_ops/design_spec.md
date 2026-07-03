@@ -2,6 +2,7 @@
 layout_id: ai_ops
 kind: layout
 summary: Telecom AI operations architecture, IT system overviews, digital transformation proposals, smart infrastructure reports.
+summary_zh: AI 运维架构、IT 系统总览、数字化转型方案和智能基础设施汇报；偏技术架构与方案说明。
 canvas_format: ppt169
 page_count: 6
 page_types: [cover, toc, chapter, content, ending, reference_style]

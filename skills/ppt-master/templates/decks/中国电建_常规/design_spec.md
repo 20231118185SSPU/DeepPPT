@@ -2,6 +2,7 @@
 deck_id: 中国电建_常规
 kind: deck
 summary: Engineering project reports, technical proposal presentations, business negotiations, corporate promotion, annual summaries.
+summary_zh: 工程项目汇报、技术方案、商务谈判、企业宣传和年度总结；稳健工程蓝风格。
 canvas_format: ppt169
 page_count: 5
 primary_color: "#00418D"

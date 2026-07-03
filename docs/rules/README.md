@@ -6,10 +6,10 @@ Conventions and style guides for contributors and AI agents working in this repo
 |---|---|
 | [`prompt-style.md`](./prompt-style.md) | Style guide for files under `skills/ppt-master/references/` — voice, sectioning, table-first, forbidden patterns |
 | [`code-style.md`](./code-style.md) | Style guide for Python under `skills/ppt-master/scripts/` — file headers, imports, CLI entry points, error handling, no-tests rule |
-| [`agent-governance.md`](./agent-governance.md) | Draft governance rule for AI entry files, routing summaries, authority layers, and non-authoritative design drafts |
-| [`documentation-style.md`](./documentation-style.md) | Draft style and status rule for `docs/`, `docs/zh/`, `docs/design/`, audits, and user-facing documents |
-| [`workflow-style.md`](./workflow-style.md) | Draft structure and trigger-language rule for `skills/ppt-master/workflows/` runbooks |
-| [`change-management.md`](./change-management.md) | Draft risk classification, user-confirmation, and reporting rule for documentation and workflow changes |
+| [`agent-governance.md`](./agent-governance.md) | Active governance rule for AI entry files, routing summaries, authority layers, and non-authoritative design drafts |
+| [`documentation-style.md`](./documentation-style.md) | Active style and status rule for `docs/`, `docs/zh/`, `docs/design/`, audits, and user-facing documents |
+| [`workflow-style.md`](./workflow-style.md) | Active structure and trigger-language rule for `skills/ppt-master/workflows/` runbooks |
+| [`change-management.md`](./change-management.md) | Active risk classification, user-confirmation, and reporting rule for documentation and workflow changes |
 
 ## Rule Selection
 

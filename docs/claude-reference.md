@@ -19,35 +19,35 @@
 
 **Core Pipeline**: `Source Document → Create Project → [Template] → [Content Selection] → [Detailed Outline] → Strategist Eight Confirmations → [Image_Generator + Image-Text Linking] → Executor Live Preview → Quality Check → Post-processing → Export PPTX`
 
-Content Selection, Detailed Outline, and Image-Text Linking are conditional phases activated when `research_report.md` exists (from deep-research). See SKILL.md Step 2 checkpoint, Step 4, and Step 5 for trigger conditions.
+Content Selection, Detailed Outline, and Image-Text Linking are conditional phases activated when `research_report.md` exists (from deep-research). See [`SKILL.md`](../skills/ppt-master/SKILL.md) Step 2 checkpoint, Step 4, and Step 5 for trigger conditions.
 
-Topic-only requests with no source material: run the [`deep-research`](skills/ppt-master/workflows/deep-research.md) orchestrator before SKILL.md Step 1. It coordinates 7 independent research steps (outline → search plan → per-page search → consolidation → analysis → narrative → visual strategy).
+Topic-only requests with no source material: run [`ppt-briefing`](../skills/ppt-master/workflows/ppt-briefing.md) first to create `ppt_brief.md` / `ppt_brief.json`, then stop for explicit user confirmation. Only after the Brief is confirmed, run the [`deep-research`](../skills/ppt-master/workflows/deep-research.md) orchestrator before [`SKILL.md`](../skills/ppt-master/SKILL.md) Step 1.
 
-deep-research creates the project directory at its own Step 0 (via `project_manager.py init`). All research artifacts write directly into `<project>/_research/` — no staging directories, no scatter across `projects/`.
+For topic-only projects, `ppt-briefing` may already create or reuse the canonical project directory. `deep-research` writes research artifacts directly into `<project>/_research/` — no staging directories, no scatter across `projects/`.
 
 ## Detailed Workflow Routing
 
 Routing rules (discriminator logic for beautify vs. main pipeline, etc.):
 
-> Template fill: when the user provides an existing `.pptx` template plus text materials or a topic and asks to reuse the original PPT design or fill content back into it (for example, "fill this deck with the new content", "fill this back into the template", or "reuse this deck's design"), run the standalone [`template-fill-pptx`](skills/ppt-master/workflows/template-fill-pptx.md) workflow. This route edits PPTX directly and must not enter the SVG generation pipeline.
+> Template fill: when the user provides an existing `.pptx` template plus text materials or a topic and asks to reuse the original PPT design or fill content back into it (for example, "fill this deck with the new content", "fill this back into the template", or "reuse this deck's design"), run the standalone [`template-fill-pptx`](../skills/ppt-master/workflows/template-fill-pptx.md) workflow. This route edits PPTX directly and must not enter the SVG generation pipeline.
 >
-> Beautify / re-layout: when the user provides an existing `.pptx` and asks to beautify or re-layout it while keeping the content (for example, "把这份 PPT 美化一下", "重新排版，内容别动", or wants to paste the regenerated elements back into the original deck), run the standalone [`beautify-pptx`](skills/ppt-master/workflows/beautify-pptx.md) workflow. Mirror of template-fill: content is preserved verbatim, the source's palette/fonts are inherited as truth, only layout is redesigned. Unlike template-fill, it regenerates a native deck through the SVG pipeline (Strategist → Executor → export), one source slide to one page; it does not edit the source in place. Routing boundary — beautify is for "keep this deck, just lay it out better": page count and page order are preserved 1:1. If the original page breakdown itself should be reconsidered (merge / split / reorder pages, re-outline the structure), that is NOT beautify: convert the deck with [`ppt_to_md`](skills/ppt-master/scripts/source_to_md/ppt_to_md.py) and run the main SKILL.md pipeline, where the Strategist re-architects the outline freely from the extracted content. The discriminator is page count / order: any change to it — split, merge, drop, reorder, even just splitting a crowded page so it reads better — is the main pipeline; beautify is strictly 1:1. Decide by one question: is the source's page split information to preserve, or just the previous author's structure to improve?
+> Beautify / re-layout: when the user provides an existing `.pptx` and asks to beautify or re-layout it while keeping the content (for example, "把这份 PPT 美化一下", "重新排版，内容别动", or wants to paste the regenerated elements back into the original deck), run the standalone [`beautify-pptx`](../skills/ppt-master/workflows/beautify-pptx.md) workflow. Mirror of template-fill: content is preserved verbatim, the source's palette/fonts are inherited as truth, only layout is redesigned. Unlike template-fill, it regenerates a native deck through the SVG pipeline (Strategist → Executor → export), one source slide to one page; it does not edit the source in place. Routing boundary — beautify is for "keep this deck, just lay it out better": page count and page order are preserved 1:1. If the original page breakdown itself should be reconsidered (merge / split / reorder pages, re-outline the structure), that is NOT beautify: convert the deck with [`ppt_to_md`](../skills/ppt-master/scripts/source_to_md/ppt_to_md.py) and run the main SKILL.md pipeline, where the Strategist re-architects the outline freely from the extracted content. The discriminator is page count / order: any change to it — split, merge, drop, reorder, even just splitting a crowded page so it reads better — is the main pipeline; beautify is strictly 1:1. Decide by one question: is the source's page split information to preserve, or just the previous author's structure to improve?
 >
-> Phase B resumption (split-mode execution): when the user opens a fresh chat and says "继续生成 projects/<x>" or similar, run the standalone [`resume-execute`](skills/ppt-master/workflows/resume-execute.md) workflow to enter Phase B (SVG generation + export) without re-running Phase A.
+> Phase B resumption (split-mode execution): when the user opens a fresh chat and says "继续生成 projects/<x>" or similar, run the standalone [`resume-execute`](../skills/ppt-master/workflows/resume-execute.md) workflow to enter Phase B (SVG generation + export) without re-running Phase A.
 >
-> Spec refinement (opt-in): when the user explicitly asks to refine / review / revise the spec before generation (for example "refine the spec first", "review the spec before generating", "send me the spec to confirm first"), run the standalone [`refine-spec`](skills/ppt-master/workflows/refine-spec.md) workflow. Strategist produces the full `design_spec.md` + `spec_lock.md` first, then stops so the user can revise any part of it (outline, color, typography, layout, image strategy, …) before any image or SVG work; on approval the pipeline resumes at Step 5/6. Default is OFF — no request means the spec is written in one pass and the pipeline auto-proceeds. Surfaced as an opt-in line in the Eight Confirmations, same shape as the split-mode note; never enter it unprompted.
+> Spec refinement (opt-in): when the user explicitly asks to refine / review / revise the spec before generation (for example "refine the spec first", "review the spec before generating", "send me the spec to confirm first"), run the standalone [`refine-spec`](../skills/ppt-master/workflows/refine-spec.md) workflow. Strategist produces the full `design_spec.md` + `spec_lock.md` first, then stops so the user can revise any part of it (outline, color, typography, layout, image strategy, …) before any image or SVG work; on approval the pipeline resumes at Step 5/6. Default is OFF — no request means the spec is written in one pass and the pipeline auto-proceeds. Surfaced as an opt-in line in the Eight Confirmations, same shape as the split-mode note; never enter it unprompted.
 >
-> Decks containing data charts: run the standalone [`verify-charts`](skills/ppt-master/workflows/verify-charts.md) workflow between the executor and post-processing steps to calibrate chart coordinates.
+> Decks containing data charts: run the standalone [`verify-charts`](../skills/ppt-master/workflows/verify-charts.md) workflow between the executor and post-processing steps to calibrate chart coordinates.
 >
-> Recorded narration / video export: run the standalone [`generate-audio`](skills/ppt-master/workflows/generate-audio.md) workflow after post-processing.
+> Recorded narration / video export: run the standalone [`generate-audio`](../skills/ppt-master/workflows/generate-audio.md) workflow after post-processing.
 >
-> Object-level animation tuning: when the user asks to change animation order, effect, timing, or a specific object's reveal behavior, run the standalone [`customize-animations`](skills/ppt-master/workflows/customize-animations.md) workflow. Default export applies page transitions but no per-element entrance animation (element builds are opt-in); create `animations.json` or pass `-a auto` only when the user asks for element animation or object-level customization.
+> Object-level animation tuning: when the user asks to change animation order, effect, timing, or a specific object's reveal behavior, run the standalone [`customize-animations`](../skills/ppt-master/workflows/customize-animations.md) workflow. Default export applies page transitions but no per-element entrance animation (element builds are opt-in); create `animations.json` or pass `-a auto` only when the user asks for element animation or object-level customization.
 >
-> Live preview: any time the user mentions "live preview", "preview", "看效果", or wants to click/select a slide element, run [`live-preview`](skills/ppt-master/workflows/live-preview.md). Step 6 auto-starts it during generation; the workflow covers post-export re-entry and applying submitted annotations.
+> Live preview: any time the user mentions "live preview", "preview", "看效果", or wants to click/select a slide element, run [`live-preview`](../skills/ppt-master/workflows/live-preview.md). Step 6 auto-starts it during generation; the workflow covers post-export re-entry and applying submitted annotations.
 >
-> Brand identity setup: when the user asks to "set up brand" / "建立品牌" / "做品牌规范", provides a brand asset (logo / brand site URL / branded PPTX / brand PDF), or wants to extract a brand from existing materials, run the standalone [`create-brand`](skills/ppt-master/workflows/create-brand.md) workflow. Output goes to `skills/ppt-master/templates/brands/<id>/`. Brands apply at SKILL.md Step 3 via the same explicit-path rule as layout templates — the user supplies the brand directory path to apply it; bare brand names never trigger.
+> Brand identity setup: when the user asks to "set up brand" / "建立品牌" / "做品牌规范", provides a brand asset (logo / brand site URL / branded PPTX / brand PDF), or wants to extract a brand from existing materials, run the standalone [`create-brand`](../skills/ppt-master/workflows/create-brand.md) workflow. Output goes to `skills/ppt-master/templates/brands/<id>/`. Brands apply at SKILL.md Step 3 via the same explicit-path rule as layout templates — the user supplies the brand directory path to apply it; bare brand names never trigger.
 >
-> Visual self-check: after Executor quality gates pass and before Step 7 post-processing, run the standalone [`visual-review`](skills/ppt-master/workflows/visual-review.md) workflow as the default recommended quality step. Skip it only when the user explicitly says "跳过视觉自检" / "skip visual review", or when `confirm_ui/result.json` contains `skip_visual_review: true`. For decks containing data charts, run [`verify-charts`](skills/ppt-master/workflows/verify-charts.md) first, then run `visual-review`.
+> Visual self-check: after Executor quality gates pass and before Step 7 post-processing, run the standalone [`visual-review`](../skills/ppt-master/workflows/visual-review.md) workflow as the default recommended quality step. Skip it only when the user explicitly says "跳过视觉自检" / "skip visual review", or when `confirm_ui/result.json` contains `skip_visual_review: true`. For decks containing data charts, run [`verify-charts`](../skills/ppt-master/workflows/verify-charts.md) first, then run `visual-review`.
 
 ## Environment & Setup
 
@@ -80,7 +80,7 @@ The pipeline operates through three serial roles. Each role is a distinct prompt
 |------|---------------|------------|
 | **Strategist** | Outline, Eight Confirmations, `design_spec.md`, `spec_lock.md`, image strategy | `design_spec.md`, `spec_lock.md`, `notes/*.md`, `image_prompts.json` / `image_queries.json` |
 | **Image_Generator** | Acquire images (AI generation or web search) per Strategist's manifest | `images/*.png` + `image_sources.json` |
-| **Executor** | Render one SVG per page following `spec_lock.md` constraints, run quality checks | `pages/*.svg` |
+| **Executor** | Render one SVG per page following `spec_lock.md` constraints, run quality checks | `svg_output/*.svg` |
 
 Steps are strictly serial. Steps marked ⛔ BLOCKING require explicit user confirmation. SVG pages are hand-written by the agent (never script-generated). Before generating each SVG page, re-read `spec_lock.md` for colors/fonts/icons/images.
 
@@ -92,34 +92,38 @@ Each generated project lives under `projects/<name>/` with this layout:
 projects/<name>/
 ├── design_spec.md          # Strategist's full design specification
 ├── spec_lock.md            # Locked palette/typography/icons/images for Executor
+├── analysis/               # Extracted source and asset facts and intermediate analysis
+├── sources/                # Imported source documents and synced research report
 ├── notes/                  # Per-page content notes (01_cover.md, 02_..., total.md)
 ├── images/                 # Acquired images + manifest files
 │   ├── image_prompts.json  # AI generation manifest (Strategist writes)
 │   ├── image_queries.json  # Web search manifest (Strategist writes)
 │   └── image_sources.json  # Provenance metadata (Image_Generator writes)
 ├── icons/                  # Selected icons copied from template library
-├── pages/                  # SVG files, one per slide (Executor writes)
-├── source/                 # Imported source documents
-└── <name>.pptx             # Final exported presentation
+├── svg_output/             # SVG files, one per slide (Executor writes)
+├── svg_final/              # Post-processed SVG snapshot when produced
+├── exports/
+│   └── <name>_<timestamp>.pptx  # Final exported presentation
+└── backup/                 # Timestamped SVG source backups from export
 ```
 
 Format is set at init time (`--format ppt169` for 16:9, `--format ppt43` for 4:3). The `research_report.md` file (produced by deep-research) activates conditional pipeline phases (Content Selection, Detailed Outline, Image-Text Linking).
 
 ## Execution Requirements
 
-- For standalone template creation (no source deck), read [`skills/ppt-master/workflows/create-template.md`](skills/ppt-master/workflows/create-template.md).
-- Technical SVG/PPT constraints live in [`skills/ppt-master/references/shared-standards.md`](skills/ppt-master/references/shared-standards.md).
-- Canvas choices live in [`skills/ppt-master/references/canvas-formats.md`](skills/ppt-master/references/canvas-formats.md).
-- Icon library details live in [`skills/ppt-master/templates/icons/README.md`](skills/ppt-master/templates/icons/README.md).
+- For standalone template creation (no source deck), read [`skills/ppt-master/workflows/create-template.md`](../skills/ppt-master/workflows/create-template.md).
+- Technical SVG/PPT constraints live in [`skills/ppt-master/references/shared-standards.md`](../skills/ppt-master/references/shared-standards.md).
+- Canvas choices live in [`skills/ppt-master/references/canvas-formats.md`](../skills/ppt-master/references/canvas-formats.md).
+- Icon library details live in [`skills/ppt-master/templates/icons/README.md`](../skills/ppt-master/templates/icons/README.md).
 
 ## Required Conventions
 
-- **Repo-wide style rules** — when editing prompt files under [`skills/ppt-master/references/`](skills/ppt-master/references/), Python under [`skills/ppt-master/scripts/`](skills/ppt-master/scripts/), or any other code/prose in the repo, follow the matching style rule in [`docs/rules/`](docs/rules/).
+- **Repo-wide style rules** — when editing prompt files under [`skills/ppt-master/references/`](../skills/ppt-master/references/), Python under [`skills/ppt-master/scripts/`](../skills/ppt-master/scripts/), or any other code/prose in the repo, follow the matching style rule in [`docs/rules/`](rules/).
 - **Markdown language consistency** — Markdown files under `skills/ppt-master/workflows/`, `skills/ppt-master/references/`, and `docs/` are currently single-language per directory. New files mirror the language of their siblings; do not mix English scaffolding with Chinese paragraphs (or vice versa) inside one file. Chat replies are unaffected.
 
 ## Command Quick Reference
 
-Convenience summary only — full workflow in [`skills/ppt-master/SKILL.md`](skills/ppt-master/SKILL.md).
+Convenience summary only — full workflow in [`skills/ppt-master/SKILL.md`](../skills/ppt-master/SKILL.md).
 
 ```bash
 # Source content conversion
@@ -172,8 +176,8 @@ python3 skills/ppt-master/scripts/spec_lock_digest.py generate <project_path>  #
 python3 skills/ppt-master/scripts/spec_lock_digest.py verify <project_path>    # Step 6 start: verify before Executor reads
 python3 skills/ppt-master/scripts/consulting_content_lock.py <project_path>    # optional consulting/high-density sidecar
 python3 skills/ppt-master/scripts/e2e_validate.py <project_path>               # post-export: page count + notes + images + PPTX
-python3 skills/ppt-master/scripts/e2e_validate.py <project_path> --pptx exports/deck.pptx  # with PPTX slide-level checks
-python3 skills/ppt-master/scripts/pptx_quality_check.py <project_path>/exports/deck.pptx --json-out <project_path>/quality/pptx_quality.json  # optional strict PPTX structure QA
+python3 skills/ppt-master/scripts/e2e_validate.py <project_path> --pptx exports/<exported_file>.pptx  # with PPTX slide-level checks
+python3 skills/ppt-master/scripts/pptx_quality_check.py <project_path>/exports/<exported_file>.pptx --json-out <project_path>/quality/pptx_quality.json  # optional strict PPTX structure QA
 python3 skills/ppt-master/scripts/smoke_check.py                                # import + CLI smoke check for all scripts
 python3 skills/ppt-master/scripts/animation_config.py scaffold <project_path>  # optional, only for custom object-level animation
 python3 skills/ppt-master/scripts/animation_config.py validate <project_path>  # optional, before re-export
@@ -191,7 +195,7 @@ python3 skills/ppt-master/scripts/svg_to_pptx.py <project_path>
 - `skills/ppt-master/references/` — role definitions and technical specifications.
 - `skills/ppt-master/scripts/` — runnable tool scripts.
 - `skills/ppt-master/scripts/docs/` — topic-focused script docs.
-- `skills/ppt-master/templates/` — layout templates (including `layouts/content_pages/` with 18 pre-built content page variants across academic/business/report scenarios), chart templates, icon library, brand presets.
+- `skills/ppt-master/templates/` — layout templates (including `layouts/content_pages` with 18 pre-built content page variants across academic/business/report scenarios), chart templates, icon library, brand presets.
 - `skills/ppt-master/workflows/` — standalone workflow files.
 - `docs/` — user-facing documentation (FAQ, installation, technical design, templates guide, audio narration).
 - `docs/rules/` — repo-wide style rules.

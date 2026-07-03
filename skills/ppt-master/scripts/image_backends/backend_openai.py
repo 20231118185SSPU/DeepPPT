@@ -2,24 +2,35 @@
 """
 OpenAI Compatible Image Generation Backend
 
-Generates images via OpenAI-compatible APIs (OpenAI, local models like Qwen-Image, etc.).
-Used by image_gen.py as a backend module.
+Purpose:
+    Generate or edit PPT Master image assets through OpenAI-compatible image
+    generation and image-edit endpoints.
 
-Configuration keys:
-  OPENAI_API_KEY   (required) API key
-  OPENAI_BASE_URL  (optional) Custom API endpoint (e.g. http://127.0.0.1:3000/v1)
-  OPENAI_MODEL     (optional) Model name (default: gpt-image-2)
-  OPENAI_SIZE_PRESET         (optional) auto, legacy, gpt-image, gpt-image-2, or dall-e-2
-  OPENAI_RESPONSE_FORMAT     (optional) auto, b64_json, url, or omit
-  OPENAI_QUALITY             (optional) auto, omit, low, medium, high, standard, or hd
-  OPENAI_OUTPUT_FORMAT       (optional) png, jpeg, or webp for GPT image models
-  OPENAI_OUTPUT_COMPRESSION  (optional) 0-100, only for jpeg/webp GPT image output
-  OPENAI_BACKGROUND          (optional) auto or opaque for gpt-image-2
-  OPENAI_MODERATION          (optional) auto or low for GPT image models
+Used by:
+    image_gen.py when the selected image backend is "openai".
+
+Configuration:
+    OPENAI_API_KEY             Required API key.
+    OPENAI_BASE_URL            Optional custom endpoint.
+    OPENAI_MODEL               Optional model override.
+    OPENAI_SIZE_PRESET         Optional size mapping preset.
+    OPENAI_RESPONSE_FORMAT     Optional response_format override.
+    OPENAI_QUALITY             Optional quality override.
+    OPENAI_OUTPUT_FORMAT       Optional png, jpeg, or webp output for GPT image models.
+    OPENAI_OUTPUT_COMPRESSION  Optional 0-100 compression for jpeg/webp output.
+    OPENAI_BACKGROUND          Optional background setting for GPT image models.
+    OPENAI_MODERATION          Optional moderation setting for GPT image models.
 
 Dependencies:
-  pip install requests Pillow
+    requests; Pillow via image_backends.backend_common.
+
+Public API:
+    generate(prompt, aspect_ratio="1:1", image_size="1K", output_dir=None,
+             filename=None, model=None, max_retries=MAX_RETRIES,
+             reference_image=None) -> str
 """
+
+from __future__ import annotations
 
 import sys
 

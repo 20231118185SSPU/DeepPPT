@@ -866,6 +866,24 @@ def _lock_file(project_path: Path) -> Path:
     return _runtime_dir(project_path) / LOCK_FILE_NAME
 
 
+def _write_live_lock(lock_file: Path, project_path: Path, port: int, url: str) -> None:
+    """Record runtime metadata for Dashboard bridges and cleanup commands."""
+    try:
+        lock_file.write_text(
+            json.dumps({
+                'pid': os.getpid(),
+                'port': port,
+                'url': url,
+                'project_path': str(project_path.resolve()),
+                'log_path': str((_runtime_dir(project_path) / 'server.log').resolve()),
+                'started_at': time.strftime('%Y-%m-%dT%H:%M:%S'),
+            }),
+            encoding='utf-8',
+        )
+    except OSError:
+        pass
+
+
 def _legacy_live_lock(project_path: Path) -> Optional[dict]:
     """Return a live legacy root lock, if one exists."""
     legacy_lock = project_path / LEGACY_LOCK_FILE_NAME
@@ -1080,7 +1098,11 @@ def main(argv: Optional[list[str]] = None) -> int:
             logger.error('live preview failed to become reachable: %s (log: %s)', url, log_path)
             return 1
         logger.info('started live preview in background: %s (pid=%s)', url, proc.pid)
+        print(f'Live Preview URL: {url}')
+        print(f'Live Preview port: {port}')
+        print(f'Live Preview project: {project_path}')
         logger.info('log: %s', log_path)
+        print(f'Live Preview log: {log_path}')
         if not args.no_browser and not _open_browser(url):
             logger.info('browser did not auto-open; open %s manually', url)
         return 0
@@ -1110,6 +1132,8 @@ def main(argv: Optional[list[str]] = None) -> int:
             existing_pid, existing_port, existing_port, existing_pid,
         )
         return 1
+    url = f'http://localhost:{port}'
+    _write_live_lock(lock_file, project_path, port, url)
     # atexit covers normal interpreter shutdown (Ctrl+C / SystemExit);
     # /api/shutdown and idle timeout call _release_lock directly before
     # os._exit since atexit handlers do not run on os._exit.
@@ -1141,7 +1165,6 @@ def main(argv: Optional[list[str]] = None) -> int:
         lock_file=lock_file,
     )
 
-    url = f'http://localhost:{port}'
     if not args.no_browser:
         _open_browser(url)
 

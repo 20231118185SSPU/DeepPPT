@@ -2,11 +2,35 @@
 """
 ModelScope image generation backend.
 
-Configuration keys:
-  MODELSCOPE_API_KEY    (required)
-  MODELSCOPE_MODEL      (optional)
-  MODELSCOPE_BASE_URL   (optional)
+Purpose:
+    Submit PPT Master image prompts to ModelScope asynchronous image generation
+    and download the completed output image.
+
+Used by:
+    image_gen.py when the selected image backend is "modelscope".
+
+Configuration:
+    MODELSCOPE_API_KEY   Required API key.
+    MODELSCOPE_MODEL     Optional model override.
+    MODELSCOPE_BASE_URL  Optional API base URL override.
+
+Dependencies:
+    requests; image_backends.backend_common.
+
+Public API:
+    generate(prompt, aspect_ratio="1:1", image_size="1K", output_dir=None,
+             filename=None, model=None, max_retries=MAX_RETRIES,
+             reference_image=None) -> str
 """
+
+from __future__ import annotations
+
+import sys
+
+if __name__ == "__main__":
+    print(__doc__)
+    print("Use via: python3 skills/ppt-master/scripts/image_gen.py \"prompt\" --backend modelscope")
+    raise SystemExit(0 if any(arg in {"-h", "--help", "help"} for arg in sys.argv[1:]) else 1)
 
 import os
 import time

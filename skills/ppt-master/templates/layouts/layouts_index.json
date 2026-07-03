@@ -1,6 +1,7 @@
 {
   "academic_defense": {
     "summary": "Thesis defense, academic presentations, research progress reports, grant applications.",
+    "summary_zh": "论文答辩、学术汇报、研究进展和基金申请场景；结构稳健，适合严肃研究内容。",
     "canvas_format": "ppt169",
     "page_count": 5,
     "page_types": [
@@ -13,6 +14,7 @@
   },
   "ai_ops": {
     "summary": "Telecom AI operations architecture, IT system overviews, digital transformation proposals, smart infrastructure reports.",
+    "summary_zh": "AI 运维架构、IT 系统总览、数字化转型方案和智能基础设施汇报；偏技术架构与方案说明。",
     "canvas_format": "ppt169",
     "page_count": 6,
     "page_types": [
@@ -26,6 +28,7 @@
   },
   "government_blue": {
     "summary": "Key project briefings, Five-Year Plan presentations, work summaries, investment promotion, policy interpretation.",
+    "summary_zh": "重点项目汇报、规划解读、工作总结、招商推介和政策说明；蓝色政务商务风。",
     "canvas_format": "ppt169",
     "page_count": 5,
     "page_types": [
@@ -38,6 +41,7 @@
   },
   "government_red": {
     "summary": "Government briefings, policy interpretation, work summaries, project introductions, investment promotion.",
+    "summary_zh": "政府简报、政策解读、工作总结、项目介绍和招商推介；红色政务风格。",
     "canvas_format": "ppt169",
     "page_count": 5,
     "page_types": [
@@ -50,6 +54,7 @@
   },
   "medical_university": {
     "summary": "Medical academic reports, case discussions, research presentations, hospital work reports, medical education and training.",
+    "summary_zh": "医学学术报告、病例讨论、科研展示、医院工作汇报和医学培训场景。",
     "canvas_format": "ppt169",
     "page_count": 5,
     "page_types": [
@@ -62,6 +67,7 @@
   },
   "pixel_retro": {
     "summary": "Tech talks, programming tutorials, game introductions, geek-style showcases.",
+    "summary_zh": "技术分享、编程教程、游戏介绍和极客风展示；像素复古视觉。",
     "canvas_format": "ppt169",
     "page_count": 5,
     "page_types": [
@@ -74,6 +80,7 @@
   },
   "psychology_attachment": {
     "summary": "Psychotherapy training, academic lectures, counseling case analysis, professional sharing.",
+    "summary_zh": "心理咨询培训、学术讲座、咨询案例分析和专业分享；温和人文取向。",
     "canvas_format": "ppt169",
     "page_count": 5,
     "page_types": [
@@ -86,6 +93,7 @@
   },
   "story_driven": {
     "summary": "Deep research presentations, narrative-driven content decks, knowledge exploration, educational storytelling, topic deep-dives.",
+    "summary_zh": "深度研究、叙事型内容、知识探索、教育讲述和主题深挖；适合故事线驱动的长内容。",
     "canvas_format": "ppt169",
     "page_count": 6,
     "page_types": [

@@ -1,26 +1,33 @@
 #!/usr/bin/env python3
 """
-Image Size Analysis Tool
-========================
+PPT Master - Image Analysis Tool
+
 Reports objective parameters (width, height, aspect ratio, category) for all
-images in a folder. Intentionally does NOT prescribe a layout — the Strategist
+images in a folder. Intentionally does NOT prescribe a layout - the Strategist
 decides narrative intent (hero / atmosphere / side-by-side / accent) per
-references/strategist.md §h; this tool only supplies the numbers.
+references/strategist.md; this tool only supplies the numbers.
 
 When a canvas is specified, also reports the reference image/text area sizes
 that would apply *if* an image is placed side-by-side with body text. Those
 numbers are conditional on the Strategist picking the side-by-side intent.
 
 Usage:
-    python scripts/analyze_images.py <images_folder_path>
-    python scripts/analyze_images.py projects/xxx/images
-    python scripts/analyze_images.py projects/xxx/images --canvas ppt43
+    python3 scripts/analyze_images.py <images_folder_path> [--canvas <format>]
+
+Examples:
+    python3 scripts/analyze_images.py projects/xxx/images
+    python3 scripts/analyze_images.py projects/xxx/images --canvas ppt43
+
+Dependencies:
+    Pillow; optional sibling config module for canvas definitions.
 
 Output:
     - Analysis report displayed in console
     - Generates image_analysis.csv under the project's analysis/ directory
       (sibling of the images folder), alongside the PPTX intake bundle
 """
+
+from __future__ import annotations
 
 import argparse
 import json

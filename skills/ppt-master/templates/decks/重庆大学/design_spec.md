@@ -2,6 +2,7 @@
 deck_id: 重庆大学
 kind: deck
 summary: Academic defense, research reports, teaching presentations, scholarly exchange.
+summary_zh: 学术答辩、研究报告、教学展示和学术交流；重庆大学品牌风格。
 canvas_format: ppt169
 page_count: 5
 primary_color: "#006BB7"

@@ -1,17 +1,24 @@
 """Shared primitives for web image providers.
 
-This module is the single home for everything that all four providers
-(Openverse / Wikimedia / Pexels / Pixabay) need:
+Purpose:
+    Centralize the importable dataclasses and helper functions used by
+    ``image_search.py`` and every ``provider_<name>.py`` module.
 
-- License tier classification (the central abstraction of this module)
-- Search request / asset candidate dataclasses
-- Query simplification for keyword-based image APIs
-- Candidate scoring
-- Attribution text builder
-- Small helpers (orientation, json path, etc.)
+License policy:
+    Classifies accepted candidates into ``no-attribution`` or
+    ``attribution-required`` tiers, and rejects unknown, noncommercial,
+    no-derivatives, or all-rights-reserved licenses.
 
-Provider-specific code (API URLs, payload shape, parse_results) lives in
-the corresponding provider_<name>.py module and only imports from here.
+Configuration/API keys:
+    None.
+
+Dependencies:
+    Standard library only.
+
+Public API:
+    ``ImageSearchRequest``, ``AssetCandidate``, license constants,
+    query simplification, relevance scoring, attribution text, and small
+    path/orientation helpers.
 """
 
 from __future__ import annotations
@@ -20,7 +27,7 @@ import sys
 
 if __name__ == "__main__":
     print(__doc__)
-    print("This is an internal helper module used by image_search.py and the four web image providers.")
+    print("This is an internal helper module used by image_search.py and web image providers.")
     raise SystemExit(0 if any(arg in {"-h", "--help", "help"} for arg in sys.argv[1:]) else 1)
 
 import re

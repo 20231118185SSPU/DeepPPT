@@ -1,10 +1,23 @@
 """Unsplash provider.
 
-Requires ``UNSPLASH_ACCESS_KEY`` in the environment. Unsplash's site-wide
-license allows commercial and non-commercial use without attribution, so all
-returned candidates are classified as ``no-attribution``.
+Purpose:
+    Search Unsplash through ``image_search.py`` for stock-photo candidates.
 
-API docs: https://unsplash.com/documentation
+License policy:
+    Treats Unsplash's site-wide license as ``no-attribution`` for returned
+    candidates.
+
+Configuration/API keys:
+    Requires ``UNSPLASH_ACCESS_KEY`` in the environment.
+
+Dependencies:
+    ``requests`` plus shared provider primitives.
+
+Public API:
+    ``search`` and ``parse_results``.
+
+API docs:
+    https://unsplash.com/documentation
 """
 
 from __future__ import annotations

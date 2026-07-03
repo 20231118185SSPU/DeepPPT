@@ -127,6 +127,7 @@ Re-declaring any of these in a template `design_spec.md` is noise — Strategist
 template_id: <id>
 category: brand | general | scenario | government | special
 summary: <one-line tone & use case>
+summary_zh: <one-line Chinese discovery summary for Dashboard / Confirm UI>
 keywords: [tag1, tag2, tag3]
 primary_color: "#......"
 canvas_format: ppt169

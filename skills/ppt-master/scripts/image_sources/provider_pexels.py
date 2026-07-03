@@ -1,10 +1,23 @@
 """Pexels provider.
 
-Requires ``PEXELS_API_KEY`` in the environment. Pexels's site-wide license
-allows commercial use without attribution, so all returned candidates are
-classified as ``no-attribution``.
+Purpose:
+    Search Pexels through ``image_search.py`` for stock-photo candidates.
 
-API docs: https://www.pexels.com/api/documentation/
+License policy:
+    Treats Pexels's site-wide license as ``no-attribution`` for returned
+    candidates.
+
+Configuration/API keys:
+    Requires ``PEXELS_API_KEY`` in the environment.
+
+Dependencies:
+    ``requests`` plus shared provider primitives.
+
+Public API:
+    ``search`` and ``parse_results``.
+
+API docs:
+    https://www.pexels.com/api/documentation/
 """
 
 from __future__ import annotations

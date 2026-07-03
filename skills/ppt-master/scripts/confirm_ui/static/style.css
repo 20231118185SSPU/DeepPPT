@@ -514,6 +514,44 @@ body.header-scrolled #side-nav { top: 52px; }
     overflow-wrap: anywhere;
 }
 
+.template-preview-link {
+    display: block;
+    width: 100%;
+    aspect-ratio: 16 / 9;
+    border: 1px solid var(--line);
+    border-radius: 7px;
+    overflow: hidden;
+    margin-top: 8px;
+    background: var(--wash);
+}
+
+.template-preview-frame {
+    width: 100%;
+    height: 100%;
+    border: 0;
+    pointer-events: none;
+    background: #fff;
+}
+
+.template-preview-strip {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    margin-top: 8px;
+}
+
+.template-preview-strip a {
+    min-height: 24px;
+    padding: 3px 7px;
+    border: 1px solid var(--line);
+    border-radius: 6px;
+    background: #fff;
+    color: var(--accent);
+    font-size: 11px;
+    font-weight: 800;
+    text-decoration: none;
+}
+
 .template-pick,
 .template-clear {
     margin-top: 10px;
@@ -549,17 +587,38 @@ body.header-scrolled #side-nav { top: 52px; }
 
 .layout-preview-row {
     display: grid;
-    grid-template-columns: minmax(180px, 0.8fr) minmax(0, 1fr);
+    grid-template-columns: 140px minmax(0, 1fr);
     gap: 10px;
-    align-items: baseline;
+    align-items: center;
     border-top: 1px solid var(--line);
     padding-top: 6px;
+}
+
+.layout-preview-copy {
+    min-width: 0;
+    display: grid;
+    gap: 3px;
 }
 
 .layout-preview-row span,
 .layout-preview-row small {
     overflow-wrap: anywhere;
 }
+
+.layout-mini-svg {
+    width: 140px;
+    height: 78px;
+    border: 1px solid var(--line);
+    border-radius: 7px;
+    background: #fff;
+}
+
+.layout-mini-svg .zone-bg { fill: #fbfcfe; }
+.layout-mini-svg .zone-title { fill: #dfe7f0; }
+.layout-mini-svg .zone-text { fill: #eef3f8; stroke: #cdd7e2; stroke-width: .5; }
+.layout-mini-svg .zone-image { fill: #e8f4ef; stroke: #b9d8c9; stroke-width: .5; }
+.layout-mini-svg .zone-chart { fill: #fff1db; stroke: #e3b86a; stroke-width: .5; }
+.layout-mini-svg .zone-flow { fill: #e7effb; stroke: #b8c8dc; stroke-width: .5; }
 
 .layout-preview-row span {
     color: var(--ink);
@@ -707,6 +766,22 @@ body.header-scrolled #side-nav { top: 52px; }
     transform: none;
 }
 
+.btn-secondary-action {
+    border: 1px solid var(--line);
+    background: #FFFFFF;
+    color: var(--ink);
+    font-size: 14px;
+    font-weight: 850;
+    padding: 11px 22px;
+    border-radius: var(--radius);
+    cursor: pointer;
+}
+
+.btn-secondary-action:hover {
+    border-color: var(--accent);
+    color: var(--accent);
+}
+
 /* ============================================================
    CONFIRMED OVERLAY
    ============================================================ */
@@ -758,7 +833,8 @@ body.header-scrolled #side-nav { top: 52px; }
     .style-preview-card { flex-direction: column; align-items: stretch; }
     .sp-chip { align-self: flex-start; }
     .template-grid { grid-template-columns: 1fr; }
-    .layout-preview-row { grid-template-columns: 1fr; gap: 3px; }
+    .layout-preview-row { grid-template-columns: 1fr; gap: 6px; }
+    .layout-mini-svg { width: 100%; height: auto; }
     #topbar-inner { padding: 14px 16px; }
     body.header-scrolled #topbar-inner { padding: 8px 16px; }
 }

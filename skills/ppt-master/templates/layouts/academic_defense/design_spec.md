@@ -2,6 +2,7 @@
 layout_id: academic_defense
 kind: layout
 summary: Thesis defense, academic presentations, research progress reports, grant applications.
+summary_zh: 论文答辩、学术汇报、研究进展和基金申请场景；结构稳健，适合严肃研究内容。
 canvas_format: ppt169
 page_count: 5
 page_types: [cover, toc, chapter, content, ending]

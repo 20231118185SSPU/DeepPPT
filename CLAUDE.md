@@ -10,7 +10,7 @@ PPT Master is an AI-driven presentation generation system. Multi-role collaborat
 
 **Detailed routing table**: [`docs/routing.md`](docs/routing.md) — loaded on demand.
 
-**Dashboard observability**: after Step 2 creates/imports the project, start or reuse the read-only Dashboard with `python3 skills/ppt-master/scripts/dashboard/server.py <project_path> --daemon --no-browser`. Default port is `8765`; logs are at `<project_path>/dashboard/dashboard.log`. Report the actual URL/log path. Launch failure is non-fatal, and Dashboard never replaces Confirm UI, Live Preview, quality gates, post-processing, or export.
+**Dashboard observability**: after Step 2 creates/imports the project, start or reuse the read-only Dashboard with `python3 skills/ppt-master/scripts/dashboard/server.py <project_path> --daemon`. Default local behavior may open the browser; add `--no-browser` only for headless/remote sessions or when the user explicitly requests no browser window. Default port is `8765`; logs are at `<project_path>/dashboard/dashboard.log`. Report the actual URL/log path. Launch failure is non-fatal, and Dashboard never replaces Confirm UI, Live Preview, quality gates, post-processing, or export.
 
 ## Constraints
 

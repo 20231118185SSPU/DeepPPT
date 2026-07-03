@@ -1,4 +1,24 @@
-"""Alibaba Qwen TTS backend for narration audio generation."""
+"""Alibaba Qwen TTS backend for narration audio generation.
+
+Purpose:
+    Generate WAV narration through DashScope's Qwen TTS multimodal generation
+    endpoint, then download the returned audio asset.
+
+Used by:
+    ``notes_to_audio.py`` when the ``qwen`` narration backend is selected.
+
+Configuration:
+    Reads ``QWEN_API_KEY`` or ``DASHSCOPE_API_KEY`` by default. Callers may
+    override the key environment name and base URL with ``QWEN_TTS_BASE_URL`` or
+    a direct ``base_url`` argument.
+
+Dependencies:
+    Standard library plus shared helpers from ``tts_backends.backend_common``.
+
+Public API:
+    ``DEFAULT_ENDPOINT``, ``DEFAULT_MODEL``, ``output_extension``,
+    ``read_qwen_api_key``, ``resolve_url``, ``generate``, and ``print_voices``.
+"""
 
 from __future__ import annotations
 

@@ -2,6 +2,7 @@
 layout_id: government_blue
 kind: layout
 summary: Key project briefings, Five-Year Plan presentations, work summaries, investment promotion, policy interpretation.
+summary_zh: 重点项目汇报、规划解读、工作总结、招商推介和政策说明；蓝色政务商务风。
 canvas_format: ppt169
 page_count: 5
 page_types: [cover, toc, chapter, content, ending]

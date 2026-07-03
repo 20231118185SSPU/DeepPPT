@@ -1,4 +1,20 @@
-"""Command-line interface: analyze / scaffold / check-plan / apply subcommands."""
+"""PPT Master - PPTX Template Fill Package CLI.
+
+Argparse entry point used by ``scripts/template_fill_pptx.py`` and by direct
+module execution. Analyzes a native PPTX template, scaffolds a fill plan, checks
+planned edits, and applies text / table / chart replacements without SVG
+conversion.
+
+Usage:
+    python3 skills/ppt-master/scripts/template_fill_pptx.py analyze <deck.pptx> -o <library.json>
+    python3 skills/ppt-master/scripts/template_fill_pptx.py scaffold <library.json> -o fill_plan.json
+    python3 skills/ppt-master/scripts/template_fill_pptx.py check-plan <library.json> fill_plan.json
+    python3 skills/ppt-master/scripts/template_fill_pptx.py apply <deck.pptx> fill_plan.json -o output.pptx
+
+Dependencies:
+    Internal ``template_fill_pptx`` package modules and Python's zip / XML
+    standard-library tooling.
+"""
 
 from __future__ import annotations
 

@@ -1,9 +1,13 @@
 #!/usr/bin/env python3
-"""Web image search CLI.
+"""
+PPT Master - Web Image Search Tool
 
-Sister tool to ``image_gen.py``: instead of generating an image from a
-prompt, this searches openly-licensed image providers and downloads a
-single best match.
+Searches openly-licensed image providers and downloads a single best match
+for use in PPT Master image acquisition.
+
+Usage:
+    python3 scripts/image_search.py <query> --filename <name> -o <images_dir>
+    python3 scripts/image_search.py --batch <image_queries.json>
 
 Workflow:
     1. Build an :class:`ImageSearchRequest` from CLI args.
@@ -34,6 +38,10 @@ Examples:
     python3 scripts/image_search.py "executive meeting" \
         --filename team.jpg --provider pexels \
         --orientation landscape -o projects/demo/images
+
+Dependencies:
+    requests, internal image_backends/image_sources helpers, and optional
+    provider API keys for keyed providers.
 """
 
 from __future__ import annotations

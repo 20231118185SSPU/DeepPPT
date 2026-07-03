@@ -31,6 +31,7 @@ const state = {
 
 const routes = {
   pipeline: '管线总览',
+  services: '服务入口',
   step: '步骤工作台',
   confirm: '确认中心',
   preview: '实时预览',
@@ -585,6 +586,7 @@ function render() {
     return;
   }
   if (current.name === 'step') renderStep(app, Number(current.arg || state.pipeline.current_step || 1));
+  else if (current.name === 'services') renderServices(app);
   else if (current.name === 'confirm') renderConfirm(app);
   else if (current.name === 'preview') renderPreview(app);
   else if (current.name === 'quality') renderQuality(app);
@@ -618,7 +620,7 @@ function setServiceLink(id, service, runningText, stoppedText, serviceName) {
   link.setAttribute('aria-disabled', String(!running));
   link.title = running
     ? `${serviceName} 正在运行：${service.url}`
-    : `${serviceName} 当前未运行；Dashboard 不会自动启动它`;
+    : `${serviceName} 当前未运行；可在“服务入口”或对应工作台按需启动`;
   if (running) link.href = service.url;
   else link.removeAttribute('href');
 }
@@ -730,6 +732,48 @@ function renderStep(app, stepNo) {
         <span class="eyebrow">产物</span>
         <h2>相关产物</h2>
         ${artifactTable(artifacts)}
+      </div>
+    </div>
+  `;
+}
+
+function renderServices(app) {
+  const p = state.pipeline;
+  app.innerHTML = `
+    <section class="hero-panel services-hero">
+      <div>
+        <span class="eyebrow">统一入口</span>
+        <h2>本地页面与服务</h2>
+        <p>所有本地页面都在这里显示实际 URL、端口、项目路径和日志位置；启动辅助页前后不依赖默认端口假设。</p>
+      </div>
+      <div class="hero-stack">
+        <strong>${escapeHtml(serviceStatusText(p.dashboard))}</strong>
+        <span>Dashboard</span>
+      </div>
+    </section>
+    <div class="summary-grid premium">
+      ${metric('Dashboard', serviceStatusText(p.dashboard))}
+      ${metric('Confirm UI', serviceStatusText(p.confirm_ui))}
+      ${metric('Live Preview', serviceStatusText(p.live_preview))}
+      ${metric('项目路径', p.project_path || '-')}
+    </div>
+    <div class="service-center-grid">
+      <div class="panel premium-panel service-panel-large">
+        <span class="eyebrow">Dashboard</span>
+        <h2>项目控制台</h2>
+        ${servicePanel(p.dashboard, 'Dashboard', '打开控制台')}
+      </div>
+      <div class="panel premium-panel service-panel-large">
+        <span class="eyebrow">Step 4</span>
+        <h2>设计确认</h2>
+        ${servicePanel(p.confirm_ui, 'Confirm UI', '打开确认页面', 'start-confirm')}
+        ${actionStatusPanel('start-confirm')}
+      </div>
+      <div class="panel premium-panel service-panel-large">
+        <span class="eyebrow">Step 6</span>
+        <h2>实时预览</h2>
+        ${servicePanel(p.live_preview, 'Live Preview', '打开实时预览', 'start-preview')}
+        ${actionStatusPanel('start-preview')}
       </div>
     </div>
   `;
@@ -1110,8 +1154,53 @@ function templateRoutePanel(route) {
         <span>${escapeHtml(pending.kind || '')} · ${escapeHtml(pending.path || pending.id || '')}</span>
         <small>必须重新执行 Step 3/4 后才能继续；不会静默套用到当前 spec。</small>
       </div>` : ''}
+      ${templateLibraryHtml(library)}
     </div>
   `;
+}
+
+function templateLibraryHtml(library) {
+  const entries = library?.entries || {};
+  const kinds = ['layout', 'deck', 'brand'];
+  const cards = kinds.flatMap((kind) => (entries[kind] || []).map((item) => templateCardHtml(item)));
+  if (!cards.length) return '';
+  return `<div class="template-preview-library">
+    <div class="panel-head">
+      <div>
+        <strong>模板与版式预览</strong>
+        <p>点击 SVG 可在新窗口查看模板外观；选择模板仍必须回到 Step 3 重新应用 explicit path。</p>
+      </div>
+    </div>
+    <div class="template-preview-grid">${cards.join('')}</div>
+  </div>`;
+}
+
+function templateCardHtml(item) {
+  const previews = item.preview_files || [];
+  const first = previews[0];
+  const desc = item.description_zh || item.description || '';
+  return `<article class="template-preview-card">
+    <div class="template-card-copy">
+      <span class="pill">${escapeHtml(templateKindName(item.kind))}</span>
+      <strong>${escapeHtml(item.name_zh || item.name || item.id)}</strong>
+      <p>${escapeHtml(desc)}</p>
+      <small>${escapeHtml(item.path || '')}</small>
+    </div>
+    ${first ? `<a class="template-thumb" href="${escapeAttr(first.url)}" target="_blank" rel="noreferrer" title="打开 ${escapeAttr(first.name)}">
+      <iframe src="${escapeAttr(first.url)}" title="${escapeAttr(first.name)}"></iframe>
+    </a>` : '<div class="template-thumb empty-thumb">暂无 SVG 预览</div>'}
+    ${previews.length > 1 ? `<div class="template-strip">${previews.map((file) => `
+      <a href="${escapeAttr(file.url)}" target="_blank" rel="noreferrer">${escapeHtml(file.name.replace('.svg', ''))}</a>
+    `).join('')}</div>` : ''}
+  </article>`;
+}
+
+function templateKindName(kind) {
+  return {
+    brand: '品牌',
+    layout: '版式',
+    deck: '整套 deck',
+  }[kind] || kind || '模板';
 }
 
 function gateListHtml(gate) {
@@ -1459,7 +1548,7 @@ function servicePanel(service, label, actionText, action = '') {
     return `<div class="service-card running">
       <div>
         <strong>${escapeHtml(label)} 正在运行</strong>
-        <p>pid ${escapeHtml(service.pid || '-')} · port ${escapeHtml(service.port || '-')}</p>
+        <p>${escapeHtml(service.url)} · pid ${escapeHtml(service.pid || '-')} · port ${escapeHtml(service.port || '-')}</p>
         ${diagnostics}
       </div>
       <a class="button" href="${escapeAttr(service.url)}" target="_blank" rel="noreferrer" title="${escapeAttr(actionText)}">${escapeHtml(actionText)}</a>
@@ -1494,6 +1583,7 @@ function serviceDiagnostics(service) {
   if (service.last_result_file?.path) rows.push(`result ${service.last_result_file.path}`);
   if (service.last_annotation_file?.path) rows.push(`annotations ${service.last_annotation_file.path}`);
   if (service.last_update_file?.path) rows.push(`edits ${service.last_update_file.path}`);
+  if (service.log_path) rows.push(`log ${compactPath(service.log_path)}`);
   return rows.length ? `<p class="service-diagnostics">${escapeHtml(rows.join(' · '))}</p>` : '';
 }
 
@@ -1508,6 +1598,8 @@ function serviceNextActionText(action) {
     open_live_preview: '打开实时预览继续查看。',
     restart_live_preview: '存在过期锁，建议重新启动实时预览。',
     start_live_preview: '建议启动实时预览。',
+    open_dashboard: '当前 Dashboard 就是统一入口。',
+    start_dashboard: 'Dashboard 未运行时按 Step 2 命令启动。',
   }[action] || '对应工作流启动后，这里会显示可打开的入口。';
 }
 

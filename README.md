@@ -23,14 +23,14 @@ DeepPPT 是一个端到端的 AI PPT 生成系统。给定一个主题或源文�
 | 输入 | 源文件 (PDF/DOCX/URL) | 仅需一个主题 |
 | 调研 | 无 / 快速搜索 | 7 步独立调研（大纲→搜索拆分→多AI逐页搜索→汇总→分析→叙事→视觉策略） |
 | 主题入口 | 直接进入生成前准备 | PPT Briefing 先确认目标、受众、叙事、素材策略和风险 |
-| 搜索 | 内置 WebSearch | 多 AI 浏览器自动化（ChatGPT/Grok/Perplexity 按内容类型分工） |
+| 搜索 | 内置 WebSearch | deep-research 计划搜索路径（Agent-Reach / 平台 / 浏览器自动化），内置 WebSearch 仅作记录式 fallback |
 | 叙事 | 模板化大纲 | 故事弧线 + 转折点 + 过渡标记 |
 | 视觉 | 通用设计规范 | 从调研内容中提取视觉身份 |
 | 工作台 | 分散脚本输出 | 统一 Dashboard 追踪项目状态、产物、质量报告、执行轨迹和预览入口 |
 | 门禁 | 基础脚本校验 | confirm / research / asset / rendered visual / harness / e2e 多阶段质量门禁 |
 | 排版 | 无自动检测 | 静态布局检查 + 本地渲染截图门禁 + 自动修正 |
 | 视觉审查 | 无独立视觉回看 | 视觉检查工作流 + OpenAI/Anthropic/Ollama 兼容后端 |
-| 动画 | 通用动画 | 按页面类型强制节奏（§18 规则） |
+| 动画 | 通用动画 | 默认页间转场；页内元素动画显式 opt-in，可用 `customize-animations` 调整对象级顺序/效果/时序 |
 | 场景 | 通用模板 | 发布会品牌预设（Apple keynote 风格） |
 | 页面类型 | 6 种基础类型 | 11 种（含讲解页、对比页、数据页、时间线页等） |
 | 图片策略 | 单轨（AI 或网络） | 来源路由 + 双轨——视觉页 AI 生图 + 信息页网络素材 |
@@ -45,8 +45,8 @@ DeepPPT 是一个端到端的 AI PPT 生成系统。给定一个主题或源文�
 - **上游 ppt-master** 提供了完整的 PPT 生成管线：源文件转换 → 项目管理 → 八项确认 → SVG 逐页生成 → 后处理 → PPTX 导出
 - **DeepPPT** 在此基础上新增了：
   - [`ppt-briefing`](skills/ppt-master/workflows/ppt-briefing.md) 前置构思工作流——主题输入先确认目标、受众、叙事、素材策略和风险，再进入深度调研
-  - [`deep-research`](skills/ppt-master/workflows/deep-research.md) 编排器——7 步独立调研工作流，协调多 AI 浏览器自动化搜索
-  - [`browse_ai.py`](skills/ppt-master/scripts/research/browse_ai.py)——Playwright CDP 浏览器自动化，ChatGPT/Grok/Perplexity 按内容类型分工搜索
+  - [`deep-research`](skills/ppt-master/workflows/deep-research.md) 编排器——7 步独立调研工作流，协调计划搜索路径；普通 WebSearch 只作为 deep-research Step 3 内部记录式 fallback
+  - [`browse_ai.py`](skills/ppt-master/scripts/research/browse_ai.py)——Playwright CDP 浏览器自动化，支持 Grok / Kimi / DeepSeek / 通义千问 / ChatGLM / Perplexity
   - [`dashboard`](skills/ppt-master/scripts/dashboard/)——统一只读 Dashboard，集中展示项目状态、产物、质量报告、执行轨迹和 Confirm / Live Preview 入口
   - [`confirm_ui_gate.py`](skills/ppt-master/scripts/confirm_ui_gate.py)、[`research_gate.py`](skills/ppt-master/scripts/research/research_gate.py)、[`asset_gate.py`](skills/ppt-master/scripts/research/asset_gate.py)——确认、研究深度和素材完整性门禁
   - [`image_source_router.py`](skills/ppt-master/scripts/image_source_router.py) + [`image-source-routing.md`](skills/ppt-master/references/image-source-routing.md)——按主题域选择官方、学术、开放版权、通用氛围图等来源包，降低错图和版权风险
@@ -59,9 +59,9 @@ DeepPPT 是一个端到端的 AI PPT 生成系统。给定一个主题或源文�
   - [`batch-review`](skills/ppt-master/workflows/batch-review.md)——按批生成与审阅的可选工作流
   - [`event_presentation`](skills/ppt-master/templates/brands/event_presentation/) 品牌预设——发布会/产品发布场景（暗色调 keynote 风格）
   - [`story_driven`](skills/ppt-master/templates/layouts/story_driven/) 布局模板——封面/目录/过渡/内容/讲解/金句/对比/数据/时间线/全图/封底
-  - [`img2img-support`](skills/ppt-master/workflows/img2img-support.md) 文档——图生图策略说明
+  - [`img2img-support`](skills/ppt-master/workflows/img2img-support.md)——图生图支持的非运行时设计说明，不是可直接调用的 standalone workflow
   - 排版稳定性检测（布局溢出/元素间距/垂直分布）+ 自动修正
-  - 动画节奏强制规则（§18）+ 视觉优先页规则（§19）
+  - 默认页间转场 + 显式 opt-in 的对象级动画配置
   - 多后端 AI 图片生成（OpenAI / Gemini / Replicate / Stability / 通义千问 / 智谱 / SiliconFlow 等 15+ 后端）
 
 DeepPPT 沿用上游管线脚本（`project_manager.py`、`svg_editor/`、`confirm_ui/`、`svg_to_pptx.py` 等），并在交互确认、实时预览、质量检查、研究门禁、视觉审查和导出校验上做了面向生产工作流的增强。
@@ -103,7 +103,7 @@ cp .env.example .env
 # 编辑 .env，设置 IMAGE_BACKEND 和对应的 API_KEY
 ```
 
-支持的图片后端：`openai` / `gemini` / `qwen` / `zhipu` / `volcengine` / `minimax` 等 15+ 后端。
+支持的图片后端通过 `IMAGE_BACKEND` 显式选择，例如 `openai` / `gemini` / `qwen` / `zhipu` / `volcengine` / `minimax` 等。
 
 零配置图片搜索源：Openverse / Wikimedia / NASA / Smithsonian（无需 API Key）。
 
@@ -189,6 +189,8 @@ DeepPPT/
 └── projects/                 # 用户项目工作区
 ```
 
+模板和品牌预设只在用户给出明确目录路径时应用；裸模板名、品牌名或风格描述不会自动触发套用。可先询问 Dashboard / Confirm UI 中的模板列表，再把选中的 `skills/ppt-master/templates/.../<id>/` 路径交给工作流。
+
 ## 工作原理
 
 ```
@@ -207,8 +209,8 @@ DeepPPT/
 │  Phase A: 深度调研（7步独立工作流）       │
 │  ├─ Step 1: 大纲生成（用户确认）          │
 │  ├─ Step 2: 搜索需求拆分（AI分配）        │
-│  ├─ Step 3: 逐页搜索（ChatGPT/Grok/     │
-│  │          Perplexity 浏览器自动化）      │
+│  ├─ Step 3: 逐页搜索（Agent-Reach /     │
+│  │          平台 / 浏览器自动化路径）       │
 │  ├─ Step 4: 汇总                         │
 │  ├─ Step 5: 结构化分析 + 交叉验证         │
 │  ├─ Step 6: 叙事构建（故事弧线）          │
@@ -219,7 +221,7 @@ DeepPPT/
 ┌─────────────────────────────────────────┐
 │  Phase B: 设计 + 生成                    │
 │  ├─ 统一 Dashboard（状态/产物/质量/轨迹） │
-│  ├─ 内容筛选 + 详细大纲                  │
+│  ├─ 内容筛选 + 详细大纲 + 图文语境绑定     │
 │  ├─ 八项确认 + 确认门禁                  │
 │  ├─ 图片来源路由 + 双轨图片生成           │
 │  ├─ 研究深度 / 素材完整性门禁             │
@@ -291,12 +293,12 @@ DeepPPT/
 **架构变更：**
 - 🔄 **深度调研拆为 7 步独立工作流**（大纲→搜索拆分→多AI逐页搜索→汇总→分析→叙事→视觉策略），每步输出到独立文件夹
 - 🗑️ **移除 topic-research 快速模式**，所有输入统一走深度调研
-- 🤖 **新增多 AI 浏览器自动化**（`browse_ai.py`），通过 Playwright CDP 连接 Chrome，按内容类型分工：技术→ChatGPT，趋势→Grok，学术→Perplexity
+- 🤖 **新增多 AI 浏览器自动化**（`browse_ai.py`），通过 Playwright CDP 连接 Chrome；当前支持 Grok / Kimi / DeepSeek / 通义千问 / ChatGLM / Perplexity
 
 **质量提升：**
 - 📐 **排版稳定性检测**：svg_quality_checker.py 新增 3 项检查（布局溢出、元素间距、垂直分布）
 - 🔧 **自动修正**：finalize_svg.py 新增 fix-layout 步骤（文字溢出自动缩减字号）
-- 🎬 **动画节奏强制**：executor-base.md §18，按页面类型选择动画，禁止花哨效果
+- 🎬 **动画策略收敛**：默认保留页间转场，页内元素动画改为显式 opt-in，避免不必要的自动级联
 - 🖼️ **视觉优先页规则**：executor-base.md §19，封面等关键页用全屏 AI 背景
 - 🎤 **发布会品牌预设**：`event_presentation`（暗色调、Apple keynote 风格）
 

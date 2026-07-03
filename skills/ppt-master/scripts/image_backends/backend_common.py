@@ -1,7 +1,27 @@
 #!/usr/bin/env python3
 """
-Shared helpers for image generation backends.
+Image generation backend shared helpers.
+
+Purpose:
+    Provide common filesystem, HTTP, retry, image-format, and API-key helpers
+    used by PPT Master image backend plugins.
+
+Used by:
+    image_gen.py backends under image_backends/.
+
+Configuration:
+    Reads provider-specific environment variables only through require_api_key().
+
+Dependencies:
+    requests; Pillow is optional for image transcode and resolution reporting.
+
+Public API:
+    resolve_output_path(), detect_image_extension(), save_image_bytes(),
+    report_resolution(), normalize_image_size(), is_rate_limit_error(),
+    retry_delay(), download_image(), require_api_key(), http_error(), poll_json().
 """
+
+from __future__ import annotations
 
 import sys
 

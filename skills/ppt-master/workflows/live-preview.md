@@ -34,14 +34,14 @@ python3 ${SKILL_DIR}/scripts/svg_editor/server.py <project_path>
 
 (Plain mode — no `--live`. The `--live` flag is reserved for Step 6's auto-startup.)
 
-The server binds `127.0.0.1:5050`, opens the browser on a local desktop, and edits `<project_path>/svg_output/` in place. After it prints `SVG Editor running at http://localhost:5050`, tell the user in their language, in one short message:
+The server binds `127.0.0.1:5050`, opens the browser on a local desktop, and edits `<project_path>/svg_output/` in place. After it prints the startup lines, tell the user in their language, in one short message:
 
-- editor is at `http://localhost:5050`
+- editor URL, actual port, project path, and `<project>/live_preview/server.log`
 - **Direct edit** (deterministic tweaks — wording, color, coordinates, SVG attributes): select an element → change the controls in the right panel → preview updates immediately, but nothing is written to `svg_output/` until **Apply changes**. `Ctrl+Z` or the **Undo** button drops staged edits step by step; applied changes are logged to `<project>/.live_edits.jsonl`. Re-export stays chat-driven: say "re-export" / "重新导出" to refresh the PPTX.
 - **Annotate** (changes that need AI judgement / re-layout): select an element → write the instruction → click **Add annotation** to stage it → click **Apply changes** to write annotation markers → return to the chat and say `apply my annotations` (or quote the browser prompt)
 - to skip the editor, just describe the change in chat
 
-Do not wait for confirmation before launching — the user already asked for preview, so launching is the response. If another project already holds the port, the launcher auto-advances to the next free one — report the actual URL from the launch log (`--port <other>` still forces a specific port). Remote access → see the appendix.
+Do not wait for confirmation before launching — the user already asked for preview, so launching is the response. If another project already holds the port, the launcher auto-advances to the next free one — report the actual URL/port from the launch output (`--port <other>` still forces a specific port). Remote access → see the appendix.
 
 ---
 

@@ -2,6 +2,7 @@
 deck_id: 中汽研_商务
 kind: deck
 summary: Product certification display, evaluation presentations, technology promotion, high-end business reporting.
+summary_zh: 产品认证展示、测评汇报、技术推广和高端商务汇报；偏商务展示。
 canvas_format: ppt169
 page_count: 5
 primary_color: "#003366"

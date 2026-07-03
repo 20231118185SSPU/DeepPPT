@@ -1,11 +1,26 @@
 ---
 description: >
-  Implementation spec for adding img2img (image-to-image / reference image) support
-  to image_gen.py. Covers CLI, manifest, backend, and test plan. Based on Yunwu API
-  docs (https://yunwu.apifox.cn/doc-5459032).
+  Non-runtime implementation draft for adding img2img (image-to-image /
+  reference image) support to image_gen.py. Covers CLI, manifest, backend,
+  and test plan. Based on Yunwu API docs (https://yunwu.apifox.cn/doc-5459032).
+status: non-runtime-draft
+runtime_workflow: false
 ---
 
-# img2img Support Implementation
+# img2img Support Implementation (Not a Runtime Workflow)
+
+> Status: implementation draft / historical design note; not an executable
+> workflow.
+> Authority: non-authoritative; `skills/ppt-master/SKILL.md`,
+> `skills/ppt-master/references/image-generator.md`, and the scripts under
+> `skills/ppt-master/scripts/` remain the live sources of truth.
+> Implemented in: current runtime behavior lives in
+> `skills/ppt-master/scripts/image_gen.py`,
+> `skills/ppt-master/scripts/image_backends/backend_openai.py`, backend stubs
+> under `skills/ppt-master/scripts/image_backends/`, and
+> `skills/ppt-master/references/image-generator.md`.
+> Routing: do not invoke this file from workflow routing. It is intentionally
+> absent from the `SKILL.md` Standalone Workflows table.
 
 > Adds reference-image input to the image generation pipeline. Currently all backends
 > are text-to-image only. This spec targets the `openai` backend (Yunwu proxy) first,

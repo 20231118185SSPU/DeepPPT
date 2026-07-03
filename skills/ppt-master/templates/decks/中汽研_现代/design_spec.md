@@ -2,6 +2,7 @@
 deck_id: 中汽研_现代
 kind: deck
 summary: Forward-looking technology showcases, strategic releases, high-end business reporting.
+summary_zh: 前瞻技术展示、战略发布和高端商务汇报；现代深色科技感。
 canvas_format: ppt169
 page_count: 5
 primary_color: "#001529"

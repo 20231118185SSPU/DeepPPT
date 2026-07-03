@@ -1,11 +1,27 @@
 """Flickr provider.
 
-Requires ``FLICKR_API_KEY`` in the environment. Flickr hosts images under a
-mix of licenses; this provider only accepts CC0/Public Domain (``no-attribution``)
-and CC BY/CC BY-SA (``attribution-required``) images. CC BY-NC variants are
-rejected outright.
+Purpose:
+    Search Flickr through ``image_search.py`` for openly licensed photo
+    candidates.
 
-API docs: https://www.flickr.com/services/api/
+License policy:
+    Accepts Flickr license IDs for CC0, Public Domain Mark, no known
+    copyright restrictions, US government works, CC BY, CC BY-SA, and CC
+    BY-ND. Noncommercial licenses, no-derivatives variants outside the
+    accepted Flickr ID set, all-rights-reserved, and unknown licenses are
+    rejected.
+
+Configuration/API keys:
+    Requires ``FLICKR_API_KEY`` in the environment.
+
+Dependencies:
+    ``requests`` plus shared provider primitives.
+
+Public API:
+    ``search`` and ``parse_results``.
+
+API docs:
+    https://www.flickr.com/services/api/
 """
 
 from __future__ import annotations

@@ -8,7 +8,12 @@ These rules are pragmatic, not exhaustive. They capture the conventions readers 
 
 ## 1. File Header
 
-Every script under `scripts/` starts with:
+Choose the file header by the module's runtime role. Do not force CLI framing onto
+library modules or package markers.
+
+### 1.1 Entry-point CLI scripts
+
+Entry-point scripts that users or workflows run directly start with:
 
 ```python
 #!/usr/bin/env python3
@@ -30,9 +35,47 @@ Dependencies:
 
 | Element | Rule |
 |---|---|
-| Shebang | `#!/usr/bin/env python3` (always — even for non-CLI helper modules) |
+| Shebang | `#!/usr/bin/env python3` |
 | Module docstring | Tool name + purpose + Usage + Examples + Dependencies |
-| Internal helper modules | May add an early `--help` short-circuit (see §4) |
+| CLI help | `-h` / `--help` must be safe before side effects (see §4) |
+
+### 1.2 Directly executable diagnostic provider/backend modules
+
+Provider and backend plugin modules may expose a narrow diagnostic mode via
+`if __name__ == "__main__"` when that already exists or is useful for support.
+These files are not full workflow CLIs and do not need argparse-only framing.
+
+| Element | Rule |
+|---|---|
+| Shebang | Allowed when the file is intentionally runnable; optional otherwise |
+| Module docstring | Purpose + Used by + Configuration/API keys + Dependencies + Public API |
+| Diagnostic guard | May print a documented diagnostic, import-readiness, or "use via ..." message |
+| Usage / Examples | Optional; include only when the diagnostic mode accepts meaningful arguments |
+
+Do not invent a command-line interface just to satisfy the header rule.
+
+### 1.3 Library/helper package modules
+
+Library modules, shared helpers, converters, parser helpers, and package-internal
+implementation files should describe how they are imported, not how to run them.
+
+| Element | Rule |
+|---|---|
+| Shebang | Omit unless the module is intentionally executable |
+| Module docstring | Short purpose, owning caller(s), dependencies, and public API when non-obvious |
+| Usage / Examples | Omit unless the module has a real direct-run mode |
+| Imports | Add `from __future__ import annotations` only when needed by §2 |
+
+### 1.4 `__init__.py`
+
+Package markers are exempt from the script-header contract.
+
+| Element | Rule |
+|---|---|
+| Shebang | Omit |
+| Usage / Examples / Dependencies | Omit |
+| Module docstring | Optional short package purpose, public API, and compatibility note |
+| Exports | Keep `__all__` when it documents the public import surface |
 
 ---
 
@@ -214,10 +257,10 @@ Common functionality lives in two designated submodules. New scripts use these, 
 
 | Module | Owns |
 |---|---|
-| [`image_backends/backend_common.py`](../skills/ppt-master/scripts/image_backends/backend_common.py) | HTTP download, retry, image format detection, save-with-Pillow-transcode |
-| [`image_sources/provider_common.py`](../skills/ppt-master/scripts/image_sources/provider_common.py) | License classification, query simplification, scoring, attribution text, dataclasses |
-| [`project_utils.py`](../skills/ppt-master/scripts/project_utils.py) | Canvas formats, project path conventions |
-| [`error_helper.py`](../skills/ppt-master/scripts/error_helper.py) | User-facing error message templates |
+| [`image_backends/backend_common.py`](../../skills/ppt-master/scripts/image_backends/backend_common.py) | HTTP download, retry, image format detection, save-with-Pillow-transcode |
+| [`image_sources/provider_common.py`](../../skills/ppt-master/scripts/image_sources/provider_common.py) | License classification, query simplification, scoring, attribution text, dataclasses |
+| [`project_utils.py`](../../skills/ppt-master/scripts/project_utils.py) | Canvas formats, project path conventions |
+| [`error_helper.py`](../../skills/ppt-master/scripts/error_helper.py) | User-facing error message templates |
 
 **Forbidden — duplicating logic that exists in a shared helper**. If a helper is missing a feature, extend the helper, don't fork it inside your new script.
 
@@ -329,7 +372,7 @@ Existing files take precedence. If a current script contradicts a rule here, dec
 
 | If you're writing... | Model after |
 |---|---|
-| A small CLI utility | [`total_md_split.py`](../skills/ppt-master/scripts/total_md_split.py), [`gemini_watermark_remover.py`](../skills/ppt-master/scripts/gemini_watermark_remover.py) |
-| A multi-backend / dispatcher CLI | [`image_search.py`](../skills/ppt-master/scripts/image_search.py), [`image_gen.py`](../skills/ppt-master/scripts/image_gen.py) |
-| A library / shared helper | [`image_sources/provider_common.py`](../skills/ppt-master/scripts/image_sources/provider_common.py), [`image_backends/backend_common.py`](../skills/ppt-master/scripts/image_backends/backend_common.py) |
-| A class-based checker / validator | [`svg_quality_checker.py`](../skills/ppt-master/scripts/svg_quality_checker.py) |
+| A small CLI utility | [`total_md_split.py`](../../skills/ppt-master/scripts/total_md_split.py), [`gemini_watermark_remover.py`](../../skills/ppt-master/scripts/gemini_watermark_remover.py) |
+| A multi-backend / dispatcher CLI | [`image_search.py`](../../skills/ppt-master/scripts/image_search.py), [`image_gen.py`](../../skills/ppt-master/scripts/image_gen.py) |
+| A library / shared helper | [`image_sources/provider_common.py`](../../skills/ppt-master/scripts/image_sources/provider_common.py), [`image_backends/backend_common.py`](../../skills/ppt-master/scripts/image_backends/backend_common.py) |
+| A class-based checker / validator | [`svg_quality_checker.py`](../../skills/ppt-master/scripts/svg_quality_checker.py) |

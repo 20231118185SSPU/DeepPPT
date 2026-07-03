@@ -109,20 +109,23 @@ Another process is using port 9222. Either stop it or change `HERMES_CHROME_PORT
 
 ## Integration with Deep Research (browse_ai.py)
 
-The deep-research workflow uses `browse_ai.py` to automate searches on ChatGPT, Grok, and Perplexity. It connects to your CDP Chrome automatically.
+The deep-research workflow can use `browse_ai.py` to automate searches on Grok, Kimi, DeepSeek, Tongyi Qianwen, ChatGLM, and Perplexity. It connects to your CDP Chrome automatically.
 
 ### Setup
 
 1. Start Chrome with CDP (steps 1-2 above)
-2. Log into ChatGPT / Grok / Perplexity in the CDP Chrome (sessions persist across restarts)
+2. Log into the services you plan to use in the CDP Chrome (sessions persist across restarts)
 3. That's it — `browse_ai.py` auto-reads `scripts/.hermes-chrome.env` for the CDP port
 
 ### Usage
 
 ```bash
-# Single search via ChatGPT (connects to CDP Chrome at port 9222)
+# List supported services
+python skills/ppt-master/scripts/research/browse_ai.py --list
+
+# Single search via Kimi (connects to CDP Chrome at port 9222)
 python skills/ppt-master/scripts/research/browse_ai.py \
-  --ai chatgpt --prompt "What is the AI market size in 2025?" --output result.md
+  --ai kimi --prompt "What is the AI market size in 2025?" --output result.md
 
 # Batch search (reads search_plan.json, routes by content type)
 python skills/ppt-master/scripts/research/browse_ai.py \

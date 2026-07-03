@@ -21,9 +21,9 @@ Match user's input language for responses. Design spec follows English template 
 
 Do not create .worktrees/, tests/, or generic engineering scaffolding.
 
-For topic-only requests (no source file), run deep-research workflow first (workflows/deep-research.md). Do not replace it with ordinary WebSearch.
+For topic-only requests (no source file), run ppt-briefing first (workflows/ppt-briefing.md), wait for explicit user confirmation, then run deep-research (workflows/deep-research.md). Do not replace deep-research with ordinary WebSearch.
 
-After Step 2 creates/imports the project, start or reuse the read-only Dashboard: python3 skills/ppt-master/scripts/dashboard/server.py <project_path> --daemon --no-browser. Default port: 8765. Log: <project_path>/dashboard/dashboard.log. Launch failure is non-fatal. Dashboard does not replace Confirm UI, Live Preview, quality gates, post-processing, or export.
+After Step 2 creates/imports the project, start or reuse the read-only Dashboard: python3 skills/ppt-master/scripts/dashboard/server.py <project_path> --daemon. Add --no-browser only for headless/remote sessions or explicit user request. Default port: 8765. Log: <project_path>/dashboard/dashboard.log. Launch failure is non-fatal. Dashboard does not replace Confirm UI, Live Preview, quality gates, post-processing, or export.
 
 Existing PPTX routing: preserve page count/order/wording and beautify only -> beautify-pptx; reuse original deck design with new content -> template-fill-pptx; restructure story or change page count/order -> main pipeline + ppt_to_md; harvest reusable template -> create-template.
 

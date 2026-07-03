@@ -321,10 +321,14 @@ def _run_commands(
         service = confirm_ui_status(project)
         if service.get("running"):
             record["url"] = service.get("url")
+            record["port"] = service.get("port")
+            record["log_path"] = service.get("log_path")
     elif record.get("action") == "start-preview":
         service = live_preview_status(project)
         if service.get("running"):
             record["url"] = service.get("url")
+            record["port"] = service.get("port")
+            record["log_path"] = service.get("log_path")
 
     record.update({
         "status": status,

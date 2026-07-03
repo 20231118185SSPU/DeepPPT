@@ -1,7 +1,7 @@
 # Workflow Style Rules
 
 > Scope: standalone workflow runbooks under `skills/ppt-master/workflows/` and research substeps under `skills/ppt-master/workflows/research/`.
-> Status: draft governance rule. It guides workflow documentation edits but does not override `SKILL.md` or any owning workflow file.
+> Status: active repository rule adopted by `AGENTS.md` for workflow documentation edits. It does not override `SKILL.md` or any owning workflow file.
 
 Workflow files are runtime instructions for a specific route. They should be clear enough to execute without duplicating the entire main pipeline.
 

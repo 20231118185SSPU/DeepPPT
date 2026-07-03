@@ -2,14 +2,23 @@
 """
 Vision check backend for OpenAI Chat Completions compatible endpoints.
 
-Supports: OpenAI GPT-4o, Azure OpenAI, DeepSeek-VL, Qwen-VL (DashScope compat),
-SiliconFlow, OpenRouter, Gemini (via OpenAI compat), and any provider exposing
-the standard /v1/chat/completions endpoint with vision support.
+Purpose:
+    Send rendered slide PNGs and review prompts to OpenAI-format vision chat
+    completions endpoints, then parse structured findings.
 
-Configuration (env vars):
-  VISION_OPENAI_API_KEY   — API key (falls back to OPENAI_API_KEY)
-  VISION_OPENAI_BASE_URL  — Base URL (default: https://api.openai.com/v1)
-  VISION_OPENAI_MODEL     — Model name (default: gpt-4o)
+Used by:
+    vision_check.py when the selected vision backend is "openai-format".
+
+Configuration:
+    VISION_OPENAI_API_KEY   Optional API key override; falls back to OPENAI_API_KEY.
+    VISION_OPENAI_BASE_URL  Optional base URL; falls back to OPENAI_BASE_URL.
+    VISION_OPENAI_MODEL     Optional model override; falls back to OPENAI_MODEL.
+
+Dependencies:
+    httpx; vision_backends.backend_common.
+
+Public API:
+    get_config(), is_available(), check().
 """
 
 import sys

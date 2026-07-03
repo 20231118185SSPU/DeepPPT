@@ -2,17 +2,27 @@
 """
 Gemini Image Generation Backend
 
-Generates images via the Google GenAI API (Gemini).
-Used by image_gen.py as a backend module.
+Purpose:
+    Generate PPT Master image assets via the Google GenAI Gemini image API.
 
-Configuration keys:
-  GEMINI_API_KEY   (required)
-  GEMINI_BASE_URL  (optional) Custom API endpoint for proxy services
-  GEMINI_MODEL     (optional) Override default model
+Used by:
+    image_gen.py when the selected image backend is "gemini".
+
+Configuration:
+    GEMINI_API_KEY   Required API key.
+    GEMINI_BASE_URL  Optional custom API endpoint for proxy services.
+    GEMINI_MODEL     Optional model override.
 
 Dependencies:
-  pip install google-genai Pillow
+    google-genai; Pillow via image_backends.backend_common.
+
+Public API:
+    generate(prompt, aspect_ratio="1:1", image_size="1K", output_dir=None,
+             filename=None, model=None, max_retries=MAX_RETRIES,
+             reference_image=None) -> str
 """
+
+from __future__ import annotations
 
 import sys
 

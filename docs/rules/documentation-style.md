@@ -1,7 +1,7 @@
 # Documentation Style Rules
 
 > Scope: user documentation, architecture explanations, design drafts, audits, and maintenance documents under `docs/`, `docs/zh/`, and `docs/design/`.
-> Status: draft governance rule. It guides low-risk documentation work but does not override `AGENTS.md`, `SKILL.md`, or owning workflow files.
+> Status: active repository rule adopted by `AGENTS.md` for documentation edits. It does not override `AGENTS.md`, `SKILL.md`, or owning workflow files.
 
 These rules keep documentation useful without turning explanations or drafts into hidden runtime authority.
 

@@ -98,6 +98,9 @@ def launch_dashboard_daemon(
         else:
             url = _lock_url(existing)
             print(f"Dashboard already running: {url}")
+            print(f"Dashboard port: {existing.get('port')}")
+            print(f"Dashboard project: {project}")
+            print(f"Dashboard log: {project / DASHBOARD_DIR_NAME / DASHBOARD_LOG_NAME}")
             if not no_browser:
                 _open_browser(url)
             return 0
@@ -159,6 +162,8 @@ def launch_dashboard_daemon(
         print(f"Warning: Dashboard may still be starting: {url} (log: {log_path})")
     else:
         print(f"Dashboard: {url}")
+    print(f"Dashboard port: {launch_port}")
+    print(f"Dashboard project: {project}")
     print(f"Dashboard log: {log_path}")
     if not no_browser:
         _open_browser(url)

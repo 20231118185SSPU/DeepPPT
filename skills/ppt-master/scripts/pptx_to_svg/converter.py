@@ -1,4 +1,4 @@
-"""Top-level orchestrator for PPTX -> SVG conversion.
+"""Top-level orchestrator for PPTX to SVG conversion.
 
 Public API: convert_pptx_to_svg(pptx_path, output_dir, options).
 
@@ -6,9 +6,6 @@ Composes the per-slide pipeline:
     OoxmlPackage -> shape_walker.walk_sp_tree
                  -> per-shape dispatch (prstgeom / txbody / pic / ...)
                  -> assembled SVG text + extracted media files
-
-Stages B-F will fill in the per-shape dispatch. For Stage A this entry just
-loads the package and reports basic per-slide structure to verify wiring.
 """
 
 from __future__ import annotations

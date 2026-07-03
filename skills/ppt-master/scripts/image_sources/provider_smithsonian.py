@@ -1,10 +1,26 @@
 """Smithsonian Open Access provider.
 
-Zero-config (no API key required, though providing one increases rate
-limits). Strong on museum collections, historical artifacts, natural
-history specimens, and American cultural heritage imagery.
+Purpose:
+    Search Smithsonian Open Access through ``image_search.py`` for museum
+    collections, historical artifacts, natural history specimens, and
+    American cultural heritage imagery.
 
-API docs: https://edan.si.edu/openaccess/apidocs/
+License policy:
+    Treats Smithsonian Open Access items as CC0 and classifies candidates as
+    ``no-attribution``.
+
+Configuration/API keys:
+    None required. A Smithsonian API key can increase rate limits, but this
+    provider currently uses the zero-config public endpoint.
+
+Dependencies:
+    ``requests`` plus shared provider primitives.
+
+Public API:
+    ``search`` and ``parse_results``.
+
+API docs:
+    https://edan.si.edu/openaccess/apidocs/
 """
 
 from __future__ import annotations

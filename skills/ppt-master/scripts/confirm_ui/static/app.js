@@ -26,8 +26,10 @@
             loading: "Loading…",
             load_error: "Could not load recommendations.json. The AI must write it before launch.",
             btn_confirm: "Confirm",
+            btn_back: "Back",
             btn_next: "Next →",
-            deriving: "Generating the downstream options from your choices…",
+            deriving: "Stage 1 saved. The AI is generating colors, typography, image strategy, page count, template expectations, and layout previews from your anchors. Keep this page open.",
+            tier2_ready: "Stage 2 is ready. Review the realization choices, or go back to adjust the Stage 1 anchors.",
             already_confirmed: "Already confirmed once. Re-submitting overwrites the previous choices.",
             confirmed_title: "✓ Confirmed",
             confirmed_hint: "Your choices are saved. You can close this page and return to the chat.",
@@ -52,6 +54,7 @@
             template_selected: "Pending selection",
             template_clear: "Clear template selection",
             template_apply_warning: "Choosing a template requires re-running Step 3 and regenerating Step 4 recommendations/spec. It will not be applied to the current spec.",
+            template_preview: "Preview",
             template_kind_brand: "Brand",
             template_kind_layout: "Layout",
             template_kind_deck: "Deck",
@@ -129,8 +132,10 @@
             loading: "加载中…",
             load_error: "无法加载推荐文件，需在启动前写入。",
             btn_confirm: "确认",
+            btn_back: "返回上一步",
             btn_next: "下一步 →",
-            deriving: "正在据你的选择生成下游选项…",
+            deriving: "第一阶段已保存。AI 正在根据你的锚点生成配色、字体、图片策略、页数、模板预期和版式预览。请保持此页打开。",
+            tier2_ready: "第二阶段已就绪。请检查具体实现选项；如第一阶段锚点不对，可返回修改。",
             already_confirmed: "已确认过一次，重新提交会覆盖之前的选择。",
             confirmed_title: "✓ 已确认",
             confirmed_hint: "选择已保存，可关闭此页并回到聊天窗口。",
@@ -155,6 +160,7 @@
             template_selected: "待处理选择",
             template_clear: "清除模板选择",
             template_apply_warning: "选择模板需要重新执行 Step 3，并重新生成 Step 4 recommendations/spec；不会套到当前 spec 上。",
+            template_preview: "预览",
             template_kind_brand: "品牌",
             template_kind_layout: "版式",
             template_kind_deck: "整套 deck",
@@ -508,6 +514,65 @@
         return t("template_free_title");
     }
 
+    function templateDescription(item) {
+        if (!item) return "";
+        if (LANG === "zh") return item.description_zh || item.description || "";
+        return item.description || item.description_zh || "";
+    }
+
+    function renderTemplatePreview(card, item) {
+        var previews = item.preview_files || [];
+        if (!previews.length) return;
+        var first = previews[0];
+        var link = el("a", "template-preview-link");
+        link.href = first.url;
+        link.target = "_blank";
+        link.rel = "noreferrer";
+        link.title = t("template_preview") + ": " + first.name;
+        var frame = el("iframe", "template-preview-frame");
+        frame.src = first.url;
+        frame.title = first.name;
+        link.appendChild(frame);
+        card.appendChild(link);
+        if (previews.length > 1) {
+            var strip = el("div", "template-preview-strip");
+            previews.forEach(function (file) {
+                var a = el("a", "", file.name.replace(".svg", ""));
+                a.href = file.url;
+                a.target = "_blank";
+                a.rel = "noreferrer";
+                strip.appendChild(a);
+            });
+            card.appendChild(strip);
+        }
+    }
+
+    function renderMiniWireframe(page) {
+        var zones = page.zones || [];
+        var svg = document.createElementNS("http://www.w3.org/2000/svg", "svg");
+        svg.setAttribute("viewBox", "0 0 100 56");
+        svg.setAttribute("class", "layout-mini-svg");
+        var bg = document.createElementNS(svg.namespaceURI, "rect");
+        bg.setAttribute("x", "0");
+        bg.setAttribute("y", "0");
+        bg.setAttribute("width", "100");
+        bg.setAttribute("height", "56");
+        bg.setAttribute("rx", "2");
+        bg.setAttribute("class", "zone-bg");
+        svg.appendChild(bg);
+        zones.forEach(function (zone) {
+            var rect = document.createElementNS(svg.namespaceURI, "rect");
+            rect.setAttribute("x", zone.x);
+            rect.setAttribute("y", zone.y);
+            rect.setAttribute("width", zone.w);
+            rect.setAttribute("height", zone.h);
+            rect.setAttribute("rx", "2");
+            rect.setAttribute("class", "zone-" + (zone.kind || "text"));
+            svg.appendChild(rect);
+        });
+        return svg;
+    }
+
     function renderTemplateRoute(host) {
         var sec = section("T", "sec_template");
         var route = (REC && REC.template_route) || {};
@@ -543,9 +608,10 @@
                     card.classList.add("selected");
                 }
                 card.appendChild(el("div", "template-card-title", item.name || item.id));
-                if (item.description) card.appendChild(el("div", "template-card-desc", item.description));
+                if (templateDescription(item)) card.appendChild(el("div", "template-card-desc", templateDescription(item)));
                 card.appendChild(el("div", "template-card-path", item.path || ""));
                 if (item.scope) card.appendChild(el("div", "template-card-scope", item.scope));
+                renderTemplatePreview(card, item);
                 var btn = el("button", "template-pick", STATE.template_selection && STATE.template_selection.path === item.path ? t("template_selected") : t("template_pick"));
                 btn.type = "button";
                 btn.addEventListener("click", function () {
@@ -591,8 +657,11 @@
                 var text = "P" + String(page.page_number || "").padStart(2, "0") + " · " +
                     (page.page_type || "-") + " · " + (page.layout_suggestion || "free design");
                 var row = el("div", "layout-preview-row");
-                row.appendChild(el("span", "", text));
-                row.appendChild(el("small", "", page.core_argument || ""));
+                row.appendChild(renderMiniWireframe(page));
+                var copy = el("div", "layout-preview-copy");
+                copy.appendChild(el("span", "", text));
+                copy.appendChild(el("small", "", page.core_argument || ""));
+                row.appendChild(copy);
                 rows.appendChild(row);
             });
             layout.appendChild(rows);
@@ -1553,9 +1622,14 @@
 
     function updateActionBar(tier) {
         var btn = document.getElementById("btn-confirm");
+        var back = document.getElementById("btn-back");
         btn.disabled = false;
         // Tier 1 advances to the re-derived Tier 2; Tier 2 / single-pass confirm.
         btn.textContent = (tier === 1) ? t("btn_next") : t("btn_confirm");
+        if (back) {
+            back.textContent = t("btn_back");
+            back.style.display = (tier === 2) ? "inline-flex" : "none";
+        }
     }
 
     // ---- state init (once) ----------------------------------------------
@@ -1699,8 +1773,16 @@
         document.getElementById("loading").style.display = "none";
         document.getElementById("sections").style.display = "block";
         document.getElementById("actionbar").style.display = "flex";
-        document.getElementById("confirm-status").textContent = "";
+        document.getElementById("confirm-status").textContent = t("tier2_ready");
         renderForTier(2);
+    }
+
+    function backToTier1() {
+        if (STAGE !== 2) return;
+        STAGE = 1;
+        document.getElementById("confirm-status").textContent = "";
+        renderForTier(1);
+        window.scrollTo({ top: 0, behavior: "smooth" });
     }
 
     function confirm() {
@@ -1847,6 +1929,7 @@
         document.getElementById("btn-confirm").addEventListener("click", function () {
             if (STAGE === 1) { submitTier1(); } else { confirm(); }
         });
+        document.getElementById("btn-back").addEventListener("click", backToTier1);
 
         Promise.all([
             loadCatalogs(),

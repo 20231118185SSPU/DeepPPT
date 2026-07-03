@@ -1,5 +1,8 @@
 #!/usr/bin/env python3
-"""Register a brand / layout / deck template into the global template index.
+"""
+PPT Master - Template Registration Tool
+
+Registers a brand, layout, or deck template into the global template index.
 
 Three kinds, three physical directories, three index files (see
 ``docs/zh/templates-architecture.md`` for the data model):
@@ -14,17 +17,30 @@ Index entry schemas (the JSON file is the single source of truth — README
 files describe the kind and usage in prose but do **not** enumerate templates;
 discovery happens exclusively against the index file):
 
-- brand:  ``{ summary, primary_color }``
-- layout: ``{ summary, canvas_format, page_count, page_types[] }``
-- deck:   ``{ summary, canvas_format, page_count, primary_color }``
+- brand:  ``{ summary, summary_zh, primary_color }``
+- layout: ``{ summary, summary_zh, canvas_format, page_count, page_types[] }``
+- deck:   ``{ summary, summary_zh, canvas_format, page_count, primary_color }``
 
-Usage::
+New layout / deck packages must include a Chinese ``summary_zh`` and at least
+one root-level SVG preview page. Existing index entries may supply
+``summary_zh`` when refreshing older templates whose ``design_spec.md`` predates
+the field.
+
+Usage:
 
     python3 scripts/register_template.py <id> --kind deck     # default kind=deck
     python3 scripts/register_template.py <id> --kind layout
     python3 scripts/register_template.py <id> --kind brand
     python3 scripts/register_template.py --rebuild-all --kind deck
     python3 scripts/register_template.py <id> --dry-run
+
+Examples:
+    python3 scripts/register_template.py academic_defense --kind layout
+    python3 scripts/register_template.py --rebuild-all --kind deck --dry-run
+
+Dependencies:
+    Standard library; PyYAML is optional but recommended for design_spec.md
+    frontmatter parsing.
 
 ``--rebuild-all`` rebuilds every entry from scratch within the chosen kind;
 recommended for repairing index drift across many templates at once.
@@ -182,7 +198,14 @@ def _derive_page_types(pages: list[str]) -> list[str]:
 # Per-kind extraction
 # ---------------------------------------------------------------------------
 
-def _extract_entry(kind: str, template_id: str, template_dir: Path) -> dict:
+def _extract_entry(
+    kind: str,
+    template_id: str,
+    template_dir: Path,
+    existing_entry: dict | None = None,
+    *,
+    require_discovery_contract: bool = False,
+) -> dict:
     """Build the index entry + extras for a single template."""
     spec_path = template_dir / "design_spec.md"
     if not spec_path.exists():
@@ -198,7 +221,8 @@ def _extract_entry(kind: str, template_id: str, template_dir: Path) -> dict:
             f"expected kind={kind!r} — use --kind {declared_kind} instead"
         )
 
-    summary = (fm.get("summary") or "").strip()
+    existing_entry = existing_entry or {}
+    summary = (fm.get("summary") or existing_entry.get("summary") or "").strip()
     if not summary:
         section_title = (
             "I. Brand Overview" if kind == "brand" else "I. Template Overview"
@@ -206,13 +230,31 @@ def _extract_entry(kind: str, template_id: str, template_dir: Path) -> dict:
         summary = (_summary_from_use_cases(
             _extract_section_field(body, section_title, ["Use Cases", "Use cases"])
         ) or "").strip()
+    summary_zh = (
+        fm.get("summary_zh")
+        or existing_entry.get("summary_zh")
+        or existing_entry.get("description_zh")
+        or ""
+    ).strip()
 
     pages = _list_pages(template_dir)
     primary_color = fm.get("primary_color") or _extract_primary_color(body) or ""
+    if KIND_CONFIG[kind]["needs_svg_roster"] and not pages:
+        raise SpecParseError(
+            "layout / deck templates must include at least one root-level SVG "
+            "preview page before registration"
+        )
+    if require_discovery_contract and kind in ("layout", "deck") and not summary_zh:
+        raise SpecParseError(
+            "new layout / deck templates must declare summary_zh in "
+            "design_spec.md frontmatter so Dashboard / Confirm UI can show a "
+            "Chinese template summary"
+        )
 
     if kind == "brand":
         entry = OrderedDict(
             summary=summary,
+            summary_zh=summary_zh,
             primary_color=str(primary_color),
         )
     elif kind == "layout":
@@ -221,6 +263,7 @@ def _extract_entry(kind: str, template_id: str, template_dir: Path) -> dict:
             page_types = [t.strip() for t in re.split(r"[,，]", page_types) if t.strip()]
         entry = OrderedDict(
             summary=summary,
+            summary_zh=summary_zh,
             canvas_format=str(fm.get("canvas_format", "ppt169")),
             page_count=int(fm.get("page_count", len(pages))),
             page_types=list(page_types),
@@ -228,6 +271,7 @@ def _extract_entry(kind: str, template_id: str, template_dir: Path) -> dict:
     elif kind == "deck":
         entry = OrderedDict(
             summary=summary,
+            summary_zh=summary_zh,
             canvas_format=str(fm.get("canvas_format", "ppt169")),
             page_count=int(fm.get("page_count", len(pages))),
             primary_color=str(primary_color),
@@ -294,6 +338,8 @@ def _print_completion_card(kind: str, template_id: str, entry: dict, extras: dic
         print(f"**Canvas**: {canvas}")
         print(f"**Pages**: {pc}")
     print(f"**Summary**: {entry.get('summary') or '—'}")
+    if entry.get("summary_zh"):
+        print(f"**中文摘要**: {entry.get('summary_zh')}")
     print("**Index Registration**: Done")
     print()
     if kind != "brand":
@@ -336,6 +382,8 @@ def main() -> int:
     cfg = KIND_CONFIG[args.kind]
     base = cfg["dir"]
 
+    existing_index = _load_index(cfg["index"])
+
     if args.rebuild_all:
         ids = _enumerate_ids(args.kind)
         if not ids:
@@ -352,7 +400,13 @@ def main() -> int:
     extracted: dict[str, dict] = {}
     for tid in ids:
         try:
-            extracted[tid] = _extract_entry(args.kind, tid, base / tid)
+            extracted[tid] = _extract_entry(
+                args.kind,
+                tid,
+                base / tid,
+                existing_index.get(tid),
+                require_discovery_contract=not args.rebuild_all,
+            )
         except SpecParseError as exc:
             print(f"Error: {tid}: {exc}", file=sys.stderr)
             return 1
@@ -360,7 +414,7 @@ def main() -> int:
     if args.rebuild_all:
         index = OrderedDict((tid, extracted[tid]["entry"]) for tid in sorted(extracted))
     else:
-        index = _load_index(cfg["index"])
+        index = existing_index
         for tid, payload in extracted.items():
             index[tid] = payload["entry"]
         index = OrderedDict(sorted(index.items()))

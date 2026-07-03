@@ -2,7 +2,23 @@
 """
 Shared helpers for vision check backends.
 
-Provides: image encoding, retry logic, response parsing, rubric loading.
+Purpose:
+    Provide image encoding, retry, response parsing, and rubric prompt helpers
+    shared by PPT Master vision backend plugins.
+
+Used by:
+    vision_check.py backends under vision_backends/.
+
+Configuration:
+    Reads spec_lock.md from a project path when extract_spec_lock_excerpt() is
+    called; no environment variables are required.
+
+Dependencies:
+    Standard library only.
+
+Public API:
+    encode_image_base64(), detect_media_type(), retry_with_backoff(),
+    parse_vision_response(), build_rubric_prompt(), extract_spec_lock_excerpt().
 """
 
 import sys

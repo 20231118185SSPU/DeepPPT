@@ -1,4 +1,17 @@
-"""CLI entry point for svg_to_pptx."""
+"""PPT Master - SVG to PPTX Package CLI.
+
+Argparse entry point used by ``scripts/svg_to_pptx.py`` and by direct module
+execution. Builds native editable PPTX files from project SVG pages, speaker
+notes, optional SVG snapshots, and optional narration audio.
+
+Usage:
+    python3 skills/ppt-master/scripts/svg_to_pptx.py <project_path> [options]
+    python3 skills/ppt-master/scripts/svg_to_pptx/pptx_cli.py <project_path> [options]
+
+Dependencies:
+    Internal ``svg_to_pptx`` package modules and optional SVG rendering backends
+    for compatibility-mode PNG snapshots.
+"""
 
 from __future__ import annotations
 

@@ -1,7 +1,7 @@
 # Change Management Rules
 
 > Scope: documentation, workflow, reference, script, routing, and AI-entry changes that can affect agent behavior.
-> Status: draft governance rule. It guides change planning and reporting but does not override explicit user instructions or higher-authority workflow files.
+> Status: active repository rule adopted by `AGENTS.md` for change planning and reporting. It does not override explicit user instructions or higher-authority workflow files.
 
 Use this file to decide when a documentation change is safe to make directly, when it needs explicit user confirmation, and what must be reported afterward.
 

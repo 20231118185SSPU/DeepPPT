@@ -2,6 +2,7 @@
 deck_id: 招商银行
 kind: deck
 summary: 交易银行产品介绍、销售收款方案汇报、客户案例拆解、分行培训材料.
+summary_zh: 交易银行产品介绍、销售收款方案汇报、客户案例拆解和分行培训材料；招行红黑品牌风格。
 canvas_format: ppt169
 page_count: 5
 primary_color: "#C8152D"

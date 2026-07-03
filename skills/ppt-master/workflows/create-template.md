@@ -181,6 +181,7 @@ Items to surface:
 | Template display name | Yes | `[decision]` (often the source deck title — `[suggested]` from `summary.md` for type A) |
 | Category | Yes | `[decision]` — one of `brand` / `general` / `scenario` / `government` / `special` |
 | Applicable scenarios | Yes | `[suggested]` from analysis; user confirms |
+| Chinese discovery summary (`summary_zh`) | Yes | `[suggested]` from analysis; one concise Chinese sentence used by Dashboard / Confirm UI |
 | Tone summary | Yes | `[suggested]` from analysis (e.g. `Modern, restrained, data-driven`) |
 | Theme mode | Yes | A: `[fact]` from `manifest.json` background colors. B: `[fact]` from SVG `fill`. C: `[suggested]` from visual estimate. D: `[decision]` |
 | Canvas format | Yes | A/B: `[fact]` from slide size or SVG `viewBox`. C: `[suggested]` from image aspect ratio. D: `[decision]`, default `ppt169` |
@@ -200,7 +201,7 @@ For type A, also include in this message:
 
 The user replies with corrections, additions, or "all good".
 
-> **Persist the brief into `design_spec.md`**. When the Template_Designer writes `design_spec.md` in Step 4, declare a YAML frontmatter block at the top with the confirmed brief (`template_id`, `category`, `summary`, `keywords`, `primary_color`, `canvas_format`, `replication_mode`, etc.). `register_template.py` reads this in Step 6, so the brief flows directly into the index without the AI re-deriving it from prose. See Step 6 for the recommended frontmatter shape.
+> **Persist the brief into `design_spec.md`**. When the Template_Designer writes `design_spec.md` in Step 4, declare a YAML frontmatter block at the top with the confirmed brief (`template_id`, `category`, `summary`, `summary_zh`, `keywords`, `primary_color`, `canvas_format`, `replication_mode`, etc.). `register_template.py` reads this in Step 6, so the brief flows directly into the index without the AI re-deriving it from prose. See Step 6 for the recommended frontmatter shape.
 
 ---
 
@@ -218,6 +219,7 @@ Skipping this gate — including silently inferring values from the reference so
 - [ ] User has been shown every Required item in Step 2 with provenance labels
 - [ ] User has replied with values or explicit acceptance of suggested defaults
 - [ ] The template is clearly positioned as a **global library template**
+- [ ] `summary_zh` is confirmed as a concise Chinese discovery summary
 - [ ] The canvas format is fixed before SVG generation
 - [ ] Replication mode is consistent with the input type (`fidelity` / `mirror` allowed for A and B with B's caveats noted; forbidden for C / D)
 - [ ] The template metadata is complete enough to register into `layouts_index.json`
@@ -312,6 +314,7 @@ python3 skills/ppt-master/scripts/svg_quality_checker.py "skills/ppt-master/temp
 
 - [ ] `design_spec.md` follows the personality-only skeleton (Overview / Color / Signature / Page Roster); generic constraints (SVG rules, pattern libraries, ratio bands, canonical placeholder table) are NOT restated. §V Page Roster lists every emitted page
 - [ ] Every page declared in `design_spec.md §V Page Roster` exists as an SVG file in the template directory (and vice versa — no orphan files)
+- [ ] At least one root-level `.svg` page exists in the template directory so Dashboard / Confirm UI can render a clickable preview
 - [ ] Variant filenames follow the letter-suffix convention (e.g. `03a_content_two_col.svg`); variants typically reuse the parent type's placeholder set unless the spec frontmatter declares otherwise
 - [ ] If TOC exists, placeholder pattern uses the canonical indexed form
 - [ ] SVG viewBox matches the chosen canvas format (for `ppt169`: `0 0 1280 720`)
@@ -349,7 +352,7 @@ The completion card's file roster is collected by globbing `*.svg` in the templa
 
 The index file is a **discovery index** — it lets the AI answer "what templates are available?" by listing names and paths. It is **not** consulted to trigger Step 3 (SKILL.md). Step 3 triggers on an explicit directory path supplied by the user, regardless of whether that path is registered. A template directory that has not been run through `register_template.py` still works fine when the user gives its path; it just won't appear in discovery listings.
 
-> **Recommended for new templates**: declare a YAML frontmatter block at the top of `design_spec.md`. The registrar prefers it over prose extraction:
+> **Required for new layout / deck templates**: declare a YAML frontmatter block at the top of `design_spec.md`. The registrar prefers it over prose extraction and rejects new layout / deck registrations without `summary_zh` or without a root-level SVG preview page:
 >
 > ```yaml
 > # deck example
@@ -357,6 +360,7 @@ The index file is a **discovery index** — it lets the AI answer "what template
 > deck_id: my_deck
 > kind: deck
 > summary: ...
+> summary_zh: ...
 > canvas_format: ppt169
 > page_count: 5
 > primary_color: "#005587"
@@ -367,6 +371,7 @@ The index file is a **discovery index** — it lets the AI answer "what template
 > layout_id: my_layout
 > kind: layout
 > summary: ...
+> summary_zh: ...
 > canvas_format: ppt169
 > page_count: 5
 > page_types: [cover, toc, chapter, content, ending]

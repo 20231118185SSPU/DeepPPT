@@ -1,10 +1,24 @@
 """NASA Image and Video Library provider.
 
-Zero-config (no API key required). Excellent for space, Earth science,
-aeronautics, and technology imagery. All content is public domain (US
-government work).
+Purpose:
+    Search NASA's Image and Video Library through ``image_search.py`` for
+    space, Earth science, aeronautics, and technology imagery.
 
-API docs: https://images.nasa.gov/docs/images.nasa.gov_api_docs.pdf
+License policy:
+    Treats returned NASA imagery as Public Domain / US government work and
+    classifies candidates as ``no-attribution``.
+
+Configuration/API keys:
+    None.
+
+Dependencies:
+    ``requests`` plus shared provider primitives.
+
+Public API:
+    ``search`` and ``parse_results``.
+
+API docs:
+    https://images.nasa.gov/docs/images.nasa.gov_api_docs.pdf
 """
 
 from __future__ import annotations

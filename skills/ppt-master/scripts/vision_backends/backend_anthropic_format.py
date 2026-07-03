@@ -2,13 +2,23 @@
 """
 Vision check backend for Anthropic Messages API compatible endpoints.
 
-Supports: Anthropic Claude (Sonnet/Haiku/Opus), AWS Bedrock Claude,
-and any provider exposing the Anthropic Messages format.
+Purpose:
+    Send rendered slide PNGs and review prompts to Anthropic Messages-format
+    vision endpoints, then parse structured findings.
 
-Configuration (env vars):
-  VISION_ANTHROPIC_API_KEY   — API key (falls back to ANTHROPIC_API_KEY)
-  VISION_ANTHROPIC_BASE_URL  — Base URL (default: https://api.anthropic.com)
-  VISION_ANTHROPIC_MODEL     — Model name (default: claude-sonnet-4-20250514)
+Used by:
+    vision_check.py when the selected vision backend is "anthropic-format".
+
+Configuration:
+    VISION_ANTHROPIC_API_KEY   Optional API key override; falls back to ANTHROPIC_API_KEY.
+    VISION_ANTHROPIC_BASE_URL  Optional base URL override.
+    VISION_ANTHROPIC_MODEL     Optional model override.
+
+Dependencies:
+    httpx; vision_backends.backend_common.
+
+Public API:
+    get_config(), is_available(), check().
 """
 
 import sys

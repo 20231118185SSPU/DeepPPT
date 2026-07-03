@@ -1,8 +1,18 @@
 #!/usr/bin/env python3
-"""PPT Master - SVG to PPTX Tool (thin wrapper).
+"""
+PPT Master - SVG to PPTX Tool
 
-Delegates to the svg_to_pptx package. Kept for CLI backward compatibility:
+Exports PPT Master SVG pages to a native editable PPTX through the
+svg_to_pptx package while keeping this wrapper for CLI backward compatibility.
+
+Usage:
+    python3 scripts/svg_to_pptx.py <project_path> [options]
+
+Examples:
     python3 scripts/svg_to_pptx.py <project_path>
+
+Dependencies:
+    Internal svg_to_pptx package and its PPTX conversion dependencies.
 """
 
 import sys

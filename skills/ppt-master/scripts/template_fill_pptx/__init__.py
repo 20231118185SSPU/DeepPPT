@@ -1,14 +1,11 @@
-"""PPTX template fill — analyze a deck as a reusable slide library and fill text.
+"""PPTX template-fill package.
 
-Direct OOXML editing (no SVG round-trip): select source slides, replace
-text / table / chart content from a fill plan, and write a new .pptx that keeps
-the original PowerPoint design. Four stages mirror the CLI subcommands:
-analyze -> scaffold -> check-plan -> apply.
+Direct OOXML editing for reusable slide libraries and native template-filled
+PPTX output.
 
-Public entry: analyze_pptx(), scaffold_plan(), check_plan(), apply_plan(), main().
+Public API: analyze_pptx(), scaffold_plan(), check_plan(), print_check_report(),
+apply_plan(), main().
 """
-
-from __future__ import annotations
 
 from .analyzer import analyze_pptx
 from .applier import apply_plan

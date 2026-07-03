@@ -8,7 +8,17 @@ Usage:
     python3 scripts/svg_quality_checker.py <svg_file>
     python3 scripts/svg_quality_checker.py <directory>
     python3 scripts/svg_quality_checker.py --all examples
+
+Examples:
+    python3 scripts/svg_quality_checker.py projects/demo_deck
+    python3 scripts/svg_quality_checker.py projects/demo_deck/svg_output/page_01.svg
+
+Dependencies:
+    Local project_utils.py, error_helper.py, update_spec.py, and optional
+    svg_to_pptx.animation_config helpers; otherwise standard library.
 """
+
+from __future__ import annotations
 
 import sys
 import re

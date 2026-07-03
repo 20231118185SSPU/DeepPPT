@@ -2,11 +2,22 @@
 """
 Vision check backend for local Ollama models (LLaVA, Llama-3.2-Vision, etc.).
 
-Supports any Ollama model with vision capability. No API key required.
+Purpose:
+    Send rendered slide PNGs and review prompts to a local Ollama vision model,
+    then parse structured findings.
 
-Configuration (env vars):
-  VISION_OLLAMA_HOST   — Ollama API host (default: http://localhost:11434)
-  VISION_OLLAMA_MODEL  — Model name (default: llava:13b)
+Used by:
+    vision_check.py when the selected vision backend is "ollama".
+
+Configuration:
+    VISION_OLLAMA_HOST   Optional Ollama API host; falls back to OLLAMA_HOST.
+    VISION_OLLAMA_MODEL  Optional model override.
+
+Dependencies:
+    httpx; vision_backends.backend_common.
+
+Public API:
+    get_config(), is_available(), check().
 """
 
 import sys

@@ -1,5 +1,8 @@
 #!/usr/bin/env python3
-"""PPT Master project management helpers.
+"""
+PPT Master - Project Manager
+
+Creates, imports, validates, inspects, and checkpoints PPT Master projects.
 
 Usage:
     python3 scripts/project_manager.py init <project_name> [--format ppt169] [--dir <path>] [--start-dashboard]
@@ -8,6 +11,13 @@ Usage:
     python3 scripts/project_manager.py info <project_path>
     python3 scripts/project_manager.py checkpoint save <project_path> [--notes "..."]
     python3 scripts/project_manager.py checkpoint load <project_path>
+
+Examples:
+    python3 scripts/project_manager.py init market_report --format ppt169
+    python3 scripts/project_manager.py import-sources projects/market_report_ppt169_20260101 sources/report.md
+
+Dependencies:
+    Standard library and internal dashboard_launcher/project_utils helpers.
 """
 
 from __future__ import annotations
