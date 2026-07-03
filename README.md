@@ -2,7 +2,7 @@
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
-> 基于 [ppt-master](https://github.com/hugohe3/ppt-master) 扩展开发，增加 PPT Briefing 前置构思、深度调研、咨询证据链、统一 Dashboard、叙事驱动模板、图片来源路由、双轨图片生成、渲染级布局检查、视觉审查、PPTX 结构 QA 和质量门禁等能力。
+> 基于 [ppt-master](https://github.com/hugohe3/ppt-master) 扩展开发，增加 PPT Briefing 前置构思、深度调研、咨询证据链、统一 Dashboard、叙事驱动模板、图片来源路由、双轨图片生成、渲染级布局检查、视觉审查、PPTX 结构 QA、质量门禁和管线协同性治理等能力。
 
 English | [中文](#简介)
 
@@ -28,6 +28,7 @@ DeepPPT 是一个端到端的 AI PPT 生成系统。给定一个主题或源文�
 | 视觉 | 通用设计规范 | 从调研内容中提取视觉身份 |
 | 工作台 | 分散脚本输出 | 统一 Dashboard 追踪项目状态、产物、质量报告、执行轨迹和预览入口 |
 | 门禁 | 基础脚本校验 | confirm / research / asset / rendered visual / harness / e2e 多阶段质量门禁 |
+| 协同性治理 | 依赖人工维护 | 链接扫描、workflow Exit Evidence、脚本分层、语言规则现实化和审计修复记录 |
 | 排版 | 无自动检测 | 静态布局检查 + 本地渲染截图门禁 + 自动修正 |
 | 视觉审查 | 无独立视觉回看 | 视觉检查工作流 + OpenAI/Anthropic/Ollama 兼容后端 |
 | 动画 | 通用动画 | 默认页间转场；页内元素动画显式 opt-in，可用 `customize-animations` 调整对象级顺序/效果/时序 |
@@ -56,10 +57,11 @@ DeepPPT 是一个端到端的 AI PPT 生成系统。给定一个主题或源文�
   - [`pptx_quality_check.py`](skills/ppt-master/scripts/pptx_quality_check.py)——导出后直接读取 PPTX ZIP/XML，检查画布比例、越界形状、占位符、整页图片风险、native text 数量和最小字号
   - [`icon_sync.py search`](skills/ppt-master/scripts/icon_sync.py)——按图标文件名和 SVG 头部标签搜索候选 `lib/name`，再沿用现有 icon sync 复制流程
   - [`vision_check.py`](skills/ppt-master/scripts/vision_check.py) + [`vision_backends`](skills/ppt-master/scripts/vision_backends/)——可插拔视觉检查后端
+  - [`docs/reviews/`](docs/reviews/) + [`docs/rules/`](docs/rules/)——管线协同性审计、修复状态记录和仓库级语言 / 文档治理规则
   - [`batch-review`](skills/ppt-master/workflows/batch-review.md)——按批生成与审阅的可选工作流
   - [`event_presentation`](skills/ppt-master/templates/brands/event_presentation/) 品牌预设——发布会/产品发布场景（暗色调 keynote 风格）
   - [`story_driven`](skills/ppt-master/templates/layouts/story_driven/) 布局模板——封面/目录/过渡/内容/讲解/金句/对比/数据/时间线/全图/封底
-  - [`img2img-support`](skills/ppt-master/workflows/img2img-support.md)——图生图支持的非运行时设计说明，不是可直接调用的 standalone workflow
+  - [`img2img-support`](docs/design/img2img-support.md)——图生图支持的非运行时设计说明，不是可直接调用的 standalone workflow
   - 排版稳定性检测（布局溢出/元素间距/垂直分布）+ 自动修正
   - 默认页间转场 + 显式 opt-in 的对象级动画配置
   - 多后端 AI 图片生成（OpenAI / Gemini / Replicate / Stability / 通义千问 / 智谱 / SiliconFlow 等 15+ 后端）
@@ -247,10 +249,24 @@ DeepPPT/
 | [image-source-routing.md](skills/ppt-master/references/image-source-routing.md) | 图片来源路由和版权风险策略 |
 | [ai-browser-setup.md](docs/ai-browser-setup.md) | 浏览器自动化配置（CDP Chrome） |
 | [dashboard-unified-design.md](docs/design/dashboard-unified-design.md) | 统一 Dashboard 设计说明 |
+| [pipeline-coherence-audit-2026-07.md](docs/reviews/pipeline-coherence-audit-2026-07.md) | 管线成熟度与协同性审计及修复状态 |
 | [Canvas Formats](skills/ppt-master/references/canvas-formats.md) | 画布格式列表 |
 | [Scripts & Tools](skills/ppt-master/scripts/README.md) | 工具脚本文档 |
 
 ## 更新日志
+
+### 2026-07-03 — 管线协同性审计修复
+
+**协同一致性：**
+- 修复 `SKILL.md` 与 `strategist.md` 中的相对链接断链，补齐全仓链接扫描闭环。
+- 收敛 `batch-review`、`deep-research`、`image-text-linking` 的契约漂移，避免 UI 死触发、参考图门槛弱化和 prompt 模板段数不一致。
+- 将非运行时 `img2img-support` 设计说明迁入 `docs/design/`，保持 `workflows/` 只承载运行工作流。
+
+**治理与证据：**
+- `scripts/README.md` 按 runtime pipeline / workflow satellite / maintenance / internal helper 分层，顶层脚本全覆盖。
+- 轻量 workflow 补齐 Exit Evidence / completion block，便于恢复、复核和审计。
+- 语言规则现实化为目录主模式：workflows 可采用英文结构骨架 + 中文说明正文，references 主英文，docs 按子目录声明。
+- 修复状态已记录到 [docs/change-log.md](docs/change-log.md) 和 [pipeline-coherence-audit-2026-07.md](docs/reviews/pipeline-coherence-audit-2026-07.md)。
 
 ### 2026-07-03 — 仓库介绍与治理工具对齐
 

@@ -119,7 +119,7 @@ Format is set at init time (`--format ppt169` for 16:9, `--format ppt43` for 4:3
 ## Required Conventions
 
 - **Repo-wide style rules** — when editing prompt files under [`skills/ppt-master/references/`](../skills/ppt-master/references/), Python under [`skills/ppt-master/scripts/`](../skills/ppt-master/scripts/), or any other code/prose in the repo, follow the matching style rule in [`docs/rules/`](rules/).
-- **Markdown language consistency** — Markdown files under `skills/ppt-master/workflows/`, `skills/ppt-master/references/`, and `docs/` are currently single-language per directory. New files mirror the language of their siblings; do not mix English scaffolding with Chinese paragraphs (or vice versa) inside one file. Chat replies are unaffected.
+- **Markdown language consistency** — Follow the directory primary-language modes in [`docs/rules/documentation-style.md`](rules/documentation-style.md#3-language-placement). Workflows may use English structural scaffolding with Chinese explanatory body text; references are primarily English; `docs/` follows its subdirectory declarations. New files must follow their location's mode, and a single file should not switch primary language casually. Chat replies are unaffected.
 
 ## Command Quick Reference
 

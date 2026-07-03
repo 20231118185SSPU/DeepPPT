@@ -13,7 +13,8 @@ description: 可选分批生成模式。Executor 每生成 N 页后暂停，等�
 | Trigger | Example |
 |---------|---------|
 | User explicit request | "分批审阅" / "batch review" / "逐批确认" / "每 5 页确认一次" |
-| confirm_ui result | `generation_mode: "batch-review"` in result.json |
+
+**Hard trigger boundary**: only an explicit chat request activates this workflow. A UI choice, saved project state, page count, or quality wording is not an activation source unless the user states the batch-review request in chat.
 
 **Recommendation signal, not a trigger**: if the deck is long (for example 20+ pages) or the user stresses high visual quality, mention batch-review as an optional mode and ask whether to enable it. Do not auto-enable this workflow from page count or quality wording alone.
 
@@ -97,6 +98,17 @@ Write `<project>/.batch_review/batch_{i:02d}.json`:
 
 1. Announce: "全部 {M} 批次已通过审阅。"
 2. Proceed to Step 7 (post-processing) as normal
+
+---
+
+## Exit Evidence
+
+Before returning to SKILL.md Step 7, confirm:
+
+- Each batch has an approved record at `<project>/.batch_review/batch_{i:02d}.json`
+- The final batch record has `status: "approved"` and includes the user's approval or revision summary
+- All approved batch pages are present in `<project>/svg_output/`
+- Any in-batch revision-loop work has completed and the affected batch record reflects the accepted result
 
 ---
 

@@ -70,6 +70,21 @@ Triggered by the user signals listed in "When to Run".
 
 ---
 
+## Exit Evidence
+
+Completion depends on the path taken:
+
+| Path | Evidence | Pass condition |
+|---|---|---|
+| Start / reopen editor | Launch output | Actual editor URL, port, project path, and `<project>/live_preview/server.log` were reported to the user |
+| Start / reopen editor | Running service record | `<project>/.live_preview.lock` points to the active preview pid/port, or the launcher reported an existing running URL for this project |
+| Apply annotations | Annotation discovery | `python3 ${SKILL_DIR}/scripts/check_annotations.py <project_path>` output was reviewed; if it reported no annotations, the workflow stopped there |
+| Apply annotations | SVG update | Processed elements in `<project>/svg_output/<file>` no longer carry `data-edit-target` / `data-edit-annotation` markers |
+| Apply annotations | Re-export | `finalize_svg.py` and `svg_to_pptx.py` completed, and a new `<project>/exports/*.pptx` path was reported |
+| Direct browser edits only | Edit log / export | Applied direct edits are recorded in `<project>/.live_edits.jsonl` when present; re-export evidence is the new PPTX path if the user requested refresh |
+
+---
+
 ## Notes (editor invariants — referenced from SKILL.md Step 6)
 
 - **UI**: bilingual (EN/中); auto-detects from `navigator.language`, persists in `localStorage`, toggled via the **中 / EN** button on the right panel. Slide navigation: first/prev/next/last buttons at the top of the center panel, plus `←` / `→` / `Home` / `End` (suppressed while typing in the annotation textarea).

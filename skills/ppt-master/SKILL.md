@@ -794,9 +794,9 @@ Steps:
 2. Which design decisions should be locked into spec_lock?
 3. Which workflow rules need updating?
 
-Use [`docs/spec-review-template.md`](../docs/spec-review-template.md) as the structured template. For each decision, ask: "Will this recur in future generations?" If yes → update spec/workflow. If one-off → skip.
+Use [`docs/spec-review-template.md`](../../docs/spec-review-template.md) as the structured template. For each decision, ask: "Will this recur in future generations?" If yes → update spec/workflow. If one-off → skip.
 
-> Also see [`docs/change-log.md`](../docs/change-log.md) for tracking all workflow/script modifications.
+> Also see [`docs/change-log.md`](../../docs/change-log.md) for tracking all workflow/script modifications.
 
 ---
 

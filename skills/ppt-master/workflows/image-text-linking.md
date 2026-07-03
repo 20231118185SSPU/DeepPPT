@@ -240,12 +240,24 @@ The `context` field carries the `core_argument` verbatim — search providers ma
 | No image prompt without page text context | 100% | Every AI prompt must contain `core_argument` or `content_bullets` content |
 | No stock search keywords from generic topic words alone | 100% | Keywords must trace to `content_bullets` |
 | Minimum AI prompt length | ≥80 characters | After template assembly; reject shorter prompts |
-| `text_image_link` present in every AI prompt | 100% | The 4-part template includes it as the final segment |
+| `text_image_link` present in every AI prompt | 100% | The 6-part template includes it in the text/image relationship segment |
 | No duplicate prompts across pages | 0 duplicates | Each page gets a unique prompt reflecting its specific `core_argument` |
 | Required reference images present | 100% | Any `reference_image_required=true` AI row must include a real local path or URL |
 | Target dimensions carried into image manifests/queries | 100% | Every AI/web row includes slot width/height or min dimensions |
 | Source routing carried into web queries | 100% | Every web row includes `source_pack`, risk, review, and provider policy when available |
 | Discovery-only not treated as cleared final asset | 100% | Browser / Google rows carry `discovery_only: true` and `needs_manual_review` when high-risk |
+
+---
+
+## Exit Evidence
+
+Completion is evidenced by the Image_Generator phase artifacts, not by a separate workflow file:
+
+| Evidence | Pass condition |
+|---|---|
+| `<project>/images/image_prompts.json` when `ai` rows exist | Every item prompt follows the 6-part prompt template, is ≥80 characters, includes audit fields, and carries target dimensions/source routing when needed |
+| `<project>/images/image_queries.json` when `web` rows exist | Every query derives from `core_argument` / `content_bullets`, carries target dimensions, and preserves `visual_need` source-routing, risk, and review fields |
+| Skip case | No `detailed_outline.json` or no `ai` / `web` rows; the default image path remains in control |
 
 ---
 
@@ -269,7 +281,7 @@ This workflow does not produce a standalone artifact. It modifies the **content*
 
 | File | Enhancement |
 |---|---|
-| `<project>/images/image_prompts.json` | Every `prompt` field follows the 4-part template with page context |
+| `<project>/images/image_prompts.json` | Every `prompt` field follows the 6-part template with page context, target size, text/image relationship, and fallback plan |
 | `<project>/images/image_queries.json` | Every `keywords` / `query` value is derived from `content_bullets`, not generic terms; web rows preserve source routing fields |
 
 These files are written by the Image_Generator role as usual — this workflow only constrains *how* their content is assembled.

@@ -412,6 +412,20 @@ The Strategist reads `narrative_function` values and assigns page rhythm labels:
 
 ---
 
+## Exit Evidence
+
+Before returning to the Strategist Eight Confirmations, verify:
+
+| Evidence | Pass condition |
+|---|---|
+| Detailed outline file | `<project>/detailed_outline.json` exists |
+| Page roster | `total_pages` equals `pages.length`, and `page_number` values are sequential from 1 |
+| Page completeness | Every substantive page has `core_argument`, `content_bullets`, `visual_need`, `layout_plan`, `content_mode`, `source_dimension`, `page_description`, `text_hierarchy`, and `element_list` |
+| Evidence binding | Every content / deep-dive / comparison / data page has at least two `evidence_refs`; consulting-mode fields are present when the upstream evidence table exists |
+| Confirmation handoff | `color_scheme` and `font_plan` are `{}` when this ran before the Eight Confirmations, so Step 4 can fill them from the confirmed values |
+
+---
+
 ## Integration Points
 
 | Direction | Target | Data |

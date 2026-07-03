@@ -181,6 +181,18 @@ If the H2/H3 structure check fails (flat document without section headings), reb
 
 ---
 
+## Exit Evidence
+
+Before handing off to `detailed-outline.md`, confirm these concrete artifacts:
+
+| Evidence | Pass condition |
+|---|---|
+| Selection record | `<project>/content_selection.json` exists and contains `selected_dimensions`, `unselected_dimensions`, `content_budget`, `suggested_pages`, `selection_rounds`, and `total_density` |
+| User confirmation | The final selection summary was explicitly confirmed by the user; any requested add/remove/page-count override is reflected in `content_selection.json` |
+| Gate result | The Gate checks above passed, including at least one selected dimension and `selected_evidence_count >= suggested_pages × 2`, or the workflow stopped with a return-to-research reason |
+
+---
+
 ## Integration Points
 
 | Direction | Target | Data |

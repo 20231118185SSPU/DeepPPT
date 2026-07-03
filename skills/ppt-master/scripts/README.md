@@ -40,16 +40,27 @@ python3 scripts/update_repo.py
 
 ## Script Index
 
-| Area | Primary scripts | Documentation |
-|------|-----------------|---------------|
-| Conversion | `source_to_md/pdf_to_md.py`, `source_to_md/doc_to_md.py`, `source_to_md/excel_to_md.py`, `source_to_md/ppt_to_md.py`, `source_to_md/web_to_md.py`, `pptx_intake.py` | [docs/conversion.md](./docs/conversion.md) |
-| Project management | `project_manager.py`, `batch_validate.py`, `generate_examples_index.py`, `error_helper.py`, `pptx_template_import.py`, `template_fill_pptx.py` | [docs/project.md](./docs/project.md) |
-| SVG pipeline | `finalize_svg.py`, `svg_to_pptx.py`, `total_md_split.py`, `svg_quality_checker.py`, `rendered_layout_check.py`, `pptx_quality_check.py`, `extract_svg_assets.py`, `animation_config.py`, `notes_to_audio.py`, `consulting_content_lock.py` | [docs/svg-pipeline.md](./docs/svg-pipeline.md) |
-| Spec maintenance | `update_spec.py` | [docs/update_spec.md](./docs/update_spec.md) |
-| Image tools | `image_gen.py`, `latex_render.py`, `analyze_images.py`, `gemini_watermark_remover.py` | [docs/image.md](./docs/image.md) |
-| Research gates | `research/browse_ai.py`, `research/research_gate.py`, `research/asset_gate.py`, `research/sync_research_outputs.py`, `confirm_ui_gate.py` | Deep-research and Step 4/5 gate docs in `../workflows/` |
-| Repo maintenance | `update_repo.py` | README install/update section |
-| Troubleshooting | validation, preview, export, dependency issues | [docs/troubleshooting.md](./docs/troubleshooting.md) |
+Layer definitions:
+
+- `runtime pipeline`: called by the main SKILL.md generation, gate, post-processing, export, or validation path.
+- `workflow satellite`: owned by a standalone or optional workflow, or by a one-off asset/revision workflow.
+- `maintenance`: repository, example, template-index, regression, or spec upkeep tools.
+- `internal helper`: importable support modules or thin service helpers whose behavior is owned by another entry point.
+
+| Layer | Area | Top-level scripts / packages | Documentation |
+|------|------|-------------------------------|---------------|
+| `runtime pipeline` | Conversion and intake | `source_to_md/`, `pptx_intake.py` | [docs/conversion.md](./docs/conversion.md) |
+| `runtime pipeline` | Project setup and local UI services | `project_manager.py`, `dashboard/`, `confirm_ui/`, `svg_editor/` | [docs/project.md](./docs/project.md), Step 4 / Live Preview docs in `../workflows/` |
+| `runtime pipeline` | Confirmation, research, and image gates | `research/`, `confirm_ui_gate.py`, `image_source_router.py` | Deep-research and Step 4/5 gate docs in `../workflows/` |
+| `runtime pipeline` | Image and asset acquisition | `analyze_images.py`, `icon_sync.py`, `image_gen.py`, `image_search.py`, `latex_render.py` | [docs/image.md](./docs/image.md) |
+| `runtime pipeline` | Pre-executor and quality gates | `consulting_content_lock.py`, `harness_gate.py`, `layout_capacity_check.py`, `rendered_layout_check.py`, `spec_compliance_check.py`, `spec_lock_digest.py`, `svg_quality_checker.py` | [docs/svg-pipeline.md](./docs/svg-pipeline.md) |
+| `runtime pipeline` | Post-processing and export | `e2e_validate.py`, `finalize_svg.py`, `memory_manager.py`, `pptx_quality_check.py`, `svg_to_pptx.py`, `total_md_split.py` | [docs/svg-pipeline.md](./docs/svg-pipeline.md) |
+| `workflow satellite` | Direct PPTX and template workflows | `beautify_identity.py`, `beautify_inventory.py`, `extract_svg_assets.py`, `pptx_template_import.py`, `pptx_to_svg.py`, `register_template.py`, `template_fill_pptx.py` | [docs/project.md](./docs/project.md), create-template / beautify / template-fill docs in `../workflows/` |
+| `workflow satellite` | Review, revision, charts, audio, and animation | `animation_config.py`, `check_annotations.py`, `notes_to_audio.py`, `svg_patch.py`, `svg_position_calculator.py`, `svg_snapshot.py`, `vision_check.py`, `visual_review.py` | [docs/svg-pipeline.md](./docs/svg-pipeline.md), visual-review / live-preview / verify-charts docs in `../workflows/` |
+| `workflow satellite` | Image fixups | `gemini_watermark_remover.py`, `rotate_images.py` | [docs/image.md](./docs/image.md), [docs/conversion.md](./docs/conversion.md) |
+| `maintenance` | Project, repo, and spec upkeep | `batch_validate.py`, `generate_examples_index.py`, `governance_drift_check.py`, `smoke_check.py`, `update_repo.py`, `update_spec.py` | [docs/project.md](./docs/project.md), [docs/update_spec.md](./docs/update_spec.md), README install/update section |
+| `internal helper` | Shared configuration, validation, and service support | `config.py`, `dashboard_launcher.py`, `error_helper.py`, `json_utils.py`, `project_utils.py`, `server_common.py` | [docs/project.md](./docs/project.md), [docs/troubleshooting.md](./docs/troubleshooting.md) |
+| `internal helper` | Shared encoding and PPTX animation XML | `console_encoding.py` (UTF-8 stdout/stderr setup for CLI scripts, including Windows non-UTF-8 locales), `pptx_animations.py` (pure XML generation for slide transitions and per-element entrance animations) | Imported by CLI/export wrappers |
 
 ## High-Frequency Commands
 

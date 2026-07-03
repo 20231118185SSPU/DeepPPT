@@ -12,6 +12,25 @@ Generate a complete set of reusable PPT templates for the **global template libr
 
 > **Companion workflow**: identity-only locking (colors / typography / logo / voice without SVG pages) is handled by [`create-brand.md`](./create-brand.md). Use that when the user wants brand identity but free page layout; use this when fixed page structures are required.
 
+## When to Run
+
+| User signal | Action |
+|---|---|
+| "create a reusable PPT template" / "make a template from this deck" / "把这份 PPT 做成模板" / "生成可复用模板" | Run this workflow |
+| User provides a `.pptx`, existing SVG pages, screenshots, PDF pages, or visual references and wants a future reusable layout / deck package | Run this workflow |
+| User asks to harvest an existing deck as a reusable future template, not generate a one-off presentation | Run this workflow |
+| User explicitly asks for fixed page structures, page-type variants, placeholders, or a library template under `templates/layouts/<id>/` or `templates/decks/<id>/` | Run this workflow |
+
+## When NOT to Run
+
+| User signal | Route instead |
+|---|---|
+| User wants brand identity only — colors, typography, logo, voice, icon style — while keeping future page layouts free | [`create-brand.md`](./create-brand.md) |
+| User provides an existing `.pptx` plus new content and wants to fill the new material back into that deck's native design | [`template-fill-pptx.md`](./template-fill-pptx.md) |
+| User wants to use an already-created template for one PPT project | SKILL.md Step 3 with the explicit template directory path |
+| User wants to beautify / re-layout an existing deck while preserving its page count, order, and wording | [`beautify-pptx.md`](./beautify-pptx.md) |
+| User provides source material or a topic and wants a generated presentation, not a reusable library asset | Main SKILL.md pipeline |
+
 ## Kind decision — deck (default) vs layout
 
 This workflow produces one of two kinds of templates depending on whether the source PPT carries a specific brand identity:
@@ -414,6 +433,18 @@ For a standard-mode template the card looks like:
 | `03_content.svg` | Done |
 | `04_ending.svg` | Done |
 ```
+
+## Exit Evidence
+
+Before finishing, report the completion card from `register_template.py` and verify these concrete artifacts:
+
+| Evidence | Expected |
+|---|---|
+| Template directory | `skills/ppt-master/templates/decks/<template_id>/` or `skills/ppt-master/templates/layouts/<template_id>/` exists |
+| Template spec | `design_spec.md` exists with `kind: deck` or `kind: layout` and `summary_zh` in frontmatter |
+| Preview pages | At least one root-level `.svg` page exists and every `§V Page Roster` entry has a matching file |
+| Validation | `svg_quality_checker.py --template-mode` passed for the template directory |
+| Index registration | `register_template.py` completed and the matching JSON index contains the template entry |
 
 ---
 

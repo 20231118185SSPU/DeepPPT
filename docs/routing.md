@@ -13,7 +13,7 @@
 | Refine spec before generation | [`refine-spec`](../skills/ppt-master/workflows/refine-spec.md) | "refine the spec first" (opt-in) |
 | Live preview | [`live-preview`](../skills/ppt-master/workflows/live-preview.md) | "preview", "看效果" |
 | Brand identity setup | [`create-brand`](../skills/ppt-master/workflows/create-brand.md) | "set up brand" / brand asset provided |
-| Visual self-check | [`visual-review`](../skills/ppt-master/workflows/visual-review.md) | Default recommended after Executor quality gates and before Step 7; skip only on explicit opt-out or `confirm_ui/result.json` `skip_visual_review: true`; chart decks run `verify-charts` first |
+| Visual self-check | [`visual-review`](../skills/ppt-master/workflows/visual-review.md) | Default recommended after Executor quality gates and before Step 7; skip only on explicit opt-out or `confirm_ui/result.json` `skip_visual_review: true`; chart decks run `verify-charts` first; 多代理评审在不支持并行子代理的宿主上降级为顺序执行。 |
 | Calibrate chart coordinates | [`verify-charts`](../skills/ppt-master/workflows/verify-charts.md) | decks with data charts |
 | Record narration / video export | [`generate-audio`](../skills/ppt-master/workflows/generate-audio.md) | "录音", "video export" |
 | Customize animations | [`customize-animations`](../skills/ppt-master/workflows/customize-animations.md) | "change animation order/effect" |

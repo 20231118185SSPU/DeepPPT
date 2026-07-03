@@ -11,14 +11,14 @@ runtime_workflow: false
 
 > Status: implementation draft / historical design note; not an executable
 > workflow.
-> Authority: non-authoritative; `skills/ppt-master/SKILL.md`,
-> `skills/ppt-master/references/image-generator.md`, and the scripts under
-> `skills/ppt-master/scripts/` remain the live sources of truth.
+> Authority: non-authoritative; `../../skills/ppt-master/SKILL.md`,
+> `../../skills/ppt-master/references/image-generator.md`, and the scripts under
+> `../../skills/ppt-master/scripts/` remain the live sources of truth.
 > Implemented in: current runtime behavior lives in
-> `skills/ppt-master/scripts/image_gen.py`,
-> `skills/ppt-master/scripts/image_backends/backend_openai.py`, backend stubs
-> under `skills/ppt-master/scripts/image_backends/`, and
-> `skills/ppt-master/references/image-generator.md`.
+> `../../skills/ppt-master/scripts/image_gen.py`,
+> `../../skills/ppt-master/scripts/image_backends/backend_openai.py`, backend
+> stubs under `../../skills/ppt-master/scripts/image_backends/`, and
+> `../../skills/ppt-master/references/image-generator.md`.
 > Routing: do not invoke this file from workflow routing. It is intentionally
 > absent from the `SKILL.md` Standalone Workflows table.
 
@@ -47,8 +47,8 @@ degree of transformation.
 
 ## Step 1: Extend the `generate()` interface
 
-**File**: `skills/ppt-master/scripts/image_gen.py` and all backends under
-`skills/ppt-master/scripts/image_backends/`.
+**File**: `../../skills/ppt-master/scripts/image_gen.py` and all backends under
+`../../skills/ppt-master/scripts/image_backends/`.
 
 Add an optional `reference_image: str | None = None` parameter to every
 `generate()` function signature:
@@ -73,7 +73,7 @@ support reference_image")` when `reference_image is not None`.
 
 ## Step 2: Implement img2img in `backend_openai.py`
 
-**File**: `skills/ppt-master/scripts/image_backends/backend_openai.py`
+**File**: `../../skills/ppt-master/scripts/image_backends/backend_openai.py`
 
 ### 2.1 New helper: `_image_edits_url()`
 
@@ -211,7 +211,7 @@ def generate(prompt: str,
 
 ## Step 3: CLI support in `image_gen.py`
 
-**File**: `skills/ppt-master/scripts/image_gen.py`
+**File**: `../../skills/ppt-master/scripts/image_gen.py`
 
 ### 3.1 Add `--reference-image` argument
 
@@ -263,7 +263,7 @@ not in `REQUIRED_ITEM_FIELDS`.
 
 ## Step 4: Manifest schema update
 
-**File**: `skills/ppt-master/references/image-generator.md` (docs update)
+**File**: `../../skills/ppt-master/references/image-generator.md` (docs update)
 
 The `image_prompts.json` schema gains an optional field per item:
 
@@ -324,7 +324,7 @@ Files to update:
 ### 6.1 Manual CLI test (text2img baseline)
 
 ```bash
-python3 skills/ppt-master/scripts/image_gen.py \
+python3 ../../skills/ppt-master/scripts/image_gen.py \
   "a red sports car on a mountain road" \
   --aspect_ratio 16:9 --image_size 1K \
   -o /tmp/img_test
@@ -335,7 +335,7 @@ Expected: image file generated, no errors.
 ### 6.2 Manual CLI test (img2img with local file)
 
 ```bash
-python3 skills/ppt-master/scripts/image_gen.py \
+python3 ../../skills/ppt-master/scripts/image_gen.py \
   "change the car color to blue" \
   --reference-image /tmp/img_test/generated_image.png \
   --aspect_ratio 16:9 --image_size 1K \
@@ -347,7 +347,7 @@ Expected: new image generated based on the reference, car is now blue.
 ### 6.3 Manual CLI test (img2img with URL)
 
 ```bash
-python3 skills/ppt-master/scripts/image_gen.py \
+python3 ../../skills/ppt-master/scripts/image_gen.py \
   "add snow to the mountain peaks" \
   --reference-image "https://upload.wikimedia.org/wikipedia/commons/thumb/a/a7/Camponotus_flavomarginatus_ant.jpg/330px-Camponotus_flavomarginatus_ant.jpg" \
   --aspect_ratio 1:1 --image_size 1K \
@@ -381,7 +381,7 @@ Create a test manifest `test_img2img_manifest.json`:
 ```
 
 ```bash
-python3 skills/ppt-master/scripts/image_gen.py \
+python3 ../../skills/ppt-master/scripts/image_gen.py \
   --manifest test_img2img_manifest.json \
   -o /tmp/img_test
 ```
@@ -394,10 +394,10 @@ Expected: first item uses img2img, second uses text2img. Both succeed.
 
 | File | Change type | Description |
 |---|---|---|
-| `scripts/image_gen.py` | Modify | Add `--reference-image` CLI arg, forward to backend, pass through in manifest mode |
-| `scripts/image_backends/backend_openai.py` | Modify | Add `_image_edits_url()`, `_post_image_edits()`, `_post_image_generations_with_ref()`; branch `_generate_image()` on `reference_image`; update `generate()` signature |
-| `scripts/image_backends/backend_*.py` (13 files) | Modify | Add stub rejection for `reference_image` param |
-| `references/image-generator.md` | Modify | Document `reference_image` manifest field and `--reference-image` CLI flag |
+| `../../skills/ppt-master/scripts/image_gen.py` | Modify | Add `--reference-image` CLI arg, forward to backend, pass through in manifest mode |
+| `../../skills/ppt-master/scripts/image_backends/backend_openai.py` | Modify | Add `_image_edits_url()`, `_post_image_edits()`, `_post_image_generations_with_ref()`; branch `_generate_image()` on `reference_image`; update `generate()` signature |
+| `../../skills/ppt-master/scripts/image_backends/backend_*.py` (13 files) | Modify | Add stub rejection for `reference_image` param |
+| `../../skills/ppt-master/references/image-generator.md` | Modify | Document `reference_image` manifest field and `--reference-image` CLI flag |
 
 ---
 

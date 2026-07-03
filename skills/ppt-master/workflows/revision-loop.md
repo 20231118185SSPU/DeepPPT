@@ -129,6 +129,18 @@ For batch operations across pages, run sequentially per page (same as Executor's
    python3 ${SKILL_DIR}/scripts/svg_to_pptx.py <project_path>
    ```
 
+## Exit Evidence
+
+Before leaving revision mode, report:
+
+| Evidence | Pass condition |
+|---|---|
+| Final snapshot | `python3 ${SKILL_DIR}/scripts/svg_snapshot.py save <project_path>/svg_output` refreshed `<project>/.revision/snapshots.json` after the last accepted change |
+| Diff summary | `svg_snapshot.py diff` or the round summary lists the modified page count, element count, and affected SVG files |
+| Guard result | `python3 ${SKILL_DIR}/scripts/svg_quality_checker.py <project_path>` passed after the final patch set |
+| Issue tracking | Any unresolved two-round issue is recorded in `<project>/.revision/escalations.json`; otherwise `<project>/.revision/issue_tracker.json` has no active unresolved blocker |
+| Export, when requested | `finalize_svg.py` and `svg_to_pptx.py` completed, and the refreshed `<project>/exports/*.pptx` path was reported |
+
 ## Loop Safety
 
 - Maximum 20 revision rounds per session

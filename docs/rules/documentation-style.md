@@ -1,6 +1,6 @@
 # Documentation Style Rules
 
-> Scope: user documentation, architecture explanations, design drafts, audits, and maintenance documents under `docs/`, `docs/zh/`, and `docs/design/`.
+> Scope: user documentation, architecture explanations, design drafts, audits, and maintenance documents under `docs/`, plus Markdown language placement for `skills/ppt-master/workflows/`, `skills/ppt-master/references/`, and `docs/`.
 > Status: active repository rule adopted by `AGENTS.md` for documentation edits. It does not override `AGENTS.md`, `SKILL.md`, or owning workflow files.
 
 These rules keep documentation useful without turning explanations or drafts into hidden runtime authority.
@@ -38,14 +38,21 @@ Use `Implemented in` only for files that actually contain the live rule or imple
 
 ## 3. Language Placement
 
-| Location | Rule |
-|---|---|
-| `docs/` user docs | English is the default root version |
-| `docs/zh/` | Chinese mirrors for user-facing docs |
-| `docs/design/` | Internal design language may follow the task, but each file should stay internally consistent |
-| Audit/governance drafts | May use the review language; must clearly mark status and authority |
+Markdown language follows each location's declared primary mode. New files must follow the mode for their location, and a single file must not switch primary language casually.
 
-Do not mix English scaffolding with long Chinese explanatory prose inside a new user-facing document unless matching an existing local pattern.
+> Change record: on 2026-07-03, this section was updated as the rule realization for audit P2-1 and the user's decision. Do not migrate or rewrite existing mixed-language workflow files as part of this rule.
+
+| Location | Primary mode |
+|---|---|
+| `skills/ppt-master/workflows/` | English structural scaffolding is allowed for runtime skeletons such as headings, tables, labels, and field names; explanatory body text may be Chinese when that matches the route, existing workflow pattern, or task language. |
+| `skills/ppt-master/references/` | English is primary for role definitions, prompt files, and technical references. Use another language only for quoted/source-specific terms, localized examples, or explicitly requested localized content. |
+| `docs/*.md` root user docs | English is the default root version. |
+| `docs/zh/` | Chinese mirrors for user-facing docs. |
+| `docs/reviews/` | Chinese review/audit documents are allowed; keep the review file's status and non-authoritative declaration clear. |
+| `docs/design/` | Internal design language may follow the task, but each file should stay internally consistent. |
+| Other audit/governance drafts | May use the review language; must clearly mark status and authority. |
+
+Do not use this rule as a reason to rewrite historical record documents such as `docs/reviews/`, documentation-governance audits, `docs/change-log.md`, or AI-router design records. Preserve their recorded wording unless the current task explicitly asks to revise that document.
 
 ---
 

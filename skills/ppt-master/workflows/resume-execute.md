@@ -83,3 +83,17 @@ The fresh session pays the cost of re-reading references (~14K tokens) but earns
 When Step 7 completes and `exports/<project_name>_<timestamp>.pptx` is produced, the workflow ends. Report the export path to the user.
 
 If the deck contains data charts, the [`verify-charts`](verify-charts.md) workflow runs between Step 6 and Step 7 as documented in SKILL.md — resume mode handles it the same way the continuous mode does.
+
+---
+
+## Exit Evidence
+
+Completion is evidenced by the same disk artifacts as a continuous SKILL.md run:
+
+| Evidence | Pass condition |
+|---|---|
+| Resume gate | Step 1 confirmed required Phase-A artifacts exist: `<project>/spec_lock.md`, `<project>/design_spec.md`, and any referenced `images/` / `templates/` assets |
+| Executor output | All planned SVG pages exist under `<project>/svg_output/`, and speaker notes exist at `<project>/notes/total.md` |
+| Quality gates | Step 6 quality commands completed successfully or recorded an explicit human acceptance for rendered-review blockers |
+| Export | Step 7 produced `<project>/exports/<project_name>_<timestamp>.pptx`; report this exact path |
+| Validation, when run | `e2e_validate.py` output and optional `pptx_quality_check.py` JSON path were reported with PASS/WARN/FAIL status |

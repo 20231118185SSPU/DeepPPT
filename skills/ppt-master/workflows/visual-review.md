@@ -185,6 +185,20 @@ python3 skills/ppt-master/scripts/svg_to_pptx.py <project_path>
 
 ---
 
+## Exit Evidence
+
+Before proceeding to post-processing, report:
+
+| Evidence | Pass condition |
+|---|---|
+| Rendered PNGs | `<project>/.preview/<page>.png` exists for every SVG page, or `vision_check.py` produced `<project>/vision_check_report.json` for the external-vision path |
+| Review table | The aggregate table from Step 3 contains only `ok` / `fixed` rows, plus any `needs_human` rows explicitly accepted by the user |
+| Fix backups | Every modified SVG has a rollback file under `<project>/.review/backup/<page>.iter<N>.svg` |
+| Brand review | If `<project>/.review/brand_review.json` contains entries, the single deck-level decision was applied or explicitly deferred before clearance |
+| No-vision fallback | When automated vision was unavailable, review metadata records `vision_available: false` and the user performed or accepted manual visual review before export |
+
+---
+
 ## Notes & invariants
 
 - **Single source of truth for rules**: [`references/visual-review.md`](../references/visual-review.md). This workflow file is just the orchestration — never restate or paraphrase rules here.

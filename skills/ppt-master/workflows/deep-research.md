@@ -244,7 +244,7 @@ Incremental write (3 rounds). Quality gate enforces narrative depth contract.
 | Executor | Main AI (Claude) |
 | Blocking | No |
 
-⛔ **MANDATORY CHECKPOINT**: At least 1 reference image in `ref/`.
+⛔ **MANDATORY CHECKPOINT**: Every page that requires reference images according to `visual_strategy.json` MUST have its corresponding approved reference image files in `_research/step7_visual/ref/`. A project-wide count of one or more reference images alone is NOT accepted.
 
 ---
 
@@ -273,6 +273,7 @@ artifacts:
   - _research/step5_analysis/research_analysis.json
   - _research/step6_narrative/research_report.md
   - _research/step7_visual/visual_strategy.json
+visual_reference_evidence: every page that requires reference images according to visual_strategy.json has corresponding approved files in _research/step7_visual/ref/; a project-wide count of one or more reference images alone is not accepted
 next_step: content-selection (if research_report.md exists)
 -->
 ```

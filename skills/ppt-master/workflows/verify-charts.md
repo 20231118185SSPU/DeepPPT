@@ -254,6 +254,20 @@ verify-charts: 19_flow.svg | type=sankey | mode=manual-verify | link widths cons
 
 ---
 
+## Exit Evidence
+
+Before returning to SKILL.md Step 7, confirm:
+
+| Evidence | Pass condition |
+|---|---|
+| Page list | The Step 1 chart list was built from `design_spec.md §VII`, or the workflow emitted the documented skip line for missing §VII / no data-driven charts |
+| Receipt coverage | One `verify-charts:` receipt line exists for every page in the Step 1 list; receipt count equals list length |
+| Scale source | Every receipt states the scale source (`from ticks`, `auto`, `formula`, `manual`, or equivalent) and the verification mode |
+| SVG updates | Any coordinate correction was written to `<project>/svg_output/<page>.svg`; missing plot-area markers added during verification are noted in the receipt |
+| Quality re-check | If any SVG changed, `python3 skills/ppt-master/scripts/svg_quality_checker.py <project_path>` passed after the last update |
+
+---
+
 ## After verification
 
 Continue with post-processing & export ([SKILL.md Step 7](../SKILL.md)):

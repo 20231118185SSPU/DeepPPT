@@ -58,3 +58,16 @@ These overlap with what the locked `mode`, visual style, and §6.1 already shape
 Once the user approves, `design_spec.md` and `spec_lock.md` both reflect the final, revised state. Return to SKILL.md and continue normally: Step 5 (Image Acquisition, if any `ai` / `web` rows) or Step 6 (Executor).
 
 > Note: this workflow does NOT duplicate Strategist content. It only inserts a review-and-revise checkpoint between spec production and the rest of the pipeline. `strategist.md` / SKILL.md remain authoritative for how the spec is written.
+
+---
+
+## Exit Evidence
+
+Before leaving the refinement checkpoint, confirm:
+
+| Evidence | Pass condition |
+|---|---|
+| Final spec files | `<project>/design_spec.md` and `<project>/spec_lock.md` exist and include the user's approved revisions |
+| User approval | The user explicitly approved the final spec after the review loop; approval happened after the last file change |
+| File sync | Any approved change that affects execution is reflected in both `design_spec.md` and `spec_lock.md`; on intentional divergence, `spec_lock.md` is named as the execution source of truth |
+| Integrity seal | `python3 ${SKILL_DIR}/scripts/spec_lock_digest.py generate <project_path>` was run after the final revision, producing `<project>/.spec_lock.digest` for Step 6 verification |
