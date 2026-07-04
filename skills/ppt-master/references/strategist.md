@@ -318,23 +318,25 @@ Write the manifest first at `<project_path>/images/formula_manifest.json`. Use t
 
 ```json
 {
-  "providers": ["codecogs", "quicklatex", "mathpad", "wikimedia"],
+  "providers": ["quicklatex", "codecogs", "mathpad", "wikimedia"],
   "items": [
     {
       "id": "formula_001",
       "latex": "E = mc^2",
       "display": "block",
+      "display_mode": "block",
+      "font": "sans-serif",
       "color": "#1D1D1F",
       "background": "#FFFFFF",
       "transparent": true,
-      "dpi": 400,
+      "dpi": 600,
       "filename": "formula_001.png"
     }
   ]
 }
 ```
 
-The script renders PNGs into `images/`, trying `codecogs`, `quicklatex`, `mathpad`, then `wikimedia` unless the manifest overrides `providers`. `codecogs`, `quicklatex`, and `mathpad` preserve requested formula color; `wikimedia` is an availability fallback and may require visual checking on dark themes. Formula PNGs are transparent by default: use `background` as the temporary render matte and local background-removal reference. Set `transparent: false` only when the final formula must keep an opaque background. It writes `pixel_width`, `pixel_height`, `ratio`, `file`, `provider`, and `status` back into the manifest. Run `analyze_images.py <project_path>/images` after formula rendering so the formula PNGs are included in the same inventory pass as user images.
+The script renders PNGs into `images/`, trying `quicklatex`, `codecogs`, `mathpad`, then `wikimedia` unless the manifest overrides `providers`. `quicklatex`, `codecogs`, and `mathpad` preserve requested formula color; `wikimedia` is an availability fallback and may require visual checking on dark themes. `display_mode` is the preferred field; keep `display` only for backward compatibility. `font` is a renderer hint, not a guarantee that every provider will match the deck font exactly. Formula PNGs are transparent by default: use `background` as the temporary render matte and local background-removal reference. Set `transparent: false` only when the final formula must keep an opaque background. It writes `pixel_width`, `pixel_height`, `ratio`, `file`, `provider`, and `status` back into the manifest. Run `analyze_images.py <project_path>/images` after formula rendering so the formula PNGs are included in the same inventory pass as user images.
 
 ### h. Image Usage Confirmation
 
@@ -910,7 +912,7 @@ Content-outline and speaker-notes strategy follow the deck's locked **mode** —
    - **Cover impact is mandatory**: Page `P01` is the deck's first visual contract, not a generic title slide. In `design_spec.md §IX`, add a `Cover impact` line for `P01` that names one concrete hook and one concrete composition strategy. Use the source's strongest available signal: a provocative core claim, object / scene metaphor, hero number, founder / product / audience moment, or a distilled conflict. Pair it with one concrete composition strategy — such as `full-bleed image + floating title`, `typographic poster`, `hero object`, `data hook`, `editorial scene`, `high-contrast abstract geometry`, or a fresh composition the deck's subject suggests (these are starting points, not the allowed set). If no external or AI image is available, still specify a native-SVG visual hook; do not fall back to "title + subtitle + decorative background". (Beautify / template-fill keep the source cover verbatim — this rule does not apply on those preservation paths.)
    - **Cover rhythm lock**: `P01` remains `anchor` in `spec_lock.md page_rhythm`, but its §IX `Cover impact` must prevent content-page patterns. Do not plan multi-card grids, agenda-like bullets, or equal-weight columns on the cover unless a template explicitly requires that structure, or a preservation path (beautify / template-fill) is transcribing the source cover verbatim.
    - **Closing impact (only when the deck closes)**: the deck's last page is its final visual contract — the strongest impression after the cover. When the deck genuinely lands on a conclusion / call-to-action / final-takeaway page, give it a `Closing impact` line in §IX: name the one thing the audience should leave with (a distilled takeaway, a forward call, a memorable restatement of the core claim) + one composition that delivers it — never a generic "Thank you" / contact-only slide or a centered-title reprise of the cover. **Do NOT invent a closing page to satisfy this** — the filler-page ban above still holds; apply it only to the page where the deck actually resolves. Same exemptions as the cover: skip on template / beautify / template-fill preservation paths.
-   - **page_layouts (write only when a template is in use)**: For each page that inherits a template SVG, add `P<NN>: <svg_basename>` (e.g., `P04: 03a_content_image_text`). Pages designed freely get **no entry** — Executor reads the absence as "free design, no inheritance". If zero pages use a template, omit the section entirely.
+   - **page_layouts (write only when a template is in use)**: For each page that inherits a template SVG, add `P<NN>: <svg_basename>` (e.g., `P04: 03a_content_image_text`). Pages designed freely get **no entry** — Executor reads the absence as "free design, no inheritance". If zero pages use a template, omit the section entirely. Dashboard's confirmation center reads this same section to show per-page layout thumbnails before generation, then switches to generated SVG/screenshots when Step 6 artifacts appear. Keep every basename exact and omit free-design pages instead of writing placeholders.
    - **page_charts (write only for chart pages that match a catalog template)**: For each page in `design_spec.md §VII` whose `reference template path` points to `templates/charts/<name>.svg`, add `P<NN>: <chart_name>`. Pages with `no-template-match` in §VII MUST NOT appear here (Executor would look for a non-existent reference). If the deck has no data-visualization pages, omit the section.
    - **Hard rule**: Use both `page_layouts` and `page_charts` for the same page only when the layout template is a compatible shell for the chart. Do not pair chart pages with conflicting page layouts (e.g., `waterfall_chart` + timeline layout, KPI cards + circle-diagram layout). If no compatible layout exists, omit the page from `page_layouts`.
 

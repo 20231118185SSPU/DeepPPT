@@ -22,21 +22,74 @@ const state = {
     path: '',
     index: 0,
     fit: 'contain',
+    pages: null,
+    kind: '',
+    title: '',
   },
   openArtifactGroups: new Set(),
   connected: false,
   polling: null,
   apiErrors: {},
+  language: localStorage.getItem('dashboard-language') || 'zh',
 };
 
-const routes = {
-  pipeline: '管线总览',
-  services: '服务入口',
-  step: '步骤工作台',
-  confirm: '确认中心',
-  preview: '实时预览',
-  quality: '质量中心',
-  artifacts: '产物与日志',
+const messages = {
+  zh: {
+    brand_subtitle: '项目控制台',
+    route_pipeline: '管线总览',
+    route_services: '服务入口',
+    route_step: '步骤工作台',
+    route_confirm: '确认中心',
+    route_preview: '实时预览',
+    route_quality: '质量中心',
+    route_artifacts: '产物与日志',
+    confirm_running: '打开确认',
+    confirm_stopped: '确认未运行',
+    preview_running: '打开预览',
+    preview_stopped: '预览未运行',
+    sse_live: 'SSE 实时',
+    polling: '轮询模式',
+    template_free: '自由设计',
+    template_applied: '已应用模板',
+    template_missing: '模板路径异常',
+    template_option: '模板路线',
+    current_route: '当前路线',
+    template_discovery: '模板库候选',
+    template_preview_title: '模板库候选预览',
+    template_preview_desc: '这里展示全局模板库候选；Step 4 的设计确认以 Confirm UI / recommendations.json 为准。点击缩略图可放大查看。',
+    no_template_preview: '暂无 SVG 预览',
+    new_window: '新窗口',
+    close: '关闭',
+    modal_label: '放大预览',
+  },
+  en: {
+    brand_subtitle: 'Project Dashboard',
+    route_pipeline: 'Pipeline',
+    route_services: 'Services',
+    route_step: 'Step Workspace',
+    route_confirm: 'Confirm Center',
+    route_preview: 'Live Preview',
+    route_quality: 'Quality',
+    route_artifacts: 'Artifacts & Logs',
+    confirm_running: 'Open Confirm',
+    confirm_stopped: 'Confirm stopped',
+    preview_running: 'Open Preview',
+    preview_stopped: 'Preview stopped',
+    sse_live: 'SSE live',
+    polling: 'Polling',
+    template_free: 'Free design',
+    template_applied: 'Template applied',
+    template_missing: 'Template path issue',
+    template_option: 'Template Route',
+    current_route: 'Current route',
+    template_discovery: 'Template candidates',
+    template_preview_title: 'Template Candidate Preview',
+    template_preview_desc: 'This section shows global template-library candidates. Step 4 design confirmation remains driven by Confirm UI / recommendations.json. Click a thumbnail to enlarge.',
+    no_template_preview: 'No SVG preview',
+    new_window: 'New window',
+    close: 'Close',
+    modal_label: 'Enlarged preview',
+  },
 };
 
 const statusLabels = {
@@ -128,6 +181,10 @@ document.addEventListener('DOMContentLoaded', () => {
   boot();
 });
 
+function t(key) {
+  return messages[state.language]?.[key] || messages.zh[key] || key;
+}
+
 async function handleDocumentClick(event) {
   const action = event.target.closest('[data-action-run]');
   if (action) {
@@ -188,6 +245,22 @@ async function handleDocumentClick(event) {
   if (previewModal) {
     event.preventDefault();
     openPreviewModal(previewModal.dataset.previewModal);
+    return;
+  }
+
+  const templateModal = event.target.closest('[data-template-modal]');
+  if (templateModal) {
+    event.preventDefault();
+    openTemplatePreviewModal(templateModal);
+    return;
+  }
+
+  const langToggle = event.target.closest('[data-lang-toggle]');
+  if (langToggle) {
+    event.preventDefault();
+    state.language = state.language === 'zh' ? 'en' : 'zh';
+    localStorage.setItem('dashboard-language', state.language);
+    render();
     return;
   }
 
@@ -257,29 +330,87 @@ function openPreviewModal(path) {
     path,
     index: selectedIndex,
     fit: state.previewModal.fit || 'contain',
+    pages: null,
+    kind: '',
+    title: '',
   };
   renderPreviewModal();
+}
+
+function openUrlPreviewModal(url, name, title, kind = 'svg') {
+  if (!url) return;
+  state.previewModal = {
+    path: url,
+    index: 0,
+    fit: state.previewModal.fit || 'contain',
+    pages: [{ name, path: title || name, url }],
+    kind,
+    title: title || name,
+  };
+  renderPreviewModal();
+}
+
+function openTemplatePreviewModal(trigger) {
+  const pages = parseTemplatePages(trigger.dataset.templatePages);
+  const startIndex = Math.max(0, Number(trigger.dataset.templateIndex || 0) || 0);
+  const fallbackUrl = trigger.dataset.templateModal;
+  const fallbackName = trigger.dataset.templateName || 'Template preview';
+  const title = trigger.dataset.templateTitle || fallbackName;
+  const modalPages = pages.length ? pages : [{ name: fallbackName, path: title, url: fallbackUrl }];
+  if (!modalPages.length || !modalPages[0].url) return;
+  const index = Math.min(startIndex, modalPages.length - 1);
+  state.previewModal = {
+    path: modalPages[index].url,
+    index,
+    fit: state.previewModal.fit || 'contain',
+    pages: modalPages,
+    kind: 'svg',
+    title,
+  };
+  renderPreviewModal();
+}
+
+function parseTemplatePages(raw) {
+  if (!raw) return [];
+  try {
+    const pages = JSON.parse(raw);
+    if (!Array.isArray(pages)) return [];
+    return pages
+      .filter((page) => page && page.url)
+      .map((page) => ({
+        name: String(page.name || 'Template preview'),
+        path: String(page.path || page.name || ''),
+        url: String(page.url),
+      }));
+  } catch {
+    return [];
+  }
 }
 
 function closePreviewModal() {
   state.previewModal.path = '';
   state.previewModal.index = 0;
+  state.previewModal.pages = null;
+  state.previewModal.kind = '';
+  state.previewModal.title = '';
   renderPreviewModal();
 }
 
 function movePreviewModal(delta) {
   const detail = modalDetail();
-  const pages = previewModalPages(detail);
+  const pages = activePreviewModalPages(detail);
   if (!state.previewModal.path || !pages.length) return;
   state.previewModal.index = (state.previewModal.index + delta + pages.length) % pages.length;
+  state.previewModal.path = pages[state.previewModal.index]?.url || state.previewModal.path;
   renderPreviewModal();
 }
 
 function setPreviewModalPage(index) {
   const detail = modalDetail();
-  const pages = previewModalPages(detail);
+  const pages = activePreviewModalPages(detail);
   if (!state.previewModal.path || index < 0 || index >= pages.length) return;
   state.previewModal.index = index;
+  state.previewModal.path = pages[index]?.url || state.previewModal.path;
   renderPreviewModal();
 }
 
@@ -291,6 +422,14 @@ function setPreviewModalFit(fit) {
 }
 
 function modalDetail() {
+  if (state.previewModal.pages) {
+    return {
+      name: state.previewModal.title || state.previewModal.pages[0]?.name || '',
+      path: state.previewModal.path,
+      open_url: state.previewModal.pages[0]?.url || state.previewModal.path,
+      preview_kind: state.previewModal.kind || 'svg',
+    };
+  }
   const detail = state.selectedArtifact;
   if (!state.previewModal.path || !detail || detail.path !== state.previewModal.path || detail.loading || detail.error) return null;
   return detail;
@@ -310,8 +449,8 @@ function renderPreviewModal() {
     return;
   }
   document.body.classList.add('modal-open');
-  const pages = previewModalPages(detail);
-  const kind = effectivePreviewKind(detail);
+  const pages = activePreviewModalPages(detail);
+  const kind = state.previewModal.kind || effectivePreviewKind(detail);
   const index = Math.min(state.previewModal.index || 0, Math.max(0, pages.length - 1));
   const page = pages[index] || { name: detail.name, path: detail.path, url: detail.open_url };
   const fit = state.previewModal.fit || 'contain';
@@ -320,7 +459,7 @@ function renderPreviewModal() {
   state.previewModal.index = index;
   root.innerHTML = `
     <div class="modal-backdrop" data-modal-close="true">
-      <section class="preview-modal modal-kind-${escapeAttr(kind)}" role="dialog" aria-modal="true" aria-label="放大预览">
+      <section class="preview-modal modal-kind-${escapeAttr(kind)}" role="dialog" aria-modal="true" aria-label="${escapeAttr(t('modal_label'))}">
         <header class="modal-topbar">
           <div class="modal-title">
             <span class="eyebrow">${escapeHtml(previewKindLabel(kind))}</span>
@@ -329,19 +468,32 @@ function renderPreviewModal() {
           </div>
           <div class="modal-actions">
             ${modalFitControls(fit)}
-            <a class="button secondary" href="${escapeAttr(page.url || detail.open_url)}" target="_blank" rel="noreferrer" title="在新窗口打开当前预览">新窗口</a>
-            <button type="button" class="button secondary" data-modal-close="true" aria-label="关闭放大预览" title="关闭放大预览">关闭</button>
+            <a class="button secondary" href="${escapeAttr(page.url || detail.open_url)}" target="_blank" rel="noreferrer" title="${escapeAttr(t('new_window'))}">${escapeHtml(t('new_window'))}</a>
+            <button type="button" class="button secondary" data-modal-close="true" aria-label="${escapeAttr(t('close'))}" title="${escapeAttr(t('close'))}">${escapeHtml(t('close'))}</button>
           </div>
         </header>
         <div class="modal-stage modal-fit-${escapeAttr(fit)}">
           ${canPage ? '<button type="button" class="modal-arrow left" data-modal-nav="-1" aria-label="上一页" title="上一页">‹</button>' : ''}
-          <iframe class="modal-frame" src="${escapeAttr(modalUrl)}" title="${escapeAttr(page.name || detail.name)}"></iframe>
+          ${modalFrameHtml(modalUrl, page.name || detail.name, kind)}
           ${canPage ? '<button type="button" class="modal-arrow right" data-modal-nav="1" aria-label="下一页" title="下一页">›</button>' : ''}
         </div>
         ${canPage ? modalStrip(pages, index) : ''}
       </section>
     </div>
   `;
+}
+
+function activePreviewModalPages(detail) {
+  return state.previewModal.pages || previewModalPages(detail);
+}
+
+function modalFrameHtml(url, title, kind) {
+  const safeUrl = escapeAttr(url);
+  const safeTitle = escapeAttr(title || 'Preview');
+  if (kind === 'svg' || kind === 'pptx') {
+    return `<img class="modal-frame modal-image-frame" src="${safeUrl}" alt="${safeTitle}">`;
+  }
+  return `<iframe class="modal-frame" src="${safeUrl}" title="${safeTitle}"></iframe>`;
 }
 
 function modalFitControls(activeFit) {
@@ -571,9 +723,10 @@ function route() {
 }
 
 function render() {
+  applyStaticI18n();
   updateChrome();
   const current = route();
-  const title = routes[current.name] || routes.pipeline;
+  const title = routeTitle(current.name);
   document.getElementById('pageTitle').textContent = title;
   document.querySelectorAll('.nav a').forEach((link) => {
     link.classList.toggle('active', link.dataset.route === current.name);
@@ -600,14 +753,14 @@ function updateChrome() {
   if (!state.pipeline) return;
   const meta = `${state.pipeline.project_name} · Step ${state.pipeline.current_step || '-'} · ${state.pipeline.canvas_format || '画布待定'}`;
   document.getElementById('projectMeta').textContent = meta;
-  setServiceLink('confirmLink', state.pipeline.confirm_ui, '打开确认', '确认未运行', 'Confirm UI');
-  setServiceLink('previewLink', state.pipeline.live_preview, '打开预览', '预览未运行', 'Live Preview');
+  setServiceLink('confirmLink', state.pipeline.confirm_ui, t('confirm_running'), t('confirm_stopped'), 'Confirm UI');
+  setServiceLink('previewLink', state.pipeline.live_preview, t('preview_running'), t('preview_stopped'), 'Live Preview');
   renderStepRail();
 }
 
 function updateConnection() {
   const badge = document.getElementById('connectionBadge');
-  badge.textContent = state.connected ? 'SSE 实时' : '轮询模式';
+  badge.textContent = state.connected ? t('sse_live') : t('polling');
   badge.title = state.connected ? '事件流已连接' : '事件流不可用，正在定时刷新';
   badge.className = `badge ${state.connected ? 'ok' : 'warn'}`;
 }
@@ -629,9 +782,9 @@ function renderStepRail() {
   const rail = document.getElementById('stepRail');
   if (!state.pipeline?.steps) return;
   rail.innerHTML = state.pipeline.steps.map((step) => `
-    <a class="rail-step ${escapeAttr(step.state)}" href="#/step/${step.step}" title="查看 Step ${step.step}：${escapeAttr(step.name)}">
+    <a class="rail-step ${escapeAttr(step.state)}" href="#/step/${step.step}" title="Step ${step.step}: ${escapeAttr(stepName(step))}">
       <span>${step.step}</span>
-      <strong>${escapeHtml(step.name)}</strong>
+      <strong>${escapeHtml(stepName(step))}</strong>
     </a>
   `).join('');
 }
@@ -648,7 +801,7 @@ function renderPipeline(app) {
       <div>
         <span class="eyebrow">管线总览</span>
         <h2>${escapeHtml(p.project_name || 'DeepPPT Project')}</h2>
-        <p>当前处于 Step ${p.current_step || '-'}${activeStep ? ` · ${escapeHtml(activeStep.name)}` : ''}</p>
+        <p>当前处于 Step ${p.current_step || '-'}${activeStep ? ` · ${escapeHtml(stepName(activeStep))}` : ''}</p>
         <div class="health-line">
           ${healthBadge(health.status)}
           <span>${escapeHtml((health.reasons || [])[0] || '暂无健康度说明。')}</span>
@@ -665,7 +818,6 @@ function renderPipeline(app) {
       ${metric('页面 / SVG', `${p.page_count ?? '-'} / ${p.svg_count ?? 0}`)}
       ${metric('质量状态', p.quality_summary?.overall || '待生成')}
     </div>
-    ${templateRoutePanel(p.template_route)}
     <div class="panel premium-panel">
       <div class="panel-head">
         <div>
@@ -695,13 +847,12 @@ function renderPipeline(app) {
 
 function renderStep(app, stepNo) {
   const step = state.pipeline.steps.find((item) => item.step === stepNo) || state.pipeline.steps[0];
-  const artifacts = artifactsForStep(step.step);
   app.innerHTML = `
     <section class="hero-panel step-hero">
       <div>
         <span class="eyebrow">Step ${step.step}</span>
-        <h2>${escapeHtml(step.name)}</h2>
-        <p>${statusText(step.state)}${step.blocking ? ' · 需要确认后继续' : ' · Dashboard 读取当前产物状态'}</p>
+        <h2>${escapeHtml(stepName(step))}</h2>
+        <p>${statusText(step.state)}${step.blocking ? ' · 需要确认后继续' : ' · Dashboard 读取当前步骤状态'}</p>
       </div>
       <div class="hero-stack">
         ${stateLabel(step.state)}
@@ -712,7 +863,6 @@ function renderStep(app, stepNo) {
       ${metric('步骤状态', statusText(step.state))}
       ${metric('Gate', gateSummaryText(step.gate))}
       ${metric('子步骤', `${completedSubSteps(step)} / ${(step.sub_steps || []).length}`)}
-      ${metric('相关产物', artifacts.length)}
     </div>
     ${step.step === 3 ? templateRoutePanel(state.pipeline.template_route) : ''}
     <div class="workbench-grid">
@@ -727,11 +877,6 @@ function renderStep(app, stepNo) {
         <div class="list compact-list">
           ${(step.sub_steps || []).map(subStepHtml).join('') || '<div class="empty small">暂无子步骤。</div>'}
         </div>
-      </div>
-      <div class="panel premium-panel wide">
-        <span class="eyebrow">产物</span>
-        <h2>相关产物</h2>
-        ${artifactTable(artifacts)}
       </div>
     </div>
   `;
@@ -1078,7 +1223,6 @@ function tracePager() {
   </div>`;
 }
 function stepCard(step) {
-  const artifacts = artifactsForStep(step.step).length;
   const subTotal = (step.sub_steps || []).length;
   const gateText = gateSummaryText(step.gate);
   return `
@@ -1086,13 +1230,12 @@ function stepCard(step) {
       <div class="step-number">${step.step}</div>
       <div class="step-card-main">
         <div class="step-title-line">
-          <h3>${escapeHtml(step.name)}</h3>
+          <h3>${escapeHtml(stepName(step))}</h3>
           ${stateLabel(step.state)}
         </div>
         <p>${step.blocking ? '阻塞确认' : gateText}</p>
         <div class="step-meta">
           <span>${subTotal} 子步骤</span>
-          <span>${artifacts} 产物</span>
         </div>
       </div>
     </a>
@@ -1101,9 +1244,9 @@ function stepCard(step) {
 
 function timelineStep(step) {
   return `
-    <a class="timeline-step ${escapeAttr(step.state)}" href="#/step/${step.step}" title="查看 Step ${step.step}：${escapeAttr(step.name)}">
+    <a class="timeline-step ${escapeAttr(step.state)}" href="#/step/${step.step}" title="查看 Step ${step.step}：${escapeAttr(stepName(step))}">
       <span>${step.step}</span>
-      <strong>${escapeHtml(step.name)}</strong>
+      <strong>${escapeHtml(stepName(step))}</strong>
       <small>${statusText(step.state)}</small>
     </a>
   `;
@@ -1111,9 +1254,9 @@ function timelineStep(step) {
 
 function templateRouteLabel(route) {
   const key = route?.route || 'free_design';
-  if (key === 'template_applied') return 'Template applied';
-  if (key === 'template_expected_missing') return 'Template expected but missing';
-  return 'Free design';
+  if (key === 'template_applied') return t('template_applied');
+  if (key === 'template_expected_missing') return t('template_missing');
+  return t('template_free');
 }
 
 function templateRoutePanel(route) {
@@ -1126,7 +1269,7 @@ function templateRoutePanel(route) {
     <div class="panel premium-panel template-route-panel">
       <div class="panel-head">
         <div>
-          <span class="eyebrow">Template Option</span>
+          <span class="eyebrow">${escapeHtml(t('template_option'))}</span>
           <h2>${escapeHtml(templateRouteLabel(route))}</h2>
           <p>${escapeHtml(route.reason || '')}</p>
         </div>
@@ -1134,12 +1277,12 @@ function templateRoutePanel(route) {
       </div>
       <div class="template-route-grid">
         <div>
-          <strong>当前路线</strong>
+          <strong>${escapeHtml(t('current_route'))}</strong>
           <span>${escapeHtml(templateRouteLabel(route))}</span>
           ${applied.path ? `<small>${escapeHtml(applied.kind || 'template')} · ${escapeHtml(applied.path)}</small>` : '<small>未应用模板包，系统按自由设计生成。</small>'}
         </div>
         <div>
-          <strong>模板发现</strong>
+          <strong>${escapeHtml(t('template_discovery'))}</strong>
           <span>${escapeHtml(String(library.total || 0))} 个可用候选</span>
           <small>Brand ${counts.brand || 0} · Layout ${counts.layout || 0} · Deck ${counts.deck || 0}</small>
         </div>
@@ -1167,8 +1310,8 @@ function templateLibraryHtml(library) {
   return `<div class="template-preview-library">
     <div class="panel-head">
       <div>
-        <strong>模板与版式预览</strong>
-        <p>点击 SVG 可在新窗口查看模板外观；选择模板仍必须回到 Step 3 重新应用 explicit path。</p>
+        <strong>${escapeHtml(t('template_preview_title'))}</strong>
+        <p>${escapeHtml(t('template_preview_desc'))}</p>
       </div>
     </div>
     <div class="template-preview-grid">${cards.join('')}</div>
@@ -1179,18 +1322,25 @@ function templateCardHtml(item) {
   const previews = item.preview_files || [];
   const first = previews[0];
   const desc = item.description_zh || item.description || '';
+  const previewPages = previews.map((file) => ({
+    name: file.name,
+    path: `${item.name_zh || item.name || item.id} · ${file.name}`,
+    url: file.url,
+  }));
+  const previewPagesAttr = escapeAttr(JSON.stringify(previewPages));
+  const title = item.name_zh || item.name || item.id;
   return `<article class="template-preview-card">
     <div class="template-card-copy">
       <span class="pill">${escapeHtml(templateKindName(item.kind))}</span>
-      <strong>${escapeHtml(item.name_zh || item.name || item.id)}</strong>
+      <strong>${escapeHtml(title)}</strong>
       <p>${escapeHtml(desc)}</p>
       <small>${escapeHtml(item.path || '')}</small>
     </div>
-    ${first ? `<a class="template-thumb" href="${escapeAttr(first.url)}" target="_blank" rel="noreferrer" title="打开 ${escapeAttr(first.name)}">
-      <iframe src="${escapeAttr(first.url)}" title="${escapeAttr(first.name)}"></iframe>
-    </a>` : '<div class="template-thumb empty-thumb">暂无 SVG 预览</div>'}
-    ${previews.length > 1 ? `<div class="template-strip">${previews.map((file) => `
-      <a href="${escapeAttr(file.url)}" target="_blank" rel="noreferrer">${escapeHtml(file.name.replace('.svg', ''))}</a>
+    ${first ? `<button class="template-thumb" type="button" data-template-modal="${escapeAttr(first.url)}" data-template-pages="${previewPagesAttr}" data-template-index="0" data-template-name="${escapeAttr(first.name)}" data-template-title="${escapeAttr(title)}" title="${escapeAttr(first.name)}">
+      <img src="${escapeAttr(first.url)}" alt="${escapeAttr(first.name)}">
+    </button>` : `<div class="template-thumb empty-thumb">${escapeHtml(t('no_template_preview'))}</div>`}
+    ${previews.length > 1 ? `<div class="template-strip">${previews.map((file, index) => `
+      <button type="button" data-template-modal="${escapeAttr(file.url)}" data-template-pages="${previewPagesAttr}" data-template-index="${index}" data-template-name="${escapeAttr(file.name)}" data-template-title="${escapeAttr(title)}">${escapeHtml(file.name.replace('.svg', ''))}</button>
     `).join('')}</div>` : ''}
   </article>`;
 }
@@ -1210,7 +1360,7 @@ function gateListHtml(gate) {
       ${gate.requirements.map((item) => `
         <div class="list-row">
           <span class="dot ${item.met ? 'ok' : 'warn'}"></span>
-          <span>${escapeHtml(item.label)}</span>
+          <span>${escapeHtml(gateRequirementLabel(item))}</span>
           <small>${item.detail ? escapeHtml(item.detail) : (item.met ? '已满足' : '待满足')}</small>
         </div>
       `).join('')}
@@ -1223,7 +1373,7 @@ function subStepHtml(item) {
   return `
     <div class="list-row">
       <span class="dot ${escapeAttr(item.state)}"></span>
-      <span>${escapeHtml(item.label)}</span>
+      <span>${escapeHtml(subStepLabel(item))}</span>
       <small>${escapeHtml(item.detail || statusText(item.state))}</small>
       ${progress}
     </div>
@@ -1385,8 +1535,6 @@ function artifactExt(detail) {
 }
 
 function artifactGroupKey(item) {
-  const kind = effectivePreviewKind(item);
-  if (['pptx', 'pdf', 'audio', 'video', 'image', 'svg', 'markdown', 'json', 'jsonl', 'text', 'binary'].includes(kind)) return kind;
   return item.type || inferTypeFromName(item.name);
 }
 
@@ -1856,6 +2004,49 @@ function metric(label, value) {
   return `<div class="metric"><span>${escapeHtml(label)}</span><strong>${escapeHtml(String(value))}</strong></div>`;
 }
 
+function applyStaticI18n() {
+  document.documentElement.lang = state.language === 'en' ? 'en' : 'zh-CN';
+  document.querySelectorAll('[data-i18n]').forEach((node) => {
+    node.textContent = t(node.dataset.i18n);
+  });
+  const langToggle = document.getElementById('langToggle');
+  if (langToggle) langToggle.textContent = state.language === 'zh' ? '中文 / EN' : 'EN / 中文';
+}
+
+function routeTitle(name) {
+  const keys = {
+    pipeline: 'route_pipeline',
+    services: 'route_services',
+    step: 'route_step',
+    confirm: 'route_confirm',
+    preview: 'route_preview',
+    quality: 'route_quality',
+    artifacts: 'route_artifacts',
+  };
+  return t(keys[name] || 'route_pipeline');
+}
+
+function stepName(step) {
+  if (!step) return '';
+  return state.language === 'en'
+    ? (step.name_en || step.name || step.name_zh || '')
+    : (step.name_zh || step.name || step.name_en || '');
+}
+
+function subStepLabel(item) {
+  if (!item) return '';
+  return state.language === 'en'
+    ? (item.label_en || item.label || item.label_zh || '')
+    : (item.label_zh || item.label || item.label_en || '');
+}
+
+function gateRequirementLabel(item) {
+  if (!item) return '';
+  return state.language === 'en'
+    ? (item.label_en || item.label || item.label_zh || '')
+    : (item.label_zh || item.label || item.label_en || '');
+}
+
 function stateLabel(value) {
   return `<span class="status ${escapeAttr(value)}">${escapeHtml(statusText(value))}</span>`;
 }
@@ -1884,10 +2075,6 @@ function countMedia() {
     const kind = effectivePreviewKind(item);
     return ['image', 'audio', 'video', 'pdf', 'pptx'].includes(kind);
   }).length;
-}
-
-function artifactsForStep(stepNo) {
-  return (state.artifacts?.artifacts || []).filter((item) => item.created_by_step === stepNo);
 }
 
 function hasArtifactPath(path) {

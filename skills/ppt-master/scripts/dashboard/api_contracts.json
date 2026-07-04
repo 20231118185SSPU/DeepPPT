@@ -23,7 +23,7 @@
     },
 
     "GET /api/step/{n}": {
-      "description": "Detailed view of a single pipeline step, including its artifacts, quality results, and filtered trace events.",
+      "description": "Detailed view of a single pipeline step, including quality results and filtered trace events. Artifacts are exposed only through GET /api/artifacts.",
       "request": {
         "params": {
           "n": {
@@ -32,11 +32,6 @@
           }
         },
         "query": {
-          "include_artifacts": {
-            "type": "boolean",
-            "default": true,
-            "description": "Include artifacts produced by this step."
-          },
           "include_quality": {
             "type": "boolean",
             "default": true,

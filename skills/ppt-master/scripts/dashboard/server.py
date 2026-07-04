@@ -90,11 +90,18 @@ def create_app(project_path: Path, bus: EventBus) -> Flask:
             return jsonify({"error": "Project not found or not initialized."}), 404
         return jsonify(state())
 
+    @app.route("/api/health")
+    def api_health():
+        return jsonify({
+            "ok": True,
+            "project": str(project),
+            "pid": os.getpid(),
+        })
+
     @app.route("/api/step/<int:n>")
     def api_step(n: int):
         if n < 1 or n > 8:
             return jsonify({"error": "Invalid step number. Must be 1-8."}), 400
-        include_artifacts = _bool_arg("include_artifacts", True)
         include_quality = _bool_arg("include_quality", True)
         include_trace = _bool_arg("include_trace", False)
         trace_limit = _int_arg("trace_limit", 50, 1, 500)
@@ -104,9 +111,7 @@ def create_app(project_path: Path, bus: EventBus) -> Flask:
         if not step:
             return jsonify({"error": "Invalid step number. Must be 1-8."}), 400
         detail = dict(step)
-        detail["artifacts"] = (
-            list_artifacts(project, step_filter=n)["artifacts"] if include_artifacts else []
-        )
+        detail["artifacts"] = []
         detail["quality"] = quality_report(project) if include_quality and n in {6, 7} else None
         detail["trace_events"] = (
             query_trace(project, step=n, limit=trace_limit)["events"] if include_trace else []

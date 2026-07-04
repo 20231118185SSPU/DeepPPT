@@ -23,6 +23,101 @@
 
 ## Log
 
+### 2026-07-04 — Dashboard template preview polish and release docs
+- **Files**: `skills/ppt-master/scripts/dashboard/static/app.js`, `skills/ppt-master/scripts/dashboard/static/style.css`, `README.md`, `docs/change-log.md`
+- **Reason**: 用户在浏览 Dashboard 时发现确认中心模板预览展示不完整、放大后无法切换其他预览画面，并且“产物与日志”的产物类型显示重叠；提交前同步项目介绍和日志。
+- **Before**: Dashboard 模板卡片只把第一张 SVG 交给放大弹窗，多张预览只能作为普通新窗口链接打开；SVG 放大预览使用 iframe，部分模板显示不完整；产物类型行的计数、大小、展开动作列为自动宽度，长名称时容易挤压重叠；README 仍引用已下线的 `event_presentation` 模板。
+- **After**: 模板卡片和预览条都携带同一组 `preview_files`，放大弹窗支持左右箭头和页码切换；SVG/PPTX 预览使用图片式 `object-fit: contain` 完整缩放；产物类型行使用稳定列宽和右对齐，避免重叠；README 更新为当前 Dashboard / Confirm UI / 模板治理能力介绍。
+- **Verification**: `node --check skills/ppt-master/scripts/dashboard/static/app.js`; `python -m py_compile skills/ppt-master/scripts/dashboard/server.py skills/ppt-master/scripts/dashboard/state_reader.py`; 临时 `_agent_` 项目 Playwright smoke：模板弹窗 5 页、下一页切换成功、预览 frame 在舞台内、产物类型行 overlap=none，验证后已 shutdown 并删除临时项目。
+- **Risk**: low（Dashboard 只读前端交互和文档更新；不改变 PPT 生成、确认 gate、模板应用或导出流程）
+- **Human reviewed**: pending
+
+### 2026-07-04 — Dashboard layout preview, i18n, and Step 3 routing `[NEEDS_HUMAN_REVIEW]`
+- **Files**: `skills/ppt-master/scripts/dashboard/static/layout-preview.js`, `skills/ppt-master/scripts/dashboard/static/app.js`, `skills/ppt-master/scripts/dashboard/static/style.css`, `skills/ppt-master/scripts/dashboard/static/index.html`, `skills/ppt-master/SKILL.md`, `docs/change-log.md`
+- **Reason**: 用户反馈 4 个问题：布局预览无法点击放大且显示不完整、侧边栏步骤名称英文未汉化、Dashboard 与 Confirm UI 模板预览不一致、端到端制作时直接进自由设计无用户选择。
+- **Before**: 布局预览卡片无点击事件、iframe 被 `pointer-events: none` 禁止交互、`aspect-ratio: 16/9` 截断内容；侧边栏步骤名称为英文硬编码；Step 3 默认自由设计不询问用户。
+- **After**: 布局预览卡片支持点击放大（模态框显示完整 iframe）、添加 hover 高亮效果；添加 `tStepName()` 翻译函数和 `stepNameZh` 映射、语言切换按钮（中/EN）；Step 3 改为两步确认：先问用户"自由设计 or 选择模板？"再继续。
+- **Risk**: medium（SKILL.md Step 3 路由变更是架构性修改，影响 pipeline 执行流程；Dashboard 前端变更是低风险 UI 改进）
+- **Human reviewed**: pending
+
+**模板预览排查结论**: Dashboard 和 Confirm UI 使用相同数据源（`state_reader.template_route_state()`），但展示目的不同：Dashboard 显示模板库中的真实模板 SVG，Confirm UI 显示抽象风格参考图。两者不是同一个东西，"不符"是正常的。
+
+### 2026-07-04 — Dashboard trigger stability fix and UI optimization
+- **Files**: `skills/ppt-master/scripts/dashboard_launcher.py`, `skills/ppt-master/scripts/dashboard/server.py`, `skills/ppt-master/scripts/dashboard/static/style.css`, `skills/ppt-master/scripts/dashboard/static/app.js`
+- **Reason**: 用户反馈 dashboard 触发不够稳定，经常不弹出来；dashboard 的各个页面展示急需优化重构，对中文用户友好。
+- **Before**: launcher 在服务器未就绪时仍返回 0（成功），静默失败；无 `/api/health` 端点；CSS 使用旧式配色和字体；部分英文文本未翻译。
+- **After**: launcher 在服务器未就绪时返回 1（失败），增加额外就绪检查（10 次重试，每次 0.3s）；新增 `/api/health` 和 `/api/config` 端点用于就绪检查；CSS 使用现代配色（蓝色主题）、改进 CJK 字体支持、优化卡片和按钮样式；英文诊断文本已翻译为中文。
+- **Risk**: low（launcher 返回码变更不影响 pipeline（dashboard 是 best-effort）；CSS 和 JS 变更不影响功能）
+- **Human reviewed**: pending
+
+**修复详情**:
+1. launcher 返回码：启动失败返回 1（原为 0），进程退出返回 1（原为 0）
+2. 就绪检查：launcher 在服务器未就绪时增加 10 次重试（每次 0.3s），浏览器只在就绪后打开
+3. 新增 API 端点：`/api/health`（轻量就绪探针）、`/api/config`（项目配置）
+4. CSS 优化：新配色（蓝色主题）、改进 CJK 字体栈、优化卡片/按钮/hero 面板样式
+5. 中文本地化：翻译 'stale lock'→'锁过期'、'project mismatch'→'项目不匹配'、'DeepPPT Project'→'DeepPPT 项目'
+
+### 2026-07-04 — Port upstream confirm_ui three-stage visual preview
+- **Files**: `skills/ppt-master/scripts/confirm_ui/server.py`, `skills/ppt-master/scripts/confirm_ui/static/app.js`, `skills/ppt-master/scripts/confirm_ui/static/index.html`, `skills/ppt-master/scripts/confirm_ui/static/style.css`, `skills/ppt-master/scripts/confirm_ui/static/catalogs.json`, `skills/ppt-master/scripts/confirm_ui/static/style_previews/` (18 SVG files)
+- **Reason**: 上游项目 `C:\Users\FUTIAN\Desktop\ppt` 的 confirm_ui 有重大更新，包括三阶段视觉预览、深色主题、日语支持、图标预览、AI 图像对比等。用户要求移植这些更新以修复模板预览问题。
+- **Before**: confirm_ui 使用两阶段确认（tier1/tier2）、浅色主题、双语（zh/en）、无图标预览、无 AI 图像对比、无 style_previews 目录。
+- **After**: confirm_ui 使用三阶段确认（stage1/stage2/stage3/final）、深色主题、三语（zh/en/ja）、图标预览 API、AI 图像对比 API、18 个视觉风格 SVG 预览。保留了当前项目的 template_route、layout_preview、template-file 路由等特有功能。
+- **Risk**: medium（架构性变更：确认流程从两阶段改为三阶段，CSS 主题从浅色改为深色，HTML 结构重构；server.py 通过选择性合并保持了与 dashboard Confirm Center 的兼容性）
+- **Human reviewed**: pending
+
+**移植详情**:
+1. 静态文件直接替换：app.js (96KB→119KB)、index.html (1.7KB→2.8KB)、style.css (21KB→20KB)、catalogs.json (17KB→26KB)
+2. 新增 style_previews/ 目录：18 个视觉风格 SVG 预览文件
+3. server.py 选择性合并：以 upstream 为基础，合入 _template_route()、_layout_preview()、_preview_zones() 函数和 /template-file/ 路由
+4. 新增 API 端点：/api/icon-previews、/api/ai-image-comparison、/ai-image-comparison/<kind>/<filename>
+5. 新增命令行参数：--wait-stage {stage2,final}
+
+**兼容性验证**:
+- smoke_check.py: 50 passed, 0 failed
+- confirm_ui server.py 导入正常
+- dashboard Confirm Center 兼容（读取 result.json 和 .confirm_ui.lock，不受 stage 字段变更影响）
+- state_reader.py 的 template_route_state() 与上游 server.py 的 _template_route() 调用链一致
+
+### 2026-07-04 — User-confirmed template cleanup
+- **Files**: `skills/ppt-master/templates/layouts/layouts_index.json`, `skills/ppt-master/templates/brands/brands_index.json`, `skills/ppt-master/templates/layouts/pixel_retro/`, `skills/ppt-master/templates/layouts/content_pages/creative/`, `skills/ppt-master/templates/layouts/content_pages/project_management/`, `skills/ppt-master/templates/brands/event_presentation/`, `skills/ppt-master/references/template-designer.md`, `docs/templates-guide.md`, `docs/zh/templates-guide.md`, `docs/reviews/template-quality-audit-2026-07.md`, `docs/change-log.md`
+- **Reason**: 用户确认上一轮模板质量审查中的所有待确认项，允许删除低分候选模板并同步索引。
+- **Before**: `pixel_retro`、`content_pages/creative`、`content_pages/project_management` 和 `event_presentation` 仍在模板目录和发现索引中，审查报告状态为待确认。
+- **After**: 已从模板库删除这 4 个目录，并从 layout / brand 索引移除对应条目；用户模板指南和 template-designer 示例去掉已删除模板名；审查报告更新为已执行状态，保留未来重建方向。
+- **Risk**: medium（删除模板目录并改变模板发现结果；已由用户明确确认）
+- **Human reviewed**: yes (2026-07-04)
+
+### 2026-07-04 — Template quality audit and deprecation candidates
+- **Files**: `docs/reviews/template-quality-audit-2026-07.md`, `docs/change-log.md`
+- **Reason**: 端到端反馈要求审查模板库质量并提出增删方向；模板删除需要用户确认，因此先生成非破坏性审查文档。
+- **Before**: 模板库没有本轮基于视觉设计、实用性、完整性、代码质量和文档质量的评分表，也没有集中记录的候选下线/重做清单。
+- **After**: 新增模板质量审查草案，记录 layout、content page 和 brand 模板评分，列出需用户确认的候选项，并提出 5 个新增模板方向和未来模板质量标准。
+- **Risk**: low（只新增非权威审查文档，不删除模板、不修改索引、不改变运行流程）
+- **Human reviewed**: pending
+
+### 2026-07-04 — Per-page layout preview and formula rendering defaults
+- **Files**: `skills/ppt-master/scripts/dashboard/layout_preview.py`, `skills/ppt-master/scripts/dashboard/server.py`, `skills/ppt-master/scripts/dashboard/static/app.js`, `skills/ppt-master/scripts/dashboard/static/index.html`, `skills/ppt-master/scripts/dashboard/static/layout-preview.js`, `skills/ppt-master/scripts/dashboard/static/style.css`, `skills/ppt-master/scripts/latex_render.py`, `skills/ppt-master/references/strategist.md`, `skills/ppt-master/references/executor-base.md`, `docs/change-log.md`
+- **Reason**: 端到端反馈要求确认阶段能看到逐页 layout 参考，并提高公式图片默认清晰度与 manifest 兼容性。
+- **Before**: Dashboard 确认中心不能按页查看 `page_layouts` 选择或生成后的 SVG/截图；公式渲染默认 300 DPI、CodeCogs 优先，manifest 不记录 `display_mode` / `font`，透明图边缘留白较多。
+- **After**: Dashboard 新增 `/api/layout-preview` 和只读逐页布局预览面板，按 `quality/screenshots` PNG、`svg_final`、`svg_output`、layout template、chart template 的优先级显示页面缩略图，并兼容旧 `.preview` PNG；公式渲染默认 600 DPI、QuickLaTeX 优先，支持 `display_mode` 与 `font` 字段，并在透明化后保守裁掉多余边距。
+- **Risk**: medium（新增 Dashboard API/前端面板并调整公式渲染默认输出尺寸；不改变 PPT 生成顺序、质量门或导出路线）
+- **Human reviewed**: pending
+
+### 2026-07-04 — Dashboard information architecture and template preview cleanup
+- **Files**: `skills/ppt-master/scripts/dashboard/static/app.js`, `skills/ppt-master/scripts/dashboard/static/style.css`, `docs/change-log.md`
+- **Reason**: 端到端反馈发现 Dashboard 模板预览会跳转新页面且缩略图只显示局部，模板预览在多个页面重复出现，管线总览难以看出 AI 当前进度和实时事件。
+- **Before**: 管线总览、Step 3 工作台、确认中心都会渲染模板预览；模板卡片使用 iframe 链接打开新窗口；管线总览同时显示 8 步 timeline 和 8 张步骤卡，和左侧步骤导航重复，SSE 更新没有形成可读的实时进度面板。
+- **After**: 模板库预览集中到确认中心，管线总览和 Step 3 只保留模板路线摘要；模板缩略图改为完整 `object-fit: contain` 首页预览，点击在 Dashboard 内弹窗放大，可用左右箭头、页码和 Esc 切换/关闭；管线总览新增 AI 当前进度、SSE/Trace 实时事件、质量快照和聚焦步骤入口，减少重复的 8 步信息。
+- **Risk**: low（Dashboard 只读前端重排与预览交互调整；不改变 Confirm UI gate、模板应用语义、PPT 生成或导出流程）
+- **Human reviewed**: pending
+
+### 2026-07-04 — Quality gate non-destructive layout mode and screenshot handoff
+- **Files**: `skills/ppt-master/scripts/finalize_svg.py`, `skills/ppt-master/scripts/rendered_layout_check.py`, `skills/ppt-master/scripts/visual_review.py`, `skills/ppt-master/scripts/svg_quality_checker.py`, `skills/ppt-master/scripts/e2e_validate.py`, `skills/ppt-master/SKILL.md` [NEEDS_HUMAN_REVIEW], `skills/ppt-master/references/shared-standards.md`, `skills/ppt-master/scripts/docs/svg-pipeline.md`, `docs/change-log.md`
+- **Reason**: 端到端反馈发现质量检测会通过自动缩小字号破坏布局、视觉门禁 PNG 不易被后续 AI/人类复核定位，并且 EMF/WMF Office 矢量图会被部分图片存在性检查误判。
+- **Before**: `finalize_svg.py` 默认执行 `fix-layout` 时会直接缩小 `svg_final/` 字号；`rendered_layout_check.py --render` 使用 `.preview/` 且报告缺少稳定的项目相对截图路径；`svg_quality_checker.py` / `e2e_validate.py` 未统一将 EMF/WMF 视为有效 Office vector image refs。
+- **After**: `finalize_svg.py` 新增 `--layout-mode suggest|auto-fix`，默认 `suggest` 只报告布局建议、不重写布局，`auto-fix` 保留旧自动缩小能力；`rendered_layout_check.py --render` 默认写入 `quality/screenshots/` 并在 JSON / 文本报告中列出 `screenshot.relative_path`；`visual_review.py` 支持 `--preview-dir`；图片存在性检查跳过已存在的 `.emf` / `.wmf` Office 矢量资产并保留真正缺失文件的失败。
+- **Risk**: medium（改变默认 post-processing 的布局修正副作用，降低自动破坏风险；需要确认依赖旧默认自动缩字的流程是否改传 `--layout-mode auto-fix`）
+- **Human reviewed**: pending
+
 ### 2026-07-03 — Pipeline coherence audit repair batch
 - **Files**: `skills/ppt-master/SKILL.md` [NEEDS_HUMAN_REVIEW], `skills/ppt-master/references/strategist.md`, `skills/ppt-master/workflows/batch-review.md`, `skills/ppt-master/workflows/deep-research.md`, `skills/ppt-master/workflows/image-text-linking.md`, `skills/ppt-master/workflows/create-template.md`, `skills/ppt-master/workflows/content-selection.md`, `skills/ppt-master/workflows/detailed-outline.md`, `skills/ppt-master/workflows/live-preview.md`, `skills/ppt-master/workflows/refine-spec.md`, `skills/ppt-master/workflows/resume-execute.md`, `skills/ppt-master/workflows/revision-loop.md`, `skills/ppt-master/workflows/verify-charts.md`, `skills/ppt-master/workflows/visual-review.md`, `skills/ppt-master/scripts/README.md`, `docs/design/img2img-support.md`, `README.md`, `docs/routing.md`, `docs/rules/documentation-style.md`, `CLAUDE.md` [NEEDS_HUMAN_REVIEW], `AGENTS.md`, `docs/claude-reference.md`, `docs/reviews/pipeline-coherence-audit-2026-07.md`
 - **Reason**: 修复 `docs/reviews/pipeline-coherence-audit-2026-07.md` 中已确认的 2 个 P0、4 个 P1 和 5 个 P2，按用户锁定决策执行：删除 batch-review 死 UI 触发语、将 img2img 非运行设计稿迁到 `docs/design/`、将语言规则现实化而不迁移混合语言文件。

@@ -247,11 +247,20 @@ python3 ${SKILL_DIR}/scripts/dashboard/server.py <project_path> --daemon
 
 ---
 
-### Step 3: Template Option
+### Step 3: Template Option `[NEEDS_HUMAN_REVIEW]`
 
 🚧 **GATE**: Step 2 complete; project directory structure is ready.
 
-**Default — free design.** Proceed directly to Step 4. Do NOT query any `*_index.json` unless triggered. Do NOT ask the user. Do NOT proactively suggest, hint at, or fuzzy-match any template based on content, slug-like words, or vague style descriptions.
+**Two-step confirmation.** ⛔ **BLOCKING**: After Step 2, ask the user ONE question before proceeding:
+
+> 请选择设计方式：
+> A. **自由设计** — 系统根据源文档自动设计配色、字体、版式（默认）
+> B. **选择模板** — 从模板库中选择一个预设模板作为设计基础
+
+- If user chooses **A (free design)** or does not respond → proceed directly to Step 4 as free design. Do NOT query any `*_index.json`. Do NOT proactively suggest templates.
+- If user chooses **B (choose template)** → list entries from `brands_index.json` / `layouts_index.json` / `decks_index.json` with their paths. Wait for the user to provide an explicit template directory path. Then apply the template per the rules below.
+
+**Route visibility**: every Dashboard / Confirm UI surface must describe the default as **Free design**, not as a missing or skipped error. The route is:
 
 **Route visibility**: every Dashboard / Confirm UI surface must describe this default as **Free design**, not as a missing or skipped error. The route is:
 
@@ -263,12 +272,13 @@ python3 ${SKILL_DIR}/scripts/dashboard/server.py <project_path> --daemon
 
 Template library indexes are discovery aids only. A UI may list `brands_index.json` / `layouts_index.json` / `decks_index.json`, but a user choice from that list is only a **pending Step 3 action** until the explicit path is applied and Step 4 recommendations/spec are regenerated.
 
-**Template flow triggers ONLY on explicit directory paths** supplied by the user in their initial message. The trigger rule is mechanical, not interpretive:
+**Template flow triggers ONLY on explicit directory paths** supplied by the user after the two-step confirmation. The trigger rule is mechanical, not interpretive:
 
-| User input contains | Step 3 action |
+| User response to Step 3 question | Step 3 action |
 |---|---|
-| One or more explicit template directory paths (each resolves to a directory containing `design_spec.md` with `kind: brand` / `kind: layout` / `kind: deck` in its YAML frontmatter) | Read each spec's `kind`, dispatch per the kind matrix below, fuse if multiple |
-| Anything else — bare template names ("用 academic_defense"), style descriptions ("麦肯锡风格"), brand mentions ("招商银行风格"), vague intent ("想用个模板"), or silence | Skip Step 3, free design |
+| **A (free design)** or no response | Skip Step 3, proceed to Step 4 as free design |
+| **B (choose template)** → then provides explicit template directory path | Read each spec's `kind`, dispatch per the kind matrix below, fuse if multiple |
+| **B (choose template)** → bare template names, style descriptions, or vague intent | List template library entries and wait for explicit path; do NOT auto-apply |
 
 There is no slug matching, no name lookup, no fuzzy resolution. A name without a path does not trigger — the user must give a path the AI can `cd` into.
 
@@ -276,7 +286,7 @@ There is no slug matching, no name lookup, no fuzzy resolution. A name without a
 
 > Bare names ("academic_defense", "招商银行", "anthropic") do NOT trigger Step 3 even if a matching directory exists in the library. The user must give a path. AI must not "helpfully" resolve a name to a path.
 
-> "What templates exist?" is out-of-band Q&A — answer by listing entries from `brands_index.json` / `layouts_index.json` / `decks_index.json` together with their paths. Listing alone does not advance the pipeline; the user must send a path back to trigger Step 3. If the Confirm UI records a `template_selection` with `action: "apply_template"`, stop before spec writing and rerun Step 3/4 with that path; never treat the selection as already applied.
+> After the user chooses "B (choose template)", list entries from `brands_index.json` / `layouts_index.json` / `decks_index.json` together with their paths. Listing alone does not advance the pipeline; the user must send a path back to trigger Step 3. If the Confirm UI records a `template_selection` with `action: "apply_template"`, stop before spec writing and rerun Step 3/4 with that path; never treat the selection as already applied.
 
 > To create a new layout or deck, read [`workflows/create-template.md`](workflows/create-template.md). To create a new brand, read [`workflows/create-brand.md`](workflows/create-brand.md).
 
@@ -657,7 +667,7 @@ python3 ${SKILL_DIR}/scripts/svg_editor/server.py <project_path> --live
 - **svg_quality_checker**: XML structure, banned features, viewBox, spec_lock drift (undeclared colors/fonts/sizes).
 - **spec_compliance_check**: semantic compliance — unused declared colors, missing templates, icon inventory, image usage. Complements the structural checker with inverse-direction validation.
 - **harness_gate --quick**: aggregated static shortcut — spec compliance + SVG quality; e2e is skipped.
-- **rendered_layout_check**: local screenshot/geometry gate — catches collision, text-line contact, abnormal whitespace, and revision-regression confirmation needs that static checks cannot prove.
+- **rendered_layout_check**: local screenshot/geometry gate — catches collision, text-line contact, abnormal whitespace, and revision-regression confirmation needs that static checks cannot prove. With `--render`, screenshots are written to `<project_path>/quality/screenshots/` and listed in `quality/rendered_visual_gate.json`; inspect those PNGs before accepting `needs_human_review` items. [NEEDS_HUMAN_REVIEW]
 - Any `error` (banned SVG features, viewBox mismatch, spec_lock drift, missing templates, etc.) MUST be fixed before proceeding — return to Visual Construction, regenerate that page, re-run check.
 - `warning` entries (low-res image, non-PPT-safe font tail, unused declared color, etc.): fix when straightforward, otherwise acknowledge and release.
 - Run against `svg_output/` (not after `finalize_svg.py` — finalize rewrites SVG and masks violations).
@@ -706,6 +716,11 @@ python3 ${SKILL_DIR}/scripts/total_md_split.py <project_path>
 ```bash
 python3 ${SKILL_DIR}/scripts/finalize_svg.py <project_path>
 ```
+
+> `finalize_svg.py` defaults to `--layout-mode suggest`: layout overflow
+> detection reports suggestions without shrinking text or rewriting layout.
+> Use `--layout-mode auto-fix` only when you explicitly want the legacy font-size
+> shrink behavior after reviewing rendered screenshots. [NEEDS_HUMAN_REVIEW]
 
 **Step 7.3** — Export PPTX (embeds speaker notes by default):
 ```bash

@@ -63,6 +63,7 @@ except ImportError:
 
 HEX_VALUE_RE = re.compile(r"#[0-9A-Fa-f]{3,8}")
 SVG_NS = "http://www.w3.org/2000/svg"
+OFFICE_VECTOR_EXTENSIONS = {".emf", ".wmf"}
 
 # Ramp envelope for font-size drift detection.
 # From design_spec_reference.md §IV — Font Size Hierarchy: the ramp spans
@@ -648,6 +649,12 @@ class SVGQualityChecker:
 
             # Resolve path relative to SVG file directory
             img_path = (svg_dir / href).resolve()
+
+            if img_path.suffix.lower() in OFFICE_VECTOR_EXTENSIONS:
+                # Office vector assets are intentionally left external during
+                # finalize_svg.py and embedded by svg_to_pptx.py for native
+                # PowerPoint fidelity. Browser preview may not render them.
+                continue
 
             if not img_path.exists():
                 result['errors'].append(

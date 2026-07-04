@@ -370,7 +370,7 @@ templates/
 │   └── google/            # Google brand identity
 ├── layouts/
 │   ├── academic_defense/  # Academic-defense structure (no identity)
-│   └── pixel_retro/       # Pixel retro / cyberpunk structure (no identity)
+│   └── story_driven/      # Narrative research structure (no identity)
 └── decks/
     ├── 招商银行/          # China Merchants Bank full PPT replica
     └── 中国电建_常规/      # PowerChina full PPT replica

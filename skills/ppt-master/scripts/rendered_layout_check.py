@@ -52,6 +52,7 @@ TEXT_LINE_PAD = 4.0
 TEXT_CONTAINER_PAD = 6.0
 TEXT_CONTAINER_HARD_OVERFLOW = 18.0
 CROSS_COLUMN_MARGIN = 18.0
+DEFAULT_SCREENSHOT_DIR = Path("quality") / "screenshots"
 
 
 @dataclass
@@ -652,7 +653,15 @@ def _hash_file(path: Path) -> str:
     return h.hexdigest()
 
 
-def _analyze_png(png_path: Path, page: str) -> tuple[list[Issue], dict[str, Any]]:
+def _project_relative(path: Path, project: Path) -> str:
+    """Return a stable slash-separated project-relative path when possible."""
+    try:
+        return path.resolve().relative_to(project.resolve()).as_posix()
+    except ValueError:
+        return path.as_posix()
+
+
+def _analyze_png(png_path: Path, page: str, project: Path) -> tuple[list[Issue], dict[str, Any]]:
     try:
         from PIL import Image
     except ImportError:
@@ -687,6 +696,7 @@ def _analyze_png(png_path: Path, page: str) -> tuple[list[Issue], dict[str, Any]
 
     meta: dict[str, Any] = {
         "path": str(png_path),
+        "relative_path": _project_relative(png_path, project),
         "sha256": _hash_file(png_path),
         "size": [width, height],
         "background_rgb": list(bg),
@@ -767,12 +777,23 @@ def _analyze_png(png_path: Path, page: str) -> tuple[list[Issue], dict[str, Any]
 
 
 def _run_renderer(project: Path, pages: list[str] | None, server_url: str) -> dict[str, Any]:
+    return _run_renderer_to_dir(project, pages, server_url, project / DEFAULT_SCREENSHOT_DIR)
+
+
+def _run_renderer_to_dir(
+    project: Path,
+    pages: list[str] | None,
+    server_url: str,
+    preview_dir: Path,
+) -> dict[str, Any]:
     cmd = [
         sys.executable,
         str(SCRIPTS_DIR / "visual_review.py"),
         str(project),
         "--server-url",
         server_url,
+        "--preview-dir",
+        str(preview_dir),
     ]
     if pages:
         cmd.extend(["--pages", *pages])
@@ -852,9 +873,14 @@ def _print_report(report: dict[str, Any]) -> None:
     print(f"must_fix: {summary['must_fix']} | needs_human_review: {summary['needs_human_review']} | info: {summary['info']}")
     for page, page_report in report["pages"].items():
         issues = page_report.get("issues", [])
+        screenshot = page_report.get("screenshot")
+        if screenshot and screenshot.get("relative_path"):
+            print(f"\n{page}")
+            print(f"  screenshot: {screenshot['relative_path']}")
+        elif issues:
+            print(f"\n{page}")
         if not issues:
             continue
-        print(f"\n{page}")
         for issue in issues:
             print(f"  [{issue['severity']}] {issue['issue_id']}: {issue['message']}")
     print("=" * 72)
@@ -873,7 +899,7 @@ def build_parser() -> argparse.ArgumentParser:
     parser.add_argument(
         "--preview-dir",
         default=None,
-        help="Override preview PNG directory (default: <project>/.preview).",
+        help="Override preview PNG directory (default: <project>/quality/screenshots).",
     )
     parser.add_argument(
         "--pages",
@@ -925,7 +951,7 @@ def main(argv: list[str] | None = None) -> int:
         return 2
 
     svg_dir = Path(args.svg_dir).resolve() if args.svg_dir else project / "svg_output"
-    preview_dir = Path(args.preview_dir).resolve() if args.preview_dir else project / ".preview"
+    preview_dir = Path(args.preview_dir).resolve() if args.preview_dir else project / DEFAULT_SCREENSHOT_DIR
     if not svg_dir.is_dir():
         print(f"SVG directory not found: {svg_dir}", file=sys.stderr)
         return 2
@@ -945,7 +971,7 @@ def main(argv: list[str] | None = None) -> int:
 
     render_result = None
     if args.render:
-        render_result = _run_renderer(project, [p.name for p in svg_files], args.server_url)
+        render_result = _run_renderer_to_dir(project, [p.name for p in svg_files], args.server_url, preview_dir)
         if render_result["returncode"] != 0:
             print(render_result["stderr"], file=sys.stderr)
 
@@ -972,8 +998,12 @@ def main(argv: list[str] | None = None) -> int:
         page_issues = _check_svg_geometry(svg_path)
         png_meta: dict[str, Any] = {}
         png_path = png_files[svg_path.name]
+        screenshot = {
+            "path": str(png_path) if png_path.exists() else None,
+            "relative_path": _project_relative(png_path, project) if png_path.exists() else None,
+        }
         if png_path.exists():
-            png_issues, png_meta = _analyze_png(png_path, svg_path.name)
+            png_issues, png_meta = _analyze_png(png_path, svg_path.name, project)
             page_issues.extend(png_issues)
         else:
             page_issues.append(Issue(
@@ -982,13 +1012,17 @@ def main(argv: list[str] | None = None) -> int:
                 "rendered_screenshot",
                 svg_path.name,
                 "Rendered PNG is missing; run visual_review.py or rendered_layout_check.py --render before export.",
-                {"expected_png": str(png_path)},
+                {
+                    "expected_png": str(png_path),
+                    "expected_relative_path": _project_relative(png_path, project),
+                },
             ))
 
         all_issues.extend(page_issues)
         pages[svg_path.name] = {
             "svg_path": str(svg_path),
             "png_path": str(png_path) if png_path.exists() else None,
+            "screenshot": screenshot,
             "png": png_meta,
             "issues": [asdict(issue) for issue in _dedupe_issues(page_issues)],
         }
@@ -1009,6 +1043,10 @@ def main(argv: list[str] | None = None) -> int:
         "project": str(project),
         "svg_dir": str(svg_dir),
         "preview_dir": str(preview_dir),
+        "screenshot_dir": {
+            "path": str(preview_dir),
+            "relative_path": _project_relative(preview_dir, project),
+        },
         "render": render_result,
         "summary": {
             "gate_status": gate_status,

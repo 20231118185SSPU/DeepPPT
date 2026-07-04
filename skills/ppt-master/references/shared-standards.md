@@ -176,7 +176,7 @@ One offending character invalidates the file and aborts export. Numeric refs (`&
 - **Fonts**: every `font-family` stack MUST end with a pre-installed family (Microsoft YaHei / SimSun / Arial / Times New Roman / Consolas …); `@font-face` is FORBIDDEN. Full rule: [`strategist.md §g`](strategist.md).
 - **Styles**: inline only (`fill=""`, `font-size=""`); `<style>`/`class` FORBIDDEN (`id` inside `<defs>` is fine)
 - **Colors**: HEX only; transparency via `fill-opacity`/`stroke-opacity`
-- **Images**: `<image href="../images/xxx.png" preserveAspectRatio="xMidYMid slice"/>`
+- **Images**: `<image href="../images/xxx.png" preserveAspectRatio="xMidYMid slice"/>`. Office vectors from DOCX/PPTX intake (`.emf` / `.wmf`) are valid image refs and stay external until native PPTX export; quality checks must not flag present EMF/WMF files as missing bitmaps, though browser preview may not render them.
 - **Icons**: `<use data-icon="<library>/<name>" x="" y="" width="48" height="48" fill="#HEX"/>` (auto-embedded post-processing). Always include library prefix. One stylistic library per deck (`chunk-filled`/`tabler-filled`/`tabler-outline`/`phosphor-duotone`); `simple-icons` only for real brand marks. See [`../templates/icons/README.md`](../templates/icons/README.md).
 
 ### Editable Information vs Visual Asset Layers
@@ -329,6 +329,10 @@ python3 scripts/svg_to_pptx.py <project_path>
 # Add --svg-snapshot to additionally emit:
 #   exports/<project_name>_<timestamp>_svg.pptx      ← SVG snapshot pptx (sibling of native pptx)
 ```
+
+`finalize_svg.py` runs layout overflow handling in non-destructive `suggest`
+mode by default. It may report text-shrink suggestions, but it must not rewrite
+layout unless `--layout-mode auto-fix` is explicitly supplied.
 
 **Optional animation flags** (only when the user asks):
 - `-t <effect>` — page transition (`fade` / `push` / `wipe` / `split` / `strips` / `cover` / `random` / `none`; default `fade`)

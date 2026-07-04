@@ -59,6 +59,17 @@ _STEP_NAMES = {
     8: "Spec Review",
 }
 
+_STEP_NAMES_ZH = {
+    1: "源内容处理",
+    2: "项目初始化",
+    3: "模板选择",
+    4: "设计确认",
+    5: "图片获取",
+    6: "页面执行",
+    7: "后处理与导出",
+    8: "规格复盘",
+}
+
 
 def _now() -> str:
     return datetime.now(tz=timezone.utc).isoformat()
@@ -271,10 +282,45 @@ def _canvas_from_spec_lock(spec_lock: dict) -> str | None:
     return None
 
 
+_SUB_STEP_LABELS_ZH = {
+    "sources": "源文件",
+    "project_dir": "项目目录",
+    "readme": "README",
+    "templates": "模板文件",
+    "recommendations": "确认建议",
+    "confirmation": "用户确认",
+    "design_spec": "设计规格",
+    "spec_lock": "规格锁",
+    "image_prompts": "图片提示词",
+    "images": "图片池",
+    "svg_generate": "SVG 生成",
+    "notes_total": "讲稿备注",
+    "notes_split": "拆分备注",
+    "svg_final": "SVG 后处理",
+    "pptx_export": "PPTX 导出",
+    "spec_review": "规格复盘",
+}
+
+_GATE_LABELS_ZH = {
+    "Source material exists": "源材料已存在",
+    "Project directory exists": "项目目录已存在",
+    "Template applied or default free-design path is valid": "模板已应用或自由设计路线有效",
+    "Step 3 complete or skipped": "Step 3 已完成或已跳过",
+    "Strategist artifacts ready": "策略阶段产物已就绪",
+    "spec_lock.md exists": "spec_lock.md 已存在",
+    "SVG output exists": "SVG 输出已存在",
+    "notes/total.md exists": "notes/total.md 已存在",
+    "PPTX export exists": "PPTX 导出已存在",
+    "Spec review completed or optional review is not applicable": "规格复盘已完成或可跳过",
+}
+
+
 def _sub_step(id_: str, label: str, state: str, detail: str | None = None, progress: float | None = None) -> dict:
     return {
         "id": id_,
         "label": label,
+        "label_en": label,
+        "label_zh": _SUB_STEP_LABELS_ZH.get(id_, label),
         "state": state,
         "progress": progress,
         "detail": detail,
@@ -287,7 +333,13 @@ def _gate(requirements: list[tuple[str, bool, str | None]]) -> dict:
     return {
         "satisfied": all(item[1] for item in requirements),
         "requirements": [
-            {"label": label, "met": met, "detail": detail}
+            {
+                "label": label,
+                "label_en": label,
+                "label_zh": _GATE_LABELS_ZH.get(label, label),
+                "met": met,
+                "detail": detail,
+            }
             for label, met, detail in requirements
         ],
     }
@@ -298,6 +350,8 @@ def _step(step: int, state: str, *, sub_steps: list[dict] | None = None, gate: d
     return {
         "step": step,
         "name": _STEP_NAMES[step],
+        "name_en": _STEP_NAMES[step],
+        "name_zh": _STEP_NAMES_ZH[step],
         "state": state,
         "blocking": step == 4,
         "started_at": started_at,

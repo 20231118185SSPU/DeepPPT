@@ -36,6 +36,8 @@ if str(_SCRIPTS_DIR) not in sys.path:
 
 from console_encoding import configure_utf8_stdio  # noqa: E402
 
+OFFICE_VECTOR_EXTENSIONS = {".emf", ".wmf"}
+
 
 # ---------------------------------------------------------------------------
 # Helpers
@@ -100,8 +102,12 @@ def parse_image_refs_from_spec_lock(spec_lock_path: Path) -> list[str]:
             path_part = content.split(":", 1)[1].strip()
         else:
             path_part = content
-        if path_part and ("images/" in path_part or path_part.endswith(".png")
-                          or path_part.endswith(".jpg") or path_part.endswith(".jpeg")):
+        suffix = Path(path_part).suffix.lower()
+        if path_part and (
+            "images/" in path_part
+            or suffix in {".png", ".jpg", ".jpeg", ".webp", ".gif", ".bmp"}
+            or suffix in OFFICE_VECTOR_EXTENSIONS
+        ):
             refs.append(path_part)
     return refs
 
@@ -281,6 +287,12 @@ def check_images(project: Path, result: CheckResult) -> None:
     for ref in refs:
         # ref is like "images/image_001.png" — resolve relative to project
         full_path = project / ref
+        if full_path.suffix.lower() in OFFICE_VECTOR_EXTENSIONS:
+            # EMF/WMF stay external until native PPTX export; they are valid
+            # image assets and should not be treated as bitmap gaps.
+            if full_path.is_file():
+                continue
+            # Keep a true missing file visible if the vector asset itself is absent.
         if not full_path.is_file():
             missing.append(ref)
 

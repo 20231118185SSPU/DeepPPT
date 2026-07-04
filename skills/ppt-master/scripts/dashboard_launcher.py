@@ -149,7 +149,7 @@ def launch_dashboard_daemon(
     except OSError as exc:
         print(f"Warning: Dashboard failed to launch: {exc}")
         print(f"Warning: Dashboard log path: {log_path}")
-        return 0
+        return 1
 
     url = _wait_for_dashboard(lock_file, proc, expected_url, project)
     if proc.poll() is not None:
@@ -157,16 +157,28 @@ def launch_dashboard_daemon(
             f"Warning: Dashboard process exited during startup "
             f"(code {proc.returncode}); see {log_path}"
         )
-        return 0
-    if not _url_ready_for_project(url, project):
-        print(f"Warning: Dashboard may still be starting: {url} (log: {log_path})")
-    else:
+        return 1
+    ready = _url_ready_for_project(url, project)
+    if not ready:
+        # Server process is alive but not responding yet — give it a bit more
+        # time.  The lock was written before app.run() started listening, so
+        # the URL readiness lag is expected on slow machines.
+        for _ in range(10):
+            time.sleep(0.3)
+            if _url_ready_for_project(url, project):
+                ready = True
+                break
+    if ready:
         print(f"Dashboard: {url}")
+    else:
+        print(f"Warning: Dashboard may still be starting: {url} (log: {log_path})")
     print(f"Dashboard port: {launch_port}")
     print(f"Dashboard project: {project}")
     print(f"Dashboard log: {log_path}")
-    if not no_browser:
+    if not no_browser and ready:
         _open_browser(url)
+    elif not ready:
+        print(f"Tip: open {url} manually once the server is ready")
     return 0
 
 
@@ -242,6 +254,24 @@ def _url_ready(url: str) -> bool:
 
 
 def _url_ready_for_project(url: str, project: Path) -> bool:
+    """Check if the dashboard at ``url`` is alive and serves ``project``.
+
+    Uses the lightweight ``/api/health`` endpoint first (fast, no heavy state
+    reads).  Falls back to ``/api/config`` for older servers that lack the
+    health probe.
+    """
+    health_url = f"{url.rstrip('/')}/api/health"
+    try:
+        with urllib.request.urlopen(health_url, timeout=1.0) as resp:
+            if resp.status < 500:
+                payload = json.loads(resp.read().decode("utf-8"))
+                if isinstance(payload, dict):
+                    raw = payload.get("project")
+                    if raw and _same_project_path(str(raw), project):
+                        return True
+    except (OSError, TimeoutError, json.JSONDecodeError, UnicodeDecodeError):
+        pass
+    # Fallback: try /api/config for backward compatibility
     config_project = _dashboard_config_project({"url": url})
     if config_project:
         return _same_project_path(config_project, project)

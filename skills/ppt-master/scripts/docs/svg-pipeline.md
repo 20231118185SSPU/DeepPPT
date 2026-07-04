@@ -162,8 +162,9 @@ python3 scripts/rendered_layout_check.py <project_path> --accept-current-render
 ```
 
 Behavior:
-- `--render` calls `visual_review.py` to refresh `<project>/.preview/*.png` via the live-preview server.
-- The gate reads `svg_output/*.svg` and `.preview/*.png`, then writes `quality/rendered_visual_gate.json`.
+- `--render` calls `visual_review.py` to refresh `<project>/quality/screenshots/*.png` via the live-preview server.
+- The gate reads `svg_output/*.svg` and `quality/screenshots/*.png`, then writes `quality/rendered_visual_gate.json`.
+- Each page report includes `screenshot.relative_path`, so agents and Dashboard can open the exact PNG used for the gate.
 - `must_fix` blocks export for deterministic layout failures such as cross-column text intrusion or text touching long rules.
 - `needs_human_review` blocks export until a human confirms the rendered screenshot, covering close-fit text, abnormal whitespace, missing/stale renders, and revision-regression checks.
 - `--accept-current-render` writes `quality/rendered_visual_acceptance.json` for the current SVG/PNG hashes after human review.

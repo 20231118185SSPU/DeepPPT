@@ -35,7 +35,8 @@ Processing options:
                     merged step, so existing --only invocations keep working.
     flatten-text  - Convert <tspan> to independent <text> (for special renderers)
     fix-rounded   - Convert <rect rx="..."/> to <path> (for PPT shape conversion)
-    fix-layout    - Auto-fix text overflow by reducing font-size (up to 2 passes)
+    fix-layout    - Detect text overflow. Default mode reports suggestions only;
+                    pass --layout-mode auto-fix to reduce font-size in svg_final/.
 """
 
 from __future__ import annotations
@@ -123,14 +124,22 @@ _LAYOUT_MAX_SHRINK = 2   # max font-size reduction passes
 _LAYOUT_SHRINK_FACTOR = 0.9  # shrink by 10% per pass
 
 
-def process_layout_fix(svg_file: Path, verbose: bool = False) -> int:
-    """Auto-fix text overflow in a single SVG file (in-place).
+def process_layout_fix(svg_file: Path, mode: str = "suggest", verbose: bool = False) -> dict:
+    """Detect or auto-fix text overflow in a single SVG file.
 
     For each <text> element whose estimated right edge exceeds the viewBox
-    safe area, reduce font-size by 10% (up to 2 passes).  Returns the
-    number of elements adjusted.
+    safe area, return a suggestion. In ``auto-fix`` mode, also reduce font-size
+    by 10% (up to 2 passes) in-place. Returns a processing report.
     """
     import re
+
+    report = {
+        "file": str(svg_file),
+        "mode": mode,
+        "modified": False,
+        "fixed_count": 0,
+        "suggestions": [],
+    }
 
     try:
         with open(svg_file, 'r', encoding='utf-8') as f:
@@ -138,18 +147,19 @@ def process_layout_fix(svg_file: Path, verbose: bool = False) -> int:
     except OSError as e:
         if verbose:
             safe_print(f"   [ERROR] {svg_file.name}: read failed: {e}")
-        return 0
+        report["error"] = f"read failed: {e}"
+        return report
 
     vb_match = re.search(r'viewBox="([^"]+)"', content)
     if not vb_match:
-        return 0
+        return report
     parts = vb_match.group(1).split()
     if len(parts) != 4:
-        return 0
+        return report
     try:
         vb_w = float(parts[2])
     except ValueError:
-        return 0
+        return report
 
     right_bound = vb_w - _LAYOUT_MARGIN_LR
 
@@ -159,7 +169,6 @@ def process_layout_fix(svg_file: Path, verbose: bool = False) -> int:
         re.DOTALL,
     )
 
-    fix_count = 0
     modified = content
 
     def _is_cjk_local(t):
@@ -200,7 +209,7 @@ def process_layout_fix(svg_file: Path, verbose: bool = False) -> int:
         if est_right <= right_bound:
             continue
 
-        # Shrink font-size
+        # Compute suggested font-size.
         new_fs = fs
         for _ in range(_LAYOUT_MAX_SHRINK):
             new_fs *= _LAYOUT_SHRINK_FACTOR
@@ -214,25 +223,45 @@ def process_layout_fix(svg_file: Path, verbose: bool = False) -> int:
             if new_right <= right_bound:
                 break
 
+        suggestion = {
+            "element_text": text[:120],
+            "x": x,
+            "text_anchor": anchor,
+            "current_font_size": fs,
+            "suggested_font_size": round(new_fs, 1),
+            "estimated_right": round(est_right, 2),
+            "right_bound": round(right_bound, 2),
+        }
+        report["suggestions"].append(suggestion)
+
         if new_fs < fs:
+            if mode != "auto-fix":
+                continue
             new_fs_str = f"{new_fs:.1f}px"
             old_tag = m.group(0)
             new_tag = old_tag.replace(f'font-size="{fs_match.group(1)}"', f'font-size="{new_fs_str}"', 1)
             modified = modified.replace(old_tag, new_tag, 1)
-            fix_count += 1
+            report["fixed_count"] += 1
 
-    if fix_count > 0:
+    if report["fixed_count"] > 0:
         try:
             with open(svg_file, 'w', encoding='utf-8') as f:
                 f.write(modified)
+            report["modified"] = True
             if verbose:
-                safe_print(f"   [OK] {svg_file.name}: {fix_count} text element(s) font-size adjusted")
+                safe_print(
+                    f"   [OK] {svg_file.name}: "
+                    f"{report['fixed_count']} text element(s) font-size adjusted"
+                )
         except OSError as e:
             if verbose:
                 safe_print(f"   [ERROR] {svg_file.name}: write failed: {e}")
-            return 0
+            report["error"] = f"write failed: {e}"
+            report["modified"] = False
+            report["fixed_count"] = 0
+            return report
 
-    return fix_count
+    return report
 
 
 def finalize_project(
@@ -242,6 +271,7 @@ def finalize_project(
     quiet: bool = False,
     compress: bool = False,
     max_dimension: int | None = None,
+    layout_mode: str = "suggest",
 ) -> bool:
     """
     Finalize SVG files in the project
@@ -253,6 +283,7 @@ def finalize_project(
         quiet: Quiet mode, reduce output
         compress: Compress images before embedding
         max_dimension: Downscale images exceeding this dimension
+        layout_mode: ``suggest`` reports layout fixes; ``auto-fix`` rewrites svg_final/
     """
     svg_output = project_dir / 'svg_output'
     svg_final = project_dir / 'svg_final'
@@ -387,14 +418,24 @@ def finalize_project(
     # Step 6: Layout auto-fix (text overflow → font-size shrink)
     if options.get('fix_layout'):
         if not quiet:
-            safe_print("[5/5] Auto-fixing layout overflow...")
+            if layout_mode == "auto-fix":
+                safe_print("[5/5] Auto-fixing layout overflow...")
+            else:
+                safe_print("[5/5] Checking layout overflow (suggestions only)...")
         layout_fix_count = 0
+        layout_suggestion_count = 0
         for svg_file in svg_final.glob('*.svg'):
-            count = process_layout_fix(svg_file, verbose=False)
-            layout_fix_count += count
+            report = process_layout_fix(svg_file, mode=layout_mode, verbose=False)
+            layout_fix_count += int(report.get("fixed_count", 0))
+            layout_suggestion_count += len(report.get("suggestions", []))
         if not quiet:
-            if layout_fix_count > 0:
+            if layout_mode == "auto-fix" and layout_fix_count > 0:
                 safe_print(f"      {layout_fix_count} text element(s) adjusted")
+            elif layout_suggestion_count > 0:
+                safe_print(
+                    f"      {layout_suggestion_count} layout suggestion(s) found; "
+                    "svg_final unchanged by fix-layout"
+                )
             else:
                 safe_print("      No overflow detected")
 
@@ -425,7 +466,7 @@ Processing options (for --only):
   align-images  Align (slice/meet) + Base64-embed all <image> (single pass)
   flatten-text  Flatten text
   fix-rounded   Convert rounded rects to Path
-  fix-layout    Auto-fix text overflow (font-size shrink)
+  fix-layout    Detect text overflow; --layout-mode auto-fix shrinks font-size
 
 Aliases (still accepted):
   crop-images, fix-aspect, embed-images  → all map to align-images
@@ -454,6 +495,8 @@ Aliases (still accepted):
                         help='Compress images before embedding (JPEG quality=85, PNG optimize)')
     parser.add_argument('--max-dimension', type=int, default=None,
                         help='Downscale images exceeding this dimension on either axis (e.g., 2560)')
+    parser.add_argument('--layout-mode', choices=['suggest', 'auto-fix'], default='suggest',
+                        help='Layout overflow handling for fix-layout (default: suggest, no rewrite)')
 
     args = parser.parse_args()
 
@@ -487,7 +530,8 @@ Aliases (still accepted):
 
     success = finalize_project(args.project_dir, options, args.dry_run, args.quiet,
                                compress=args.compress,
-                               max_dimension=args.max_dimension)
+                               max_dimension=args.max_dimension,
+                               layout_mode=args.layout_mode)
     sys.exit(0 if success else 1)
 
 

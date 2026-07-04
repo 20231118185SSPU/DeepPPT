@@ -607,7 +607,7 @@
         "artifacts":   {
           "type": "array",
           "items": { "$ref": "#/definitions/Artifact" },
-          "description": "Artifacts produced by or consumed by this step."
+          "description": "Deprecated compatibility field. Step details no longer include artifacts; use ArtifactList from GET /api/artifacts."
         },
         "quality": {
           "type": ["object", "null"],

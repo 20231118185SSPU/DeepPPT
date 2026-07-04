@@ -65,19 +65,6 @@
       "ending"
     ]
   },
-  "pixel_retro": {
-    "summary": "Tech talks, programming tutorials, game introductions, geek-style showcases.",
-    "summary_zh": "技术分享、编程教程、游戏介绍和极客风展示；像素复古视觉。",
-    "canvas_format": "ppt169",
-    "page_count": 5,
-    "page_types": [
-      "cover",
-      "toc",
-      "chapter",
-      "content",
-      "ending"
-    ]
-  },
   "psychology_attachment": {
     "summary": "Psychotherapy training, academic lectures, counseling case analysis, professional sharing.",
     "summary_zh": "心理咨询培训、学术讲座、咨询案例分析和专业分享；温和人文取向。",
@@ -187,30 +174,6 @@
       "03_content_flow_diagram — 五节点水平流程管线图",
       "03_content_arch_diagram — 三层架构分层图",
       "03_content_mindmap — 放射状思维导图"
-    ]
-  },
-  "content_pages/project_management": {
-    "summary": "项目管理场景：项目规划、Sprint 回顾、产品路线图、任务追踪。规划型布局，强调甘特图、路线图和待办清单。",
-    "canvas_format": "ppt169",
-    "page_types": ["content"],
-    "color_scheme": {"primary": "#4A154B", "accent": "#7B2D8E", "secondary": "#E91E63", "bg": "#FAF5FF"},
-    "variants": [
-      "03_content_roadmap — 四列路线图（NOW/NEXT/LATER/VISION）",
-      "03_content_gantt — 甘特图任务时间表",
-      "03_content_todo_checklist — 待办清单检查列表",
-      "03_content_timeline — 水平里程碑时间线"
-    ]
-  },
-  "content_pages/creative": {
-    "summary": "创意展示场景：作品集、案例研究、品牌展示、教学培训、产品展示。视觉冲击布局，强调图片网格、全图英雄和大字引用。",
-    "canvas_format": "ppt169",
-    "page_types": ["content"],
-    "color_scheme": {"primary": "#7C3AED", "accent": "#EC4899", "secondary": "#F59E0B", "bg": "#FFFBEB"},
-    "variants": [
-      "03_content_image_hero — 全图铺底英雄页",
-      "03_content_big_quote — 大字引用呼吸页",
-      "03_content_icon_grid — 2×3 图标描述网格",
-      "03_content_three_columns — 三栏功能支柱"
     ]
   }
 }

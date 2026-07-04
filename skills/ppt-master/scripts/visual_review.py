@@ -15,6 +15,7 @@ Usage:
     python3 scripts/visual_review.py <project_path>
     python3 scripts/visual_review.py <project_path> --pages 02 03
     python3 scripts/visual_review.py <project_path> --server-url http://localhost:5050
+    python3 scripts/visual_review.py <project_path> --preview-dir <project_path>/quality/screenshots
 
 Examples:
     python3 scripts/visual_review.py projects/demo_deck
@@ -29,7 +30,8 @@ Exit codes (per references/visual-review.md §7):
     3 — rendering backend (playwright + chromium) missing or unable to launch
     4 — one or more page-level render failures (details in stderr)
 
-Output: JSON summary printed to stdout, PNGs written to <project>/.preview/.
+Output: JSON summary printed to stdout, PNGs written to <project>/.preview/
+unless --preview-dir is provided.
 """
 
 from __future__ import annotations
@@ -238,6 +240,11 @@ def main() -> int:
         help='Live-preview server URL (default: http://localhost:5050)',
     )
     parser.add_argument(
+        '--preview-dir',
+        default=None,
+        help='Directory for rendered PNGs (default: <project>/.preview).',
+    )
+    parser.add_argument(
         '--lock-timeout', type=float, default=30.0,
         help='Seconds to wait for render lock (default: 30)',
     )
@@ -275,7 +282,7 @@ def main() -> int:
         _safe_print(str(e))
         return 2
 
-    preview_dir = project_path / '.preview'
+    preview_dir = Path(args.preview_dir).resolve() if args.preview_dir else project_path / '.preview'
     lock_path = preview_dir / '.render.lock'
 
     with file_lock(lock_path, timeout=args.lock_timeout):

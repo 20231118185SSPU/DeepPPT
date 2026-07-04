@@ -282,6 +282,8 @@ Before drawing each page, look up its entry in `page_layouts` to decide which ba
 
 Do **not** invent a layout entry, and do **not** assume a template just because `templates/` exists — if `page_layouts` is present but silent for this page, that silence is the instruction.
 
+Dashboard mirrors this contract in its confirmation-center layout preview: before Step 6 it displays available template thumbnails for `page_layouts` / `page_charts`, and after Step 6 it prefers `quality/screenshots` PNGs, `svg_final`, or `svg_output` artifacts. If the preview shows a missing/free-design page unexpectedly, re-check the `page_layouts` basename before drawing.
+
 **Per-page chart reference — `page_charts` section**:
 
 Before drawing each page, look up its entry in `page_charts` to decide which chart structure applies (the SVG itself was loaded in §1.0):

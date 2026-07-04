@@ -32,7 +32,7 @@ DeepPPT 是一个端到端的 AI PPT 生成系统。给定一个主题或源文�
 | 排版 | 无自动检测 | 静态布局检查 + 本地渲染截图门禁 + 自动修正 |
 | 视觉审查 | 无独立视觉回看 | 视觉检查工作流 + OpenAI/Anthropic/Ollama 兼容后端 |
 | 动画 | 通用动画 | 默认页间转场；页内元素动画显式 opt-in，可用 `customize-animations` 调整对象级顺序/效果/时序 |
-| 场景 | 通用模板 | 发布会品牌预设（Apple keynote 风格） |
+| 模板治理 | 基础模板库 | 模板发现、质量审查、低分模板下线和显式路径应用 |
 | 页面类型 | 6 种基础类型 | 11 种（含讲解页、对比页、数据页、时间线页等） |
 | 图片策略 | 单轨（AI 或网络） | 来源路由 + 双轨——视觉页 AI 生图 + 信息页网络素材 |
 | 咨询报告 | 通用大纲 | 可选证据表、SCR 备选、每页 SO WHAT / caveat / evidence IDs |
@@ -48,7 +48,7 @@ DeepPPT 是一个端到端的 AI PPT 生成系统。给定一个主题或源文�
   - [`ppt-briefing`](skills/ppt-master/workflows/ppt-briefing.md) 前置构思工作流——主题输入先确认目标、受众、叙事、素材策略和风险，再进入深度调研
   - [`deep-research`](skills/ppt-master/workflows/deep-research.md) 编排器——7 步独立调研工作流，协调计划搜索路径；普通 WebSearch 只作为 deep-research Step 3 内部记录式 fallback
   - [`browse_ai.py`](skills/ppt-master/scripts/research/browse_ai.py)——Playwright CDP 浏览器自动化，支持 Grok / Kimi / DeepSeek / 通义千问 / ChatGLM / Perplexity
-  - [`dashboard`](skills/ppt-master/scripts/dashboard/)——统一只读 Dashboard，集中展示项目状态、产物、质量报告、执行轨迹和 Confirm / Live Preview 入口
+  - [`dashboard`](skills/ppt-master/scripts/dashboard/)——统一只读 Dashboard，集中展示项目状态、产物、质量报告、执行轨迹、模板预览和 Confirm / Live Preview 入口
   - [`confirm_ui_gate.py`](skills/ppt-master/scripts/confirm_ui_gate.py)、[`research_gate.py`](skills/ppt-master/scripts/research/research_gate.py)、[`asset_gate.py`](skills/ppt-master/scripts/research/asset_gate.py)——确认、研究深度和素材完整性门禁
   - [`image_source_router.py`](skills/ppt-master/scripts/image_source_router.py) + [`image-source-routing.md`](skills/ppt-master/references/image-source-routing.md)——按主题域选择官方、学术、开放版权、通用氛围图等来源包，降低错图和版权风险
   - [`rendered_layout_check.py`](skills/ppt-master/scripts/rendered_layout_check.py)——基于本地渲染截图的布局门禁，补足静态 SVG 检查无法发现的重叠、踩线和异常留白
@@ -59,7 +59,7 @@ DeepPPT 是一个端到端的 AI PPT 生成系统。给定一个主题或源文�
   - [`vision_check.py`](skills/ppt-master/scripts/vision_check.py) + [`vision_backends`](skills/ppt-master/scripts/vision_backends/)——可插拔视觉检查后端
   - [`docs/reviews/`](docs/reviews/) + [`docs/rules/`](docs/rules/)——管线协同性审计、修复状态记录和仓库级语言 / 文档治理规则
   - [`batch-review`](skills/ppt-master/workflows/batch-review.md)——按批生成与审阅的可选工作流
-  - [`event_presentation`](skills/ppt-master/templates/brands/event_presentation/) 品牌预设——发布会/产品发布场景（暗色调 keynote 风格）
+  - 模板库质量治理——Dashboard / Confirm UI 统一展示候选预览，低分模板经审查和用户确认后从索引下线
   - [`story_driven`](skills/ppt-master/templates/layouts/story_driven/) 布局模板——封面/目录/过渡/内容/讲解/金句/对比/数据/时间线/全图/封底
   - [`img2img-support`](docs/design/img2img-support.md)——图生图支持的非运行时设计说明，不是可直接调用的 standalone workflow
   - 排版稳定性检测（布局溢出/元素间距/垂直分布）+ 自动修正
@@ -255,6 +255,18 @@ DeepPPT/
 
 ## 更新日志
 
+### 2026-07-04 — Dashboard / Confirm UI 预览与模板治理
+
+**交互与可视化：**
+- Dashboard 确认中心集中展示模板库候选，模板缩略图完整缩放，放大弹窗支持多页预览切换。
+- Confirm UI 升级为三阶段视觉确认，加入风格 SVG 预览、图标预览、AI 图像对比和多语言界面。
+- Dashboard 产物与日志页面优化产物类型布局，长文件名、大小和展开动作不再挤压重叠。
+
+**模板与质量：**
+- 完成模板质量审查并按用户确认下线低分模板，索引和模板指南同步更新。
+- Dashboard 增加逐页 layout 预览入口；公式渲染默认提高清晰度并改进 manifest 字段兼容。
+- 质量门禁默认采用非破坏性 layout suggest 模式，渲染截图统一写入 `quality/screenshots/` 便于复核。
+
 ### 2026-07-03 — 管线协同性审计修复
 
 **协同一致性：**
@@ -329,7 +341,7 @@ DeepPPT/
 - 🔧 **自动修正**：finalize_svg.py 新增 fix-layout 步骤（文字溢出自动缩减字号）
 - 🎬 **动画策略收敛**：默认保留页间转场，页内元素动画改为显式 opt-in，避免不必要的自动级联
 - 🖼️ **视觉优先页规则**：executor-base.md §19，封面等关键页用全屏 AI 背景
-- 🎤 **发布会品牌预设**：`event_presentation`（暗色调、Apple keynote 风格）
+- 🧭 **模板治理**：模板库支持审查、下线和发现索引同步，低分候选不再作为默认可选项暴露
 
 **文档更新：**
 - 📖 SETUP.md 新增浏览器自动化设置章节

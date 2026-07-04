@@ -13,7 +13,7 @@ Usage:
 
 Examples:
     python3 scripts/latex_render.py projects/demo_ppt169_20260523
-    python3 scripts/latex_render.py projects/demo_ppt169_20260523 --providers codecogs,quicklatex,mathpad,wikimedia
+    python3 scripts/latex_render.py projects/demo_ppt169_20260523 --providers quicklatex,codecogs,mathpad,wikimedia
 
 Dependencies:
     Pillow (for measuring generated PNG dimensions)
@@ -38,10 +38,10 @@ except ImportError:
     Image = None
 
 
-DEFAULT_DPI = 300
+DEFAULT_DPI = 600
 DEFAULT_TRANSPARENT_TOLERANCE = 12
 DEFAULT_MANIFEST = "images/formula_manifest.json"
-DEFAULT_PROVIDERS = ["codecogs", "quicklatex", "mathpad", "wikimedia"]
+DEFAULT_PROVIDERS = ["quicklatex", "codecogs", "mathpad", "wikimedia"]
 CODECOGS_ENDPOINT = "https://latex.codecogs.com/png.image?"
 WIKIMEDIA_CHECK_ENDPOINT = "https://wikimedia.org/api/rest_v1/media/math/check"
 WIKIMEDIA_RENDER_ENDPOINT = "https://wikimedia.org/api/rest_v1/media/math/render/png"
@@ -128,6 +128,44 @@ def _normalize_tolerance(value: Any) -> int:
     if tolerance < 0 or tolerance > 255:
         raise RuntimeError("transparent_tolerance must be between 0 and 255.")
     return tolerance
+
+
+def _normalize_display(value: Any, index: int) -> str:
+    """Normalize display/display_mode manifest values."""
+    display = str(value or "block").strip().lower()
+    aliases = {
+        "display": "block",
+        "displayed": "block",
+        "block": "block",
+        "inline": "inline",
+        "text": "inline",
+    }
+    normalized = aliases.get(display)
+    if normalized is None:
+        raise RuntimeError(f"Formula item #{index} has invalid `display`: {display}")
+    return normalized
+
+
+def _normalize_font(value: Any) -> str | None:
+    """Normalize an optional manifest font hint."""
+    if value is None:
+        return None
+    font = str(value).strip()
+    return font or None
+
+
+def _quicklatex_preamble(font: str | None) -> str | None:
+    """Return a conservative QuickLaTeX preamble for known font hints."""
+    if not font:
+        return None
+    normalized = font.strip().lower().replace("_", "-")
+    if normalized in {"sans", "sans-serif", "sfmath"}:
+        return r"\usepackage{sfmath}"
+    if normalized in {"cmbright", "computer-modern-bright"}:
+        return r"\usepackage{cmbright}"
+    if normalized in {"arev", "arev-sans"}:
+        return r"\usepackage{arev}"
+    return None
 
 
 def _parse_providers(value: str | list[str] | None) -> list[str]:
@@ -238,19 +276,24 @@ def _render_quicklatex(
     color: str | None,
     background: str | None,
     display: str,
+    font: str | None = None,
 ) -> bytes:
     """Render one formula through QuickLaTeX."""
     wrapped = f"${latex}$" if display == "inline" else f"$${latex}$$"
-    # QuickLaTeX uses CSS font size rather than DPI. Keep a conservative fixed
-    # size; downstream placement uses measured dimensions from the PNG.
+    # QuickLaTeX uses CSS font size rather than DPI. Scale the font size with
+    # requested DPI, then let downstream placement use measured PNG dimensions.
+    font_size = max(24, min(48, round(24 * dpi / 300)))
     params = {
         "formula": wrapped,
-        "fsize": "24px",
+        "fsize": f"{font_size}px",
         "fcolor": color or "000000",
         "mode": "0",
         "out": "1",
         "remhost": "quicklatex.com",
     }
+    preamble = _quicklatex_preamble(font)
+    if preamble:
+        params["preamble"] = preamble
     req = urllib.request.Request(
         QUICKLATEX_ENDPOINT,
         data=urllib.parse.urlencode(params).encode("utf-8"),
@@ -315,13 +358,17 @@ def _render_with_providers(
     color: str | None,
     background: str | None,
     display: str,
+    font: str | None,
     providers: list[str],
 ) -> tuple[str, list[str]]:
     """Try providers in order and write the first successful PNG."""
     errors: list[str] = []
     for provider in providers:
         try:
-            data = PROVIDER_RENDERERS[provider](latex, dpi, color, background, display)
+            if provider == "quicklatex":
+                data = PROVIDER_RENDERERS[provider](latex, dpi, color, background, display, font)
+            else:
+                data = PROVIDER_RENDERERS[provider](latex, dpi, color, background, display)
             output_path.write_bytes(data)
             return provider, errors
         except RuntimeError as exc:
@@ -406,6 +453,27 @@ def _make_png_background_transparent(
     Image.fromarray(arr, "RGBA").save(path)
 
 
+def _trim_png_margins(path: Path, padding: int = 2) -> None:
+    """Trim transparent margins while preserving a small antialiasing pad."""
+    if Image is None:
+        raise RuntimeError(
+            "Pillow is required to trim formula PNGs. Run: pip install Pillow"
+        )
+    with Image.open(path) as img:
+        rgba = img.convert("RGBA")
+    alpha = rgba.getchannel("A")
+    bbox = alpha.getbbox()
+    if not bbox:
+        return
+    left = max(0, bbox[0] - padding)
+    top = max(0, bbox[1] - padding)
+    right = min(rgba.width, bbox[2] + padding)
+    bottom = min(rgba.height, bbox[3] + padding)
+    if (left, top, right, bottom) == (0, 0, rgba.width, rgba.height):
+        return
+    rgba.crop((left, top, right, bottom)).save(path)
+
+
 def _process_item(
     item: dict[str, Any],
     index: int,
@@ -427,9 +495,8 @@ def _process_item(
     background = _normalize_hex_color(item.get("background"), "background")
     transparent = _parse_bool(item.get("transparent"), True)
     transparent_tolerance = _normalize_tolerance(item.get("transparent_tolerance"))
-    display = str(item.get("display") or "block").strip().lower()
-    if display not in {"inline", "block"}:
-        raise RuntimeError(f"Formula item #{index} has invalid `display`: {display}")
+    display = _normalize_display(item.get("display_mode") or item.get("display"), index)
+    font = _normalize_font(item.get("font"))
     item_providers = _parse_providers(
         item.get("providers") or item.get("provider_chain") or providers
     )
@@ -439,8 +506,11 @@ def _process_item(
     updated["file"] = _project_relative(output_path, project_path)
     updated["dpi"] = dpi
     updated["display"] = display
+    updated["display_mode"] = display
     updated["providers"] = item_providers
     updated["transparent"] = transparent
+    if font:
+        updated["font"] = font
     if color:
         updated["color"] = f"#{color}"
     if background:
@@ -461,6 +531,7 @@ def _process_item(
                 color,
                 background,
                 display,
+                font,
                 item_providers,
             )
             updated["provider"] = provider_used
@@ -478,6 +549,7 @@ def _process_item(
                 background=background,
                 tolerance=transparent_tolerance,
             )
+            _trim_png_margins(output_path)
         width, height = _image_dimensions(output_path)
         updated["pixel_width"] = width
         updated["pixel_height"] = height
