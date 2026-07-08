@@ -410,6 +410,7 @@ def integration_smoke(scripts_dir: Path) -> tuple[int, int, int]:
         if scc.is_file():
             _run([python, str(scc), "--help"], "spec_compliance_check.py --help")
         else:
+            print(f"  [SKIP] spec_compliance_check.py not found")
             skipped += 1
 
         # --- Test 6: svg_quality_checker.py --help ---
@@ -418,6 +419,7 @@ def integration_smoke(scripts_dir: Path) -> tuple[int, int, int]:
         if sqc.is_file():
             _run([python, str(sqc), "--help"], "svg_quality_checker.py --help")
         else:
+            print(f"  [SKIP] svg_quality_checker.py not found")
             skipped += 1
 
     finally:
