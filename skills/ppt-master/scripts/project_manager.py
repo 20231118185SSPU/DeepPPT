@@ -837,11 +837,13 @@ class ProjectManager:
                 continue
 
             # Idempotency: when re-importing (move or repo-internal), remove
-            # any previous file with the same stem so we don't accumulate
-            # duplicate _1, _2 variants.
+            # any previous file with the same stem + extension so we don't
+            # accumulate duplicate _1, _2 variants.  Only match the same
+            # extension to avoid deleting unrelated files that share a stem
+            # (e.g. report.pdf vs report.docx).
             if effective_move:
                 for old in sources_dir.glob(f"{source_path.stem}.*"):
-                    if old.is_file() and old.name != source_path.name:
+                    if old.is_file() and old.name != source_path.name and old.suffix.lower() == suffix:
                         old.unlink(missing_ok=True)
 
             archived_path = self._copy_or_move_file(
