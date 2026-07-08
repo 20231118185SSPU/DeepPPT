@@ -836,6 +836,14 @@ class ProjectManager:
                     summary["notes"].append(note)
                 continue
 
+            # Idempotency: when re-importing (move or repo-internal), remove
+            # any previous file with the same stem so we don't accumulate
+            # duplicate _1, _2 variants.
+            if effective_move:
+                for old in sources_dir.glob(f"{source_path.stem}.*"):
+                    if old.is_file() and old.name != source_path.name:
+                        old.unlink(missing_ok=True)
+
             archived_path = self._copy_or_move_file(
                 source_path,
                 sources_dir / source_path.name,
@@ -1094,18 +1102,6 @@ class ProjectManager:
             return json.loads(ck_path.read_text(encoding="utf-8"))
         # No saved checkpoint — generate on the fly
         return self.checkpoint_save(project_path)
-        shared = get_project_info_common(project_path)
-        return {
-            "name": shared.get("name", Path(project_path).name),
-            "path": shared.get("path", str(project_path)),
-            "exists": shared.get("exists", False),
-            "svg_count": shared.get("svg_count", 0),
-            "has_spec": shared.get("has_spec", False),
-            "has_source": shared.get("has_source", False),
-            "source_count": shared.get("source_count", 0),
-            "canvas_format": shared.get("format_name", "Unknown"),
-            "create_date": shared.get("date_formatted", "Unknown"),
-        }
 
 
 def build_parser() -> argparse.ArgumentParser:
