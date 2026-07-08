@@ -273,6 +273,163 @@ def _dashboard_log(project: Path) -> Path:
     return project / "dashboard" / "dashboard.log"
 
 
+def integration_smoke(scripts_dir: Path) -> tuple[int, int, int]:
+    """Run integration-level smoke tests on core scripts.
+
+    Tests that core scripts produce correct output for known inputs,
+    not just that they import. Returns (passed, failed, skipped).
+    """
+    python = sys.executable
+    passed = failed = skipped = 0
+    tmp_dir = Path(uuid.uuid4().hex[:8])
+    tmp_path = scripts_dir.parent / "_smoke_test" / tmp_dir
+
+    def _run(cmd: list[str], label: str, *, expect_exit: int = 0, timeout: int = 15) -> bool:
+        nonlocal passed, failed
+        try:
+            r = subprocess.run(cmd, capture_output=True, text=True,
+                               encoding="utf-8", errors="replace", timeout=timeout)
+            if r.returncode == expect_exit:
+                print(f"  [PASS] {label}")
+                passed += 1
+                return True
+            else:
+                print(f"  [FAIL] {label} — exit {r.returncode}, expected {expect_exit}")
+                if r.stderr.strip():
+                    print(f"         stderr: {r.stderr.strip()[:200]}")
+                failed += 1
+                return False
+        except subprocess.TimeoutExpired:
+            print(f"  [FAIL] {label} — timed out ({timeout}s)")
+            failed += 1
+            return False
+        except Exception as e:
+            print(f"  [FAIL] {label} — {type(e).__name__}: {e}")
+            failed += 1
+            return False
+
+    try:
+        tmp_path.mkdir(parents=True, exist_ok=True)
+
+        # --- Test 1: config.py loads and has expected keys ---
+        print("\n  [1] config.py module loads correctly")
+        cfg_script = scripts_dir / "config.py"
+        _run([python, "-c", (
+            f"import sys; sys.path.insert(0, r'{scripts_dir}'); "
+            "from config import CANVAS_FORMATS, Config; "
+            "assert 'ppt169' in CANVAS_FORMATS, 'ppt169 missing'; "
+            "assert Config.get_canvas_format('ppt169') is not None, 'get_canvas_format failed'; "
+            "assert len(Config.get_all_canvas_formats()) >= 5, 'too few formats'; "
+            "print('config OK')"
+        )], "config.py loads + CANVAS_FORMATS + Config")
+
+        # --- Test 2: console_encoding.py ---
+        print("\n  [2] console_encoding.py works")
+        _run([python, "-c", (
+            f"import sys; sys.path.insert(0, r'{scripts_dir}'); "
+            "from console_encoding import configure_utf8_stdio; "
+            "configure_utf8_stdio(); "
+            "print('encoding OK')"
+        )], "console_encoding.py configure_utf8_stdio")
+
+        # --- Test 3: spec_lock_digest.py round-trip ---
+        print("\n  [3] spec_lock_digest.py generate + verify round-trip")
+        spec_lock = tmp_path / "spec_lock.md"
+        spec_lock.write_text(
+            "## canvas\n- viewBox: 0 0 1280 720\n- format: PPT 16:9\n\n"
+            "## mode\n- mode: narrative\n\n"
+            "## visual_style\n- visual_style: swiss-minimal\n\n"
+            "## colors\n- bg: #FFFFFF\n- primary: #1A1A2E\n\n"
+            "## typography\n- font_family: Arial\n- body: 22\n\n"
+            "## icons\n- library: tabler-outline\n\n"
+            "## images\n- none\n\n"
+            "## decisions\n- rationale: test\n\n"
+            "## page_rhythm\n- page1: anchor\n\n"
+            "## page_layouts\n- page1: 03_content.svg\n\n"
+            "## page_charts\n- none\n\n"
+            "## forbidden\n- no emoji\n",
+            encoding="utf-8"
+        )
+        digest_script = scripts_dir / "spec_lock_digest.py"
+        if digest_script.is_file():
+            _run([python, str(digest_script), "generate", str(tmp_path)],
+                 "spec_lock_digest.py generate")
+            _run([python, str(digest_script), "verify", str(tmp_path)],
+                 "spec_lock_digest.py verify (should pass)")
+            # Tamper with spec_lock and verify should fail
+            spec_lock.write_text(
+                spec_lock.read_text(encoding="utf-8") + "\n## tampered\n- yes\n",
+                encoding="utf-8"
+            )
+            _run([python, str(digest_script), "verify", str(tmp_path)],
+                 "spec_lock_digest.py verify (tampered, should fail)", expect_exit=2)
+        else:
+            print(f"  [SKIP] spec_lock_digest.py not found")
+            skipped += 1
+
+        # --- Test 4: spec_lock_validate.py ---
+        print("\n  [4] spec_lock_validate.py validates correctly")
+        validate_script = scripts_dir / "spec_lock_validate.py"
+        if validate_script.is_file():
+            # Restore valid spec_lock
+            spec_lock.write_text(
+                "## canvas\n- viewBox: 0 0 1280 720\n- format: PPT 16:9\n\n"
+                "## mode\n- mode: narrative\n\n"
+                "## visual_style\n- visual_style: swiss-minimal\n\n"
+                "## colors\n- bg: #FFFFFF\n- primary: #1A1A2E\n\n"
+                "## typography\n- font_family: Arial\n- body: 22\n\n"
+                "## icons\n- library: tabler-outline\n\n"
+                "## images\n- none\n\n"
+                "## decisions\n- rationale: test\n\n"
+                "## page_rhythm\n- page1: anchor\n\n"
+                "## page_layouts\n- page1: 03_content.svg\n\n"
+                "## page_charts\n- none\n\n"
+                "## forbidden\n- no emoji\n",
+                encoding="utf-8"
+            )
+            _run([python, str(validate_script), str(tmp_path)],
+                 "spec_lock_validate.py (valid spec)")
+            # Test with missing sections
+            incomplete = tmp_path / "incomplete_project"
+            incomplete.mkdir(exist_ok=True)
+            (incomplete / "spec_lock.md").write_text(
+                "## canvas\n- viewBox: 0 0 1280 720\n", encoding="utf-8"
+            )
+            _run([python, str(validate_script), str(incomplete)],
+                 "spec_lock_validate.py (incomplete, should fail)", expect_exit=1)
+            # Test with missing file
+            _run([python, str(validate_script), str(tmp_path / "nonexistent")],
+                 "spec_lock_validate.py (missing file, should exit 2)", expect_exit=2)
+        else:
+            print(f"  [SKIP] spec_lock_validate.py not found")
+            skipped += 1
+
+        # --- Test 5: spec_compliance_check.py --help ---
+        print("\n  [5] spec_compliance_check.py --help")
+        scc = scripts_dir / "spec_compliance_check.py"
+        if scc.is_file():
+            _run([python, str(scc), "--help"], "spec_compliance_check.py --help")
+        else:
+            skipped += 1
+
+        # --- Test 6: svg_quality_checker.py --help ---
+        print("\n  [6] svg_quality_checker.py --help")
+        sqc = scripts_dir / "svg_quality_checker.py"
+        if sqc.is_file():
+            _run([python, str(sqc), "--help"], "svg_quality_checker.py --help")
+        else:
+            skipped += 1
+
+    finally:
+        # Cleanup temp directory
+        import shutil
+        smoke_dir = scripts_dir.parent / "_smoke_test"
+        if smoke_dir.is_dir():
+            shutil.rmtree(smoke_dir, ignore_errors=True)
+
+    return passed, failed, skipped
+
+
 def build_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(
         description="Smoke check all PPT Master scripts.",
@@ -291,6 +448,16 @@ def build_parser() -> argparse.ArgumentParser:
         "--dashboard-e2e",
         action="store_true",
         help="Run opt-in Dashboard daemon/API/shutdown smoke check",
+    )
+    parser.add_argument(
+        "--governance",
+        action="store_true",
+        help="Run governance drift check (platform config consistency, routing, docs/rules)",
+    )
+    parser.add_argument(
+        "--integration",
+        action="store_true",
+        help="Run integration smoke tests for core scripts (config, spec_lock_digest, spec_lock_validate, etc.)",
     )
     return parser
 
@@ -365,6 +532,51 @@ def main(argv: Optional[list[str]] = None) -> int:
         else:
             print(f"  [FAIL] {msg}")
             failed += 1
+
+    if args.governance:
+        print("\nGovernance drift check")
+        print("-" * 50)
+        gov_script = scripts_dir / "governance_drift_check.py"
+        if not gov_script.is_file():
+            print(f"  [SKIP] governance_drift_check.py not found")
+            skipped += 1
+        else:
+            try:
+                # governance_drift_check.py expects the repo root (parent of skills/)
+                repo_root = scripts_dir.parent.parent.parent
+                result = subprocess.run(
+                    [python, str(gov_script), "--root", str(repo_root)],
+                    capture_output=True, text=True, encoding="utf-8", errors="replace",
+                    timeout=30,
+                )
+                if result.returncode == 0:
+                    print(f"  [PASS] No governance drift detected")
+                    if result.stdout.strip():
+                        print(f"         {result.stdout.strip()[:200]}")
+                    passed += 1
+                else:
+                    print(f"  [FAIL] Governance drift detected (exit {result.returncode})")
+                    if result.stdout.strip():
+                        for line in result.stdout.strip().splitlines()[:10]:
+                            print(f"         {line}")
+                    if result.stderr.strip():
+                        for line in result.stderr.strip().splitlines()[:5]:
+                            print(f"         {line}")
+                    failed += 1
+            except subprocess.TimeoutExpired:
+                print(f"  [FAIL] Governance check timed out (30s)")
+                failed += 1
+            except Exception as e:
+                print(f"  [FAIL] {type(e).__name__}: {e}")
+                failed += 1
+
+    if args.integration:
+        print("\nIntegration smoke tests")
+        print("-" * 50)
+        ip, if_, is_ = integration_smoke(scripts_dir)
+        passed += ip
+        failed += if_
+        skipped += is_
 
     total = passed + failed + skipped
     print(f"\n{'=' * 50}")
