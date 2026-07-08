@@ -58,8 +58,16 @@ from console_encoding import configure_utf8_stdio
 
 
 def safe_print(text: str) -> None:
-    """Print text with UTF-8 encoding safety on Windows."""
-    print(text)
+    """Print text with UTF-8 encoding safety on Windows.
+
+    configure_utf8_stdio() (called in __main__) handles the common case.
+    The try/except is a fallback when this module is imported by another
+    script that did not call configure_utf8_stdio().
+    """
+    try:
+        print(text)
+    except UnicodeEncodeError:
+        print(text.encode("utf-8", errors="replace").decode("utf-8", errors="replace"))
 
 
 def process_flatten_text(svg_file: Path, verbose: bool = False) -> bool:
