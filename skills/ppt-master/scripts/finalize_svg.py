@@ -54,25 +54,12 @@ from svg_finalize.align_embed_images import (
     count_office_vector_refs_in_svg,
 )
 from svg_finalize.embed_icons import process_svg_file as embed_icons_in_file
+from console_encoding import configure_utf8_stdio
 
 
 def safe_print(text: str) -> None:
-    """Print text while tolerating Windows terminal encoding limits."""
-    try:
-        print(text)
-    except UnicodeEncodeError:
-        replacements = {
-            chr(0x23F3): "[..]",
-            chr(0x2705): "[DONE]",
-            chr(0x274C): "[ERROR]",
-            chr(0x26A0) + chr(0xFE0F): "[WARN]",
-            chr(0x1F4C1): "[DIR]",
-            chr(0x1F4C4): "[FILE]",
-            chr(0x1F4E6): "[OK]",
-        }
-        for source, target in replacements.items():
-            text = text.replace(source, target)
-        print(text)
+    """Print text with UTF-8 encoding safety on Windows."""
+    print(text)
 
 
 def process_flatten_text(svg_file: Path, verbose: bool = False) -> bool:
@@ -536,4 +523,5 @@ Aliases (still accepted):
 
 
 if __name__ == '__main__':
+    configure_utf8_stdio()
     main()
