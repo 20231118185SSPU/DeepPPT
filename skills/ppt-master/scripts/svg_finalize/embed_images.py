@@ -18,6 +18,7 @@ import html
 import re
 import sys
 import argparse
+from pathlib import Path
 
 
 def get_mime_type(filename: str, file_bytes: bytes | None = None) -> str:
@@ -147,7 +148,7 @@ def embed_images_in_svg(svg_path: str, dry_run: bool = False,
         
         # Handle relative paths
         if not os.path.isabs(img_path_decoded):
-            full_path = os.path.join(svg_dir, img_path_decoded)
+            full_path = str(Path(svg_dir) / img_path_decoded)
         else:
             full_path = img_path_decoded
         

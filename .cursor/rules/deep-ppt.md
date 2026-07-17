@@ -6,7 +6,7 @@
 ## Routing Guardrails
 
 - Existing PPTX: preserve page count/order/wording and beautify only → `beautify-pptx`; reuse original deck design with new content → `template-fill-pptx`; restructure story or change page count/order → main pipeline + `ppt_to_md`; harvest reusable template → `create-template`.
-- Dashboard: after Step 2, start/reuse `python3 skills/ppt-master/scripts/dashboard/server.py <project_path> --daemon --no-browser`; default port `8765`, log `<project_path>/dashboard/dashboard.log`, failure non-fatal, read-only only and not a replacement for Confirm UI / Live Preview / quality gates / export.
+- Dashboard: after Step 2, start/reuse `python3 skills/ppt-master/scripts/dashboard/server.py <project_path> --daemon`; default port `8765`, log `<project_path>/dashboard/dashboard.log`, failure non-fatal, read-only only and not a replacement for Confirm UI / Live Preview / quality gates / export. Browser auto-opens locally; add `--no-browser` only for headless/remote sessions or when the user explicitly does not want a window.
 - Topic-only with no source → `deep-research`; do not replace it with ordinary WebSearch.
 - Animation: page transitions are default; per-element animations are off unless requested. Object-level animation tuning → `customize-animations`.
 - Live preview starts automatically in Step 6; apply submitted annotations only after Step 7 through `live-preview`.
@@ -17,7 +17,7 @@
 | Script | Purpose |
 |--------|---------|
 | `skills/ppt-master/scripts/project_manager.py init <name> --format ppt169` | Create project |
-| `skills/ppt-master/scripts/dashboard/server.py <path> --daemon --no-browser` | Start/reuse read-only Dashboard after Step 2 |
+| `skills/ppt-master/scripts/dashboard/server.py <path> --daemon` | Start/reuse read-only Dashboard after Step 2 (add `--no-browser` for headless/remote) |
 | `skills/ppt-master/scripts/confirm_ui/server.py <path> --daemon --wait` | Eight Confirmations UI |
 | `skills/ppt-master/scripts/image_gen.py --manifest <path>/images/image_prompts.json` | AI image generation |
 | `skills/ppt-master/scripts/image_search.py --batch <path>/images/image_queries.json` | Web image search |

@@ -23,6 +23,14 @@
 
 ## Log
 
+### 2026-07-17 — Live preview reliability and first-page quality preflight
+- **Files**: `skills/ppt-master/scripts/server_common.py`, `skills/ppt-master/scripts/confirm_ui/server.py`, `skills/ppt-master/scripts/svg_editor/server.py`, `skills/ppt-master/scripts/svg_editor/static/app.js`, `skills/ppt-master/scripts/docs/confirm_ui.md`, `skills/ppt-master/references/executor-base.md`, `docs/change-log.md`
+- **Reason**: Absorb upstream `6b7f8909`, `4c7e9635`, `cb9a4bf3`, and `fa3161cf`, plus the per-page QA discipline visible in the reference projects, without replacing DeepPPT's existing pipeline or user-owned work-in-progress.
+- **Before**: Live Preview only resolved the shared icon library, refreshes could return to the first slide or render stale responses, malformed lock PIDs could raise during shutdown, and staged Confirm UI recommendations could skip a confirmation stage. Executor quality checks started only after all pages were authored.
+- **After**: Project icons resolve before the shared fallback; the selected slide is persisted in the URL hash and survives temporary rewrites; lock PIDs are normalized and stale locks can be cleared safely; skipped Confirm UI stages fail fast with a repair directive; the Executor checks the first SVG before drawing page 2.
+- **Risk**: medium (preview/confirmation lifecycle behavior and an Executor reference gate changed; PPTX export semantics remain unchanged).
+- **Human reviewed**: pending
+
 ### 2026-07-04 — Dashboard template preview polish and release docs
 - **Files**: `skills/ppt-master/scripts/dashboard/static/app.js`, `skills/ppt-master/scripts/dashboard/static/style.css`, `README.md`, `docs/change-log.md`
 - **Reason**: 用户在浏览 Dashboard 时发现确认中心模板预览展示不完整、放大后无法切换其他预览画面，并且“产物与日志”的产物类型显示重叠；提交前同步项目介绍和日志。

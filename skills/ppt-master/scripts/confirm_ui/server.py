@@ -54,7 +54,9 @@ if str(_SCRIPTS_DIR) not in sys.path:
 from console_encoding import configure_utf8_stdio  # noqa: E402
 from server_common import (  # noqa: E402
     claim_lock as _claim_lock,
+    clear_lock as _clear_lock,
     find_free_port as _find_free_port,
+    lock_pid as _lock_pid,
     process_alive as _process_alive,
     read_lock as _read_lock,
     release_lock as _release_lock,
@@ -121,6 +123,11 @@ def _wait_for_result(
             except OSError:
                 pass
 
+        skip_error = _stage_skip_error(result_file.parent)
+        if skip_error:
+            logger.error('%s', skip_error)
+            return 2
+
         returncode = proc.poll()
         if returncode is not None:
             logger.error('confirm UI exited before a fresh result was written')
@@ -173,6 +180,50 @@ def _recommendation_stage(data: dict) -> int:
     if stage == 'stage3':
         return 3
     return 0
+
+
+def _result_stage_number(stage: Optional[str]) -> int:
+    """Return the confirmed stage number, treating final as stage three."""
+    if stage == 'final':
+        return 3
+    if stage in {'stage1', 'stage2', 'stage3'}:
+        return int(stage[-1])
+    return 0
+
+
+def _stage_name(number: int) -> str:
+    """Return the canonical stage name for a numeric stage."""
+    return 'stage1' if number <= 1 else 'stage2' if number == 2 else 'stage3'
+
+
+def _stage_skip(rec_stage_number: int, result_stage: Optional[str]) -> bool:
+    """Detect recommendations that run ahead of the confirmed stage order."""
+    if rec_stage_number <= 1 or rec_stage_number == 0 or result_stage == 'final':
+        return False
+    return rec_stage_number > _result_stage_number(result_stage) + 1
+
+
+def _stage_skip_error(confirm_dir: Path) -> Optional[str]:
+    """Return a repair directive when recommendations skip a confirmation stage."""
+    try:
+        rec_data = json.loads(
+            (confirm_dir / RECOMMENDATIONS_NAME).read_text(encoding='utf-8')
+        )
+    except (OSError, json.JSONDecodeError):
+        return None
+    if not isinstance(rec_data, dict):
+        return None
+    rec_stage_number = _recommendation_stage(rec_data)
+    result_stage = _result_stage(confirm_dir / RESULT_NAME)
+    if not _stage_skip(rec_stage_number, result_stage):
+        return None
+    expected = _stage_name(_result_stage_number(result_stage) + 1)
+    reattach = '--daemon --wait' if expected == 'stage1' else '--wait-only --wait-stage stage2'
+    return (
+        f'stage skip detected: recommendations.json is {_stage_name(rec_stage_number)} '
+        f'but the last confirmed result is {result_stage or "absent"}. '
+        f'Overwrite recommendations.json with {expected} recommendations, then re-run {reattach}.'
+    )
 
 
 # Stage-1 anchors and Stage-2 design-system choices. On later pages these sections
@@ -239,7 +290,12 @@ def _wait_only_for_result(
             return 0
 
         lock = _read_lock(lock_file)
-        pid = int((lock or {}).get('pid', 0) or 0)
+        skip_error = _stage_skip_error(result_file.parent)
+        if skip_error:
+            logger.error('%s', skip_error)
+            return 2
+
+        pid = _lock_pid(lock)
         if not pid or not _process_alive(pid):
             logger.error('confirm server is no longer running before stage=%s was confirmed', target_stage)
             return 1
@@ -267,10 +323,10 @@ def _shutdown_existing(lock_file: Path) -> int:
     if not existing:
         logger.info('no confirm server running — nothing to stop')
         return 0
-    pid = int(existing.get('pid', 0) or 0)
+    pid = _lock_pid(existing)
     port = existing.get('port')
     if not _process_alive(pid):
-        _release_lock(lock_file)
+        _clear_lock(lock_file)
         logger.info('confirm server already stopped; cleared stale lock')
         return 0
     # Graceful first: the server flushes and releases its own lock.
@@ -294,7 +350,7 @@ def _shutdown_existing(lock_file: Path) -> int:
             os.kill(pid, signal.SIGTERM)
         except OSError:
             pass
-    _release_lock(lock_file)
+    _clear_lock(lock_file)
     logger.info('confirm server stopped (pid=%s)', pid)
     return 0
 
@@ -612,6 +668,9 @@ def create_app(
         # Report whether a result already exists (re-open after confirm).
         result_file = confirm_dir / RESULT_NAME
         data['_already_confirmed'] = result_file.exists()
+        skip_error = _stage_skip_error(confirm_dir)
+        if skip_error:
+            return jsonify({'error': skip_error, 'stage_skip': True}), 409
         # Inject template route and layout preview data (DeepPPT extensions).
         data['template_route'] = _template_route(project_path)
         data['layout_preview'] = _layout_preview(project_path)
@@ -749,7 +808,7 @@ def main(argv: Optional[list[str]] = None) -> int:
     if args.daemon:
         lock_file = project_path / LOCK_FILE_NAME
         existing = _read_lock(lock_file)
-        if existing and _process_alive(int(existing.get('pid', 0))):
+        if existing and _process_alive(_lock_pid(existing)):
             existing_pid = existing.get('pid', '?')
             existing_port = existing.get('port', '?')
             logger.error(

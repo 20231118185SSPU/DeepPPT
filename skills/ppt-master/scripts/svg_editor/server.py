@@ -62,7 +62,9 @@ if str(_ROOT_SCRIPTS_DIR) not in sys.path:
 from console_encoding import configure_utf8_stdio  # noqa: E402
 from server_common import (  # noqa: E402
     claim_lock as _claim_lock,
+    clear_lock as _clear_lock,
     find_free_port as _find_free_port,
+    lock_pid as _lock_pid,
     process_alive as _process_alive,
     read_lock as _read_lock,
     release_lock as _release_lock,
@@ -118,11 +120,14 @@ def _cache_put(cache: dict, lock: threading.Lock, path: str, mtime: float, value
         cache[path] = (mtime, value)
 
 
-# Lock / liveness helpers are shared with confirm_ui via server_common
-# (imported above as _process_alive / _read_lock / _claim_lock / _release_lock).
+# Lock / liveness helpers are shared with confirm_ui via server_common.
 
 
-def _inline_icons(content: str) -> tuple[str, list[dict]]:
+def _inline_icons(
+    content: str,
+    icons_dir: Path,
+    fallback_dir: Optional[Path] = None,
+) -> tuple[str, list[dict]]:
     """Replace <use data-icon="..."/> with rendered <g> for browser preview.
 
     Returns (rewritten_content, warnings). Each warning is
@@ -143,7 +148,7 @@ def _inline_icons(content: str) -> tuple[str, list[dict]]:
             if not icon_name:
                 warnings.append({'icon': '', 'reason': 'missing data-icon attribute'})
                 continue
-            icon_path, _ = resolve_icon_path(icon_name, _ICONS_DIR)
+            icon_path, _ = resolve_icon_path(icon_name, icons_dir, fallback_dir)
             color = str(attrs.get('fill', '#000000'))
             elements, style, base_size = extract_paths_from_icon(icon_path, color)
         except Exception as exc:
@@ -350,6 +355,9 @@ def create_app(
     svg_dir = project_path / 'svg_output'
     images_dir = project_path / 'images'
     assets_dir = project_path / 'assets'
+    project_icons_dir = project_path / 'icons'
+    icons_dir = project_icons_dir if project_icons_dir.is_dir() else _ICONS_DIR
+    icons_fallback_dir = _ICONS_DIR if icons_dir != _ICONS_DIR else None
 
     app = Flask(__name__, static_folder='static', static_url_path='/static')
     app.config['PROJECT_PATH'] = project_path
@@ -572,7 +580,11 @@ def create_app(
                         tag = tag.split('}', 1)[1]
                     id_to_tag[eid] = tag
             content = ET.tostring(root, encoding='unicode', xml_declaration=False)
-            content, warnings = _inline_icons(content)
+            content, warnings = _inline_icons(
+                content,
+                icons_dir,
+                icons_fallback_dir,
+            )
             if not pending_edits:
                 _cache_put(
                     _SLIDE_CACHE, _SLIDE_CACHE_LOCK, path_str, mtime,
@@ -888,7 +900,7 @@ def _legacy_live_lock(project_path: Path) -> Optional[dict]:
     """Return a live legacy root lock, if one exists."""
     legacy_lock = project_path / LEGACY_LOCK_FILE_NAME
     existing = _read_lock(legacy_lock)
-    if existing and _process_alive(int(existing.get('pid', 0))):
+    if existing and _process_alive(_lock_pid(existing)):
         return existing
     return None
 
@@ -905,10 +917,10 @@ def _shutdown_existing(project_path: Path) -> int:
         logger.info('no live preview server running — nothing to stop')
         return 0
 
-    pid = int(existing.get('pid', 0) or 0)
+    pid = _lock_pid(existing)
     port = existing.get('port')
     if not _process_alive(pid):
-        _release_lock(lock_file)
+        _clear_lock(lock_file)
         logger.info('live preview already stopped; cleared stale lock')
         return 0
 
@@ -933,7 +945,7 @@ def _shutdown_existing(project_path: Path) -> int:
             os.kill(pid, signal.SIGTERM)
         except OSError:
             pass
-    _release_lock(lock_file)
+    _clear_lock(lock_file)
     logger.info('live preview server stopped (pid=%s)', pid)
     return 0
 
@@ -1042,7 +1054,7 @@ def main(argv: Optional[list[str]] = None) -> int:
 
     if args.daemon:
         existing = _read_lock(lock_file)
-        if existing and _process_alive(int(existing.get('pid', 0))):
+        if existing and _process_alive(_lock_pid(existing)):
             existing_pid = existing.get('pid', '?')
             existing_port = existing.get('port', '?')
             logger.error(

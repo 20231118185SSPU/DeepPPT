@@ -146,3 +146,67 @@ Priority 3: Fresh Chromium       ← no persistence, fallback only
 ```
 
 When `--cdp-port` is set (or read from `.hermes-chrome.env`), the script connects to the already-running Chrome. This is the fastest and most reliable mode — no browser launch delay, all login sessions available.
+
+## Selector Maintenance
+
+`browse_ai.py` uses hardcoded CSS selectors (defined in `AI_SERVICES`) to locate input fields, submit buttons, and response containers on each AI service's web UI. These selectors **will break** when services update their DOM — this is expected and not a bug.
+
+### Check if selectors still work
+
+```bash
+python skills/ppt-master/scripts/research/browse_ai.py --validate
+```
+
+This opens each AI service page in your CDP Chrome and checks whether the input and submit selectors resolve to visible elements. Output example:
+
+```
+Validating Grok...
+  [OK] Input element found
+  [OK] Submit button found
+Validating Kimi...
+  [WARN] Input found via fallback: textarea
+  [WARN] Submit button not immediately visible (may appear after typing)
+...
+==================================================
+Selector Validation Summary
+==================================================
+  Grok        : input=OK  submit=OK   error=none
+  Kimi        : input=OK  submit=WARN error=none
+  ...
+```
+
+- **input=OK**: the primary or fallback selector found a visible input element.
+- **input=FAIL**: no input element matched — the service likely changed its DOM.
+- **submit=WARN**: the submit button wasn't visible before typing (normal for some services).
+- **submit=FAIL + error**: the page itself failed to load (network, login expired, or URL changed).
+
+### How to update broken selectors
+
+1. Open the AI service in your CDP Chrome (or any browser with DevTools).
+2. Right-click the input field / send button → **Inspect**.
+3. In DevTools, note the element's `id`, `class`, `data-testid`, `aria-label`, or `role` attribute.
+4. Build a CSS selector that targets it (prefer `data-testid` > `aria-label` > `class` > `role`).
+5. Update the matching entry in `AI_SERVICES` in `browse_ai.py` (lines 44–105).
+
+Each service entry has these selector keys:
+
+| Key | What it targets |
+|---|---|
+| `input_selector` | The text input area (textarea or contenteditable div) |
+| `submit_selector` | The send/submit button |
+| `response_selector` | The container holding the AI's response text |
+| `stop_selector` | The button to stop a response in progress |
+| `new_chat_selector` | The button/link to start a new conversation |
+| `wait_ready_selector` | Element that signals the page is ready for input |
+
+Use comma-separated fallback selectors (e.g. `"textarea, div[contenteditable='true']"`) to be resilient to minor class name changes.
+
+### Fallback behavior when an AI service fails
+
+`browse_ai.py` does not abort when one service is broken. The fallback chain is:
+
+1. **Primary AI fails** → the next service in `FALLBACK_ORDER` is tried automatically.
+2. **All browser-based AIs fail** → the script outputs manual websearch prompt text so you can still research the topic via traditional search.
+3. **`--batch` mode** → each query in the plan is routed independently; a failure on one query does not block others.
+
+Run `--validate` periodically (e.g. monthly or after a service outage) to catch selector drift before it affects a batch run.

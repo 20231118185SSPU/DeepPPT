@@ -26,7 +26,7 @@ import json
 import html
 import logging
 from pathlib import Path
-from typing import List, Dict, Tuple
+
 from collections import defaultdict
 from xml.etree import ElementTree as ET
 
@@ -109,7 +109,7 @@ def _design_spec_is_brand(spec_path: Path) -> bool:
     return False
 
 
-def _parse_placeholders_fallback(block: str) -> Dict[str, Tuple[str, ...]]:
+def _parse_placeholders_fallback(block: str) -> dict[str, tuple[str, ...]]:
     """Tiny YAML-free reader for the documented ``placeholders:`` shape.
 
     Used only when PyYAML is unavailable. Recognized lines (indentation-aware,
@@ -127,7 +127,7 @@ def _parse_placeholders_fallback(block: str) -> Dict[str, Tuple[str, ...]]:
     Anything outside this minimal grammar is silently skipped — designers who
     rely on advanced YAML should install pyyaml.
     """
-    out: Dict[str, Tuple[str, ...]] = {}
+    out: dict[str, tuple[str, ...]] = {}
     inline_re = re.compile(
         r"^\s{2}([A-Za-z0-9_]+)\s*:\s*\[(.*)\]\s*$"
     )
@@ -137,7 +137,7 @@ def _parse_placeholders_fallback(block: str) -> Dict[str, Tuple[str, ...]]:
 
     in_section = False
     current_block_key: str | None = None
-    current_items: List[str] = []
+    current_items: list[str] = []
 
     def _flush_block() -> None:
         nonlocal current_block_key, current_items
@@ -224,21 +224,21 @@ class SVGQualityChecker:
         self.issue_types = defaultdict(int)
         # spec_lock drift state (populated only when _parse_spec_lock is available
         # and a spec_lock.md is found near the SVG)
-        self._lock_cache: Dict[Path, Dict] = {}
-        self._drift_summary: Dict[str, Dict[str, set]] = {
+        self._lock_cache: dict[Path, dict] = {}
+        self._drift_summary: dict[str, dict[str, set]] = {
             'colors': defaultdict(set),
             'fonts': defaultdict(set),
             'sizes': defaultdict(set),
         }
         self._lock_seen = False  # True once we locate at least one spec_lock.md
-        self._source_manifest_cache: Dict[Path, Dict] = {}
+        self._source_manifest_cache: dict[Path, dict] = {}
         # Template-mode aggregation (populated by check_directory when
         # template_mode=True). Each entry is (severity, kind, message) where
         # severity is 'error' or 'warning'. Printed in print_summary.
-        self._template_issues: List[Tuple[str, str, str]] = []
-        self._animation_issues: List[Tuple[str, str]] = []
+        self._template_issues: list[tuple[str, str, str]] = []
+        self._animation_issues: list[tuple[str, str]] = []
 
-    def check_file(self, svg_file: str, expected_format: str = None) -> Dict:
+    def check_file(self, svg_file: str, expected_format: str = None) -> dict:
         """
         Check a single SVG file
 
@@ -346,8 +346,8 @@ class SVGQualityChecker:
             # Determine pass/fail
             result['passed'] = len(result['errors']) == 0
 
-        except Exception as e:
-            result['errors'].append(f"Failed to read file: {e}")
+        except (OSError, UnicodeDecodeError, ET.ParseError) as e:
+            result['errors'].append(f"Failed to read/parse file: {type(e).__name__}: {e}")
             result['passed'] = False
 
         # Update statistics
@@ -367,7 +367,7 @@ class SVGQualityChecker:
         self.results.append(result)
         return result
 
-    def _check_xml_well_formed(self, content: str, result: Dict) -> bool:
+    def _check_xml_well_formed(self, content: str, result: dict) -> bool:
         """Check that the SVG content parses as well-formed XML.
 
         SVG is strict XML.  AI-generated decks frequently produce content that
@@ -391,7 +391,7 @@ class SVGQualityChecker:
             )
             return False
 
-    def _check_viewbox(self, content: str, result: Dict, expected_format: str = None):
+    def _check_viewbox(self, content: str, result: dict, expected_format: str = None):
         """Check viewBox attribute"""
         viewbox_match = re.search(r'viewBox="([^"]+)"', content)
 
@@ -414,7 +414,7 @@ class SVGQualityChecker:
                     f"viewBox mismatch: expected '{expected_viewbox}', got '{viewbox}'"
                 )
 
-    def _check_forbidden_elements(self, content: str, result: Dict):
+    def _check_forbidden_elements(self, content: str, result: dict):
         """Check forbidden elements (blocklist)"""
         content_lower = content.lower()
 
@@ -524,7 +524,7 @@ class SVGQualityChecker:
             except ValueError:
                 pass
 
-    def _check_fonts(self, content: str, result: Dict):
+    def _check_fonts(self, content: str, result: dict):
         """Check font usage.
 
         PPTX stores a single `typeface` per run with no runtime fallback, so every
@@ -572,7 +572,7 @@ class SVGQualityChecker:
                 )
                 break
 
-    def _check_dimensions(self, content: str, result: Dict):
+    def _check_dimensions(self, content: str, result: dict):
         """Check root SVG width/height presence and consistency with viewBox."""
         root_match = re.search(r'<svg\b([^>]*)>', content, re.IGNORECASE)
         if not root_match:
@@ -607,7 +607,7 @@ class SVGQualityChecker:
                 "(e.g. width=1280 height=720)."
             )
 
-    def _check_text_elements(self, content: str, result: Dict):
+    def _check_text_elements(self, content: str, result: dict):
         """Check text elements and wrapping methods"""
         # Count text and tspan elements
         text_count = content.count('<text')
@@ -623,7 +623,7 @@ class SVGQualityChecker:
                 f"Detected {len(text_matches)} potentially overly long single-line text(s) (consider using tspan for wrapping)"
             )
 
-    def _check_image_references(self, content: str, svg_path: Path, result: Dict):
+    def _check_image_references(self, content: str, svg_path: Path, result: dict):
         """Check image file existence and resolution vs display size."""
         # Find all <image ...> elements (capture the full tag)
         img_tag_pattern = re.compile(r'<image\b([^>]*)/?>', re.IGNORECASE)
@@ -694,7 +694,7 @@ class SVGQualityChecker:
             except Exception as exc:
                 logger.debug("Image resolution check skipped for %s: %s", href, exc)
 
-    def _check_animation_group_ids(self, content: str, result: Dict):
+    def _check_animation_group_ids(self, content: str, result: dict):
         """Warn when visible top-level groups cannot be customized."""
         try:
             root = ET.fromstring(content)
@@ -728,7 +728,7 @@ class SVGQualityChecker:
         'divot', 'shingle',
     })
 
-    def _check_pattern_fills(self, content: str, result: Dict):
+    def _check_pattern_fills(self, content: str, result: dict):
         """Audit <pattern> defs that drive PPTX <a:pattFill> output.
 
         svg_to_pptx maps <pattern fill> to native <a:pattFill prst="...">. The
@@ -799,7 +799,7 @@ class SVGQualityChecker:
                 return data
         return None
 
-    def _check_spec_lock_drift(self, content: str, svg_path: Path, result: Dict):
+    def _check_spec_lock_drift(self, content: str, svg_path: Path, result: dict):
         """Detect values used in the SVG that fall outside spec_lock.md.
 
         Covers colors (fill / stroke / stop-color), font-family, and font-size.
@@ -925,7 +925,7 @@ class SVGQualityChecker:
                 return candidate
         return None
 
-    def _load_image_sources_manifest(self, svg_path: Path) -> Dict:
+    def _load_image_sources_manifest(self, svg_path: Path) -> dict:
         manifest_path = self._find_image_sources_manifest(svg_path)
         if manifest_path is None:
             return {}
@@ -939,7 +939,7 @@ class SVGQualityChecker:
         self._source_manifest_cache[manifest_path] = payload
         return payload
 
-    def _check_sourced_image_attribution(self, content: str, svg_path: Path, result: Dict):
+    def _check_sourced_image_attribution(self, content: str, svg_path: Path, result: dict):
         """Require visible credit text for attribution-required web images.
 
         image_search.py records the legal tier in images/image_sources.json;
@@ -977,7 +977,7 @@ class SVGQualityChecker:
                     f"references/image-searcher.md §7."
                 )
 
-    def _check_contrast(self, content: str, svg_path: Path, result: Dict):
+    def _check_contrast(self, content: str, svg_path: Path, result: dict):
         """WCAG contrast check: text fill colors vs spec_lock background.
         
         Only checks text with font-size >= 14px — decorative micro-text
@@ -1021,7 +1021,7 @@ class SVGQualityChecker:
                     f"Text fill {fill} vs bg {bg_color}: "
                     f"WCAG contrast {contrast:.1f}:1 (below 4.5:1 standard)")
 
-    def _check_narrative_consistency(self, content: str, svg_path: Path, result: Dict):
+    def _check_narrative_consistency(self, content: str, svg_path: Path, result: dict):
         """Check that SVG text content aligns with the page's core_argument
         from detailed_outline.json (narrative restatement mechanism —
         executor-base.md §2.1a)."""
@@ -1092,7 +1092,7 @@ class SVGQualityChecker:
     SAFE_MARGIN_TB = 40   # top/bottom
     OVERFLOW_TOLERANCE = 10  # px grace to avoid false positives
 
-    def _check_layout_bounds(self, content: str, result: Dict):
+    def _check_layout_bounds(self, content: str, result: dict):
         """Check whether visible elements exceed the viewBox safe area.
 
         Uses regex-based heuristics (not a full SVG renderer) to detect
@@ -1247,7 +1247,7 @@ class SVGQualityChecker:
     MIN_H_GAP = 15   # px between same-row text elements
     MIN_V_GAP_RATIO = 0.3  # fraction of font-size for vertical gap
 
-    def _check_element_spacing(self, content: str, result: Dict):
+    def _check_element_spacing(self, content: str, result: dict):
         """Warn when text elements are too close together."""
         vb_match = re.search(r'viewBox="([^"]+)"', content)
         if not vb_match:
@@ -1312,7 +1312,7 @@ class SVGQualityChecker:
     # Check 14: Vertical distribution — content spread across zones
     # ------------------------------------------------------------------
 
-    def _check_vertical_distribution(self, content: str, result: Dict):
+    def _check_vertical_distribution(self, content: str, result: dict):
         """Check that content spans the safe area vertically (executor-base §14.5).
 
         Divides the viewBox into 3 equal zones and checks that each has
@@ -1387,7 +1387,7 @@ class SVGQualityChecker:
         ']'
     )
 
-    def _check_emoji_usage(self, content: str, result: Dict):
+    def _check_emoji_usage(self, content: str, result: dict):
         """Check for emoji Unicode characters in SVG text content (§4.0 ban)."""
         for m in re.finditer(r'<text[^>]*>([^<]*(?:<tspan[^>]*>[^<]*</tspan>[^<]*)*)</text>',
                              content, re.DOTALL):
@@ -1399,7 +1399,7 @@ class SVGQualityChecker:
                     f"Emoji character(s) detected in SVG text: {sample}. "
                     f"Use icons from the project icon library (data-icon placeholder) instead.")
 
-    def _check_element_overlap(self, content: str, result: Dict):
+    def _check_element_overlap(self, content: str, result: dict):
         """Check for overlapping content elements (>20px overlap in both axes)."""
         elements = []
         for m in re.finditer(
@@ -1432,7 +1432,7 @@ class SVGQualityChecker:
                 f"Element overlap: {overlap_count} pair(s) of content elements "
                 f"overlap by >{overlap_threshold}px in both axes")
 
-    def _check_image_text_spacing(self, content: str, result: Dict):
+    def _check_image_text_spacing(self, content: str, result: dict):
         """Check spacing between image and text elements (20-80px)."""
         images = []
         for m in re.finditer(
@@ -1473,7 +1473,7 @@ class SVGQualityChecker:
                     f"Image-text spacing: image at ({ix:.0f},{iy:.0f}) is "
                     f"{min_dist:.0f}px from nearest text (consider reducing gap)")
 
-    def _check_whitespace_balance(self, content: str, result: Dict):
+    def _check_whitespace_balance(self, content: str, result: dict):
         """Check left/right balance — flag if one side has >70% of content."""
         vb_match = re.search(r'viewBox="([^"]+)"', content)
         if not vb_match:
@@ -1576,7 +1576,7 @@ class SVGQualityChecker:
         darker = min(l1, l2)
         return (lighter + 0.05) / (darker + 0.05)
 
-    def check_directory(self, directory: str, expected_format: str = None) -> List[Dict]:
+    def check_directory(self, directory: str, expected_format: str = None) -> list[dict]:
         """
         Check all SVG files in a directory
 
@@ -1585,7 +1585,7 @@ class SVGQualityChecker:
             expected_format: Expected canvas format
 
         Returns:
-            List of check results
+            list of check results
         """
         dir_path = Path(directory)
 
@@ -1656,7 +1656,7 @@ class SVGQualityChecker:
             self._animation_issues.append(('warning', warning))
 
     def _check_template_contract(self, dir_path: Path,
-                                 svg_files: List[Path]) -> None:
+                                 svg_files: list[Path]) -> None:
         """Template-mode-only checks: roster ↔ design_spec consistency and
         per-page placeholder hints.
 
@@ -1734,7 +1734,7 @@ class SVGQualityChecker:
                     ))
 
     @staticmethod
-    def _extract_frontmatter_placeholders(spec_text: str) -> Dict[str, Tuple[str, ...]]:
+    def _extract_frontmatter_placeholders(spec_text: str) -> dict[str, tuple[str, ...]]:
         """Read the optional ``placeholders:`` map from design_spec.md frontmatter.
 
         Shape:
@@ -1778,7 +1778,7 @@ class SVGQualityChecker:
         if not isinstance(raw, dict):
             return {}
 
-        out: Dict[str, Tuple[str, ...]] = {}
+        out: dict[str, tuple[str, ...]] = {}
         for stem, value in raw.items():
             if not isinstance(stem, str):
                 continue
@@ -1789,7 +1789,7 @@ class SVGQualityChecker:
         return out
 
     @staticmethod
-    def _extract_spec_roster(spec_text: str) -> List[str]:
+    def _extract_spec_roster(spec_text: str) -> list[str]:
         """Best-effort: extract the page roster from design_spec.md.
 
         Templates do not share a uniform section index for the roster — the
@@ -1820,7 +1820,7 @@ class SVGQualityChecker:
         else:
             text = spec_text
 
-        stems: List[str] = []
+        stems: list[str] = []
         seen: set = set()
         # Accept backtick-quoted (`01_cover.svg`) and parenthesized
         # (01_cover.svg) forms — existing specs use either.
@@ -1847,8 +1847,8 @@ class SVGQualityChecker:
     @classmethod
     def _lookup_template_contract(
         cls, stem: str, *,
-        overrides: Dict[str, Tuple[str, ...]] | None = None,
-    ) -> Tuple[str, ...] | None:
+        overrides: dict[str, tuple[str, ...]] | None = None,
+    ) -> tuple[str, ...] | None:
         """Resolve a SVG stem to its expected placeholder set.
 
         Resolution order, first hit wins:
@@ -1878,7 +1878,7 @@ class SVGQualityChecker:
             return overrides[key]
         return cls.DEFAULT_PLACEHOLDER_CONVENTION.get(key)
 
-    def _print_result(self, result: Dict):
+    def _print_result(self, result: dict):
         """Print check result for a single file"""
         if result['passed']:
             if result['warnings']:

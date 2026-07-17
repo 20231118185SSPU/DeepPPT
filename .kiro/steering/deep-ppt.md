@@ -9,7 +9,7 @@
 3. Re-read `spec_lock.md` per page. No memory-based values.
 4. Use `analyze_images.py` for image info. Never open image files directly.
 5. Topic-only → run `workflows/deep-research.md` first; do not replace it with ordinary WebSearch.
-6. Dashboard after Step 2 → run/reuse `python3 skills/ppt-master/scripts/dashboard/server.py <project_path> --daemon --no-browser`; default port `8765`, log `<project_path>/dashboard/dashboard.log`, failure non-fatal.
+6. Dashboard after Step 2 → run/reuse `python3 skills/ppt-master/scripts/dashboard/server.py <project_path> --daemon`; default port `8765`, log `<project_path>/dashboard/dashboard.log`, failure non-fatal. Browser auto-opens locally; add `--no-browser` only for headless/remote sessions or when the user explicitly does not want a window.
 
 ## Routing Guardrails
 

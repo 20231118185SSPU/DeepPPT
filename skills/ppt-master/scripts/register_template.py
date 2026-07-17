@@ -52,6 +52,7 @@ import argparse
 import json
 import re
 import sys
+import xml.etree.ElementTree as ET
 from collections import OrderedDict
 from pathlib import Path
 
@@ -178,7 +179,20 @@ def _summary_from_use_cases(use_cases: str | None) -> str | None:
 
 
 def _list_pages(template_dir: Path) -> list[str]:
-    return sorted(p.stem for p in template_dir.glob("*.svg"))
+    svg_files = sorted(template_dir.glob("*.svg"))
+    for svg_path in svg_files:
+        try:
+            tree = ET.parse(svg_path)
+        except ET.ParseError as exc:
+            raise SpecParseError(
+                f"{svg_path.name}: invalid SVG XML — {exc}"
+            ) from exc
+        root = tree.getroot()
+        if not root.tag.endswith("}svg") and root.tag != "svg":
+            raise SpecParseError(
+                f"{svg_path.name}: root element is <{root.tag}>, expected <svg>"
+            )
+    return [p.stem for p in svg_files]
 
 
 def _derive_page_types(pages: list[str]) -> list[str]:

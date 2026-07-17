@@ -330,11 +330,11 @@ def analyze_images(images_dir: str) -> list[ImageAnalysis]:
 
     # Iterate through all files in the directory
     for filename in sorted(os.listdir(images_dir)):
-        filepath = os.path.join(images_dir, filename)
+        filepath = Path(images_dir) / filename
         meta = manifest.get(filename)
 
         # Check if it is an image file
-        if os.path.isfile(filepath) and Path(filename).suffix.lower() in IMAGE_EXTENSIONS:
+        if filepath.is_file() and Path(filename).suffix.lower() in IMAGE_EXTENSIONS:
             try:
                 with Image.open(filepath) as img:
                     width, height = img.size
@@ -366,8 +366,8 @@ def analyze_images(images_dir: str) -> list[ImageAnalysis]:
     for filename, meta in sorted(manifest.items()):
         if filename in seen_filenames:
             continue
-        filepath = os.path.join(images_dir, filename)
-        if not os.path.isfile(filepath):
+        filepath = Path(images_dir) / filename
+        if not filepath.is_file():
             continue
         result = _result_from_manifest(filename, filepath, meta)
         if result:
@@ -582,10 +582,10 @@ def main() -> None:
 
         # Save to CSV file (saved under the project's analysis/ directory,
         # alongside the PPTX intake bundle)
-        parent_dir = os.path.dirname(images_dir)
-        analysis_dir = os.path.join(parent_dir, "analysis")
-        os.makedirs(analysis_dir, exist_ok=True)
-        csv_path = os.path.join(analysis_dir, "image_analysis.csv")
+        parent_dir = Path(images_dir).parent
+        analysis_dir = parent_dir / "analysis"
+        analysis_dir.mkdir(parents=True, exist_ok=True)
+        csv_path = analysis_dir / "image_analysis.csv"
         save_csv(results, csv_path)
     else:
         print("No image files found in the directory.")

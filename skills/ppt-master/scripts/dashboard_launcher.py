@@ -35,7 +35,7 @@ _SCRIPTS_DIR = Path(__file__).resolve().parent
 if str(_SCRIPTS_DIR) not in sys.path:
     sys.path.insert(0, str(_SCRIPTS_DIR))
 
-from server_common import process_alive, read_lock  # noqa: E402
+from server_common import _port_available, process_alive, read_lock  # noqa: E402
 
 DEFAULT_PORT = 8765
 LOCK_FILE_NAME = ".dashboard.lock"
@@ -56,20 +56,6 @@ def find_safe_port(preferred: int, host: str = "127.0.0.1", span: int = 50) -> i
     if preferred in UNSAFE_PORTS:
         return preferred + 1
     return preferred
-
-
-def _port_available(host: str, port: int) -> bool:
-    """Return True when no listener owns ``host:port`` and a bind succeeds."""
-    with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as probe:
-        probe.settimeout(0.2)
-        if probe.connect_ex((host, port)) == 0:
-            return False
-    with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as probe:
-        try:
-            probe.bind((host, port))
-            return True
-        except OSError:
-            return False
 
 
 def launch_dashboard_daemon(

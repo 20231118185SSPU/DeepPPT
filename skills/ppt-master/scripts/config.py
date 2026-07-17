@@ -14,11 +14,13 @@ Usage:
     colors = Config.get_color_scheme('consulting')
 """
 
+from __future__ import annotations
+
 import argparse
 import json
 import os
 from pathlib import Path
-from typing import Dict, List, Optional, Any
+from typing import Any
 
 
 # ============================================================
@@ -110,8 +112,8 @@ def strip_inline_env_comment(value: str) -> str:
 def load_prefixed_env_file(
     prefixes: tuple[str, ...],
     *,
-    deprecated_keys: Optional[dict[str, str]] = None,
-) -> Optional[Path]:
+    deprecated_keys: dict[str, str] | None = None,
+) -> Path | None:
     """
     Load matching keys from the first supported .env file.
 
@@ -551,7 +553,7 @@ class Config:
     """Configuration manager."""
 
     @staticmethod
-    def get_canvas_format(format_key: str) -> Optional[Dict]:
+    def get_canvas_format(format_key: str) -> dict | None:
         """
         Get canvas format configuration.
 
@@ -564,12 +566,12 @@ class Config:
         return CANVAS_FORMATS.get(format_key)
 
     @staticmethod
-    def get_all_canvas_formats() -> Dict:
+    def get_all_canvas_formats() -> dict:
         """Get all canvas formats."""
         return CANVAS_FORMATS.copy()
 
     @staticmethod
-    def get_color_scheme(style: str) -> Optional[Dict]:
+    def get_color_scheme(style: str) -> dict | None:
         """
         Get color scheme.
 
@@ -582,7 +584,7 @@ class Config:
         return DESIGN_COLORS.get(style)
 
     @staticmethod
-    def get_industry_colors(industry: str) -> Optional[Dict]:
+    def get_industry_colors(industry: str) -> dict | None:
         """
         Get industry color palette.
 
@@ -595,12 +597,12 @@ class Config:
         return INDUSTRY_COLORS.get(industry)
 
     @staticmethod
-    def get_all_industries() -> List[str]:
+    def get_all_industries() -> list[str]:
         """Get list of all industries."""
         return list(INDUSTRY_COLORS.keys())
 
     @staticmethod
-    def get_layout_margins(format_key: str) -> Optional[Dict]:
+    def get_layout_margins(format_key: str) -> dict | None:
         """
         Get layout margin configuration.
 
@@ -686,9 +688,9 @@ def build_parser() -> argparse.ArgumentParser:
         description="PPT Master configuration management tool.",
     )
     subparsers = parser.add_subparsers(dest="command", required=True)
-    subparsers.add_parser("list-formats", help="List all canvas formats")
-    subparsers.add_parser("list-colors", help="List all color schemes")
-    subparsers.add_parser("list-industries", help="List all industry colors")
+    subparsers.add_parser("list-formats", help="list all canvas formats")
+    subparsers.add_parser("list-colors", help="list all color schemes")
+    subparsers.add_parser("list-industries", help="list all industry colors")
 
     export = subparsers.add_parser("export", help="Export configuration to JSON")
     export.add_argument(
@@ -714,18 +716,18 @@ def main(argv: list[str] | None = None) -> int:
     args = parser.parse_args(argv)
 
     if args.command == 'list-formats':
-        print("\nCanvas Format List:\n")
+        print("\nCanvas Format list:\n")
         for key, info in CANVAS_FORMATS.items():
             print(
                 f"  {key:15} | {info['name']:15} | {info['dimensions']:12} | {info['use_case']}")
 
     elif args.command == 'list-colors':
-        print("\nColor Scheme List:\n")
+        print("\nColor Scheme list:\n")
         for key, info in DESIGN_COLORS.items():
             print(f"  {key:12} | {info['name']:15} | Primary: {info['primary']}")
 
     elif args.command == 'list-industries':
-        print("\nIndustry Color List:\n")
+        print("\nIndustry Color list:\n")
         for key, info in INDUSTRY_COLORS.items():
             print(f"  {key:15} | {info['name']:15} | Primary: {info['primary']}")
 

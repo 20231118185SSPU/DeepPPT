@@ -71,6 +71,7 @@ description: >
 | `${SKILL_DIR}/scripts/svg_to_pptx.py` | Export to PPTX |
 | `${SKILL_DIR}/scripts/update_spec.py` | Propagate a `spec_lock.md` color / font_family change across all generated SVGs |
 | `${SKILL_DIR}/scripts/spec_lock_digest.py` | spec_lock integrity guard — generate/verify SHA-256 digest to detect unintended modifications |
+| `${SKILL_DIR}/scripts/spec_lock_validate.py` | spec_lock structural validator — required sections, data population, canvas/mode/colors sanity |
 | `${SKILL_DIR}/scripts/consulting_content_lock.py` | Optional consulting sidecar — generate `analysis/slide_content_lock.json` from detailed outline / spec_lock |
 | `${SKILL_DIR}/scripts/e2e_validate.py` | End-to-end pipeline validation — page count, speaker notes, image completeness, PPTX integrity |
 | `${SKILL_DIR}/scripts/pptx_quality_check.py` | Optional post-export PPTX structure QA — slide size, bounds, placeholders, image-area risk, native text, font floor |
@@ -88,7 +89,7 @@ description: >
 
 For complete tool documentation, see `${SKILL_DIR}/scripts/README.md`.
 
-> **Windows note**: if a `python3 ...` command fails (common on python.org installs, which provide `python.exe` but not `python3.exe`), rerun the same command with `python` instead.
+> **Windows note**: All `python3 ...` examples in this document should be read as `python ...` on standard Windows Python installs (python.org provides `python.exe` but not `python3.exe`). If `python3` is not recognized, substitute `python` in every command below. The scripts use `sys.executable` internally where possible.
 
 ## Template Index
 
@@ -478,7 +479,7 @@ The page is a **confirmation surface only** — Strategist still authors every r
 
 | Signal read | Line content |
 |---|---|
-| Heavy (long page count / bulky sources / heavy web-fetch accumulation) | State estimated page count and large source size; recommend switching to [split mode](workflows/resume-execute.md) after Step 5 — stop this chat, open a fresh window and input `继续生成 projects/<project_name>` to enter Phase B (SVG generation + export); no response or "continue" = default continuous mode. |
+| Heavy (long page count / bulky sources / heavy web-fetch accumulation) | State estimated page count and large source size; **strongly recommend** switching to [split mode](workflows/resume-execute.md) after Step 5 — stop this chat, open a fresh window and input `继续生成 projects/<project_name>` to enter Phase B (SVG generation + export); no response or "continue" = default continuous mode. **Hard warning**: continuous mode with 40+ pages risks context-compression drift and degraded SVG quality; if page count ≥ 40, print an additional ⚠️ warning before proceeding. |
 | Normal (default) | State scale is moderate, default continuous mode generates in one go; if mid-way window switch is desired, input `继续生成 projects/<project_name>` after Step 5 to switch to [split mode](workflows/resume-execute.md). |
 
 This line is required output every run — the user must always see the mode choice exists. Whether to act on it is the user's call. When the Confirm UI is used, this choice also appears as the in-page generation-mode toggle and is captured in `result.json` (`generation_mode`); the chat-summary fallback still prints this line.
@@ -615,11 +616,17 @@ Workflow:
 
 🚧 **GATE**: Step 4 (and Step 5 if triggered) complete; all prerequisite deliverables are ready. If Step 5 acquired AI/web assets, `python3 ${SKILL_DIR}/scripts/research/asset_gate.py <project_path>` must pass before Executor starts.
 
-**spec_lock integrity check** — before reading any references, verify the contract:
+**spec_lock integrity check (⛔ BLOCKING)** — before reading any references, verify the contract:
 ```
 python3 ${SKILL_DIR}/scripts/spec_lock_digest.py verify <project_path>
 ```
-Exit code 0 = integrity confirmed; exit code 2 = **MISMATCH** — the file was modified since Step 4. If mismatch, investigate before proceeding — re-run `generate` only if the change was intentional.
+Exit code 0 = integrity confirmed; exit code 2 = **MISMATCH** — the file was modified since Step 4. If mismatch, **do NOT proceed** — investigate before continuing; re-run `generate` only if the change was intentional. This is a hard gate: Executor MUST NOT start with a mismatched spec_lock.
+
+**spec_lock structural validation** — also before reading references, verify the contract has all required sections:
+```
+python3 ${SKILL_DIR}/scripts/spec_lock_validate.py <project_path>
+```
+Exit code 0 = all required sections present with data; exit code 1 = structural errors (missing sections or empty data). If errors, **do NOT proceed** — return to Strategist and fix the spec_lock before generating SVGs.
 
 Read the execution references for this deck's locked `mode` + `visual_style` (from `spec_lock.md`):
 ```
@@ -663,6 +670,8 @@ python3 ${SKILL_DIR}/scripts/svg_editor/server.py <project_path> --live
 > 2. `python3 ${SKILL_DIR}/scripts/svg_quality_checker.py <project_path>`
 > 3. `python3 ${SKILL_DIR}/scripts/harness_gate.py <project_path> --quick`
 > 4. `python3 ${SKILL_DIR}/scripts/rendered_layout_check.py <project_path> --render`
+>
+> **Why steps 1–2 before step 3?** Steps 1–2 provide granular per-script error output for debugging; step 3 (harness) re-runs the same checks internally but produces the unified PASS/FAIL report and dashboard trace. The redundancy is intentional — steps 1–2 are for the developer, step 3 is for the pipeline.
 
 - **svg_quality_checker**: XML structure, banned features, viewBox, spec_lock drift (undeclared colors/fonts/sizes).
 - **spec_compliance_check**: semantic compliance — unused declared colors, missing templates, icon inventory, image usage. Complements the structural checker with inverse-direction validation.

@@ -140,6 +140,7 @@ class AssetGate:
             self._check_search_assets(search_manifest)
 
         self._check_orphan_web_assets()
+        self._check_image_file_quality()
         self._print_result()
         return 1 if self.errors else 0
 
@@ -477,6 +478,51 @@ class AssetGate:
                     f"images/web_assets/{path.name} is not referenced by any plan, manifest, or SVG.",
                     "Step 5",
                     "Remove it if unused, or add it to detailed_outline/image_sources/SVG usage.",
+                )
+
+    def _check_image_file_quality(self) -> None:
+        """Basic quality checks on image files: can open, minimum resolution, not empty."""
+        images_dir = self.project / "images"
+        if not images_dir.is_dir():
+            return
+        MIN_DIMENSION = 64  # pixels — below this, image is likely a thumbnail or corrupt
+        MIN_FILE_SIZE = 1024  # bytes — below this, file is likely empty or corrupt
+        for path in sorted(images_dir.rglob("*")):
+            if not path.is_file():
+                continue
+            if path.suffix.lower() not in IMAGE_EXTENSIONS:
+                continue
+            # Skip formula PNGs and template reference images
+            if path.parent.name in ("formula", "templates", "web_assets"):
+                continue
+            # File size check
+            try:
+                size = path.stat().st_size
+            except OSError:
+                continue
+            if size < MIN_FILE_SIZE:
+                self._warn(
+                    f"{path.name} is suspiciously small ({size} bytes) — may be corrupt or empty.",
+                    "Step 5",
+                    "Regenerate or re-download this image.",
+                )
+                continue
+            # Pillow open + dimension check
+            try:
+                with Image.open(path) as img:
+                    img.load()
+                    w, h = img.size
+                    if w < MIN_DIMENSION or h < MIN_DIMENSION:
+                        self._warn(
+                            f"{path.name} has very low resolution ({w}x{h}) — may look blurry in PPT.",
+                            "Step 5",
+                            "Regenerate with higher resolution or replace with a larger image.",
+                        )
+            except Exception as exc:
+                self._warn(
+                    f"{path.name} could not be opened by Pillow: {exc}",
+                    "Step 5",
+                    "Regenerate or convert this image to a standard format (PNG/JPEG).",
                 )
 
     def _svg_references(self) -> set[str]:

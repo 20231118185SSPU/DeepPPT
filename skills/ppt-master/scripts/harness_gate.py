@@ -35,6 +35,7 @@ if str(SCRIPTS_DIR / "dashboard") not in sys.path:
     sys.path.insert(0, str(SCRIPTS_DIR / "dashboard"))
 
 from trace_writer import trace_event  # noqa: E402
+from console_encoding import configure_utf8_stdio  # noqa: E402
 
 
 def _run_check(cmd: list[str], label: str) -> dict:
@@ -261,9 +262,5 @@ def main(argv: list[str] | None = None) -> int:
 
 
 if __name__ == "__main__":
-    if sys.platform == "win32":
-        import io
-
-        sys.stdout = io.TextIOWrapper(sys.stdout.buffer, encoding="utf-8", errors="replace")
-        sys.stderr = io.TextIOWrapper(sys.stderr.buffer, encoding="utf-8", errors="replace")
+    configure_utf8_stdio()
     sys.exit(main())

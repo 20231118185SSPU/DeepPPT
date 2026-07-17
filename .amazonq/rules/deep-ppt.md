@@ -9,7 +9,7 @@
 - SVG pages: hand-written by agent, one at a time — no script-generated batch
 - Re-read `spec_lock.md` before each SVG page — no values from memory
 - Never read/open image files — use `analyze_images.py`
-- Dashboard: after Step 2, start/reuse `python3 skills/ppt-master/scripts/dashboard/server.py <project_path> --daemon --no-browser`; default port `8765`, log `<project_path>/dashboard/dashboard.log`, failure is non-fatal, read-only only and not a replacement for Confirm UI / Live Preview / quality gates / export
+- Dashboard: after Step 2, start/reuse `python3 skills/ppt-master/scripts/dashboard/server.py <project_path> --daemon`; default port `8765`, log `<project_path>/dashboard/dashboard.log`, failure is non-fatal, read-only only and not a replacement for Confirm UI / Live Preview / quality gates / export. Browser auto-opens locally; add `--no-browser` only for headless/remote sessions or when the user explicitly does not want a window
 - Existing PPTX: preserve page count/order/wording and beautify only → `beautify-pptx`; reuse original deck design with new content → `template-fill-pptx`; restructure story or change page count/order → main pipeline + `ppt_to_md`; harvest reusable template → `create-template`
 - Topic only? → `workflows/deep-research.md` first; do not replace it with ordinary WebSearch
 - Animation: page transitions are default; per-element animations are off unless requested. Object-level tuning → `customize-animations`

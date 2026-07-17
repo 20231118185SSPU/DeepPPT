@@ -24,6 +24,7 @@ Public API:
 from __future__ import annotations
 
 import sys
+from pathlib import Path
 
 if __name__ == "__main__":
     print(__doc__)
@@ -47,6 +48,8 @@ MAX_RETRIES = 3
 RETRY_BASE_DELAY = 10
 RETRY_BACKOFF = 2
 
+MAX_DOWNLOAD_SIZE = 50 * 1024 * 1024  # 50 MB — guard against memory exhaustion
+
 
 def resolve_output_path(prompt: str, output_dir: str = None,
                         filename: str = None, ext: str = ".png") -> str:
@@ -61,7 +64,7 @@ def resolve_output_path(prompt: str, output_dir: str = None,
     full_name = f"{file_name}{ext}"
     if output_dir:
         os.makedirs(output_dir, exist_ok=True)
-        return os.path.join(output_dir, full_name)
+        return str(Path(output_dir) / full_name)
     return full_name
 
 
@@ -202,12 +205,35 @@ def retry_delay(attempt: int, rate_limited: bool) -> int:
     return 5
 
 
-def download_image(url: str, path: str, headers: dict = None, timeout: int = 180) -> str:
-    """Download an image URL and save it to disk."""
-    response = requests.get(url, headers=headers or {}, timeout=timeout)
+def download_image(url: str, path: str, headers: dict = None, timeout: int = 180,
+                   max_size: int = MAX_DOWNLOAD_SIZE) -> str:
+    """Download an image URL and save it to disk with content-size guard."""
+    # Pre-check Content-Length before downloading
+    head_resp = requests.head(url, headers=headers or {}, timeout=timeout, allow_redirects=True)
+    head_resp.raise_for_status()
+    content_length = head_resp.headers.get("Content-Length")
+    if content_length and int(content_length) > max_size:
+        raise RuntimeError(
+            f"Image too large: {int(content_length)} bytes exceeds {max_size} byte limit for {url}"
+        )
+
+    response = requests.get(url, headers=headers or {}, timeout=timeout, stream=True)
     response.raise_for_status()
+
+    # Stream with size tracking to catch servers that lie about Content-Length
+    chunks = []
+    total = 0
+    for chunk in response.iter_content(chunk_size=65536):
+        total += len(chunk)
+        if total > max_size:
+            response.close()
+            raise RuntimeError(
+                f"Image download exceeded {max_size} byte limit (received {total} bytes) for {url}"
+            )
+        chunks.append(chunk)
+
     return save_image_bytes(
-        response.content,
+        b"".join(chunks),
         path,
         content_type=response.headers.get("Content-Type"),
     )

@@ -1,0 +1,6 @@
+# .align/check-commands.txt — 项目验证命令清单（每行一条，# 开头为注释）
+# 基线冒烟检查（无项目参数，仓库级）
+python skills/ppt-master/scripts/smoke_check.py --skip-help
+# 以下命令需要项目路径参数，交付时按实际 project_path 补全后运行：
+# python skills/ppt-master/scripts/harness_gate.py <project_path> --quick
+# python skills/ppt-master/scripts/e2e_validate.py <project_path> --pptx <exported_pptx>

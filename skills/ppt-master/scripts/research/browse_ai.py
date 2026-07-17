@@ -13,6 +13,9 @@ Usage:
 
     # List supported AI services
     python browse_ai.py --list
+
+    # Validate that CSS selectors still match the live AI service pages
+    python browse_ai.py --validate
 """
 
 import argparse
@@ -1099,7 +1102,11 @@ def main():
         return
 
     if args.validate:
-        validate_selectors(args.cdp_port, args.chrome_profile)
+        try:
+            validate_selectors(args.cdp_port, args.chrome_profile)
+        except RuntimeError as e:
+            print(f"ERROR: {e}", file=sys.stderr)
+            sys.exit(2)
         return
 
     if args.refresh_manifest:

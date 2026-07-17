@@ -34,6 +34,7 @@ import os
 import re
 import sys
 import time
+from pathlib import Path
 from urllib.parse import urljoin, urlparse
 
 try:
@@ -54,14 +55,51 @@ except ImportError:
     _CURL_IMPERSONATE = None
 
 
+_SSL_VERIFY = os.environ.get("DEEPPPT_SSL_VERIFY", "true").lower() not in ("false", "0", "no")
+
+_MAX_HTML_SIZE = 10 * 1024 * 1024   # 10 MB — guard for HTML page fetches
+_MAX_IMAGE_SIZE = 20 * 1024 * 1024  # 20 MB — guard for image downloads
+
+
 def _http_get(url: str, *, headers: dict | None = None, timeout: int | None = None,
-              verify: bool = False, stream: bool = False):
+              verify: bool | None = None, stream: bool = False,
+              max_size: int | None = None):
     """HTTP GET with curl_cffi preferred, requests fallback.
 
     Using curl_cffi lets this script fetch sites that reject Python's default
     TLS fingerprint (notably mp.weixin.qq.com). Signature mirrors the subset of
     requests.get() this script actually uses.
+
+    SSL verification defaults to ON. Set DEEPPPT_SSL_VERIFY=false to disable
+    (e.g., for self-signed certs in corporate proxies).
+
+    When *max_size* is set, a HEAD pre-check rejects responses whose
+    Content-Length exceeds the limit before the body is transferred.
     """
+    if verify is None:
+        verify = _SSL_VERIFY
+
+    # Content-Length pre-check to reject oversized responses early
+    if max_size is not None:
+        try:
+            if curl_requests is not None:
+                head = curl_requests.head(
+                    url, headers=headers, timeout=timeout,
+                    verify=verify, impersonate=_CURL_IMPERSONATE, allow_redirects=True,
+                )
+            else:
+                head = requests.head(url, headers=headers, timeout=timeout,
+                                     verify=verify, allow_redirects=True)
+            cl = head.headers.get("Content-Length")
+            if cl and int(cl) > max_size:
+                raise RuntimeError(
+                    f"Response too large: Content-Length {cl} exceeds {max_size} byte limit for {url}"
+                )
+        except RuntimeError:
+            raise
+        except Exception:
+            pass  # HEAD may not be supported; the GET will be guarded by caller
+
     if curl_requests is not None:
         return curl_requests.get(
             url, headers=headers, timeout=timeout,
@@ -129,7 +167,8 @@ def fetch_url(url: str) -> str:
 
     try:
         response = _http_get(url, headers=headers,
-                             timeout=CONFIG["timeout"], verify=False)
+                             timeout=CONFIG["timeout"],
+                             max_size=_MAX_HTML_SIZE)
         response.raise_for_status()
 
         # Enhanced encoding detection (requests handles this well usually, but we force apparent_encoding for Chinese)
@@ -137,7 +176,12 @@ def fetch_url(url: str) -> str:
         if hasattr(response, "apparent_encoding") and response.apparent_encoding:
             response.encoding = response.apparent_encoding
 
-        return response.text
+        text = response.text
+        if len(text) > _MAX_HTML_SIZE:
+            raise RuntimeError(
+                f"HTML page too large: {len(text)} bytes exceeds {_MAX_HTML_SIZE} byte limit for {url}"
+            )
+        return text
     except Exception as e:
         raise Exception(f"Failed to fetch {url}: {str(e)}")
 
@@ -205,6 +249,15 @@ def build_image_filename(abs_url: str, seq: int, content_type: str | None = None
     return f"{stem}{ext}"
 
 
+def _assert_inside(parent: str, child: str) -> str:
+    """Raise ValueError if resolved child escapes resolved parent directory."""
+    rp = Path(parent).resolve()
+    rc = Path(child).resolve()
+    if not str(rc).startswith(str(rp) + os.sep) and rc != rp:
+        raise ValueError(f"Path traversal blocked: {child} escapes {parent}")
+    return child
+
+
 def download_and_rewrite_images(
     content_element: Tag | None,
     page_url: str,
@@ -255,11 +308,18 @@ def download_and_rewrite_images(
                     abs_url,
                     headers={"User-Agent": CONFIG["user_agent"]},
                     timeout=CONFIG["timeout"],
-                    verify=False,
+                    max_size=_MAX_IMAGE_SIZE,
                 )
                 resp.raise_for_status()
+                # Guard: reject images whose actual body exceeds the limit
+                if len(resp.content) > _MAX_IMAGE_SIZE:
+                    raise RuntimeError(
+                        f"Image too large: {len(resp.content)} bytes exceeds {_MAX_IMAGE_SIZE} byte limit"
+                    )
                 filename = build_image_filename(
                     abs_url, idx, resp.headers.get("Content-Type"))
+                # Defense-in-depth: ensure filename doesn't escape image_dir
+                _assert_inside(image_dir, os.path.join(image_dir, filename))
 
                 # Check if image is webp and convert to png
                 stem, ext = os.path.splitext(filename)
@@ -729,7 +789,4 @@ def main() -> None:
 
 
 if __name__ == "__main__":
-    # Disable warnings for verify=False if needed, though often useful to see
-    import urllib3
-    urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
     main()

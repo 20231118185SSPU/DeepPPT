@@ -22,12 +22,12 @@ Shared rules live in `docs/ai-rules-shared.md`; routing details live in `docs/ro
    icons, and images. Never use values from memory.
 4. **Image handling**: Never read/open image files (.jpg, .png). Use `analyze_images.py` output.
 5. **Language**: Match the user's input language. Design spec follows English template structure.
-6. **Dashboard**: After Step 2, start or reuse `python3 skills/ppt-master/scripts/dashboard/server.py <project_path> --daemon --no-browser`. Default port is `8765`; logs are at `<project_path>/dashboard/dashboard.log`; failure is non-fatal.
+6. **Dashboard**: After Step 2, start or reuse `python3 skills/ppt-master/scripts/dashboard/server.py <project_path> --daemon`. Default port is `8765`; logs are at `<project_path>/dashboard/dashboard.log`; failure is non-fatal. Browser auto-opens locally; add `--no-browser` only for headless/remote sessions or when the user explicitly does not want a window.
 
 ## Key Scripts
 
 - `python3 skills/ppt-master/scripts/project_manager.py init <name> --format ppt169`
-- `python3 skills/ppt-master/scripts/dashboard/server.py <path> --daemon --no-browser`
+- `python3 skills/ppt-master/scripts/dashboard/server.py <path> --daemon` (add `--no-browser` for headless/remote)
 - `python3 skills/ppt-master/scripts/confirm_ui/server.py <path> --daemon --wait`
 - `python3 skills/ppt-master/scripts/image_gen.py --manifest <path>/images/image_prompts.json`
 - `python3 skills/ppt-master/scripts/svg_quality_checker.py <path>`
