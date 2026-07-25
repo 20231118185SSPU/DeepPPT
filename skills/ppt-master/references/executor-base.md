@@ -23,7 +23,7 @@
 - Layout SVG already loaded in this batch
 - Chart SVG already loaded in this batch
 
-`spec_lock.md` is the only file re-read per page (§2.1).
+`spec_lock.md` and the current page object from `page_expression.json` are the only contracts re-read per page (§2.1).
 
 **Exception**: user mid-deck adds pages or swaps templates introducing a basename/chart absent from the original batch → read the new file once, continue.
 
@@ -55,6 +55,8 @@ When the project's chosen template is a `mirror` template (`design_spec.md` fron
 6. **No `{{}}` substitution** — mirror SVGs do not contain placeholder markers. Do not search for `{{TITLE}}` / `{{CONTENT_AREA}}` etc.; do not invent placeholders. The whole mirror contract is "verbatim source + in-place text edit".
 7. **Output filename** — follow the standard project SVG naming convention (`<NN>_<page_name>.svg` where `<NN>` matches the project page index, not the mirror source index). The mirror filename is the *reference*, not the *output*.
 
+**Assertion precedence in mirror mode (HARD rule)**: §2.1's visible-assertion contract governs mirror-page selection. Strategist MUST select a mirror page with an existing top-level text group that can carry the exact assertion at `>= typography.body` without moving, resizing, or regrouping elements. Executor may add or replace only that existing group's semantic `id` with `lead` or `subtitle`; this metadata edit does not change the mirror geometry. If no compatible page exists, return to Strategist to choose another mirror page or leave `page_layouts` empty for free design. Never hide the assertion, shrink it below body, or break mirror geometry to force a fit.
+
 **Detecting mirror mode**: read the chosen template's `design_spec.md` frontmatter once during §1.0 batch read. If `replication_mode: mirror`, every page that hits `page_layouts` follows §1.1 above; pages without a `page_layouts` entry still fall through to free design (resolution rule 3 above).
 
 **Mirror + chart pages**: chart structures inside a mirror SVG are already drawn (axis, series, labels). Treat them as visual references — replace the data labels and series text content to match the project's chart spec, but do not redraw the chart from a `templates/charts/<name>.svg` baseline. A mirror template's `page_charts` entries are normally absent for this reason.
@@ -81,9 +83,9 @@ Before generating each page, output which template is used:
 - **Content pages**: template defines only header/footer; content area is free
 - **No template**: generate entirely per the Design Spec
 
-### Transition Page Centering Rule
+### Transition Page Composition Rule
 
-**Hard rule**: all transition pages MUST use centered text alignment.
+**Default**: use centered text for a transition page when no stronger composition is specified.
 
 | Element | Alignment | Position |
 |---------|-----------|----------|
@@ -93,11 +95,11 @@ Before generating each page, output which template is used:
 | Next hook / guiding question | Center | Bottom area |
 | Decorative elements | Symmetric left/right | Top and bottom corners |
 
-**Forbidden**: left-aligned transition pages where content clusters on the left side leaving large empty space on the right. If the project uses `transition_centered` template, inherit its centered structure. For free-design transition pages, apply the same centering discipline.
+If the project uses the `transition_centered` template, inherit its centered structure. In free design, an asymmetric transition is allowed when its `visual_act` names the visual anchor and the empty field creates a deliberate bridge to the next section. Empty space alone is not a defect.
 
 **Section Divider Visual Treatment**:
 
-Chapter / section divider pages (all `anchor`-tagged transition pages) MUST NOT be a plain solid-color background with centered text — that is the "generic PowerPoint" appearance. Minimum visual treatment for every divider:
+Chapter / section divider pages (all `anchor`-tagged transition pages) must realize their `visual_act` rather than fall back to generic centered text. Candidate techniques:
 
 | Technique | When to use |
 |---|---|
@@ -106,11 +108,11 @@ Chapter / section divider pages (all `anchor`-tagged transition pages) MUST NOT 
 | Oversized chapter number | Chapter number typeset at ≥3× body size, semi-transparent, as a decorative anchor |
 | Image-as-canvas + mask | When the page has associated images or the source PPT used image backgrounds — full-bleed image with semi-transparent overlay (see §17.3 for opacity rules), content floated on top |
 
-At minimum, apply **2 of the 4 techniques** on each divider page. Use inherited palette colors (`primary`, `accent`, `secondary_accent`) to create visual hierarchy — not just the background color.
+Use the smallest set of techniques that makes the transition's anchor and next beat legible. Do not combine techniques by quota or add corner decoration merely to fill whitespace. Use inherited palette colors (`primary`, `accent`, `secondary_accent`) to create hierarchy.
 
 ### Deep-Dive Page Pairing Rule
 
-**Hard rule**: every content page that makes a substantive, expandable claim MUST be followed by ≥1 deep-dive page.
+**Default**: prove a substantive assertion on the same page with its dominant evidence. Add a following deep-dive only when the evidence cannot remain legible, traceable, and honestly explained on one canvas. Do not split by quota. When a split is necessary, the first page's `next_beat` must name the question the deep-dive resolves.
 
 | Content page claim type | Deep-dive layout | Content |
 |-------------------------|-----------------|---------|
@@ -119,7 +121,7 @@ At minimum, apply **2 of the 4 techniques** on each divider page. Use inherited 
 | Compares two approaches | Side-by-side layout | Detailed comparison with evidence |
 | Presents a key metric/number | Data callout layout | Context, breakdown, source |
 
-Deep-dive page titles MUST echo or reference the preceding content page's core claim (narrative continuity).
+Deep-dive page titles MUST echo or reference the preceding content page's assertion (narrative continuity).
 
 ### Screenshot Grid Rule
 
@@ -162,25 +164,30 @@ Screenshots MUST be the same dimensions within each column. Grid layout MUST be 
 
 Before the first SVG page, output a confirmation listing: canvas dimensions, body font size, color scheme (primary/secondary/accent HEX), font plan. Prevents spec/execution drift.
 
-### 2.1a Narrative Restatement (Mandatory)
+### 2.1a Narrative + Page-Expression Restatement (Mandatory)
 
 > Long decks lose narrative coherence when later pages drift from the outline's intent. This restatement mechanism pushes each page's narrative function into the highest-attention position — right before generation begins.
 
-**Hard rule**: Before generating each SVG page, Executor MUST restate (internally or in output):
+**Hard rule**: Before generating each SVG page, `read_file <project_path>/page_expression.json` and inspect the current `P<NN>` object. Restate (internally or in output):
 
-1. **Current page's narrative function** — from `detailed_outline.json` → `narrative_function` (or inferred from `design_spec.md §IX` if no detailed outline exists)
-2. **Current page's core argument** — from `detailed_outline.json` → `core_argument` (or the page's key takeaway from `§IX`)
-3. **Narrative bridge** — how this page connects to the previous page's ending point (one sentence)
+1. `question` — the audience question this page answers.
+2. `assertion` — the exact sentence this page must make visible.
+3. `evidence` — the source-grounded material that proves it.
+4. `visual_act` — how the evidence becomes a visible relationship.
+5. `takeaway` — the remembered landing point.
+6. `next_beat` — the bridge to the following page.
 
-This restatement ensures long-deck pages maintain narrative coherence even when context compression erodes earlier pages' intent. For pages without `detailed_outline.json` context, derive the restatement from `design_spec.md §IX Content` and the page's `page_rhythm` tag.
+Also restate the page's narrative function from `detailed_outline.json` when available. `next_beat` replaces an improvised bridge: the locked contract already states how the page advances.
 
-> This mechanism complements §2.1's spec_lock re-read: §2.1 ensures **visual consistency** (colors, fonts, icons), §2.1a ensures **narrative consistency** (argument flow, content coherence).
+Only structural objects (`cover`, `toc`, `chapter`, `transition`, `closing`, or `ending`) may contain `{"applicable": false, "reason": "..."}`. Respect the reason and do not fabricate evidence or a claim. Any main-pipeline project, new or legacy, with a missing JSON file, missing page ID, incomplete content-page field, or unreasoned exception returns to Strategist before SVG authoring; a legacy main-pipeline project must migrate the contract before resuming. Only standalone preservation routes without this sidecar may warn once and use their existing §IX contract.
+
+> This mechanism complements §2.1's spec_lock re-read: §2.1 ensures visual-token consistency; the JSON ensures expression and narrative consistency.
 
 ### 2.1 Per-page spec_lock re-read (Mandatory)
 
-> Long decks drift off the declared palette/icons mid-deck due to context compression. `spec_lock.md` is the canonical execution reference — re-read it per page to bypass model memory.
+> Long decks drift off the declared palette/icons mid-deck due to context compression. `spec_lock.md` is the canonical visual-token reference; `page_expression.json` owns per-page expression. Re-read both per page to bypass model memory.
 
-**Hard rule**: Before generating **each** SVG page, `read_file <project_path>/spec_lock.md`. Use only values from this file, not from memory. If context was auto-compacted, also `read_file <project_path>/design_spec.md` for the current page's §IX brief.
+**Hard rule**: Before generating **each** SVG page, `read_file <project_path>/spec_lock.md` and the current page object from `<project_path>/page_expression.json`. Use only values from these contracts, not from memory. If context was auto-compacted, also `read_file <project_path>/design_spec.md` for the current page's human-review §IX brief.
 
 **spec_lock.md has two functional layers** — read both, but treat them differently:
 
@@ -196,6 +203,8 @@ The partition is a thinking aid, not a structural split — both live in one fil
 - **Prose render recipe**: one `<text>` per paragraph; wrap lines with sibling `<tspan>` that reset `x` to the block's left edge and advance `dy` by the font size × a line-height factor. **Default — line-height by density (may override per content fit)**: ~1.4–1.5× for dense / small-body blocks (CLReq comfortable minimum), 1.6–2.0× for large-type, sparse, or `breathing` blocks. Fit about width ÷ font-size CJK glyphs per line (Latin fits roughly twice that); the last line runs short. Use the body ramp size, not a new one.
 - **Template precedence**: when an inherited template slot is a bullet list but the §IX block is prose, the prose wins — widen or reflow the container to hold the paragraph, or drop that card; do not pour the sentence back into the list slot.
 - **Mode precedence**: the locked mode shapes voice / register, not §IX's authored titles or page order. When a `§IX` title is a user-authored topic label, keep it — do not upgrade it to an assertion just because the mode (e.g. `pyramid`) favors them; mode title-tendencies apply only to AI-drafted titles.
+
+**Visible assertion (HARD rule)**: every applicable `assertion` must appear verbatim as editable SVG `<text>` in a top-level `lead` or `subtitle` semantic group. Its font size MUST be `>= typography.body`. Use the locked `lead` slot when the assertion is the page's primary headline; use `subtitle` when it supports a separate topic title. If the required role/size is absent, return to Strategist and extend `spec_lock.md typography` before drawing — never hide the assertion in body text, speaker notes, or a raster image, and never shrink it to make a layout fit.
 
 > Note: block-level phrasing, applied *within* the page's `page_rhythm` density (below), not against it.
 
@@ -222,7 +231,7 @@ Before drawing each page, look up its entry in `page_rhythm` (key format `P<NN>`
 | `dense` | Information-heavy. Card grids, multi-column layouts, KPI dashboards, tables, and charts are all permitted. This is the baseline behavior. |
 | `breathing` | Low-density impact page. Avoid **multi-card grid layouts** — do not organize content as multiple parallel rounded containers (3-card row, 4-card KPI grid, 2×2 matrix rendered as cards). Use naked text blocks, dividers, whitespace, or full-bleed imagery as the content structure. Single rounded visual elements (hero image corners, callouts, tags, one emphasis block) are fine — the rule is about grid structure, not about the `rx` attribute. Proportions follow information weight (not a preset ratio). Typical forms: hero quote, single large number with one-line interpretation, full-bleed image with floating caption, section transition. |
 
-> Without rhythm variation, every page defaults to card grids (the "AI-generated" look). `page_rhythm` is the only narrative lever that survives context compression.
+> Without rhythm variation, every page defaults to card grids (the "AI-generated" look). `page_rhythm` is the density / tempo lever; `page_expression.json` carries the page's argument and bridge through context compression.
 
 **Missing `page_rhythm` section** → emit `warning: spec_lock.md missing page_rhythm — defaulting all pages to dense` once, fall back to `dense` for all pages.
 
@@ -254,23 +263,27 @@ Before drawing each page, look up its entry in `page_rhythm` (key format `P<NN>`
 
 **pictures=0 is not a goal**: a page with no pictures can still fail if the chart semantics, surface system, spatial anchors, or reading order are visually degraded. A page with a small number of justified non-text assets can pass when the title, data, labels, SO WHAT, and sources remain editable.
 
-**Layout-analysis-aware generation (beautify mode)**:
+**Composition-first generation (main pipeline + beautify)**:
 
-When `design_spec.md §IX` includes per-page layout analysis fields (`persuasion_action`, `content_relation`, `layout_family`, `why_not_card_grid`) — typically present in beautify projects via `beautify_layout_analysis.json` — the Executor MUST respect these fields:
+For the main pipeline, read `content_relation`, `information_anchor`, and `visual_act` from the current `page_expression.json` object. Beautify projects that predate the sidecar use the equivalent §IX / `beautify_layout_analysis.json` fields. Before selecting a template, cards, or columns, state one page-level **composition action** that combines all three inputs.
 
-| `content_relation` | → Required layout approach | Card grid allowed? |
+**Canvas, not DOM (HARD rule)**: treat the slide as one continuous field. Establish one dominant evidence zone and a deliberate reading path first; only then add supporting text, dividers, panels, or containers. Do not begin with equal boxes and pour content into them. The locked visual style's composition geometry is vocabulary for realizing the action, not a substitute for choosing it.
+
+| `content_relation` | Default page-scale action around `information_anchor` | Card grid allowed? |
 |---|---|---|
-| `sequence` | Timeline, process flow, or step progression — directional layout with connectors | **No** |
-| `hierarchy` | Nested or layered structure with visual depth | **No** |
-| `single_claim` | Full-emphasis layout — hero image, big quote, or full-bleed statement | **No** |
-| `compare` | Side-by-side split (L/R or T/B) with symmetric structure | **No** |
-| `weighted_set` | Asymmetric layout — larger area for the primary item | **No** |
-| `evidence_chain` | Argument → proof flow — directional reading path | **No** |
-| `parallel_set` | Equal-weight items — card grid IS appropriate | **Yes** |
-| `matrix` | Two-axis structure — grid or matrix layout | **Yes** |
-| `summary` | Condensed takeaway — quote-style or hero layout | **No** |
+| `sequence` | Move the anchor through one directional path; checkpoints expose change or verification | **No** |
+| `hierarchy` | Nest, stack, or scale layers around the anchor so parent/child depth is visible | **No** |
+| `single_claim` | Isolate the anchor and make the proof, contrast, or consequence dominate | **No** |
+| `compare` | Align both states to a shared baseline / scale so the difference is the primary mark | **No** |
+| `weighted_set` | Enlarge the anchor and subordinate the remaining items by area, contrast, or proximity | **No** |
+| `evidence_chain` | Trace assertion → proof → interpretation as one causal or evidentiary path | **No** |
+| `parallel_set` | Repeat genuinely equal units with equal weight and one shared comparison rule | **Yes, when boundaries are real** |
+| `matrix` | Make both axes explicit, then place evidence by position rather than decoration | **Yes, as a true matrix** |
+| `summary` | Compress the anchor into one synthesis mark and land on the takeaway | **No** |
 
-**Self-check before generating a card grid**: if about to produce a multi-card grid layout (≥3 parallel rounded containers), check the page's `content_relation`. If it is NOT `parallel_set` or `matrix`, STOP and select a different layout that matches the content relation. This is the single most impactful rule for avoiding the "AI-generated look" in beautified decks.
+These are action families, not fixed layouts. `visual_act` must make the page-specific encoding explicit before geometry is chosen.
+
+**Self-check before generating a card grid or equal-width columns**: if `content_relation` is not `parallel_set` or `matrix`, STOP. Even for those two relations, proceed only when the containers encode the declared `visual_act`; otherwise select a canvas-level composition that gives the evidence a clearer hierarchy.
 
 **Per-page template lookup — `page_layouts` section**:
 
@@ -288,7 +301,7 @@ Dashboard mirrors this contract in its confirmation-center layout preview: befor
 
 Before drawing each page, look up its entry in `page_charts` to decide which chart structure applies (the SVG itself was loaded in §1.0):
 
-- Entry present (e.g., `P09: timeline_horizontal`) → adapt the corresponding chart SVG already in context. Apply project colors/typography/density; do not copy verbatim. Cross-reference `templates/charts/charts_index.json` for the chart's purpose summary if needed.
+- Entry present (e.g., `P09: timeline`) → adapt the corresponding chart SVG already in context. Apply project colors/typography/density; do not copy verbatim. Cross-reference `templates/charts/charts_index.json` for the chart's purpose summary if needed.
 - No entry for this page → either no chart on this page, or a chart that didn't match any catalog template (Strategist's `no-template-match` fallback). Design the visualization from scratch using `design_spec.md §VII` for guidance.
 - Whole section absent → no chart pages in this deck.
 
@@ -302,8 +315,8 @@ Before drawing each page, look up its entry in `page_charts` to decide which cha
 - **Main-agent ownership**: SVG generation must run in the main agent (not sub-agents) — pages share upstream context for cross-page visual continuity
 - **Generation rhythm**: lock global design context first, then generate pages sequentially in one continuous context. No batched groups (e.g., 5 at a time).
 - **Phased batch generation** (recommended):
-  1. **Visual Construction Phase**: generate all SVG pages sequentially for visual consistency. Use layout judgment for chart marks during the draft. **MUST embed plot-area markers** per §3.1 below on every chart page — coordinate calibration is a post-generation step (see [`workflows/verify-charts.md`](../workflows/verify-charts.md)) that depends on these markers. **First-page gate (Mandatory)**: after completing the first page, run `python3 scripts/svg_quality_checker.py <project_path>/svg_output/<first_page>.svg` and fix every error before drawing page 2. This catches systematic structural errors before they are repeated across the deck.
-  2. **Quality Check Gate**: run `python3 scripts/svg_quality_checker.py <project_path>` on `svg_output/`. Any `error` (banned features, viewBox mismatch, spec_lock drift, non-PPT-safe font, etc.) MUST be fixed on the offending page before proceeding — regenerate and re-check. Address `warning`s when straightforward. Do NOT defer to after `finalize_svg.py` — finalize rewrites SVG and masks some violations.
+  1. **Visual Construction Phase**: generate all SVG pages sequentially for visual consistency. Use layout judgment for chart marks during the draft. **MUST embed plot-area markers** per §3.1 below on every chart page — coordinate calibration is a post-generation step (see [`workflows/verify-charts.md`](../workflows/verify-charts.md)) that depends on these markers. **First-page gate (Mandatory)**: after completing the first page, run `python3 scripts/svg_quality_checker.py <project_path>/svg_output/<first_page>.svg`. Read the complete issue set before editing, select every straightforward warning that can be fixed without changing locked intent, then correct all errors and selected warnings in one pass. Re-run the checker once after that batch; never re-run it after each individual fix. Page 2 starts only after the re-check has no errors. This catches systematic structural errors before they are repeated across the deck.
+  2. **Quality Check Gate**: run `python3 scripts/svg_quality_checker.py <project_path>` on `svg_output/`. Read the complete deck-wide issue set before editing. Any `error` (banned features, viewBox mismatch, spec_lock drift, non-PPT-safe font, etc.) MUST be fixed, together with every warning selected as straightforward and compatible with locked intent, in one coherent pass across the offending pages. Re-run the checker once after the batch; never invoke it between individual fixes. If that re-check still reports errors, begin a new complete collect → batch-fix → single-recheck cycle. Do NOT defer to after `finalize_svg.py` — finalize rewrites SVG and masks some violations.
   3. **Logic Construction Phase**: after SVGs pass the quality check, batch-generate speaker notes for narrative continuity.
 
 ### 3.1 Chart Plot-Area Marker (MANDATORY on every chart page)
@@ -598,18 +611,18 @@ python3 scripts/svg_to_pptx.py <project_path>
 
 ---
 
-## 10. Text Centering & Fill Rule (文字居中与铺满规则)
+## 10. Text Alignment & Frame Fit (文字对齐与文本框适配)
 
-**Hard rule**: all text content MUST be centered within its content frame.
+**Hard rule**: alignment follows the page-level composition action, reading path, and locked visual style. There is no global centering or fill requirement.
 
-| Element | Alignment | Fill behavior |
-|---------|-----------|---------------|
-| Page titles | `text-anchor="middle"`, x = canvas center (640 for 1280-wide) | Span the full content width (60px margins) |
-| Body text / cards | `text-anchor="middle"` or centered `<text>` blocks | Fill the card/area width with appropriate padding (20-30px inner padding) |
-| Takeaway line | `text-anchor="middle"` | Span full content width |
-| Hero numbers | `text-anchor="middle"` | Centered in their container |
+| Element | Alignment behavior |
+|---------|--------------------|
+| Page title / assertion lead | Align to the primary evidence zone; center only when the composition is genuinely axial or symmetric |
+| Body / explanation | Prefer left/start alignment for continuous reading; center short labels only inside a genuinely centered unit |
+| Takeaway | Place at the visual act's landing point; alignment follows that edge or axis |
+| Hero number | Align with the scale, baseline, or object it proves; center only when it is the isolated page anchor |
 
-**Split-layout centering (分栏布局居中公式)**: for layouts dividing the canvas into image and text regions (e.g., left-image/right-text or right-image/left-text), text MUST be centered **within its own panel**, not against the full canvas:
+**Split-layout centering (when selected)**: when a split composition intentionally centers text inside one panel, center it **within that panel**, not against the full canvas:
 
 | Layout type | Text panel x-range (1280-wide) | Center x for `text-anchor="middle"` |
 |---|---|---|
@@ -623,9 +636,9 @@ python3 scripts/svg_to_pptx.py <project_path>
 
 **Forbidden**: using `x=640` (canvas center) for text in a split layout where the text panel does not span the full canvas — this misaligns text to one side of the panel.
 
-**Text spacing**: text blocks within a card/area MUST use the full available width. Do NOT cluster text in a narrow column when the card is wide. Use `x` positioning to center text within each container, and use `font-size` and `dy` spacing to fill the vertical space appropriately.
+**Text spacing**: size text frames for readable measure and the declared hierarchy. A narrow column is valid when it creates editorial rhythm or protects the dominant evidence field; do not stretch text merely to fill a wide container.
 
-**Forbidden**: text aligned to the left margin (`text-anchor="start"`) when the content area is wide and the text is short — this creates an ugly left-heavy layout. Center everything unless the layout specifically requires left alignment (e.g., timeline nodes).
+**Forbidden**: choosing alignment only because a card or column was created first. Alignment must reinforce the `visual_act`, not repair an arbitrary container.
 
 ## 11. Color Contrast Rule (色彩对比规则)
 
@@ -700,11 +713,12 @@ Used for: deep-dive side images, data page illustrations, comparison page visual
 
 **Hard rule**: every SVG page must pass these layout quality checks before moving to the next page.
 
-### 14.1 Whitespace control
-- Safe margins: left/right 50px, top/bottom 40px
-- Content must fill ≥75% of the safe area for text pages, ≥85% for image+text pages
-- Adjacent element gap > 40px = **whitespace violation** — reduce gap or enlarge elements
-- Empty corners or dead zones are forbidden — fill with content, decorative elements, or background images
+### 14.1 Whitespace intent
+- Safe margins default to left/right 50px and top/bottom 40px unless the locked template/style says otherwise.
+- There is no page-fill percentage target. Judge whitespace by whether it isolates the `information_anchor`, clarifies grouping, and advances the declared reading path.
+- Gaps larger than 40px are valid when they separate narrative stages or protect a dominant evidence field. A large gap is a problem only when related items become disconnected.
+- Empty corners and large negative-space fields are allowed. Never add content, decoration, or a background image solely to occupy them.
+- Actual failure: the visual act has no clear center of gravity, related evidence is stranded, or accidental imbalance obscures the assertion → evidence → takeaway path.
 
 ### 14.2 Font size minimums
 - **Global absolute minimum**: all visible text ≥ **14px** (body, labels, data, cards — everything except footnotes)
@@ -720,7 +734,7 @@ Used for: deep-dive side images, data page illustrations, comparison page visual
 
 ### 14.2a Card Density & Readability
 
-**Hard rule**: card count, card size, font size, line height, and text density MUST be solved together. A large card with tiny text and unused lower space is a layout failure, even when the page passes safe-margin checks.
+**Scope**: apply this section only after the composition-first check has established that cards encode a real `parallel_set` / `matrix` boundary. Card count, card size, font size, line height, and text density MUST then be solved together. A large card with tiny text and accidental unused lower space is a layout failure, even when the page passes safe-margin checks.
 
 | Card scenario | Required layout response | Minimum readable type |
 |---|---|---|
@@ -754,10 +768,10 @@ Used for: deep-dive side images, data page illustrations, comparison page visual
 - For every table, verify semantic role before font size: body/recommendation/risk/action text cannot become chart-axis micro text.
 
 ### 14.3 Centering discipline
-- All text inside content boxes must be horizontally centered (`text-anchor="middle"`)
-- Multi-line text blocks: left-align content, center the block within its container
-- Titles: always centered on the page
-- Data cards / info boxes: text centered within each card
+- Follow §10: alignment is chosen from the composition action and locked visual style, not globally.
+- Multi-line prose normally uses `text-anchor="start"`; short labels may center inside a truly symmetric mark.
+- Titles / assertion leads align to the primary evidence zone. Center them only for a centered composition.
+- Card text centers only when the card represents an equal scan unit; evidence, caveats, and explanation may require start alignment.
 
 ### 14.4 Complex pages → AI-generated full images
 - Relationship networks, data dashboards, complex comparison layouts: do NOT hand-draw in SVG
@@ -766,20 +780,13 @@ Used for: deep-dive side images, data page illustrations, comparison page visual
 
 ### 14.5 Vertical Distribution Rule (垂直分布规则)
 
-**Hard rule**: content MUST be evenly distributed across the full vertical safe area. Concentrating all content in the upper 50% while leaving the lower half empty is a layout failure.
+**Diagnostic, not a quota**: inspect the full safe area, but do not distribute content evenly by default. A page-scale visual act may intentionally weight the top, bottom, or one side and leave the opposite field empty.
 
-| Canvas | Safe area (y-range) | Minimum content coverage |
-|---|---|---|
-| 1280×720 (PPT 16:9) | y=50 to y=680 (630px usable) | Content spans ≥ 80% of safe area height |
-| 960×720 (PPT 4:3) | y=50 to y=680 | Same |
-
-**Distribution rules**:
-- Divide the safe area into **3 vertical zones**: top (y=50–260), middle (y=260–470), bottom (y=470–680)
-- Each zone MUST contain ≥ **20%** of the page's total content weight (text blocks, images, cards, or decorative elements)
-- A page where the bottom 40% is entirely empty background = **vertical distribution violation**
-- Exception: `breathing` pages with intentional negative space (hero number, full-bleed image with floating caption) — the dominant visual element must still touch ≥ 2 zones
-
-**Forbidden**: stacking all cards, text, and data in the top half of the canvas. If content does not fill the full height, enlarge elements, increase spacing, or add decorative fills in the lower region.
+**Distribution checks**:
+- The `information_anchor` must occupy the position and area promised by `visual_act`.
+- The assertion, evidence, explanation, and takeaway must form a coherent reading path without unrelated islands.
+- A dense cluster in one region is a failure only when it looks accidental or leaves evidence / takeaway disconnected — not because another zone is empty.
+- Fix accidental imbalance by recomposing the primary zone or reading path. Do not enlarge elements, spread gaps, or add decorative fills just to cover canvas area.
 
 ### 14.6 Layout Pre-Generation Checklist (Mandatory)
 
@@ -793,9 +800,9 @@ Used for: deep-dive side images, data page illustrations, comparison page visual
 | 4 | Font sizes meet page-type minimums (§14.2) | body ≥14px global, ≥20px content, ≥22px deep-dive |
 | 5 | ALL colors from `spec_lock.md colors` section | 0 undeclared colors |
 | 6 | Images sized to match layout slots (±10% tolerance) | 0 mismatches |
-| 7 | Image-text spacing between 20–80px | No element pairs outside range |
-| 8 | Content distributed across top/middle/bottom zones (§14.5) | Each zone ≥20% weight |
-| 9 | Left/right halves balanced (neither side >70% empty) | No one-sided layouts |
+| 7 | Image-text spacing preserves grouping and reading order | Related items read as one unit |
+| 8 | Whitespace is intentional (§14.1 / §14.5) | Anchor and reading path remain clear |
+| 9 | Visual hierarchy matches `content_relation + information_anchor + visual_act` | One dominant evidence zone; no accidental islands |
 | 10 | Icons use `data-icon` placeholder — no emoji (§4.0) | 0 emoji characters |
 | 11 | Page colors consistent with other pages in the deck | ≤3 new colors per page |
 
@@ -845,27 +852,29 @@ Use a sub-agent or visual model to evaluate each downloaded image against the pa
 
 ### 17.1 Visual Enrichment Rule (P2)
 
-**Hard rule**: data pages, explanation pages (讲解页), and timeline pages MUST NOT use flat solid-color backgrounds without decorative elements. Every such page needs at least **2 of the following 3** visual enrichment layers:
+**Hard rule**: enrichment must strengthen the page's evidence relationship. The dominant evidence field and its `visual_act` are the primary enrichment; gradients, depth, and decoration are optional style tools, not a quota.
 
-| Layer | Implementation | Examples |
+| Optional layer | Use only when | Examples |
 |---|---|---|
-| **Gradient background** | `<linearGradient>` or `<radialGradient>` on the page background `<rect>`, using project colors with subtle opacity variation | Primary→secondary_accent at 5-15% opacity shift; radial glow at 10% opacity in one corner |
-| **Card shadow / depth** | Drop shadow or layered card effect on content containers | `<filter>` with `feDropShadow` (dx=0, dy=4, stdDeviation=8, opacity=0.15-0.25); or layered rects with slight offset |
-| **Decorative elements** | Geometric shapes, lines, dots, or accent bars that reinforce the page's visual theme | Accent bar at card top (3-4px, primary color); corner decorative shapes; subtle dot grid pattern; divider lines between sections |
+| **Gradient background** | The locked visual style uses tonal depth and the gradient directs attention toward the anchor | Primary→secondary_accent at 5-15% opacity shift; radial emphasis behind a real focal point |
+| **Card shadow / depth** | An element is genuinely floating above the evidence field | Subtle shadow on a single overlay or callout, not every peer container |
+| **Decorative elements** | The mark reinforces a scale, path, grouping, or editorial rhythm | Baseline, connector, full-height rule, or accent that participates in the composition |
 
-**Minimum requirements by page type**:
+**Evidence-led defaults by page type**:
 
-| Page type | Required enrichment | Forbidden |
+| Page type | Primary visual evidence |
 |---|---|---|
-| Data / KPI dashboard | Gradient bg + card shadow | Pure `#FFFFFF` or `#0A0E1A` flat fill with no decoration |
-| Explanation / timeline | Gradient bg OR decorative shapes + card shadow | Flat solid background with plain text blocks |
-| Comparison / side-by-side | Accent bar or divider between sections + card shadow | Two flat cards with no visual separation |
-| Content (hero image) | Image itself is the enrichment; overlay scrim sufficient | — (image pages exempt) |
-| Breathing / quote | Single decorative element (accent bar, dot, line) | — (minimal enrichment ok) |
+| Data / KPI dashboard | The chart scale, delta, benchmark, or number relationship dominates; background may stay flat |
+| Explanation / timeline | Direction, checkpoints, and causal connectors carry the page |
+| Comparison | A shared baseline / axis and visible difference carry the page |
+| Content (hero image) | The image must prove or embody the assertion, not act as generic atmosphere |
+| Breathing / quote | The isolated assertion / evidence and intentional negative space carry the page |
+
+**Forbidden**: adding gradients, shadows, corner shapes, or filler images merely to avoid an empty area. Decoration is never evidence.
 
 ### 17.2 Card & Container Depth Rules
 
-**Hard rule**: cards and content containers MUST have visual depth cues. Flat cards on flat backgrounds create the "Word document" look.
+**Style precedence**: when cards or containers were justified by the composition action, separate them in the way the locked visual style calls for. Flat editorial / minimal styles may use whitespace, alignment, tint, or hairline rules with no shadow. Use depth only for a genuinely floating layer.
 
 | Depth technique | When to use | Specification |
 |---|---|---|

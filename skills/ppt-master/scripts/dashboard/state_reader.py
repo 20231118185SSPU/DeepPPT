@@ -33,7 +33,7 @@ from update_spec import parse_lock  # noqa: E402
 from artifact_registry import latest_pptx  # noqa: E402
 from bridge import dashboard_status, confirm_ui_status, live_preview_status  # noqa: E402
 from health_reader import health_summary  # noqa: E402
-from quality_reader import quality_summary  # noqa: E402
+from quality_reader import page_expression_summary, quality_summary  # noqa: E402
 
 _SKILL_DIR = Path(__file__).resolve().parents[2]
 _TEMPLATE_INDEXES = {
@@ -250,6 +250,13 @@ def _spec_digest(project: Path) -> str | None:
         return hashlib.sha256(lock_path.read_bytes()).hexdigest()
     except OSError:
         return None
+
+
+def _page_expression_state(project: Path) -> dict:
+    """Return lightweight page-expression contract observability for Dashboard."""
+    summary = page_expression_summary(project)
+    summary["modified_at"] = summary.pop("updated_at")
+    return summary
 
 
 def _canvas_info(canvas_id: str | None) -> dict | None:
@@ -659,6 +666,14 @@ def read_pipeline_state(project: Path) -> dict:
     canvas_id = info.get("format")
     if canvas_id == "unknown":
         canvas_id = _canvas_from_spec_lock(spec_lock)
+    quality = quality_summary(project)
+    digest_status = quality.get("spec_lock_digest") if quality else None
+    if digest_status == "PASS":
+        spec_lock_verified = True
+    elif digest_status == "FAIL":
+        spec_lock_verified = False
+    else:
+        spec_lock_verified = None
     payload = {
         "project_name": info.get("name") or project.name,
         "project_path": str(project.resolve()),
@@ -670,8 +685,9 @@ def read_pipeline_state(project: Path) -> dict:
         "confirm_status": confirm_status,
         "template_route": template_route_state(project),
         "spec_lock_digest": _spec_digest(project),
-        "spec_lock_verified": None,
-        "quality_summary": quality_summary(project),
+        "spec_lock_verified": spec_lock_verified,
+        "page_expression": _page_expression_state(project),
+        "quality_summary": quality,
         "image_provenance": _image_provenance_summary(project),
         "page_count": page_count,
         "svg_count": svg_count,

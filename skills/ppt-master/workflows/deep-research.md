@@ -27,17 +27,17 @@ This workflow is the **single entry point** for all research. The former `topic-
 | Cross-verified facts | >=8 facts confirmed by >=2 independent sources |
 | Structured data points | >=10 statistics / timeline events / comparisons / quotes |
 | Research report body | >=3000 Chinese characters or equivalent depth in the deck language |
-| DEEP_DIVE markers | >=5 |
+| DEEP_DIVE markers | Use only where evidence genuinely needs a separate deep section; no project-wide quota |
 | AI-page reference images | 1-3 vetted references per AI-generated page that depicts people, products, objects, places, or IP-specific subjects |
 | Information pages | >=1 downloaded web asset or svg-native information card per deep-dive / comparison / data / timeline page |
 
-If any metric fails, return to Step 2 or Step 3 and fill the gap before entering the main PPT pipeline. Do not pad prose to pass a word-count gate.
+Return search-plan/source shortfalls to Step 2 or Step 3, narrative-depth defects to Step 6, and visual-reference defects to Step 7 before entering the main PPT pipeline. Do not pad prose or add DEEP_DIVE markers merely to satisfy a count.
 
 ### Consulting Evidence Layer (Optional)
 
 **When to run**: enable this layer only for consulting, briefing, pyramid, board-report, investor, strategy, or other high-density business decks. General educational, showcase, narrative, and lightweight marketing decks keep the default research contract above.
 
-**Output when enabled**: Step 5 analysis SHOULD include an `evidence_table` in `_research/step5_analysis/research_analysis.json`:
+**Output when enabled**: Step 5 analysis MUST record `consulting_evidence` (`enabled`, `reason`, and `source`) and include an `evidence_table` in `_research/step5_analysis/research_analysis.json`. `source` is one of `user_request`, `ppt_brief`, or `orchestrator_classification`.
 
 | Field | Notes |
 |---|---|
@@ -50,23 +50,24 @@ If any metric fails, return to Step 2 or Step 3 and fill the gap before entering
 | `implication` | Why the evidence matters for the audience decision |
 | `recommended_visual` | Chart, table, matrix, timeline, map, evidence block, or text treatment |
 
-**Mandatory when enabled**: do not turn weak or missing evidence into confident claims. Mark gaps as `not provided`, `not derivable`, `directional only`, or `needs external verification` and keep them visible for `detailed-outline`.
+**Mandatory when enabled**: do not turn weak or missing evidence into confident claims. Mark gaps as `not provided`, `not derivable`, `directional only`, or `needs external verification` and keep them visible for `detailed-outline`. General educational, showcase, narrative, and lightweight marketing decks record `enabled: false` automatically; do not add a user question solely for this routing decision.
 
 ### Storyline Alternatives (Optional)
 
-**When to run**: enable after the optional consulting evidence layer when the deck needs a management recommendation, investment view, board decision, market assessment, or high-density business report.
+**When to run**: enable whenever the optional consulting evidence layer is enabled. The layer already limits this path to consulting, management briefing, investor, strategy, board, and other high-density decision-oriented work.
 
-**Output when enabled**: Step 6 narrative SHOULD include `storyline_alternatives` alongside the research report. Provide 2-3 candidate storylines before converging:
+**Output when enabled**: Step 6 narrative MUST place a machine-readable `STORYLINE_ALTERNATIVES` block at the start of `research_report.md`. Provide exactly 2-3 candidate storylines before converging, plus one top-level `recommended_storyline` object that references the selected candidate and states its rationale:
 
 | Field | Notes |
 |---|---|
+| `storyline_alternatives` | Array containing exactly 2-3 candidate objects |
 | `storyline_id` | Stable ID such as `S1` |
 | `scr` | Situation, Complication, Resolution as one sentence each |
 | `management_conclusion` | The decision-oriented answer this storyline supports |
 | `key_evidence_ids` | 5-8 IDs from `evidence_table` when available |
 | `caveats` | Evidence gaps, conflicts, or conditions that could weaken the story |
-| `recommended_reason` | Why this storyline best serves the user's goal |
-| `rejected_reason` | Why this storyline should not be used, when it is not recommended |
+| `audience_fit` | Audience, usage context, and decision need this storyline serves |
+| `rejected_reason` | Required for every unselected candidate; `null` for the selected candidate |
 | `page_material_pool` | Candidate numbers, tables, sidebars, charts, annotations, and SO WHAT blocks |
 
 **Default — no extra user stop (may override when requested)**: these alternatives inform the Strategist's recommendations and `detailed-outline`. They do not add a new mandatory confirmation screen unless the user asks to review the storyline before generation.
@@ -289,7 +290,7 @@ next_step: content-selection (if research_report.md exists)
 | Step 3 search fails for all browser AIs | `browse_ai.py` marks `needs_manual_websearch`; Agent manually runs built-in WebSearch/WebFetch or asks user for URLs |
 | Step 2 plan is too broad or source list is weak | Rewrite Step 2 before any search; do not compensate later with generic WebSearch |
 | Step 3 page result does not map to the search plan | Re-search that page using its planned dimensions / queries / source targets |
-| Step 6 quality gate fails | Auto-return to Step 3 for gap pages, then re-run Steps 4-6 |
+| Step 6 narrative/schema quality gate fails | Return to Step 6 and repair the report; if the failure identifies missing evidence, return to Step 3 for those gaps, then re-run Steps 4-6 |
 | `research_gate.py` fails after Step 7 | Return to the exact step printed by the gate; re-run downstream steps, then run the gate again before sync |
 | Context window exhaustion | Use split mode: Steps 1-3 in one session, Steps 4-7 in another |
 | Playwright unavailable | `browse_ai.py` cannot browse locally; use the emitted manual WebSearch prompt |

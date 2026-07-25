@@ -2,9 +2,11 @@
 
 > **⚠️ Skeleton for Strategist — do NOT copy verbatim into a project.** When producing `<project_path>/spec_lock.md`, emit only `##` sections with filled-in `-` data lines. Do NOT carry over any `>` blockquote guidance, HARD-rule notes, or override examples — those are author-time guidance, not runtime data. Every output line must be parseable data.
 >
-> Machine-readable execution contract. Executor MUST `read_file` this before every SVG page. Values not listed here must NOT appear in SVGs. For design narrative (rationale, audience, style), see `design_spec.md`.
+> Machine-readable visual-token contract. Executor MUST `read_file` this before every SVG page. Visual token values not listed here must NOT appear in SVGs. For per-page expression, see `page_expression.json`; for design narrative (rationale, audience, style), see `design_spec.md`.
 >
 > After SVG generation begins, this is the canonical source for color / font / icon / image values. Modifications should go through `scripts/update_spec.py` to keep this file and generated SVGs in sync.
+>
+> **Per-page expression ownership:** do not add a `## page_expression` section here. The current lock parser supports only flat `- key: value` rows and cannot preserve nested per-page fields safely. `<project_path>/page_expression.json`, authored by Strategist, is the sole machine truth for `question` / `assertion` / `evidence` / `visual_act` / `takeaway` / `next_beat`; `design_spec.md §IX` is its human-review mirror. Executor re-reads both this file and the current page object from that JSON before every page. `.spec_lock.digest` seals both machine contracts when `page_expression.json` is present; a legacy spec_lock-only digest blocks sidecar projects until it is regenerated.
 
 ## canvas
 - viewBox: 0 0 1280 720
@@ -56,6 +58,7 @@
 - code_family: Consolas, "Courier New", monospace
 - body: 22
 - title: 32
+- lead: 26
 - subtitle: 24
 - annotation: 14
 
@@ -70,7 +73,7 @@
 >
 > Sizes (`body` / `title` / etc.) are in px, matching SVG units. `body` is the **required baseline anchor** — all other sizes derive as ratios of it (ramp table: `design_spec_reference.md §IV`).
 >
-> **Size slots are anchors, not a closed menu.** Common slots (`title` / `subtitle` / `annotation`) cover frequent cases. Add role-specific slots (e.g. `cover_title: 72`, `hero_number: 48`, `chart_annotation: 13`) when needed — common for cover-heavy decks, consulting-style hero numbers, dense pages. Executor may use intermediate sizes as long as the ratio to `body` sits in the role's ramp band.
+> **Size slots are anchors, not a closed menu.** Common slots (`title` / `lead` / `subtitle` / `annotation`) cover frequent cases. `lead` is the visible page-assertion role and MUST be `>= body`; use `subtitle` instead when the assertion is supporting the title rather than leading the page. Add role-specific slots (e.g. `cover_title: 72`, `hero_number: 48`, `chart_annotation: 13`) when needed — common for cover-heavy decks, consulting-style hero numbers, dense pages. Executor may use intermediate sizes as long as the ratio to `body` sits in the role's ramp band.
 >
 > **⚠️ PPT-safe stack discipline (HARD rule).** PPTX stores one `typeface` per run with no runtime fallback. Every stack MUST end with a cross-platform pre-installed font: `"Microsoft YaHei", sans-serif` / `SimSun, serif` / `Arial, sans-serif` / `"Times New Roman", serif` / `Consolas, "Courier New", monospace`. Non-preinstalled fonts (Inter / Google Fonts / brand typefaces) may lead the stack only when the Design Spec notes the font-install or embedding requirement.
 >
@@ -138,7 +141,7 @@
 
 ## page_charts
 - P05: bar_chart
-- P09: timeline_horizontal
+- P09: timeline
 - P12: quadrant_bubble_scatter
 
 > One entry per page **that adapts a `templates/charts/` chart template**. Key: `P<NN>` matching §IX. Value: chart template basename without `.svg` (must match a key in `templates/charts/charts_index.json`).

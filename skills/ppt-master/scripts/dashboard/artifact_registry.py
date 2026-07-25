@@ -43,6 +43,8 @@ _ROOT_FILES = {
     "README.md",
     "design_spec.md",
     "spec_lock.md",
+    "page_expression.json",
+    ".spec_lock.digest",
     "animations.json",
     "trace.jsonl",
     "metadata.json",
@@ -99,6 +101,10 @@ def _artifact_type(rel_path: str, path: Path) -> str:
     if name == "design_spec.md":
         return "spec"
     if name == "spec_lock.md":
+        return "lock"
+    if name == "page_expression.json":
+        return "spec"
+    if name == ".spec_lock.digest":
         return "lock"
     if name == "animations.json":
         return "animation"
@@ -233,4 +239,3 @@ def latest_pptx(project: Path) -> str | None:
     if not pptx_files:
         return None
     return pptx_files[0].relative_to(project).as_posix()
-

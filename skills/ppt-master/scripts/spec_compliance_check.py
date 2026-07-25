@@ -17,6 +17,7 @@ Checks:
     6. Inventory cross-check — SVG data-icon attrs use declared library + inventory
     7. Cross-section consistency — page_layouts/chart/rhythm keys exist in page_rhythm
     8. Image usage — images declared in spec_lock referenced by at least one SVG
+    9. Page expression — Strategist contract completeness and visible assertions
 
 Usage:
     python3 scripts/spec_compliance_check.py <project_path> [options]
@@ -28,6 +29,10 @@ Examples:
 
 Dependencies:
     None (only uses standard library)
+
+References:
+    See ../references/strategist.md and ../templates/design_spec_reference.md for
+    the page-expression contract mirrored by this runtime checker.
 """
 
 from __future__ import annotations
@@ -36,6 +41,7 @@ import argparse
 import json
 import re
 import sys
+import xml.etree.ElementTree as ET
 from dataclasses import dataclass, field
 from pathlib import Path
 from typing import Optional
@@ -62,6 +68,42 @@ SUPPORTED_ICON_LIBRARIES = {
 }
 COLOR_HEX_RE = re.compile(r"^#[0-9A-Fa-f]{6}$")
 _DATA_ICON_RE = re.compile(r'data-icon="([^"]+)"')
+
+PAGE_EXPRESSION_FILENAME = "page_expression.json"
+PAGE_EXPRESSION_FIELDS = (
+    "question",
+    "assertion",
+    "evidence",
+    "visual_act",
+    "takeaway",
+    "next_beat",
+)
+CONTENT_TEXT_FIELDS = {
+    "question",
+    "assertion",
+    "visual_act",
+    "takeaway",
+    "next_beat",
+}
+STRUCTURAL_PAGE_KINDS = {
+    "cover",
+    "toc",
+    "chapter",
+    "transition",
+    "closing",
+    "ending",
+}
+CONTENT_RELATIONS = {
+    "single_claim",
+    "parallel_set",
+    "weighted_set",
+    "compare",
+    "sequence",
+    "hierarchy",
+    "evidence_chain",
+    "matrix",
+    "summary",
+}
 
 
 # ---------------------------------------------------------------------------
@@ -155,6 +197,580 @@ def _parse_page_ids(spec_lock: dict[str, dict[str, str]]) -> list[str]:
         pid = key.split("_")[0] if "_" in key else key
         ids.append(pid)
     return ids
+
+
+def _normalize_contract_text(value: object) -> str:
+    """Collapse XML/JSON whitespace for exact visible-text comparisons."""
+    return " ".join(str(value).split())
+
+
+def _svg_page_id(stem: str) -> Optional[str]:
+    """Map a supported SVG filename stem to its canonical page ID."""
+    prefixed = re.match(r"^(P\d+)(?:_|$)", stem)
+    if prefixed:
+        return prefixed.group(1)
+    numeric = re.match(r"^(\d+)(?:_|$)", stem)
+    if numeric:
+        return f"P{int(numeric.group(1)):02d}"
+    return None
+
+
+def _expected_page_ids(project: Path, spec_lock: dict[str, dict[str, str]]) -> list[str]:
+    """Return the union of locked and rendered project page IDs."""
+    page_ids = set(_parse_page_ids(spec_lock))
+    for directory_name in ("svg_output", "svg_final"):
+        svg_dir = project / directory_name
+        if not svg_dir.is_dir():
+            continue
+        for svg_path in svg_dir.glob("*.svg"):
+            page_id = _svg_page_id(svg_path.stem)
+            if page_id:
+                page_ids.add(page_id)
+    return sorted(page_ids, key=lambda value: int(value[1:]))
+
+
+def _preservation_route(project: Path) -> Optional[str]:
+    """Detect the existing direct-PPTX preservation routes."""
+    analysis = project / "analysis"
+    if (analysis / "fill_plan.json").is_file() or any(
+        analysis.glob("*fill_plan.json")
+    ):
+        return "template-fill"
+    if (analysis / "beautify_layout_analysis.json").is_file():
+        return "beautify"
+    return None
+
+
+def _contract_severity(route: Optional[str]) -> str:
+    return "warn" if route else "error"
+
+
+def _contract_detail(route: Optional[str]) -> str:
+    if route:
+        return f"{route} is a standalone preservation route; page-expression compatibility is warning-only."
+    return "Main-pipeline projects must satisfy the page-expression contract."
+
+
+def _valid_content_field(field_name: str, value: object) -> bool:
+    """Return whether a content-page field has the supported contract shape."""
+    if field_name in CONTENT_TEXT_FIELDS:
+        return isinstance(value, str) and bool(value.strip())
+    if field_name == "evidence":
+        if isinstance(value, str):
+            return bool(value.strip())
+        return (
+            isinstance(value, list)
+            and bool(value)
+            and all(isinstance(item, str) and bool(item.strip()) for item in value)
+        )
+    return False
+
+
+def _is_structural_exception(value: object) -> bool:
+    """Return whether a field is the exact allowed structural-page exception."""
+    return (
+        isinstance(value, dict)
+        and set(value) == {"applicable", "reason"}
+        and value.get("applicable") is False
+        and isinstance(value.get("reason"), str)
+        and bool(value["reason"].strip())
+    )
+
+
+def _font_sizes_from_element(element: ET.Element) -> list[float]:
+    """Read numeric font-size values from SVG attributes and inline style."""
+    values: list[float] = []
+    raw_values = [element.attrib.get("font-size", "")]
+    style = element.attrib.get("style", "")
+    style_match = re.search(r"(?:^|;)\s*font-size\s*:\s*([^;]+)", style)
+    if style_match:
+        raw_values.append(style_match.group(1))
+    for raw in raw_values:
+        match = re.match(r"\s*([0-9]+(?:\.[0-9]+)?)", raw)
+        if match:
+            values.append(float(match.group(1)))
+    return values
+
+
+def _effective_style_property(
+    element: ET.Element,
+    parent_map: dict[ET.Element, ET.Element],
+    name: str,
+) -> str:
+    """Resolve the nearest inherited SVG presentation property."""
+    current: Optional[ET.Element] = element
+    while current is not None:
+        value = _style_property(current, name)
+        if value:
+            return value
+        current = parent_map.get(current)
+    return ""
+
+
+def _effective_font_size(
+    element: ET.Element,
+    parent_map: dict[ET.Element, ET.Element],
+) -> Optional[float]:
+    """Resolve the nearest font-size declaration for a text-bearing node."""
+    current: Optional[ET.Element] = element
+    while current is not None:
+        sizes = _font_sizes_from_element(current)
+        if sizes:
+            # Inline style wins over a presentation attribute on the same node.
+            return sizes[-1]
+        current = parent_map.get(current)
+    return None
+
+
+def _text_font_sizes(
+    text_element: ET.Element,
+    parent_map: dict[ET.Element, ET.Element],
+) -> list[Optional[float]]:
+    """Return effective sizes for every visible text run in an assertion node."""
+    values: list[Optional[float]] = []
+    for element in text_element.iter():
+        if not _svg_element_visible(element, parent_map):
+            continue
+        if element.text and element.text.strip():
+            values.append(_effective_font_size(element, parent_map))
+        if element is not text_element and element.tail and element.tail.strip():
+            parent = parent_map.get(element)
+            if parent is not None and _svg_element_visible(parent, parent_map):
+                values.append(_effective_font_size(parent, parent_map))
+    return values
+
+
+def _find_svg_for_page(project: Path, page_id: str) -> Optional[Path]:
+    """Find the first SVG page matching a canonical page ID."""
+    for directory_name in ("svg_output", "svg_final"):
+        svg_dir = project / directory_name
+        if not svg_dir.is_dir():
+            continue
+        for svg_path in sorted(svg_dir.glob("*.svg")):
+            if _svg_page_id(svg_path.stem) == page_id:
+                return svg_path
+    return None
+
+
+def _typography_body_size(spec_lock: dict[str, dict[str, str]]) -> Optional[float]:
+    typography = spec_lock.get("typography", {})
+    if not isinstance(typography, dict):
+        return None
+    raw = str(typography.get("body") or "")
+    match = re.match(r"^\s*([0-9]+(?:\.[0-9]+)?)", raw)
+    return float(match.group(1)) if match else None
+
+
+def _style_property(element: ET.Element, name: str) -> str:
+    """Return an SVG presentation attribute or inline-style value."""
+    direct = element.attrib.get(name, "").strip()
+    if direct:
+        return direct
+    style = element.attrib.get("style", "")
+    match = re.search(rf"(?:^|;)\s*{re.escape(name)}\s*:\s*([^;]+)", style)
+    return match.group(1).strip() if match else ""
+
+
+def _svg_element_visible(
+    element: ET.Element,
+    parent_map: dict[ET.Element, ET.Element],
+) -> bool:
+    """Reject elements hidden by presentation attributes or inline style."""
+    current: Optional[ET.Element] = element
+    while current is not None:
+        if _style_property(current, "display").lower() == "none":
+            return False
+        if _style_property(current, "visibility").lower() in {"hidden", "collapse"}:
+            return False
+        opacity = _style_property(current, "opacity")
+        if opacity:
+            try:
+                if float(opacity) <= 0:
+                    return False
+            except ValueError:
+                pass
+        current = parent_map.get(current)
+
+    # A text run with no visible fill or stroke is not an observable assertion.
+    # Resolve inherited paint from the leaf so a child override does not get
+    # hidden by a group-level placeholder fill.
+    tag = element.tag.rsplit("}", 1)[-1]
+    if tag in {"text", "tspan"}:
+        fill = _effective_style_property(element, parent_map, "fill").lower()
+        stroke = _effective_style_property(element, parent_map, "stroke").lower()
+        fill_opacity = _effective_style_property(element, parent_map, "fill-opacity")
+        stroke_opacity = _effective_style_property(element, parent_map, "stroke-opacity")
+        fill_visible = fill not in {"none", "transparent"}
+        stroke_visible = stroke not in {"", "none", "transparent"}
+        if fill_opacity:
+            try:
+                fill_visible = fill_visible and float(fill_opacity) > 0
+            except ValueError:
+                pass
+        if stroke_opacity:
+            try:
+                stroke_visible = stroke_visible and float(stroke_opacity) > 0
+            except ValueError:
+                pass
+        if not fill_visible and not stroke_visible:
+            return False
+    return True
+
+
+def _visible_element_text(
+    element: ET.Element,
+    parent_map: dict[ET.Element, ET.Element],
+) -> str:
+    """Return rendered text while excluding hidden descendant runs."""
+    if not _svg_element_visible(element, parent_map):
+        return ""
+    chunks = [element.text or ""]
+    for child in element:
+        chunks.append(_visible_element_text(child, parent_map))
+        # A tail belongs to the parent, so it remains visible when only the
+        # preceding child is hidden.
+        chunks.append(child.tail or "")
+    return "".join(chunks)
+
+
+def _check_assertion_visibility(
+    project: Path,
+    page_id: str,
+    page: dict,
+    body_size: Optional[float],
+    route: Optional[str],
+) -> list[ComplianceIssue]:
+    """Check that an applicable assertion is editable and visibly prominent."""
+    issues: list[ComplianceIssue] = []
+    assertion = page.get("assertion")
+    if not isinstance(assertion, str) or not assertion.strip():
+        issues.append(ComplianceIssue(
+            severity=_contract_severity(route),
+            check="page-expression-assertion-invalid",
+            message=f"{page_id}: applicable assertion must be a non-empty string",
+            detail=_contract_detail(route),
+        ))
+        return issues
+    severity = _contract_severity(route)
+    detail = _contract_detail(route)
+    svg_path = _find_svg_for_page(project, page_id)
+    if svg_path is None:
+        issues.append(ComplianceIssue(
+            severity=severity,
+            check="page-expression-svg-missing",
+            message=f"{page_id}: no SVG page is available to verify assertion visibility",
+            detail=detail,
+        ))
+        return issues
+
+    try:
+        root = ET.parse(svg_path).getroot()
+    except (ET.ParseError, OSError) as exc:
+        issues.append(ComplianceIssue(
+            severity=severity,
+            check="page-expression-svg-parse",
+            message=f"{page_id}: cannot parse SVG for assertion visibility: {exc}",
+            detail=detail,
+        ))
+        return issues
+
+    parent_map = {child: parent for parent in root.iter() for child in parent}
+    role_groups = [
+        child for child in list(root)
+        if child.tag.rsplit("}", 1)[-1] == "g"
+        and child.attrib.get("id") in {"lead", "subtitle"}
+    ]
+    visible_role_groups = [
+        group for group in role_groups if _svg_element_visible(group, parent_map)
+    ]
+    assertion_text = _normalize_contract_text(assertion)
+    visible_groups = [
+        group for group in visible_role_groups
+        if assertion_text in _normalize_contract_text(
+            _visible_element_text(group, parent_map)
+        )
+    ]
+    if not role_groups:
+        issues.append(ComplianceIssue(
+            severity=severity,
+            check="page-expression-role-missing",
+            message=f"{page_id}: SVG has no top-level lead or subtitle semantic group",
+            detail=detail,
+        ))
+        return issues
+    if not visible_role_groups:
+        issues.append(ComplianceIssue(
+            severity=severity,
+            check="page-expression-role-hidden",
+            message=f"{page_id}: lead/subtitle semantic group is hidden",
+            detail=detail,
+        ))
+        return issues
+    if not visible_groups:
+        issues.append(ComplianceIssue(
+            severity=severity,
+            check="page-expression-assertion-not-visible",
+            message=f"{page_id}: assertion is not verbatim in a top-level lead/subtitle group",
+            detail=detail,
+        ))
+        return issues
+
+    matching_texts = [
+        (element, group)
+        for group in visible_groups
+        for element in group.iter()
+        if element.tag.rsplit("}", 1)[-1] == "text"
+        and _svg_element_visible(element, parent_map)
+        and assertion_text == _normalize_contract_text(
+            _visible_element_text(element, parent_map)
+        )
+    ]
+    if not matching_texts:
+        issues.append(ComplianceIssue(
+            severity=severity,
+            check="page-expression-assertion-not-editable",
+            message=f"{page_id}: assertion is not present in an editable SVG text element",
+            detail=detail,
+        ))
+        return issues
+
+    if body_size is None:
+        issues.append(ComplianceIssue(
+            severity=severity,
+            check="page-expression-body-size-missing",
+            message=f"{page_id}: typography.body is unavailable for assertion-size verification",
+            detail=detail,
+        ))
+        return issues
+
+    for text_element, group in matching_texts:
+        sizes = _text_font_sizes(text_element, parent_map)
+        if not sizes:
+            issues.append(ComplianceIssue(
+                severity=severity,
+                check="page-expression-assertion-size-missing",
+                message=f"{page_id}: assertion text has no readable font-size",
+                detail=detail,
+            ))
+            continue
+        if any(size is None for size in sizes):
+            issues.append(ComplianceIssue(
+                severity=severity,
+                check="page-expression-assertion-size-missing",
+                message=f"{page_id}: assertion text has a run without a readable font-size",
+                detail=detail,
+            ))
+            continue
+        minimum = min(size for size in sizes if size is not None)
+        if minimum < body_size:
+            issues.append(ComplianceIssue(
+                severity=severity,
+                check="page-expression-assertion-too-small",
+                message=(
+                    f"{page_id}: assertion font-size {minimum:g}px is below "
+                    f"typography.body {body_size:g}px"
+                ),
+                detail=detail,
+            ))
+    return issues
+
+
+def check_page_expression(
+    project_path: Path,
+    spec_lock: dict[str, dict[str, str]],
+) -> list[ComplianceIssue]:
+    """Validate the Strategist-owned page-expression contract and SVG assertions."""
+    route = _preservation_route(project_path)
+    severity = _contract_severity(route)
+    detail = _contract_detail(route)
+    issues: list[ComplianceIssue] = []
+    lock_path = project_path / "spec_lock.md"
+    try:
+        lock_text = lock_path.read_text(encoding="utf-8")
+    except OSError:
+        lock_text = ""
+    if re.search(r"(?mi)^##\s+page_expression\s*$", lock_text):
+        issues.append(ComplianceIssue(
+            severity=severity,
+            check="page-expression-duplicate-lock-section",
+            message="spec_lock.md must not contain a ## page_expression section",
+            detail=detail,
+        ))
+
+    contract_path = project_path / PAGE_EXPRESSION_FILENAME
+    if not contract_path.is_file():
+        issues.append(ComplianceIssue(
+            severity=severity,
+            check="page-expression-missing",
+            message=f"{PAGE_EXPRESSION_FILENAME} not found in project root",
+            detail=detail,
+        ))
+        return issues
+    try:
+        contract = json.loads(contract_path.read_text(encoding="utf-8"))
+    except (OSError, json.JSONDecodeError) as exc:
+        issues.append(ComplianceIssue(
+            severity=severity,
+            check="page-expression-parse-error",
+            message=f"Failed to parse {PAGE_EXPRESSION_FILENAME}: {exc}",
+            detail=detail,
+        ))
+        return issues
+    if not isinstance(contract, dict):
+        issues.append(ComplianceIssue(
+            severity=severity,
+            check="page-expression-root",
+            message=f"{PAGE_EXPRESSION_FILENAME} must contain a JSON object",
+            detail=detail,
+        ))
+        return issues
+    schema_version = contract.get("schema_version")
+    if not isinstance(schema_version, int) or isinstance(schema_version, bool) or schema_version != 1:
+        issues.append(ComplianceIssue(
+            severity=severity,
+            check="page-expression-schema-version",
+            message="page_expression.json schema_version must be 1",
+            detail=detail,
+        ))
+    if contract.get("owner") != "Strategist":
+        issues.append(ComplianceIssue(
+            severity=severity,
+            check="page-expression-owner",
+            message="page_expression.json owner must be Strategist",
+            detail=detail,
+        ))
+
+    pages = contract.get("pages")
+    if not isinstance(pages, dict):
+        issues.append(ComplianceIssue(
+            severity=severity,
+            check="page-expression-pages",
+            message="page_expression.json pages must be an object keyed by page ID",
+            detail=detail,
+        ))
+        return issues
+    expected_ids = _expected_page_ids(project_path, spec_lock)
+    actual_ids = set(str(page_id) for page_id in pages)
+    missing_ids = [page_id for page_id in expected_ids if page_id not in actual_ids]
+    extra_ids = sorted(actual_ids - set(expected_ids))
+    if missing_ids:
+        issues.append(ComplianceIssue(
+            severity=severity,
+            check="page-expression-page-coverage",
+            message=f"page_expression.json is missing project pages: {', '.join(missing_ids)}",
+            detail=detail,
+        ))
+    if extra_ids:
+        issues.append(ComplianceIssue(
+            severity=severity,
+            check="page-expression-page-coverage",
+            message=f"page_expression.json contains pages not in the project: {', '.join(extra_ids)}",
+            detail=detail,
+        ))
+    if not pages:
+        issues.append(ComplianceIssue(
+            severity=severity,
+            check="page-expression-pages-empty",
+            message="page_expression.json pages must not be empty",
+            detail=detail,
+        ))
+
+    body_size = _typography_body_size(spec_lock)
+    for page_id, page in pages.items():
+        page_label = str(page_id)
+        if not isinstance(page, dict):
+            issues.append(ComplianceIssue(
+                severity=severity,
+                check="page-expression-page-object",
+                message=f"{page_label}: page entry must be an object",
+                detail=detail,
+            ))
+            continue
+        raw_page_kind = page.get("page_kind")
+        if not isinstance(raw_page_kind, str) or not raw_page_kind.strip():
+            issues.append(ComplianceIssue(
+                severity=severity,
+                check="page-expression-page-kind",
+                message=f"{page_label}: page_kind must be a non-empty string",
+                detail=detail,
+            ))
+            page_kind = ""
+        else:
+            page_kind = raw_page_kind.strip().lower()
+        is_structural = page_kind in STRUCTURAL_PAGE_KINDS
+        if not is_structural:
+            relation = page.get("content_relation")
+            if not isinstance(relation, str) or relation not in CONTENT_RELATIONS:
+                issues.append(ComplianceIssue(
+                    severity=severity,
+                    check="page-expression-content-relation",
+                    message=(
+                        f"{page_label}: content_relation must be one of "
+                        f"{', '.join(sorted(CONTENT_RELATIONS))}"
+                    ),
+                    detail=detail,
+                ))
+            anchor = page.get("information_anchor")
+            if not isinstance(anchor, str) or not anchor.strip():
+                issues.append(ComplianceIssue(
+                    severity=severity,
+                    check="page-expression-information-anchor",
+                    message=f"{page_label}: information_anchor must be non-empty",
+                    detail=detail,
+                ))
+
+        for field_name in PAGE_EXPRESSION_FIELDS:
+            if field_name not in page:
+                issues.append(ComplianceIssue(
+                    severity=severity,
+                    check="page-expression-field-missing",
+                    message=f"{page_label}: missing required field '{field_name}'",
+                    detail=detail,
+                ))
+                continue
+            value = page[field_name]
+            if is_structural:
+                if not (
+                    _valid_content_field(field_name, value)
+                    or _is_structural_exception(value)
+                ):
+                    issues.append(ComplianceIssue(
+                        severity=severity,
+                        check="page-expression-structural-exception",
+                        message=(
+                            f"{page_label}: structural field '{field_name}' must be a "
+                            "non-empty applicable value or "
+                            "'{\"applicable\": false, \"reason\": \"...\"}'"
+                        ),
+                        detail=detail,
+                    ))
+            elif field_name == "assertion" and not _valid_content_field(field_name, value):
+                issues.append(ComplianceIssue(
+                    severity=severity,
+                    check="page-expression-assertion-invalid",
+                    message=f"{page_label}: content assertion must be a non-empty string",
+                    detail=detail,
+                ))
+            elif not _valid_content_field(field_name, value):
+                issues.append(ComplianceIssue(
+                    severity=severity,
+                    check="page-expression-field-invalid",
+                    message=(
+                        f"{page_label}: content field '{field_name}' must be a non-empty "
+                        "string (or a non-empty list of strings for evidence)"
+                    ),
+                    detail=detail,
+                ))
+
+        if isinstance(page.get("assertion"), str):
+            issues.extend(_check_assertion_visibility(
+                project_path,
+                page_label,
+                page,
+                body_size,
+                route,
+            ))
+    return issues
 
 
 _HEX_RE = re.compile(r"^#[0-9A-Fa-f]{6}$")
@@ -421,6 +1037,11 @@ def run_compliance(project_path: Path, *, strict: bool = False) -> ComplianceRep
         ))
         return report
 
+    # Page expression is a Strategist-owned main-pipeline contract. Preservation
+    # routes are detected from their existing workflow artifacts and retain only
+    # an explicit compatibility warning.
+    report.issues.extend(check_page_expression(project_path, spec_lock))
+
     # Locate SVGs
     svg_dir = _find_svg_dir(project_path)
     has_svgs = svg_dir is not None
@@ -463,7 +1084,7 @@ def run_compliance(project_path: Path, *, strict: bool = False) -> ComplianceRep
 # ---------------------------------------------------------------------------
 def build_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(
-        description="Validate spec_lock.md semantic compliance against SVG output.",
+        description="Validate spec_lock.md and page_expression.json compliance against SVG output.",
         formatter_class=argparse.RawDescriptionHelpFormatter,
     )
     parser.add_argument(
@@ -515,7 +1136,7 @@ def main(argv: Optional[list[str]] = None) -> int:
         return 0 if report.passed else 1
 
     # Human-readable output
-    print(f"=== spec_lock Compliance: {project.name} ===\n")
+    print(f"=== spec + page-expression Compliance: {project.name} ===\n")
 
     if not report.issues:
         print("All checks passed — no issues found.")

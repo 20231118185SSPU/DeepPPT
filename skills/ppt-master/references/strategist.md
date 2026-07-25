@@ -62,13 +62,15 @@ After confirming page count, check the following scenarios and select matching l
 | Comparing two or more objects | `screenshot_grid` | Need to visually show differences between projects/approaches/versions |
 | Showcasing multiple projects/cases/works | `gallery` | Have 4+ items to present with visual previews |
 | Content page claim needs detailed expansion | `deepdive_card` | Claim contains data/steps/scenarios that need explanation; pair with preceding content page |
-| Chapter transition | `transition_centered` | **Default for ALL transition pages** — replaces left-aligned layout |
+| Chapter transition | `transition_centered` | Default; may use an asymmetric composition when `visual_act` defines its anchor and reading path |
 
-**Hard rules**:
-1. Every content page that makes a substantive, expandable claim MUST be followed by ≥1 deep-dive page (`deepdive_card` or equivalent). A content page without a following deep-dive is a quality gap.
-2. Transition pages MUST use centered layout (`transition_centered`). Left-aligned transition pages with asymmetric whitespace are forbidden.
-3. When comparing objects, prefer `screenshot_grid` over pure text comparison tables. Screenshots from actual project outputs (svg_output/, exports/) are preferred over AI-generated placeholder images.
-4. Gallery layouts use actual project screenshots, not placeholder images.
+**Hard rule**: Every substantive content-page assertion MUST carry the evidence needed to support it on the same page. Add a following deep-dive page only when that evidence cannot remain legible and traceable on one canvas; when split, the first page's `next_beat` must name the question the deep-dive resolves. Do not add a deep-dive by quota.
+
+**Default — centered transitions (may override when `visual_act` defines an asymmetric anchor and reading path)**: use `transition_centered`; empty space by itself is not a failure.
+
+**Default — screenshot comparison (may override when another evidence form proves the comparison more directly)**: prefer `screenshot_grid` over pure text comparison tables. Use actual project outputs (`svg_output/`, `exports/`) before AI-generated placeholders.
+
+**Hard rule**: Gallery layouts use actual project screenshots, not placeholder images.
 
 ### c. Key Information Confirmation
 
@@ -278,6 +280,7 @@ Baseline scales with **canvas height first, then content density** — the `18`/
 | Chapter / section opener | 2-2.5x | 48-60px | 36-45px |
 | Page title | 1.5-2x | 36-48px | 27-36px |
 | Hero number (consulting KPIs) | 1.5-2x | 36-48px | 27-36px |
+| Lead / page assertion | 1-1.5x | 24-36px | 18-27px |
 | Subtitle | 1.2-1.5x | 29-36px | 22-27px |
 | **Body** | **1x** | **24px** | **18px** |
 | Annotation / caption | 0.7-0.85x | 17-20px | 13-15px |
@@ -734,44 +737,67 @@ Side-by-side only: container ratio must match image ratio. Hero / atmosphere / a
 
 ### Template Match — Visualization + Structural Patterns (Non-blocking — Strategist recommends, no user confirmation needed)
 
-The catalog covers **both data charts and structural information designs**. A "match" is not limited to numeric pages — any page whose content shape matches a `Pick for ...` clause is a candidate:
+Use both lenses when identifying candidate pages:
 
-- **Data-type pages**: comparisons, trends, proportions, KPIs, financials, rankings, distributions, conversion funnels
-- **Structural-type pages**: team rosters, agendas, principles & values, methodology phases, customer journey, capability maps, OKR cascades, roadmaps, strategic frameworks (SWOT / BCG / PEST / Porter's Five Forces / Value Chain — matched via `quadrant_text_bullets`, `quadrant_bubble_scatter`, `vertical_pillars`, `hub_inward_arrows`, `chevron_chain_with_tail` respectively)
+| Lens | Content shapes |
+|---|---|
+| Numeric / data | Comparisons, trends, proportions, KPIs, financials, rankings, distributions, funnels |
+| Structural information | Rosters, agendas, principles, phases, journeys, capability maps, OKR cascades, roadmaps, strategic frameworks |
 
-The most common Strategist failure mode is missing the structural half — treating "chart" as "numeric chart only" and leaving team / agenda / principles / journey pages as text-only when a template would fit. Read the catalog with both lenses.
+**Per-page recall**: For every page whose information structure may benefit from
+a visualization, restate its content shape as 3-8 concise English semantic tags.
+Translate source-language and industry terms into structure before recall. Run:
 
-> **Reading is mandatory; the catalog is a starting point, not a copy target.**
-> - Fully read `templates/charts/charts_index.json` **before drafting the Eight Confirmations** — the read happens up front, not when you sit down to write Section VII. The file contains `meta` + `charts.<key>.summary` only; each `summary` is a selection rule (`"Pick for … Skip if …"`), not a description. There is **no category, quickLookup, or keyword index** — selection is done by semantically matching each page's content shape against all 71 summaries in one pass.
-> - Not every page needs a chart. When a page's information structure matches a catalog entry, **use that template as a structural starting point** — keep the visualization type and core layout logic, then adapt composition, density, color, decoration, and accompanying elements to fit this deck's content and visual tone. Free adjustment is encouraged; what is forbidden is (a) generating without reading the catalog, and (b) blind verbatim mimicry that ignores the page's actual content weight.
->
-> **Workflow**:
-> 1. Read all 71 summaries; for each page, identify the Pick clause that matches the page's content shape AND does not match any Skip clause.
-> 2. Prefer specificity (`vertical_list` over generic `numbered_steps`).
-> 3. One primary visualization per page; a supporting layout may accompany it.
-> 4. List selections in Design Spec section VII; section IX only notes the visualization type name per page.
->
-> **Source vocabulary mismatch** — the catalog is in English. When source content uses Chinese / industry jargon ("中台", "架构图", "述职", "管道", "前后端"), translate the intent first, then match against summaries. The catalog deliberately keeps no keyword index — full-read forces semantic matching rather than lexical grep.
->
-> **Read-audit (mandatory, section VII format)** — single combined table; `summary-quote` column is the anti-fabrication audit, `path` + `usage` serve Executor lookup. Format defined in [`templates/design_spec_reference.md`](../templates/design_spec_reference.md) §VII:
+```bash
+python3 skills/ppt-master/scripts/chart_recall.py recall \
+  --page P03 \
+  --tag "time series" \
+  --tag "three metrics" \
+  --tag "direction over time" \
+  --limit 6
+```
+
+Read the returned JSON unfiltered. `confidence` is lexical only. At `high` or
+`medium`, select the best semantic fit or retain no match after candidate review.
+At `low` or `none`, select a fitting bounded candidate directly; otherwise rerun
+the same command once with `--semantic-fallback` before retaining no match.
+
+**Selection**:
+
+1. Reject candidates whose `Skip` clause matches the page.
+2. Prefer the most specific fitting structure; use one primary visualization per page.
+3. Treat the selected SVG as a structural reference, not a copy target. Adapt it to the deck's content, density, palette, and visual style.
+4. Validate every selected key before writing the lock:
+
+```bash
+python3 skills/ppt-master/scripts/chart_recall.py validate <key> [<key> ...]
+```
+
+**Read-audit (mandatory, section VII format)**: keep the combined audit table.
+Copy `path` and `summary` verbatim from the recall result; draw rejected
+runners-up only from real returned candidates. Format defined in
+[`templates/design_spec_reference.md`](../templates/design_spec_reference.md) §VII:
 > ```
-> Catalog read: 71 templates
+> Catalog source: live charts_index.json via chart_recall.py
 >
 > | Page | Template      | Path                              | Summary-quote (verbatim) | Usage |
 > | ---- | ------------- | --------------------------------- | ------------------------ | ----- |
-> | P03  | bar_chart     | templates/charts/bar_chart.svg    | "<verbatim first sentence>" | <intent> |
-> | P07  | line_chart    | templates/charts/line_chart.svg   | "<verbatim first sentence>" | <intent> |
-> | P11  | pie_chart     | templates/charts/pie_chart.svg    | "<verbatim first sentence>" | <intent> |
+> | P03  | bar_chart     | templates/charts/bar_chart.svg    | "<verbatim full summary>" | <intent> |
+> | P07  | line_chart    | templates/charts/line_chart.svg   | "<verbatim full summary>" | <intent> |
+> | P11  | pie_chart     | templates/charts/pie_chart.svg    | "<verbatim full summary>" | <intent> |
 >
-> Runners-up considered (3 entries minimum, drawn from real second-best matches):
+> Runners-up considered (up to 3 entries, drawn from real non-selected candidates):
 > - <key_A> | rejected for P03: <reason citing this deck's specifics>
 > - <key_B> | rejected for P07: <reason>
 > - <key_C> | rejected for P11: <reason>
 > ```
-> The `summary-quote` must be copy-pasted from `charts_index.json` — paraphrasing or summarizing breaks the audit. Every template name listed (selected or rejected) must `grep` cleanly inside `charts_index.json` (so misspelled or invented keys fail). If fewer than 3 visualization pages exist, list what exists and note "fewer than 3 viz pages"; runners-up still required for each page that does exist.
+> The `summary-quote` must be copied verbatim from the recall JSON. Every
+> selected key must pass `chart_recall.py validate`. List at most three real
+> non-selected candidates across the deck. If recall returned fewer, list every
+> available runner-up and state the actual shortfall; never invent a candidate.
 >
 > **Fallback when no template fits**:
-> 1. Re-read the full summary list with the page's intent re-stated in plain language — "non-obvious" matches often surface on the second pass (e.g. "causal chain" → `process_flow` or `sankey_chart`).
+> 1. At low or no lexical confidence, run the explicit semantic fallback once.
 > 2. If still no fit: data-driven content → table layout; conceptual/illustrative → "AI-generated image" (Image_Generator handles); structural → "custom layout".
 > 3. Mark the page `no-template-match` in section VII with the fallback chosen and why. Do NOT silently substitute a close-but-wrong chart.
 
@@ -868,7 +894,33 @@ Content-outline and speaker-notes strategy follow the deck's locked **mode** —
 
 > Note: §IX is the only content copy the Executor re-reads after context compression — what you write there is what survives.
 
+**Page-expression contract (HARD rule, main pipeline)**: every §IX page gets a `Page expression` block with these fields:
+
+| Field | Contract |
+|---|---|
+| `question` | The audience's question at this moment. |
+| `assertion` | The page's only repeatable assertion, written as one sentence. If it cannot be named, merge, split, or cut the page. |
+| `evidence` | The real source-grounded material that proves the assertion. Cite source / evidence IDs when available; never invent proof. |
+| `visual_act` | How that evidence becomes a visible relationship — for example magnify a delta, align two states to one baseline, expose a bottleneck, or trace a causal chain. A container recipe such as “three cards” or “two columns” is not a visual act. |
+| `takeaway` | What the audience should remember after leaving the page. |
+| `next_beat` | The unresolved question or bridge that advances the narrative to the next page. |
+
+Every main-pipeline content page MUST fill all six fields. Structural pages (`cover`, `toc`, `chapter`, `transition`, `closing`, or `ending`) still carry all six keys but may mark a field not applicable only with a page-specific reason; do not manufacture evidence for a structural page. In the machine contract, encode an exception as `{"applicable": false, "reason": "..."}` in that field.
+
+For every content page, also declare:
+
+- `content_relation`: one of `single_claim` / `parallel_set` / `weighted_set` / `compare` / `sequence` / `hierarchy` / `evidence_chain` / `matrix` / `summary`.
+- `information_anchor`: the one number, figure, comparison, object, or relationship that carries the page.
+
+These two fields plus `visual_act` are the composition inputs. Decide them before writing `Layout`, selecting a template, or naming cards / columns.
+
+**Single machine truth**: after authoring the human-review blocks in `design_spec.md §IX`, write `<project>/page_expression.json`. Its top level is `{"schema_version": 1, "owner": "Strategist", "pages": {...}}`; each `P<NN>` object contains `page_kind`, `content_relation`, `information_anchor`, and the six fields above. This JSON is the sole machine-readable page-expression contract. Do NOT duplicate the fields into `spec_lock.md ## page_expression`: the current lock parser is flat and cannot preserve nested page objects. `design_spec.md §IX` is the human-review mirror; keep it synchronized, but Executor treats the JSON as authoritative at runtime.
+
+Runtime contract gate: [`scripts/spec_compliance_check.py`](../scripts/spec_compliance_check.py) validates this sidecar and the rendered assertion role.
+
 **Detailed outline integration (conditional)**: when `<project>/detailed_outline.json` exists (produced by the `detailed-outline` workflow), use it as the authoritative page-by-page content plan for §IX. Transcribe each page's `core_argument`, `content_bullets`, `narrative_function`, and `visual_need` into the corresponding §IX entry — do NOT draft §IX from scratch or from headings alone when this file is present. The outline also provides `evidence_refs` for source traceability and `layout_plan` hints for §V. `§VIII Image Resource List` rows should reference the outline's `visual_need.image_description` and `image_slot_size`. When `detailed_outline.json` does not exist (user provided source files directly, no research), draft §IX as usual from the source material.
+
+Map `core_argument → assertion`, `evidence_refs / evidence_ids → evidence`, and `so_what → takeaway`. Reuse `content_relation` and `information_anchor` when present; derive them from the source when absent. Derive `question`, `visual_act`, and `next_beat` from the page's narrative function and adjacent pages. Missing optional outline fields are not permission to omit the page-expression contract.
 
 **Consulting outline fields (optional)**: when `detailed_outline.json` includes `storyline_alternatives`, `recommended_storyline`, `evidence_ids`, `caveats`, `so_what`, or `content_density`, preserve them in `design_spec.md §IX` for consulting / briefing / pyramid / executive-report / high-density business decks.
 
@@ -895,7 +947,7 @@ Content-outline and speaker-notes strategy follow the deck's locked **mode** —
 | VI. Icon Usage Spec | Source description, placeholder syntax, recommended icon list |
 | VII. Visualization Reference List | Visualization type, reference template path, used-in pages, purpose |
 | VIII. Image Resource List | Filename, dimensions, ratio, purpose, status, generation description |
-| IX. Content Outline | Grouped by chapter; each page includes layout, title, core message (the page's one idea), content blocks (in the selected phrasing mode), visualization type (if applicable) |
+| IX. Content Outline | Grouped by chapter; each page includes `content_relation`, `information_anchor`, the six-field page-expression contract, layout, title, content blocks (in the selected phrasing mode), and visualization type (if applicable) |
 | X. Speaker Notes Requirements | File naming rules, content structure description |
 | XI. Technical Constraints Reminder | SVG generation rules, PPT compatibility rules |
 
@@ -903,7 +955,8 @@ Content-outline and speaker-notes strategy follow the deck's locked **mode** —
 1. Read reference template: `templates/design_spec_reference.md`
 2. Generate complete spec from scratch based on analysis
 3. Save to: `projects/<project_name>.../design_spec.md`
-4. **Generate execution lock**: read `templates/spec_lock_reference.md` and produce `projects/<project_name>.../spec_lock.md` — a distilled, machine-readable short form of the color / typography / icon / image / **page_rhythm** / **page_layouts** / **page_charts** / **decisions** decisions above. This file is what the Executor re-reads before every page (see [executor-base.md](executor-base.md) §2.1). The values in `spec_lock.md` MUST exactly match the decisions recorded in `design_spec.md`; if they ever diverge, `spec_lock.md` wins and `design_spec.md` should be treated as historical narrative.
+4. **Generate page-expression contract**: produce `projects/<project_name>.../page_expression.json` from §IX. Strategist owns writes; Executor is read-only. Validate that every page ID is covered, every content page has six applicable fields, and every allowed structural-page exception has a reason.
+5. **Generate execution lock**: read `templates/spec_lock_reference.md` and produce `projects/<project_name>.../spec_lock.md` — a distilled, machine-readable short form of the color / typography / icon / image / **page_rhythm** / **page_layouts** / **page_charts** / **decisions** decisions above. This file is what the Executor re-reads before every page (see [executor-base.md](executor-base.md) §2.1). The values in `spec_lock.md` MUST exactly match the decisions recorded in `design_spec.md`; if they ever diverge, `spec_lock.md` wins and `design_spec.md` should be treated as historical narrative. Do not add a `page_expression` section; that content belongs only in the sibling JSON.
    - **`## decisions` is mandatory**: For every high-stakes design choice where a future AI session might question or reverse the decision, add an entry to the `## decisions` section with a causal chain (format: `- topic: "decision summary. WHY: rationale."`). The WHY suffix captures the reasoning that survives context compression — it prevents the "probability model re-debating settled decisions" failure mode. Aim for 2-5 entries per deck; typical entries: color psychology rationale, font legibility trade-offs, audience-specific layout choices, "why not X" counter-arguments. Do NOT duplicate operational specs already in other sections (colors, fonts, layouts).
    - **WHY reasoning in design_spec.md**: Throughout `design_spec.md`, every major design decision in §III (Color), §IV (Typography), §V (Layout), and §VII (Visualization) MUST include a causal explanation — not just "this color matches the theme" but "we chose X because the audience does Y in environment Z, so W would fail." This causal chain is the raw material that feeds `spec_lock.md ## decisions`. Without it, a new AI session has no basis for maintaining the decision.
    - **page_rhythm is mandatory**: Based on the page list in §IX Content Outline, assign each page one of `anchor` / `dense` / `breathing` (see `spec_lock_reference.md` for the full vocabulary). This is what breaks the uniform "every page is a card grid" feel — without it the Executor defaults all pages to `dense`.
@@ -913,6 +966,7 @@ Content-outline and speaker-notes strategy follow the deck's locked **mode** —
    - **Cover rhythm lock**: `P01` remains `anchor` in `spec_lock.md page_rhythm`, but its §IX `Cover impact` must prevent content-page patterns. Do not plan multi-card grids, agenda-like bullets, or equal-weight columns on the cover unless a template explicitly requires that structure, or a preservation path (beautify / template-fill) is transcribing the source cover verbatim.
    - **Closing impact (only when the deck closes)**: the deck's last page is its final visual contract — the strongest impression after the cover. When the deck genuinely lands on a conclusion / call-to-action / final-takeaway page, give it a `Closing impact` line in §IX: name the one thing the audience should leave with (a distilled takeaway, a forward call, a memorable restatement of the core claim) + one composition that delivers it — never a generic "Thank you" / contact-only slide or a centered-title reprise of the cover. **Do NOT invent a closing page to satisfy this** — the filler-page ban above still holds; apply it only to the page where the deck actually resolves. Same exemptions as the cover: skip on template / beautify / template-fill preservation paths.
    - **page_layouts (write only when a template is in use)**: For each page that inherits a template SVG, add `P<NN>: <svg_basename>` (e.g., `P04: 03a_content_image_text`). Pages designed freely get **no entry** — Executor reads the absence as "free design, no inheritance". If zero pages use a template, omit the section entirely. Dashboard's confirmation center reads this same section to show per-page layout thumbnails before generation, then switches to generated SVG/screenshots when Step 6 artifacts appear. Keep every basename exact and omit free-design pages instead of writing placeholders.
+   - **Mirror assertion fit**: when the applied template declares `replication_mode: mirror`, map a page only to a mirror SVG whose existing top-level text group can carry that page's exact `assertion` at `>= typography.body` without moving, resizing, or regrouping elements. If no mirror page fits, leave that page out of `page_layouts` for free design; do not defer an impossible assertion fit to Executor.
    - **page_charts (write only for chart pages that match a catalog template)**: For each page in `design_spec.md §VII` whose `reference template path` points to `templates/charts/<name>.svg`, add `P<NN>: <chart_name>`. Pages with `no-template-match` in §VII MUST NOT appear here (Executor would look for a non-existent reference). If the deck has no data-visualization pages, omit the section.
    - **Hard rule**: Use both `page_layouts` and `page_charts` for the same page only when the layout template is a compatible shell for the chart. Do not pair chart pages with conflicting page layouts (e.g., `waterfall_chart` + timeline layout, KPI cards + circle-diagram layout). If no compatible layout exists, omit the page from `page_layouts`.
 
@@ -926,13 +980,14 @@ Project folder must exist before Strategist runs. If not, execute:
 python3 scripts/project_manager.py init <project_name> --format <canvas_format>
 ```
 
-Save outputs to `projects/<project_name>_<format>_<YYYYMMDD>/design_spec.md`.
+Save `design_spec.md`, `page_expression.json`, and `spec_lock.md` to
+`projects/<project_name>_<format>_<YYYYMMDD>/`.
 
 ---
 
 ## 8. Complete Design Spec and Prompt Next Steps
 
-After writing `design_spec.md` and `spec_lock.md`, output the next-step prompt below. This is a handoff instruction, not part of `design_spec.md`. Pick the variant by whether Step 3 copied a template into `<project_path>/templates/`.
+After writing `design_spec.md`, `page_expression.json`, and `spec_lock.md`, output the next-step prompt below. This is a handoff instruction, not part of `design_spec.md`. Pick the variant by whether Step 3 copied a template into `<project_path>/templates/`.
 
 ### Template mode (template applied in Step 3)
 

@@ -328,7 +328,7 @@ class SVGQualityChecker:
                 # 13. Element spacing check: minimum gaps between elements.
                 self._check_element_spacing(content, result)
 
-                # 14. Vertical distribution check: content spread across zones.
+                # 14. Review-only vertical distribution heuristic.
                 self._check_vertical_distribution(content, result)
 
                 # 15. Emoji usage check: no emoji in SVG text (§4.0).
@@ -337,10 +337,10 @@ class SVGQualityChecker:
                 # 16. Element overlap detection.
                 self._check_element_overlap(content, result)
 
-                # 17. Image-text spacing validation (20-80px).
+                # 17. Image-text minimum gap + review-only large-gap heuristic.
                 self._check_image_text_spacing(content, result)
 
-                # 18. Whitespace balance (left/right).
+                # 18. Review-only whitespace balance heuristic (left/right).
                 self._check_whitespace_balance(content, result)
 
             # Determine pass/fail
@@ -1313,10 +1313,11 @@ class SVGQualityChecker:
     # ------------------------------------------------------------------
 
     def _check_vertical_distribution(self, content: str, result: dict):
-        """Check that content spans the safe area vertically (executor-base §14.5).
+        """Report sparse vertical distribution for human composition review.
 
         Divides the viewBox into 3 equal zones and checks that each has
-        at least some visible content.  Warns if the bottom 40% is empty.
+        at least some visible content. Intentional sparse compositions are valid;
+        this heuristic must never be satisfied by adding filler.
         """
         vb_match = re.search(r'viewBox="([^"]+)"', content)
         if not vb_match:
@@ -1359,8 +1360,9 @@ class SVGQualityChecker:
         has_bottom_content = any(y >= bottom_threshold for y in y_positions)
         if not has_bottom_content:
             result['warnings'].append(
-                f"Vertical distribution: bottom 40% of canvas has no content "
-                f"(all {total} elements above y={bottom_threshold:.0f})")
+                f"Review only: vertical distribution leaves the bottom 40% empty "
+                f"(all {total} elements above y={bottom_threshold:.0f}). Verify the "
+                "composition is intentional; do not add filler to occupy the canvas.")
 
         # Check: any zone < 15% of content weight
         for idx, (label, count) in enumerate(
@@ -1369,8 +1371,9 @@ class SVGQualityChecker:
             ratio = count / total
             if ratio < 0.15 and count == 0:
                 result['warnings'].append(
-                    f"Vertical distribution: {label} zone (y={idx*zone_h:.0f}-"
-                    f"{(idx+1)*zone_h:.0f}) has no content")
+                    f"Review only: vertical distribution leaves the {label} zone "
+                    f"(y={idx*zone_h:.0f}-{(idx+1)*zone_h:.0f}) empty. Verify the "
+                    "composition is intentional; do not add filler to occupy the zone.")
 
     _EMOJI_RE = re.compile(
         '['
@@ -1433,7 +1436,7 @@ class SVGQualityChecker:
                 f"overlap by >{overlap_threshold}px in both axes")
 
     def _check_image_text_spacing(self, content: str, result: dict):
-        """Check spacing between image and text elements (20-80px)."""
+        """Check the minimum image-text gap and review unusually large gaps."""
         images = []
         for m in re.finditer(
             r'<image\b[^>]*\bx="([^"]+)"[^>]*\by="([^"]+)"[^>]*'
@@ -1470,11 +1473,13 @@ class SVGQualityChecker:
                     f"only {min_dist:.0f}px away (min 20px)")
             elif min_dist > 80 and len(texts) > 1:
                 result['warnings'].append(
-                    f"Image-text spacing: image at ({ix:.0f},{iy:.0f}) is "
-                    f"{min_dist:.0f}px from nearest text (consider reducing gap)")
+                    f"Review only: image-text spacing places the image at "
+                    f"({ix:.0f},{iy:.0f}) {min_dist:.0f}px from nearest text. Verify "
+                    "the gap supports the composition; do not compress it solely to "
+                    "satisfy this heuristic.")
 
     def _check_whitespace_balance(self, content: str, result: dict):
-        """Check left/right balance — flag if one side has >70% of content."""
+        """Report strongly one-sided layouts for human composition review."""
         vb_match = re.search(r'viewBox="([^"]+)"', content)
         if not vb_match:
             return
@@ -1505,12 +1510,14 @@ class SVGQualityChecker:
         left_ratio = left_count / total
         if left_ratio > 0.80:
             result['warnings'].append(
-                f"Whitespace balance: {left_ratio:.0%} of elements on the left side — "
-                f"right side may have excessive whitespace")
+                f"Review only: whitespace balance places {left_ratio:.0%} of elements "
+                "on the left. Verify the one-sided composition is intentional; do not "
+                "add filler merely to balance the canvas.")
         elif left_ratio < 0.20:
             result['warnings'].append(
-                f"Whitespace balance: {1-left_ratio:.0%} of elements on the right side — "
-                f"left side may have excessive whitespace")
+                f"Review only: whitespace balance places {1-left_ratio:.0%} of "
+                "elements on the right. Verify the one-sided composition is intentional; "
+                "do not add filler merely to balance the canvas.")
 
     @staticmethod
     def _normalize_size(value: str) -> str:
@@ -2097,6 +2104,8 @@ _SHOULD_FIX_KEYWORDS = (
 def _classify_issue(msg: str) -> str:
     """Classify an error/warning message into must_fix/should_fix/accepted_risks."""
     msg_lower = msg.lower()
+    if msg_lower.startswith('review only:'):
+        return 'accepted_risks'
     for kw in _MUST_FIX_KEYWORDS:
         if kw.lower() in msg_lower:
             return 'must_fix'

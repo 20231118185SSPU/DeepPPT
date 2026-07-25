@@ -6,7 +6,7 @@ description: 深度调研 Step 5 — 结构化分析。对汇总文档进行交�
 
 > 对 Step 4 的汇总文档进行深度分析：交叉验证事实、提取结构化数据、构建叙事节点、规划演讲深度。
 
-**输入**: `_research/step4_consolidated/consolidated.md`
+**输入**: `_research/step4_consolidated/consolidated.md` + `ppt_brief.json`（若存在）+ 已确认的用户上下文
 **输出**: `_research/step5_analysis/research_analysis.json`
 
 **Hard rule**: 本步骤只输出结构化分析。不得在这里写完整叙事报告、视觉策略、图片提示词或 SVG 设计方案。
@@ -66,7 +66,58 @@ description: 深度调研 Step 5 — 结构化分析。对汇总文档进行交�
 
 ---
 
-## 5.4 研究丰富度评估
+## 5.4 咨询证据层（条件启用）
+
+仅在咨询、管理层简报、金字塔汇报、董事会、投资者、战略分析或其他高密度决策型演示中启用。根据 `ppt_brief.json` 的目标、受众和使用场景，以及用户已确认的上下文判断；通识教育、作品展示、叙事分享和轻量营销自动关闭，不为此单独询问用户。不得仅因材料中出现数据就自动启用。
+
+无论是否启用，都在顶层记录判定及理由：
+
+```json
+{
+  "consulting_evidence": {
+    "enabled": true,
+    "reason": "董事会需要基于证据作出市场进入决策",
+    "source": "ppt_brief"
+  }
+}
+```
+
+`source` 只能是 `user_request`、`ppt_brief` 或 `orchestrator_classification`，用于记录本次路由依据；它不改变用户已确认的目标。
+
+启用时，额外输出顶层 `evidence_table`。每个影响结论或决策的事实、数字、比较、建议、冲突和限制条件各占一行：
+
+```json
+{
+  "evidence_id": "E001",
+  "claim_or_data": "目标市场连续三年增长",
+  "value": "18.4",
+  "unit": "% CAGR",
+  "period": "2023-2026E",
+  "normalized_value": null,
+  "normalized_unit": null,
+  "source_ids": ["S01", "S03"],
+  "source_location": "S01 p.27 table 4; S03 section 2.1",
+  "confidence": "high",
+  "conflict_or_caveat": "S03 使用自然年，S01 使用财年",
+  "implication": "增长成立，但进入节奏需按财年口径复核",
+  "recommended_visual": "带口径注释的趋势图"
+}
+```
+
+**Hard rules**:
+
+- `evidence_id` 使用稳定且唯一的 `E001` 格式；后续改写不得重排或复用已删除的 ID
+- `value` / `unit` / `period` 保留来源原值；仅在可推导时填写 `normalized_value` / `normalized_unit`
+- `source_ids` 必须存在于 `sources`，`source_location` 必须精确到文件、URL、页码、章节、表格、工作表、段落或时间戳
+- `confidence` 只能是 `high` / `medium` / `low`，并与来源等级和交叉验证结果一致
+- 缺失或薄弱证据使用 `not provided` / `not derivable` / `directional only` / `needs external verification` 明示；不得用常识补值或把预测写成事实
+- `conflict_or_caveat`、`implication` 和 `recommended_visual` 不得省略；无已知冲突时写 `none identified`
+
+未启用时同样写完整 `consulting_evidence` 回执，并省略 `evidence_table`；不得生成空洞占位行。
+
+---
+
+## 5.5 研究丰富度评估
 
 对每个搜索维度评估丰富度：
 
@@ -96,7 +147,7 @@ description: 深度调研 Step 5 — 结构化分析。对汇总文档进行交�
 
 ---
 
-## 5.5 构建叙事节点
+## 5.6 构建叙事节点
 
 确定 3-6 个叙事节点，构建故事弧：
 
@@ -109,7 +160,7 @@ description: 深度调研 Step 5 — 结构化分析。对汇总文档进行交�
 
 ---
 
-## 5.6 规划演讲深度
+## 5.7 规划演讲深度
 
 对每个核心论点确定深度展开类型：
 
@@ -123,13 +174,13 @@ description: 深度调研 Step 5 — 结构化分析。对汇总文档进行交�
 
 ---
 
-## 5.7 输出 JSON
+## 5.8 输出 JSON
 
 增量写入 `_research/step5_analysis/research_analysis.json`（3 轮防超时）：
 
-**Round 5.7a**: 来源和维度
-**Round 5.7b**: 交叉验证和结构化数据（read → merge → save）
-**Round 5.7c**: 叙事节点和演讲深度（read → merge → save）
+**Round 5.8a**: 来源、维度和咨询证据层判定
+**Round 5.8b**: 交叉验证、结构化数据和条件 `evidence_table`（read → merge → save）
+**Round 5.8c**: 叙事节点和演讲深度（read → merge → save）
 
 ```json
 {
@@ -149,6 +200,12 @@ description: 深度调研 Step 5 — 结构化分析。对汇总文档进行交�
     "entities": [...],
     "quotes": [...]
   },
+  "consulting_evidence": {
+    "enabled": true,
+    "reason": "...",
+    "source": "ppt_brief"
+  },
+  "evidence_table": [...],
   "richness_assessment": {...},
   "content_options": [...],
   "narrative_nodes": [...],
@@ -158,6 +215,8 @@ description: 深度调研 Step 5 — 结构化分析。对汇总文档进行交�
   }
 }
 ```
+
+启用咨询证据层时，交付前验证 `evidence_table` 的 ID 唯一、`source_ids` 可解析，且每行均包含原值口径、精确来源位置、置信度、限制条件、含义和推荐视觉。关闭时验证顶层判定存在且没有伪造占位证据。
 
 ---
 

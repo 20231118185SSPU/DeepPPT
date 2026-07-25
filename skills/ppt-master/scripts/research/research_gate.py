@@ -25,9 +25,26 @@ from typing import Any
 
 
 URL_RE = re.compile(r"https?://[^\s\]\)\}\"'<>，。；;]+", re.IGNORECASE)
-DEEP_DIVE_RE = re.compile(r"\bDEEP_DIVE\b", re.IGNORECASE)
 CJK_RE = re.compile(r"[\u4e00-\u9fff]")
 WORD_RE = re.compile(r"[A-Za-z0-9][A-Za-z0-9_-]*")
+HTML_COMMENT_RE = re.compile(r"<!--.*?-->", re.DOTALL)
+STORYLINE_ALTERNATIVES_RE = re.compile(
+    r"<!--\s*STORYLINE_ALTERNATIVES\s*(\{.*?\})\s*-->",
+    re.IGNORECASE | re.DOTALL,
+)
+EVIDENCE_ID_RE = re.compile(r"^E\d{3,}$")
+STORYLINE_ID_RE = re.compile(r"^S[1-9]\d*$")
+CONSULTING_EVIDENCE_SOURCES = {
+    "user_request",
+    "ppt_brief",
+    "orchestrator_classification",
+}
+EVIDENCE_GAP_MARKERS = {
+    "not provided",
+    "not derivable",
+    "directional only",
+    "needs external verification",
+}
 
 
 @dataclass
@@ -66,7 +83,7 @@ class ResearchGate:
         if isinstance(analysis, dict) or report_text:
             self._check_research_analysis(analysis if isinstance(analysis, dict) else {}, report_text)
         if report_text:
-            self._check_report(report_text)
+            self._check_report(report_text, analysis if isinstance(analysis, dict) else {})
         if isinstance(visual, dict):
             self._check_visual_strategy(visual)
 
@@ -304,7 +321,135 @@ class ResearchGate:
                 "Return to Step 5 and extract statistics, timeline events, comparisons, and sourced quotes.",
             )
 
-    def _check_report(self, text: str) -> None:
+        self._check_consulting_evidence(analysis)
+
+    def _check_consulting_evidence(self, analysis: dict[str, Any]) -> None:
+        receipt = analysis.get("consulting_evidence")
+        if not isinstance(receipt, dict):
+            self._fail(
+                "research_analysis.json lacks the consulting_evidence routing receipt.",
+                "Step 5",
+                "Record enabled, reason, and source before deciding whether evidence_table applies.",
+            )
+            return
+
+        enabled = receipt.get("enabled")
+        if not isinstance(enabled, bool):
+            self._fail(
+                "consulting_evidence.enabled must be true or false.",
+                "Step 5",
+                "Write an explicit boolean routing decision.",
+            )
+            return
+        if not _nonempty_string(receipt.get("reason")):
+            self._fail(
+                "consulting_evidence.reason is missing.",
+                "Step 5",
+                "Record why the decision-oriented evidence layer is enabled or disabled.",
+            )
+        if receipt.get("source") not in CONSULTING_EVIDENCE_SOURCES:
+            self._fail(
+                "consulting_evidence.source is invalid.",
+                "Step 5",
+                "Use user_request, ppt_brief, or orchestrator_classification.",
+            )
+
+        if not enabled:
+            if "evidence_table" in analysis:
+                self._fail(
+                    "evidence_table must be omitted when consulting_evidence.enabled is false.",
+                    "Step 5",
+                    "Remove the placeholder table or enable the layer with a valid reason.",
+                )
+            return
+
+        evidence_table = analysis.get("evidence_table")
+        if not isinstance(evidence_table, list) or not evidence_table:
+            self._fail(
+                "consulting evidence is enabled but evidence_table is missing or empty.",
+                "Step 5",
+                "Build traceable evidence rows before narrative construction.",
+            )
+            return
+
+        source_registry = _source_registry_ids(analysis)
+        seen_ids: set[str] = set()
+        for index, row in enumerate(evidence_table, 1):
+            if not isinstance(row, dict):
+                self._fail(
+                    f"evidence_table row #{index} is not an object.",
+                    "Step 5",
+                    "Rewrite every evidence row with the documented fields.",
+                )
+                continue
+
+            evidence_id = str(row.get("evidence_id") or "").strip()
+            if EVIDENCE_ID_RE.fullmatch(evidence_id) is None:
+                self._fail(
+                    f"evidence_table row #{index} has invalid evidence_id {evidence_id!r}.",
+                    "Step 5",
+                    "Use a stable ID such as E001.",
+                )
+            elif evidence_id in seen_ids:
+                self._fail(
+                    f"evidence_table repeats evidence_id {evidence_id}.",
+                    "Step 5",
+                    "Keep evidence IDs unique and stable.",
+                )
+            else:
+                seen_ids.add(evidence_id)
+
+            for field_name in (
+                "claim_or_data",
+                "value",
+                "unit",
+                "period",
+                "source_location",
+                "conflict_or_caveat",
+                "implication",
+                "recommended_visual",
+            ):
+                if not _present_scalar(row.get(field_name)):
+                    self._fail(
+                        f"{evidence_id or f'row #{index}'} lacks {field_name}.",
+                        "Step 5",
+                        "Preserve the original scope or use an explicit evidence-gap marker.",
+                    )
+
+            if row.get("confidence") not in {"high", "medium", "low"}:
+                self._fail(
+                    f"{evidence_id or f'row #{index}'} has invalid confidence.",
+                    "Step 5",
+                    "Use high, medium, or low based on source quality and cross-checks.",
+                )
+
+            source_ids = row.get("source_ids")
+            if not isinstance(source_ids, list) or not all(
+                isinstance(source_id, str) and source_id.strip() for source_id in source_ids
+            ):
+                self._fail(
+                    f"{evidence_id or f'row #{index}'} source_ids must be a string array.",
+                    "Step 5",
+                    "Reference sources[] IDs, or use an empty array only for an explicit gap row.",
+                )
+                continue
+            normalized_source_ids = {source_id.strip() for source_id in source_ids}
+            unknown_ids = sorted(normalized_source_ids - source_registry)
+            if unknown_ids:
+                self._fail(
+                    f"{evidence_id or f'row #{index}'} references unknown sources: "
+                    f"{', '.join(unknown_ids)}.",
+                    "Step 5",
+                    "Add the sources to sources[] or correct source_ids.",
+                )
+            if not normalized_source_ids and not _has_evidence_gap_marker(row):
+                self._fail(
+                    f"{evidence_id or f'row #{index}'} has no source_ids and no gap marker.",
+                    "Step 5",
+                    "Cite a source or mark the evidence as not provided/not derivable.",
+                )
+
+    def _check_report(self, text: str, analysis: dict[str, Any]) -> None:
         body_units = _body_units(text)
         if body_units < 3000:
             self._fail(
@@ -312,12 +457,178 @@ class ResearchGate:
                 "Step 6",
                 "Return to Step 6 and expand sourced narrative analysis without padding.",
             )
-        deep_dive_count = len(DEEP_DIVE_RE.findall(text))
-        if deep_dive_count < 5:
+        receipt = analysis.get("consulting_evidence")
+        if not isinstance(receipt, dict) or receipt.get("enabled") is not True:
+            return
+        self._check_storyline_alternatives(text, _evidence_ids(analysis))
+
+    def _check_storyline_alternatives(self, text: str, evidence_ids: set[str]) -> None:
+        match = STORYLINE_ALTERNATIVES_RE.search(text)
+        if match is None:
             self._fail(
-                f"research_report.md has {deep_dive_count} DEEP_DIVE markers; expected >=5.",
+                "consulting evidence is enabled but research_report.md lacks "
+                "STORYLINE_ALTERNATIVES.",
                 "Step 6",
-                "Return to Step 6 and mark at least five genuinely deep sections with DEEP_DIVE.",
+                "Write the machine-readable block with 2-3 SCR candidates.",
+            )
+            return
+        try:
+            payload = json.loads(match.group(1))
+        except json.JSONDecodeError as exc:
+            self._fail(
+                f"STORYLINE_ALTERNATIVES contains invalid JSON: {exc}.",
+                "Step 6",
+                "Rewrite the comment block as valid JSON.",
+            )
+            return
+        if not isinstance(payload, dict) or payload.get("enabled") is not True:
+            self._fail(
+                "STORYLINE_ALTERNATIVES must be an enabled JSON object.",
+                "Step 6",
+                "Set enabled=true and provide the required candidates.",
+            )
+            return
+
+        alternatives = payload.get("storyline_alternatives")
+        if not isinstance(alternatives, list) or not 2 <= len(alternatives) <= 3:
+            self._fail(
+                "storyline_alternatives must contain exactly 2-3 candidates.",
+                "Step 6",
+                "Compare 2-3 real SCR options before selecting one.",
+            )
+            return
+
+        recommendation = payload.get("recommended_storyline")
+        if not isinstance(recommendation, dict):
+            self._fail(
+                "recommended_storyline is missing from STORYLINE_ALTERNATIVES.",
+                "Step 6",
+                "Reference exactly one candidate and state the selection rationale.",
+            )
+            recommendation = {}
+        recommended_id = str(recommendation.get("storyline_id") or "").strip()
+        if not _nonempty_string(recommendation.get("rationale")):
+            self._fail(
+                "recommended_storyline.rationale is missing.",
+                "Step 6",
+                "Explain why the selected SCR best fits the evidence, audience, and goal.",
+            )
+
+        seen_ids: set[str] = set()
+        for index, candidate in enumerate(alternatives, 1):
+            if not isinstance(candidate, dict):
+                self._fail(
+                    f"storyline candidate #{index} is not an object.",
+                    "Step 6",
+                    "Rewrite each candidate with the documented SCR fields.",
+                )
+                continue
+            storyline_id = str(candidate.get("storyline_id") or "").strip()
+            if STORYLINE_ID_RE.fullmatch(storyline_id) is None:
+                self._fail(
+                    f"storyline candidate #{index} has invalid ID {storyline_id!r}.",
+                    "Step 6",
+                    "Use a stable ID such as S1.",
+                )
+            elif storyline_id in seen_ids:
+                self._fail(
+                    f"storyline_alternatives repeats {storyline_id}.",
+                    "Step 6",
+                    "Keep storyline IDs unique.",
+                )
+            else:
+                seen_ids.add(storyline_id)
+
+            scr = candidate.get("scr")
+            if not isinstance(scr, dict) or any(
+                not _nonempty_string(scr.get(key))
+                for key in ("situation", "complication", "resolution")
+            ):
+                self._fail(
+                    f"{storyline_id or f'candidate #{index}'} lacks complete SCR statements.",
+                    "Step 6",
+                    "Write one non-empty sentence for situation, complication, and resolution.",
+                )
+            for field_name in ("management_conclusion", "audience_fit"):
+                if not _nonempty_string(candidate.get(field_name)):
+                    self._fail(
+                        f"{storyline_id or f'candidate #{index}'} lacks {field_name}.",
+                        "Step 6",
+                        "Complete every decision-oriented storyline field.",
+                    )
+
+            key_evidence_ids = candidate.get("key_evidence_ids")
+            if not isinstance(key_evidence_ids, list) or not key_evidence_ids or not all(
+                isinstance(item, str) and item.strip() for item in key_evidence_ids
+            ):
+                self._fail(
+                    f"{storyline_id or f'candidate #{index}'} has invalid key_evidence_ids.",
+                    "Step 6",
+                    "Reference at least one evidence_table ID without fabrication.",
+                )
+                candidate_evidence_ids: set[str] = set()
+            else:
+                candidate_evidence_ids = {item.strip() for item in key_evidence_ids}
+                if len(key_evidence_ids) > 8:
+                    self._fail(
+                        f"{storyline_id or f'candidate #{index}'} uses more than 8 evidence IDs.",
+                        "Step 6",
+                        "Keep the strongest 5-8 IDs, or fewer with an explicit caveat.",
+                    )
+                unknown_ids = sorted(candidate_evidence_ids - evidence_ids)
+                if unknown_ids:
+                    self._fail(
+                        f"{storyline_id or f'candidate #{index}'} references unknown evidence: "
+                        f"{', '.join(unknown_ids)}.",
+                        "Step 6",
+                        "Use only IDs present in evidence_table.",
+                    )
+
+            caveats = candidate.get("caveats")
+            if not isinstance(caveats, list) or not all(isinstance(item, str) for item in caveats):
+                self._fail(
+                    f"{storyline_id or f'candidate #{index}'} caveats must be a string array.",
+                    "Step 6",
+                    "Record conflicts and evidence limitations, or use an empty array.",
+                )
+            elif len(candidate_evidence_ids) < 5 and not any(item.strip() for item in caveats):
+                self._fail(
+                    f"{storyline_id or f'candidate #{index}'} has fewer than 5 evidence IDs "
+                    "without a caveat.",
+                    "Step 6",
+                    "Keep the honest shortfall and explain it in caveats.",
+                )
+
+            page_material_pool = candidate.get("page_material_pool")
+            if not isinstance(page_material_pool, list) or not page_material_pool or not all(
+                isinstance(item, str) and item.strip() for item in page_material_pool
+            ):
+                self._fail(
+                    f"{storyline_id or f'candidate #{index}'} lacks page_material_pool.",
+                    "Step 6",
+                    "List usable charts, tables, matrices, timelines, annotations, or sidebars.",
+                )
+
+            rejected_reason = candidate.get("rejected_reason")
+            if storyline_id == recommended_id:
+                if rejected_reason is not None:
+                    self._fail(
+                        f"Recommended storyline {storyline_id} must set rejected_reason to null.",
+                        "Step 6",
+                        "Reserve rejected_reason for unselected candidates.",
+                    )
+            elif not _nonempty_string(rejected_reason):
+                self._fail(
+                    f"Unselected storyline {storyline_id or f'#{index}'} lacks rejected_reason.",
+                    "Step 6",
+                    "State the evidence, caveat, repetition, or audience reason for rejection.",
+                )
+
+        if recommended_id not in seen_ids:
+            self._fail(
+                "recommended_storyline does not resolve to one candidate.",
+                "Step 6",
+                "Reference exactly one storyline_id from storyline_alternatives.",
             )
 
     def _check_visual_strategy(self, visual: dict[str, Any]) -> None:
@@ -382,6 +693,39 @@ def _as_list(value: Any) -> list[Any]:
     if value in (None, ""):
         return []
     return [value]
+
+
+def _nonempty_string(value: Any) -> bool:
+    return isinstance(value, str) and bool(value.strip())
+
+
+def _present_scalar(value: Any) -> bool:
+    if isinstance(value, bool) or value is None:
+        return False
+    if isinstance(value, str):
+        return bool(value.strip())
+    return isinstance(value, (int, float))
+
+
+def _source_registry_ids(analysis: dict[str, Any]) -> set[str]:
+    return {
+        str(source.get("source_id") or "").strip()
+        for source in _as_list(analysis.get("sources"))
+        if isinstance(source, dict) and str(source.get("source_id") or "").strip()
+    }
+
+
+def _evidence_ids(analysis: dict[str, Any]) -> set[str]:
+    return {
+        str(row.get("evidence_id") or "").strip()
+        for row in _as_list(analysis.get("evidence_table"))
+        if isinstance(row, dict) and str(row.get("evidence_id") or "").strip()
+    }
+
+
+def _has_evidence_gap_marker(row: dict[str, Any]) -> bool:
+    text = json.dumps(row, ensure_ascii=False).casefold()
+    return any(marker in text for marker in EVIDENCE_GAP_MARKERS)
 
 
 def _planned_pages(plan: dict[str, Any]) -> list[dict[str, Any]]:
@@ -456,8 +800,9 @@ def _count_structured_markers(text: str) -> int:
 
 
 def _body_units(text: str) -> int:
-    cjk_count = len(CJK_RE.findall(text))
-    word_count = len(WORD_RE.findall(text))
+    visible_text = HTML_COMMENT_RE.sub("", text)
+    cjk_count = len(CJK_RE.findall(visible_text))
+    word_count = len(WORD_RE.findall(visible_text))
     return cjk_count + word_count
 
 

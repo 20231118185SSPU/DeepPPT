@@ -2,7 +2,7 @@
 
 > Human-readable design narrative — rationale, audience, style, color choices, content outline. Read once by downstream roles for context.
 >
-> Machine-readable execution contract: `spec_lock.md` (color / typography / icon / image short form). Executor re-reads `spec_lock.md` before every SVG page to resist context-compression drift. Keep both in sync; on divergence, `spec_lock.md` wins.
+> Machine-readable execution contracts are split by ownership: `spec_lock.md` owns visual tokens (color / typography / icon / image short form), while `page_expression.json` is the sole machine truth for per-page expression. Executor re-reads both before every SVG page. This §IX outline is the human-review mirror of `page_expression.json`; keep it synchronized, and let each machine contract win inside its own domain.
 
 ## I. Project Information
 
@@ -141,6 +141,7 @@ Two views on the same font decisions — fill both, keep them consistent:
 | Chapter / section opener | 2-2.5x | 48-60px | 36-45px | Bold |
 | Page title | 1.5-2x | 36-48px | 27-36px | Bold |
 | Hero number (consulting KPIs) | 1.5-2x | 36-48px | 27-36px | Bold |
+| Lead / page assertion | 1-1.5x | 24-36px | 18-27px | SemiBold |
 | Subtitle | 1.2-1.5x | 29-36px | 22-27px | SemiBold |
 | **Body content** | **1x** | **24px** | **18px** | Regular |
 | Annotation / caption | 0.7-0.85x | 17-20px | 13-15px | Regular |
@@ -229,21 +230,21 @@ Two views on the same font decisions — fill both, keep them consistent:
 
 ## VII. Visualization Reference List (if needed)
 
-> When pages map to a chart-library template (data charts OR structural patterns — team rosters, agendas, frameworks, etc.), Strategist lists them here for Executor reference. Single combined table — `summary-quote` column is the anti-fabrication audit, `path` + `usage` columns serve Executor lookup.
+> When pages map to a chart-library template (data charts OR structural patterns — team rosters, agendas, frameworks, etc.), Strategist lists them here for Executor reference. Use `chart_recall.py` per candidate page; the script reads the live catalog and returns bounded candidates. Single combined table — `summary-quote` is the anti-fabrication audit, while `path` + `usage` serve Executor lookup.
 
-Catalog read: 71 templates
+Catalog source: live `charts_index.json` via `chart_recall.py`
 
 | Page | Template | Path | Summary-quote (verbatim from `charts_index.json`) | Usage |
 | ---- | -------- | ---- | ------------------------------------------------- | ----- |
 | P05 | grouped_bar_chart | `templates/charts/grouped_bar_chart.svg` | "Pick for 2-4 series side-by-side across the same categories (e.g. YoY/QoQ). Skip if showing composition within each category (use stacked_bar_chart)." | YoY revenue comparison by product line |
 
-**Runners-up considered** (3 entries minimum, drawn from real second-best matches in this deck):
+**Runners-up considered** (up to 3 entries, drawn from real non-selected candidates in this deck):
 
 - `<key_A>` | rejected for P05: `<reason citing this deck's specifics>`
 - `<key_B>` | rejected for P##: `<reason>`
 - `<key_C>` | rejected for P##: `<reason>`
 
-> **Audit rule**: `Summary-quote` must be copy-pasted verbatim — paraphrasing breaks the audit. Every template name listed must `grep` cleanly inside `charts_index.json` (so misspellings/inventions fail). If fewer than 3 viz pages exist, list what exists and note "fewer than 3 viz pages"; runners-up still required for each page that does exist.
+> **Audit rule**: `Summary-quote` and `Path` must be copied verbatim from the recall JSON — paraphrasing breaks the audit. Every selected template key must pass `python3 skills/ppt-master/scripts/chart_recall.py validate <key>`. List at most three real non-selected candidates across the deck. If recall returned fewer, list every available runner-up and state the actual shortfall; never invent a candidate.
 
 ---
 
@@ -318,10 +319,23 @@ Catalog read: 71 templates
 
 ## IX. Content Outline
 
+> **Mandatory page-expression contract:** every page carries the six fields below in §IX and in the matching `page_expression.json` page object. Every main-pipeline content page must provide real values for all six. Only structural pages (`cover`, `toc`, `chapter`, `transition`, `closing`, or `ending`) may mark a field `N/A`, and every such field must give a page-specific reason. Never invent evidence to avoid an `N/A`.
+>
+> Each content page also declares `Content relation` and `Information anchor`. These two fields and `Visual act` determine the page-scale composition before any card, column, or component choice. `Visual act` names how evidence becomes a visible relationship, not a container recipe such as “three cards” or “two columns.”
+>
+> Runtime validation is implemented by [`scripts/spec_compliance_check.py`](../scripts/spec_compliance_check.py); this section remains the human-review mirror, not a second machine contract.
+
 ### Part 1: [Chapter Name]
 
 #### Slide 01 - Cover
 
+- **Page expression**:
+  - **Question**: [value, or `N/A — <page-specific reason>`]
+  - **Assertion**: [value, or `N/A — <page-specific reason>`]
+  - **Evidence**: [real source-grounded material, or `N/A — <page-specific reason>`; never fabricate proof for a cover]
+  - **Visual act**: [value, or `N/A — <page-specific reason>`]
+  - **Takeaway**: [value, or `N/A — <page-specific reason>`]
+  - **Next beat**: [how the opening advances to Slide 02, or `N/A — <page-specific reason>`]
 - **Cover impact**: [MANDATORY — see strategist.md §6.2. Name one concrete hook (provocative core claim / hero number / object-scene metaphor / founder-product-audience moment / distilled conflict) + one composition strategy (full-bleed image + floating title / typographic poster / hero object / data hook / editorial scene / high-contrast abstract geometry / or a fresh one the subject suggests). This is the cover's spine — do NOT fall back to "title + subtitle + decorative background".]
 - **Layout**: [realize the Cover impact above; choose the composition that delivers it — not a default centered title block]
 - **Title**: [Main title]
@@ -330,16 +344,26 @@ Catalog read: 71 templates
 
 #### Slide 02 - [Page Name]
 
-- **Layout**: [Choose a pattern from §V, combine two, or break the grid as the content demands]
+- **Content relation**: [`single_claim` / `parallel_set` / `weighted_set` / `compare` / `sequence` / `hierarchy` / `evidence_chain` / `matrix` / `summary`]
+- **Information anchor**: [the one number, figure, comparison, object, or relationship that carries the page]
+- **Page expression**:
+  - **Question**: [the audience's question at this moment]
+  - **Assertion**: [the page's single, repeatable assertion sentence]
+  - **Evidence**: [the actual source-grounded material that proves the assertion; include source / evidence IDs where available]
+  - **Visual act**: [the page-scale action that encodes the evidence relationship]
+  - **Takeaway**: [what the audience should remember after leaving the page]
+  - **Next beat**: [the unresolved question or bridge that advances to the next page]
+- **Layout**: [only after the three composition inputs above are clear, choose geometry from §V, combine patterns, or break the grid]
 - **Title**: [Page title]
-- **Core message**: [the one thing this page exists to land — its spine, always phrased as one assertion sentence (prose by nature). One per page; can't name it → merge or cut the page.]
 - **Visualization**: [visualization_type] (see VII. Visualization Reference List)
-- **Content**: write each block in the phrasing that fits it (prose / bullet / keyword / … any phrasing the content calls for) and write it already in that mode, so the texture itself carries the intent — a prose block reads as a real sentence, not a fragment. One page may mix modes; blocks still sit under the core message, never replace it:
+- **Content**: write each block in the phrasing that fits it (prose / bullet / keyword / … any phrasing the content calls for) and write it already in that mode, so the texture itself carries the intent — a prose block reads as a real sentence, not a fragment. One page may mix modes; blocks still support the assertion, never replace it:
   - [a connected sentence or two that argues the point]
   - [parallel fragment] · [parallel fragment] · [parallel fragment]
   - [label] / [label] / [label]
 
 > **Visualization field**: add only when the page has data visualization or structured infographic elements. Type must be listed in §VII.
+>
+> **Assertion display (HARD rule):** the exact `Assertion` text must appear on the slide as a `lead` or `subtitle`, never only in this spec or speaker notes. Its font size must be at least the deck's body size. When it leads the page, move a topic label into the kicker/title support role rather than duplicating the assertion.
 
 ---
 
@@ -349,6 +373,13 @@ Catalog read: 71 templates
 
 #### Slide NN - Closing  *(only if the deck genuinely lands on a conclusion / CTA / final-takeaway page — do NOT invent one to fill this slot; see strategist.md §6.2)*
 
+- **Page expression**:
+  - **Question**: [value, or `N/A — <page-specific reason>`]
+  - **Assertion**: [value, or `N/A — <page-specific reason>`]
+  - **Evidence**: [real source-grounded material, or `N/A — <page-specific reason>`; never fabricate proof for a closing]
+  - **Visual act**: [value, or `N/A — <page-specific reason>`]
+  - **Takeaway**: [the final remembered point]
+  - **Next beat**: [the forward action, or `N/A — <page-specific reason>` when the narrative intentionally ends]
 - **Closing impact**: [MANDATORY for the closing page — name the one thing the audience leaves with (distilled takeaway / forward call / memorable restatement of the core claim) + one composition that lands it. Do NOT write a generic "Thank you" / contact-only / centered-title reprise of the cover.]
 - **Layout**: [realize the Closing impact above — the deck's final impression, not a default sign-off]
 - **Content**: [the takeaway / call-to-action itself, phrased to land]

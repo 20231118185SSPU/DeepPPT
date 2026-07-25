@@ -71,6 +71,7 @@ _CHECK_FILES = {
 
 _CHECK_LABELS = {
     "spec_compliance": "Spec Compliance",
+    "spec_lock_digest": "Spec Lock Digest",
     "svg_quality": "SVG Quality",
     "e2e": "E2E Validation",
     "visual_review": "Visual Review",
@@ -79,7 +80,14 @@ _CHECK_LABELS = {
     "integrated_review": "Integrated Review",
 }
 
-_SUMMARY_CHECKS = ("spec_compliance", "svg_quality", "e2e", "rendered_visual", "visual_review")
+_SUMMARY_CHECKS = (
+    "spec_compliance",
+    "spec_lock_digest",
+    "svg_quality",
+    "e2e",
+    "rendered_visual",
+    "visual_review",
+)
 _ISSUE_GROUPS = ("must_fix", "should_fix", "accepted_risks")
 _STATUS_RANK = {"fail": 3, "warn": 2, "unknown": 1, "pass": 0}
 
@@ -96,6 +104,53 @@ class ReportFile:
 
 def _now() -> str:
     return datetime.now(tz=timezone.utc).isoformat()
+
+
+def page_expression_summary(project: Path) -> dict[str, Any]:
+    """Read page-expression metadata without running a heavy validation gate."""
+    path = project / "page_expression.json"
+    summary: dict[str, Any] = {
+        "path": "page_expression.json",
+        "exists": path.is_file(),
+        "status": "missing",
+        "schema_version": None,
+        "owner": None,
+        "page_count": 0,
+        "updated_at": _mtime_iso(path) if path.is_file() else None,
+    }
+    if not path.is_file():
+        return summary
+    try:
+        data = json.loads(path.read_text(encoding="utf-8"))
+    except (OSError, json.JSONDecodeError):
+        summary["status"] = "invalid"
+        return summary
+    if not isinstance(data, dict):
+        summary["status"] = "invalid"
+        return summary
+    raw_schema_version = data.get("schema_version")
+    schema_version = (
+        raw_schema_version
+        if isinstance(raw_schema_version, int) and not isinstance(raw_schema_version, bool)
+        else None
+    )
+    raw_owner = data.get("owner")
+    owner = raw_owner if isinstance(raw_owner, str) else None
+    pages = data.get("pages")
+    summary.update({
+        "schema_version": schema_version,
+        "owner": owner,
+        "page_count": len(pages) if isinstance(pages, dict) else 0,
+        "status": (
+            "ready"
+            if schema_version == 1
+            and owner == "Strategist"
+            and isinstance(pages, dict)
+            and bool(pages)
+            else "invalid"
+        ),
+    })
+    return summary
 
 
 def _mtime_iso(path: Path) -> str:
@@ -638,6 +693,7 @@ def _legacy_harness(
 
     return {
         "spec_compliance": statuses.get("spec_compliance", "SKIP"),
+        "spec_lock_digest": statuses.get("spec_lock_digest", "SKIP"),
         "svg_quality": statuses.get("svg_quality", "SKIP"),
         "e2e": statuses.get("e2e", "SKIP"),
         "rendered_visual": statuses.get("rendered_visual", "SKIP"),
@@ -670,6 +726,7 @@ def normalize_quality_report(project: Path) -> Optional[dict]:
     issues = _merge_issues(reports)
     return {
         "overall": overall,
+        "page_expression": page_expression_summary(project),
         "checks": checks,
         "issues": issues,
         "diagnostics": _diagnostics(project, reports, checks, issues, overall),
@@ -732,6 +789,7 @@ def quality_summary(project: Path) -> dict | None:
     harness = report["harness"]
     return {
         "spec_compliance": harness.get("spec_compliance", "SKIP"),
+        "spec_lock_digest": harness.get("spec_lock_digest", "SKIP"),
         "svg_quality": harness.get("svg_quality", "SKIP"),
         "e2e": harness.get("e2e", "SKIP"),
         "rendered_visual": harness.get("rendered_visual", "SKIP"),
@@ -739,5 +797,4 @@ def quality_summary(project: Path) -> dict | None:
         "overall": harness.get("overall", "SKIP"),
         "checked_at": report.get("checked_at") or _now(),
     }
-
 

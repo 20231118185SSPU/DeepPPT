@@ -30,6 +30,7 @@ Verify the project's Phase-A artifacts before doing anything else:
 |---|---|---|
 | `<project_path>/spec_lock.md` | Always | Strategist's execution contract; Executor reads it per page |
 | `<project_path>/design_spec.md` | Always | Section IX page outline; Executor cross-references it |
+| `<project_path>/page_expression.json` | Always | Strategist's per-page assertion, evidence, visual act, and narrative bridge contract |
 | `<project_path>/images/` | `spec_lock images` references any image | Images must exist for embedding |
 | `<project_path>/templates/` | `spec_lock page_layouts` / `page_charts` references any | Layout / chart SVGs needed for batch read |
 
@@ -45,6 +46,7 @@ If any required artifact is missing → report which one(s) and stop. Do NOT aut
 | File | Purpose | Load always? |
 |------|---------|:---:|
 | `spec_lock.md` | Design decisions & execution contract | ✅ |
+| `page_expression.json` | Current page's machine-readable expression contract | ✅ |
 | `design_spec.md §IX` | Page structure & content outline | ✅ |
 | Current page's SVG (if resuming mid-generation) | Visual continuity reference | Only if resuming mid-page |
 | `sources/<file>.md` | Source material facts & texture | ✅ (read relevant sections on demand) |
@@ -65,7 +67,7 @@ Then jump to `### Step 6: Executor Phase` and run the documented pipeline:
 - Read references (executor-base + shared-standards + the locked `mode` file under `modes/` + the locked `visual_style` file under `visual-styles/` + image-layout-spec + svg-image-embedding)
 - Design Parameter Confirmation
 - Pre-generation Batch Read (every layout / chart SVG referenced in `spec_lock`)
-- Per-page `spec_lock` re-read + sequential page generation
+- Per-page `spec_lock.md` and current `page_expression.json` object re-read + sequential page generation
 - Quality Check Gate
 - Speaker notes generation
 - Step 7: Post-processing & Export (`total_md_split` → `finalize_svg` → `svg_to_pptx`)
@@ -92,7 +94,7 @@ Completion is evidenced by the same disk artifacts as a continuous SKILL.md run:
 
 | Evidence | Pass condition |
 |---|---|
-| Resume gate | Step 1 confirmed required Phase-A artifacts exist: `<project>/spec_lock.md`, `<project>/design_spec.md`, and any referenced `images/` / `templates/` assets |
+| Resume gate | Step 1 confirmed required Phase-A artifacts exist: `<project>/spec_lock.md`, `<project>/page_expression.json`, `<project>/design_spec.md`, and any referenced `images/` / `templates/` assets |
 | Executor output | All planned SVG pages exist under `<project>/svg_output/`, and speaker notes exist at `<project>/notes/total.md` |
 | Quality gates | Step 6 quality commands completed successfully or recorded an explicit human acceptance for rendered-review blockers |
 | Export | Step 7 produced `<project>/exports/<project_name>_<timestamp>.pptx`; report this exact path |

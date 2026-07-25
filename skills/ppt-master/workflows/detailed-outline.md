@@ -37,7 +37,7 @@ From `research_report.md`, extract only the content belonging to the dimensions 
 
 **Brief inheritance**: when `ppt_brief.json` exists, every page plan must respect its `narrative_frame`, `content_boundary`, `material_strategy`, `source_strategy`, `copyright_and_risk`, and `acceptance_criteria`.
 
-**咨询模式证据继承（可选）**：当 `_research/step5_analysis/research_analysis.json` 包含 `evidence_table`，或 `_research/step6_narrative/research_report.md` 明确给出 `storyline_alternatives` / SCR 备选时，读取这些字段并作为高密度咨询页的证据约束。没有这些字段时，不要为通用 PPT 强行补 MBB schema。
+**咨询模式证据继承（可选）**：当 `_research/step5_analysis/research_analysis.json` 包含 `evidence_table`，或 `_research/step6_narrative/research_report.md` 的 `STORYLINE_ALTERNATIVES` 块包含 `storyline_alternatives` 时，读取这些字段并作为高密度咨询页的证据约束。没有这些字段时，不要为通用 PPT 强行补 MBB schema。
 
 **1.2 Determine page count**
 
@@ -51,7 +51,7 @@ Arrange the selected dimensions into a coherent story that guides the audience f
 
 **2.0 咨询模式故事线收敛（可选）**
 
-当输入包含 `storyline_alternatives`，且目标是 consulting / briefing / pyramid / high-density business report：
+当输入的 `STORYLINE_ALTERNATIVES` 块包含 `storyline_alternatives`，且目标是 consulting / briefing / pyramid / high-density business report：
 
 | 字段 | 要求 |
 |---|---|
@@ -236,7 +236,7 @@ Every content page MUST have a `layout_plan` determined BEFORE image generation:
 | Maximum pages per dimension | ≤5 pages (avoid overweighting) |
 | Deep-dive pages | For dimensions with `density ≥ 7`, consider adding an `expand` or `prove` page after the initial content page |
 
-**Hard rule — content/deep-dive pairing**: every substantive content page must be followed by a `deep_dive`, `comparison`, `data`, `timeline`, or `quote` page unless the page is explicitly a transition / synthesis page. This is what keeps the presenter from running out of material after user content selection.
+**Hard rule — evidence-driven page splitting**: keep a substantive assertion and its dominant evidence on the same page when both remain legible, traceable, and honestly explained. Add a following `deep_dive`, `comparison`, `data`, `timeline`, or `quote` page only when the evidence needs a separate canvas; do not split by quota. When a split is necessary, set `paired_with` in both directions and make the first page's narrative bridge name the question the follow-up resolves.
 
 **Hard rule — evidence per page**: every content and deep-dive page must cite at least 2 evidence refs. Pages that cannot cite evidence must be rewritten, merged, or sent back to research.
 
@@ -385,7 +385,7 @@ The Strategist reads `narrative_function` values and assigns page rhythm labels:
 | Every content/deep-dive page has `evidence_refs` | >=2 refs | Return to research or merge page |
 | Consulting-mode pages with `evidence_table` have `evidence_ids`, `caveats`, `so_what`, `content_density` | 100% when applicable | Fill from evidence table or mark missing evidence explicitly |
 | Consulting-mode output preserves 2-3 `storyline_alternatives` before choosing one SCR | 2-3 when applicable | Re-run narrative selection; do not collapse directly to one outline |
-| Every substantive content page has a follow-up deep-dive page | 100% | Add deep-dive page or mark reason |
+| Every evidence-driven split has reciprocal `paired_with` values and a stated question/answer bridge | 100% of actual splits | Fix the mapping, or merge the evidence back into the content page |
 | Every image page has `layout_plan.image_area` before prompt generation | 100% | Fill layout first |
 | No consecutive pages share the same `narrative_function` | 0 violations | Swap adjacent pages or reassign functions |
 | `visual_need.image_type = "chart"` requires `image_description` to include chart type + data source | 100% | Add chart type (e.g., "柱状图") and data source to description |

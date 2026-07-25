@@ -201,6 +201,20 @@
           "type": ["boolean", "null"],
           "description": "True if spec_lock digest verified before Step 6. Null if not checked."
         },
+        "page_expression": {
+          "type": "object",
+          "description": "Read-only metadata for the Strategist-owned page_expression.json contract.",
+          "additionalProperties": true,
+          "properties": {
+            "path": { "type": "string" },
+            "exists": { "type": "boolean" },
+            "status": { "type": "string", "enum": ["missing", "invalid", "ready"] },
+            "schema_version": { "type": ["integer", "null"] },
+            "owner": { "type": ["string", "null"] },
+            "page_count": { "type": "integer", "minimum": 0 },
+            "modified_at": { "type": ["string", "null"] }
+          }
+        },
         "quality_summary": {
           "oneOf": [{ "$ref": "#/definitions/QualitySummary" }, { "type": "null" }],
           "description": "Aggregate quality gate results. Null before quality checks."
@@ -256,10 +270,11 @@
 
     "QualitySummary": {
       "type": "object",
-      "required": ["spec_compliance", "svg_quality", "e2e", "rendered_visual", "visual_review", "overall"],
+      "required": ["spec_compliance", "spec_lock_digest", "svg_quality", "e2e", "rendered_visual", "visual_review", "overall"],
       "additionalProperties": false,
       "properties": {
         "spec_compliance": { "$ref": "#/definitions/QualityGate" },
+        "spec_lock_digest": { "$ref": "#/definitions/QualityGate" },
         "svg_quality":     { "$ref": "#/definitions/QualityGate" },
         "e2e":             { "$ref": "#/definitions/QualityGate" },
         "rendered_visual": { "$ref": "#/definitions/QualityGate" },
@@ -399,10 +414,11 @@
 
     "HarnessGateReport": {
       "type": "object",
-      "required": ["spec_compliance", "svg_quality", "e2e", "overall"],
+      "required": ["spec_compliance", "spec_lock_digest", "svg_quality", "e2e", "overall"],
       "additionalProperties": false,
       "properties": {
         "spec_compliance": { "$ref": "#/definitions/QualityGate" },
+        "spec_lock_digest": { "$ref": "#/definitions/QualityGate" },
         "svg_quality":     { "$ref": "#/definitions/QualityGate" },
         "e2e":             { "$ref": "#/definitions/QualityGate" },
         "overall":         { "$ref": "#/definitions/QualityGate" },
@@ -411,13 +427,14 @@
         "e2e_skipped":     { "type": "boolean" },
         "summary":         { "type": "string" },
         "checked_at":      { "$ref": "#/definitions/ISOTimestamp" },
+        "write_mode":      { "type": "string", "enum": ["read-only", "dashboard-artifacts"] },
         "details": {
           "type": "array",
           "items": {
             "type": "object",
             "required": ["label", "passed", "returncode"],
             "properties": {
-              "label":      { "type": "string", "enum": ["spec_compliance", "svg_quality", "e2e"] },
+              "label":      { "type": "string", "enum": ["spec_compliance", "spec_lock_digest", "svg_quality", "e2e"] },
               "passed":     { "type": "boolean" },
               "stdout":     { "type": "string" },
               "stderr":     { "type": "string" },
@@ -635,6 +652,11 @@
         "harness":         { "$ref": "#/definitions/HarnessGateReport" },
         "svg_quality":     { "oneOf": [{ "$ref": "#/definitions/SVGQualityReport" }, { "type": "null" }] },
         "spec_compliance": { "oneOf": [{ "$ref": "#/definitions/ComplianceReport" }, { "type": "null" }] },
+        "page_expression": {
+          "type": ["object", "null"],
+          "description": "Read-only page-expression contract metadata.",
+          "additionalProperties": true
+        },
         "e2e":             { "oneOf": [{ "$ref": "#/definitions/E2EValidateResult" }, { "type": "null" }] },
         "rendered_visual": { "type": ["object", "null"] },
         "integrated_review": { "oneOf": [{ "$ref": "#/definitions/IntegratedReview" }, { "type": "null" }] },

@@ -4,9 +4,9 @@ This directory contains the standardized SVG visualization templates used by PPT
 
 ## Source of truth
 
-[`charts_index.json`](./charts_index.json) is the single source of truth for the library: total count + one selection-rule `summary` per template (format: `"Pick for X. Skip if Y (use other_key)."`). Both human readers and AI roles read it in full — there is no category/keyword sub-index. Selection is done by semantic match against the summary list in one pass.
+[`charts_index.json`](./charts_index.json) is the single source of truth for the library: total count + one selection-rule `summary` per template (format: `"Pick for X. Skip if Y (use other_key)."`). [`chart_recall.py`](../../scripts/chart_recall.py) reads that live catalog on every call and returns a bounded shortlist; it does not maintain a second category or keyword index.
 
-To browse the library, open `charts_index.json` and scan the `charts` block top-to-bottom; each entry's `summary` answers "when do I pick this, when do I skip" directly.
+For page planning, call `chart_recall.py` with 3-8 structural semantic tags and review each returned `Pick` / `Skip` rule. Use `--semantic-fallback` only after a low- or no-confidence bounded review finds no fit. Maintainers may still open `charts_index.json` to inspect the complete library.
 
 ## Style rules
 

@@ -1,10 +1,22 @@
-# DeepPPT — AI 深度调研驱动的 PPT 生成系统
+# DeepPPT - Research-Driven, Native-Editable AI Presentations
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
-> 基于 [ppt-master](https://github.com/hugohe3/ppt-master) 扩展开发，增加 PPT Briefing 前置构思、深度调研、咨询证据链、统一 Dashboard、叙事驱动模板、图片来源路由、双轨图片生成、渲染级布局检查、视觉审查、PPTX 结构 QA、质量门禁和管线协同性治理等能力。
+> An extension of [ppt-master](https://github.com/hugohe3/ppt-master) with briefing-led deep research, evidence-backed planning, deterministic chart recall, intent-first page composition, contract-aware observability, and production quality gates.
 
-English | [中文](#简介)
+[English](#overview) | [中文](#简介)
+
+## Overview
+
+DeepPPT turns a topic or source document into a natively editable PPTX. It coordinates research, narrative and visual planning, asset acquisition, SVG authoring, validation, and export while preserving explicit machine contracts across resumable workflows.
+
+Latest production hardening includes:
+
+- **Deterministic chart recall** - `chart_recall.py` ranks up to the requested number of candidates from the live visualization catalog using 3-8 content-shape tags, gates semantic fallback on low lexical confidence, and validates exact selected keys.
+- **Complete page-expression lifecycle** - the Strategist-owned `page_expression.json` remains authoritative across continuous, split, resume, and refine-spec paths; compliance checks enforce page coverage and visible assertions, and the contract is sealed together with `spec_lock.md`.
+- **Evidence-backed consulting narratives** - when consulting evidence is enabled, research preserves traceable evidence rows and resolves exactly 2-3 SCR alternatives into one recommendation with evidence IDs, caveats, and explicit rejection reasons.
+- **Digest-aware observability** - the read-only Dashboard exposes page-expression and digest state, while Harness verifies the seal for sidecar projects and fails closed on contract drift.
+- **Intent-first composition QA** - the Executor composes from `content_relation`, `information_anchor`, and `visual_act` before choosing layout patterns. Sparse composition, one-sided whitespace, and large image-text gaps remain review signals rather than prompts to add filler; fixes are batched before one re-check.
 
 ---
 
@@ -13,6 +25,8 @@ English | [中文](#简介)
 DeepPPT 是一个端到端的 AI PPT 生成系统。给定一个主题或源文件，它会自动完成深度调研、结构化分析、叙事构建、视觉身份提取、资源获取、SVG 页面生成、质量门禁和 PPTX 导出，最终产出一份**原生可编辑的 PPTX**。
 
 当输入只有一个主题时，DeepPPT 会先生成可确认的 `ppt_brief.md` / `ppt_brief.json`，明确目标、受众、叙事、素材策略和验收标准；用户确认后才进入深度调研，避免在方向未锁定时直接搜索和生成。
+
+当前版本进一步将页面表达、图表选型和执行可观测性收敛为机器合同：`page_expression.json` 贯穿连续生成、分段交接、恢复执行和规格精修路径，并与 `spec_lock.md` 一同封存；图表候选从实时目录中确定性召回并校验精确键；Dashboard 和 Harness 会显示并验证合同摘要状态，防止恢复或修改过程中的静默漂移。
 
 **支持 13 个主流 AI Agent 平台**，克隆即用：Claude Code / Cursor / Windsurf / GitHub Copilot / OpenAI Codex / Pi / Cline / Roo Code / Aider / Amazon Q / Kiro / Junie / Hermes Agent。
 
@@ -28,8 +42,10 @@ DeepPPT 是一个端到端的 AI PPT 生成系统。给定一个主题或源文�
 | 视觉 | 通用设计规范 | 从调研内容中提取视觉身份 |
 | 工作台 | 分散脚本输出 | 统一 Dashboard 追踪项目状态、产物、质量报告、执行轨迹和预览入口 |
 | 门禁 | 基础脚本校验 | confirm / research / asset / rendered visual / harness / e2e 多阶段质量门禁 |
+| 页面表达合同 | 无独立逐页机器合同 | `page_expression.json` 锁定 assertion / evidence / visual act / takeaway / next beat，并覆盖 continuous / split / resume / refine 生命周期 |
+| 图表选型 | 手动浏览图表索引 | 基于 3-8 个内容形态标签确定性召回候选，低置信度时才开放语义 fallback，入锁前校验精确键 |
 | 协同性治理 | 依赖人工维护 | 链接扫描、workflow Exit Evidence、脚本分层、语言规则现实化和审计修复记录 |
-| 排版 | 无自动检测 | 静态布局检查 + 本地渲染截图门禁 + 自动修正 |
+| 排版 | 无自动检测 | 静态合同检查 + 本地渲染截图门禁 + 意图优先的留白审查；宽松构图只提示复核，不用填充物“修正” |
 | 视觉审查 | 无独立视觉回看 | 视觉检查工作流 + OpenAI/Anthropic/Ollama 兼容后端 |
 | 动画 | 通用动画 | 默认页间转场；页内元素动画显式 opt-in，可用 `customize-animations` 调整对象级顺序/效果/时序 |
 | 模板治理 | 基础模板库 | 模板发现、质量审查、低分模板下线和显式路径应用 |
@@ -37,7 +53,7 @@ DeepPPT 是一个端到端的 AI PPT 生成系统。给定一个主题或源文�
 | 图片策略 | 单轨（AI 或网络） | 来源路由 + 双轨——视觉页 AI 生图 + 信息页网络素材 |
 | 咨询报告 | 通用大纲 | 可选证据表、SCR 备选、每页 SO WHAT / caveat / evidence IDs |
 | 可编辑性 | SVG 导出为 PPTX | 可编辑信息层规则 + post-export PPTX 结构检查 |
-| 内容深度 | 单页展示 | 内容页 + 讲解页配对，每页都可讲 |
+| 内容深度 | 单页展示 | 证据和可读性驱动的页面拆分；主张与主要证据优先同页，不设置讲解页数量配额 |
 
 ## 与 ppt-master 的关系
 
@@ -49,6 +65,8 @@ DeepPPT 是一个端到端的 AI PPT 生成系统。给定一个主题或源文�
   - [`deep-research`](skills/ppt-master/workflows/deep-research.md) 编排器——7 步独立调研工作流，协调计划搜索路径；普通 WebSearch 只作为 deep-research Step 3 内部记录式 fallback
   - [`browse_ai.py`](skills/ppt-master/scripts/research/browse_ai.py)——Playwright CDP 浏览器自动化，支持 Grok / Kimi / DeepSeek / 通义千问 / ChatGLM / Perplexity
   - [`dashboard`](skills/ppt-master/scripts/dashboard/)——统一只读 Dashboard，集中展示项目状态、产物、质量报告、执行轨迹、模板预览和 Confirm / Live Preview 入口
+  - [`chart_recall.py`](skills/ppt-master/scripts/chart_recall.py)——从实时图表目录确定性召回候选，在低词法置信度时约束语义 fallback，并校验进入 `page_charts` 的精确键
+  - `page_expression.json` 全生命周期合同——逐页锁定主张、证据、视觉动作、结论和叙事衔接，与 `spec_lock.md` 一同封存并由 compliance / Harness / Dashboard 验证
   - [`confirm_ui_gate.py`](skills/ppt-master/scripts/confirm_ui_gate.py)、[`research_gate.py`](skills/ppt-master/scripts/research/research_gate.py)、[`asset_gate.py`](skills/ppt-master/scripts/research/asset_gate.py)——确认、研究深度和素材完整性门禁
   - [`image_source_router.py`](skills/ppt-master/scripts/image_source_router.py) + [`image-source-routing.md`](skills/ppt-master/references/image-source-routing.md)——按主题域选择官方、学术、开放版权、通用氛围图等来源包，降低错图和版权风险
   - [`rendered_layout_check.py`](skills/ppt-master/scripts/rendered_layout_check.py)——基于本地渲染截图的布局门禁，补足静态 SVG 检查无法发现的重叠、踩线和异常留白
@@ -162,6 +180,7 @@ DeepPPT/
 │   │   ├── svg_editor/       # 实时预览编辑器
 │   │   ├── image_backends/   # 15+ AI 图片后端
 │   │   ├── image_source_router.py  # 图片来源路由
+│   │   ├── chart_recall.py         # 确定性图表候选召回与键校验
 │   │   ├── rendered_layout_check.py # 渲染级布局检查
 │   │   ├── pptx_quality_check.py    # 导出后 PPTX 结构 QA
 │   │   ├── consulting_content_lock.py # 咨询内容锁 sidecar
@@ -225,6 +244,8 @@ DeepPPT/
 │  ├─ 统一 Dashboard（状态/产物/质量/轨迹） │
 │  ├─ 内容筛选 + 详细大纲 + 图文语境绑定     │
 │  ├─ 八项确认 + 确认门禁                  │
+│  ├─ 页面表达合同 + spec lock 摘要封存      │
+│  ├─ 图表候选召回 + 精确键校验             │
 │  ├─ 图片来源路由 + 双轨图片生成           │
 │  ├─ 研究深度 / 素材完整性门禁             │
 │  ├─ SVG 逐页生成（实时预览）             │
@@ -254,6 +275,17 @@ DeepPPT/
 | [Scripts & Tools](skills/ppt-master/scripts/README.md) | 工具脚本文档 |
 
 ## 更新日志
+
+### 2026-07-25 — 页面表达、图表召回与证据合同强化
+
+**规划与研究：**
+- `page_expression.json` 贯穿连续、分段、恢复和规格精修路径，并与 `spec_lock.md` 一同进行摘要封存和漂移检查。
+- 新增确定性图表候选召回；咨询研究在启用证据模式时保留可追溯证据，并从 2-3 条 SCR 备选中形成单一建议。
+
+**执行与质量：**
+- Dashboard / Harness 展示并验证页面表达及摘要状态；合同缺失、不可见 assertion 或摘要漂移会失败关闭。
+- Executor 先依据内容关系、信息锚点和视觉动作构图；宽松留白、单侧构图和较大图文间距只进入复核，不再诱导填充装饰。
+- 质量修复先集中收集、一次修正，再统一复检，减少逐项反复调用检查器。
 
 ### 2026-07-04 — Dashboard / Confirm UI 预览与模板治理
 

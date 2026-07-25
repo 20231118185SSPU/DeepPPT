@@ -171,9 +171,9 @@ python3 skills/ppt-master/scripts/image_search.py --batch <project_path>/images/
 python3 skills/ppt-master/scripts/image_search.py --url-capture https://example.com -o <project_path>/images/web_assets/web_assets
 python3 skills/ppt-master/scripts/svg_editor/server.py <project_path> --live
 python3 skills/ppt-master/scripts/svg_quality_checker.py <project_path>
-python3 skills/ppt-master/scripts/spec_compliance_check.py <project_path>    # spec_lock semantic compliance
-python3 skills/ppt-master/scripts/spec_lock_digest.py generate <project_path>  # Step 4 end: seal spec_lock integrity
-python3 skills/ppt-master/scripts/spec_lock_digest.py verify <project_path>    # Step 6 start: verify before Executor reads
+python3 skills/ppt-master/scripts/spec_compliance_check.py <project_path>    # spec + page-expression semantic compliance
+python3 skills/ppt-master/scripts/spec_lock_digest.py generate <project_path>  # Step 4 end: seal both machine contracts when page_expression exists
+python3 skills/ppt-master/scripts/spec_lock_digest.py verify <project_path>    # Step 6 start: verify every covered machine contract
 python3 skills/ppt-master/scripts/consulting_content_lock.py <project_path>    # optional consulting/high-density sidecar
 python3 skills/ppt-master/scripts/e2e_validate.py <project_path>               # post-export: page count + notes + images + PPTX
 python3 skills/ppt-master/scripts/e2e_validate.py <project_path> --pptx exports/<exported_file>.pptx  # with PPTX slide-level checks

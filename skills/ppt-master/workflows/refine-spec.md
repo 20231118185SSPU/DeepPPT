@@ -4,11 +4,11 @@ description: Opt-in spec-refinement loop between the Eight Confirmations and Ima
 
 # Refine Spec Workflow
 
-> Standalone, **opt-in** spec-review pass. The default pipeline writes `design_spec.md` + `spec_lock.md` and auto-proceeds. When the user explicitly asks to refine the spec, the Strategist produces the full spec first, then **stops** — the user reviews and revises any part of it (outline, color, typography, layout, image strategy, page rhythm, …) before any image generation or SVG work begins.
+> Standalone, **opt-in** spec-review pass. The default pipeline writes `design_spec.md`, `page_expression.json`, and `spec_lock.md`, then auto-proceeds. When the user explicitly asks to refine the spec, the Strategist produces the full spec first, then **stops** — the user reviews and revises any part of it (outline, color, typography, layout, image strategy, page rhythm, …) before any image generation or SVG work begins.
 
 This workflow is **conditional**, same shape as the split-mode choice: it never fires on its own and the default path is unchanged. The Eight Confirmations settle design directions up front as abstract recommendations; this pass lets the user revise the **concrete spec** the Strategist produced from them. It is most valuable for a zero-background user, who can judge a finished spec far better than the up-front recommendations — and the spec's content outline (`§IX`) is usually what they most want to adjust.
 
-**Boundary**: this workflow is the pre-generation review of `design_spec.md` / `spec_lock.md`. Step 8a Spec Review is post-export workflow learning and does not approve page layouts before generation.
+**Boundary**: this workflow is the pre-generation review of `design_spec.md`, `page_expression.json`, and `spec_lock.md`. Step 8a Spec Review is post-export workflow learning and does not approve page layouts before generation.
 
 ## When to Run
 
@@ -28,7 +28,7 @@ The user **explicitly asks** to refine / review / revise the spec before generat
 
 ## Step 1: Produce the full spec
 
-Run the default Strategist output exactly as SKILL.md Step 4 specifies: write `design_spec.md` (§I–XI) and `spec_lock.md`. Read the relevant `sources/` files so the content outline (`§IX`) carries real facts, not skeleton points. Nothing special here — this is the normal spec, just produced under the knowledge that the user is about to review it.
+Run the default Strategist output exactly as SKILL.md Step 4 specifies: write `design_spec.md` (§I–XI), `page_expression.json`, and `spec_lock.md`. Read the relevant `sources/` files so the content outline (`§IX`) carries real facts, not skeleton points. Nothing special here — this is the normal spec, just produced under the knowledge that the user is about to review it.
 
 ---
 
@@ -49,13 +49,13 @@ The user may revise **any part of the spec**, not just the outline — content o
 
 These overlap with what the locked `mode`, visual style, and §6.1 already shape — treat them as discussion angles to surface what is worth talking about, not a second pass to redo.
 
-**Keep both files in sync on every change.** Any revision the user approves must land in both `design_spec.md` and `spec_lock.md`; on divergence `spec_lock.md` wins (see [`strategist.md`](../references/strategist.md) §6.2). Iterate as many rounds as the user wants. The loop ends only when the user explicitly approves the spec.
+**Keep all owning contracts in sync on every change.** Any approved §IX page-content, order, count, or expression revision must update both `design_spec.md` and `page_expression.json`; any approved execution-facing design revision must update `design_spec.md` and `spec_lock.md`. Do not copy visual tokens into `page_expression.json`. On visual-contract divergence `spec_lock.md` wins (see [`strategist.md`](../references/strategist.md) §6.2). Iterate as many rounds as the user wants. The loop ends only when the user explicitly approves the spec.
 
 ---
 
 ## Step 3: Hand back
 
-Once the user approves, `design_spec.md` and `spec_lock.md` both reflect the final, revised state. Return to SKILL.md and continue normally: Step 5 (Image Acquisition, if any `ai` / `web` rows) or Step 6 (Executor).
+Once the user approves, `design_spec.md`, `page_expression.json`, and `spec_lock.md` reflect the final, revised state. Return to SKILL.md and continue normally: Step 5 (Image Acquisition, if any `ai` / `web` rows) or Step 6 (Executor).
 
 > Note: this workflow does NOT duplicate Strategist content. It only inserts a review-and-revise checkpoint between spec production and the rest of the pipeline. `strategist.md` / SKILL.md remain authoritative for how the spec is written.
 
@@ -67,7 +67,7 @@ Before leaving the refinement checkpoint, confirm:
 
 | Evidence | Pass condition |
 |---|---|
-| Final spec files | `<project>/design_spec.md` and `<project>/spec_lock.md` exist and include the user's approved revisions |
+| Final spec files | `<project>/design_spec.md`, `<project>/page_expression.json`, and `<project>/spec_lock.md` exist and include the user's approved revisions |
 | User approval | The user explicitly approved the final spec after the review loop; approval happened after the last file change |
-| File sync | Any approved change that affects execution is reflected in both `design_spec.md` and `spec_lock.md`; on intentional divergence, `spec_lock.md` is named as the execution source of truth |
+| File sync | Approved §IX changes are reflected in `design_spec.md` + `page_expression.json`; execution-facing design changes are reflected in `design_spec.md` + `spec_lock.md` |
 | Integrity seal | `python3 ${SKILL_DIR}/scripts/spec_lock_digest.py generate <project_path>` was run after the final revision, producing `<project>/.spec_lock.digest` for Step 6 verification |

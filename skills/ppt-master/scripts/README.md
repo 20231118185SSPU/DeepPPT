@@ -56,7 +56,7 @@ Layer definitions:
 | `runtime pipeline` | Pre-executor and quality gates | `consulting_content_lock.py`, `harness_gate.py`, `layout_capacity_check.py`, `rendered_layout_check.py`, `spec_compliance_check.py`, `spec_lock_digest.py`, `svg_quality_checker.py` | [docs/svg-pipeline.md](./docs/svg-pipeline.md) |
 | `runtime pipeline` | Post-processing and export | `e2e_validate.py`, `finalize_svg.py`, `memory_manager.py`, `pptx_quality_check.py`, `svg_to_pptx.py`, `total_md_split.py` | [docs/svg-pipeline.md](./docs/svg-pipeline.md) |
 | `workflow satellite` | Direct PPTX and template workflows | `beautify_identity.py`, `beautify_inventory.py`, `extract_svg_assets.py`, `pptx_template_import.py`, `pptx_to_svg.py`, `register_template.py`, `template_fill_pptx.py` | [docs/project.md](./docs/project.md), create-template / beautify / template-fill docs in `../workflows/` |
-| `workflow satellite` | Review, revision, charts, audio, and animation | `animation_config.py`, `check_annotations.py`, `notes_to_audio.py`, `svg_patch.py`, `svg_position_calculator.py`, `svg_snapshot.py`, `vision_check.py`, `visual_review.py` | [docs/svg-pipeline.md](./docs/svg-pipeline.md), visual-review / live-preview / verify-charts docs in `../workflows/` |
+| `workflow satellite` | Review, revision, charts, audio, and animation | `animation_config.py`, `chart_recall.py`, `check_annotations.py`, `notes_to_audio.py`, `svg_patch.py`, `svg_position_calculator.py`, `svg_snapshot.py`, `vision_check.py`, `visual_review.py` | [docs/chart-recall.md](./docs/chart-recall.md), [docs/svg-pipeline.md](./docs/svg-pipeline.md), visual-review / live-preview / verify-charts docs in `../workflows/` |
 | `workflow satellite` | Image fixups | `gemini_watermark_remover.py`, `rotate_images.py` | [docs/image.md](./docs/image.md), [docs/conversion.md](./docs/conversion.md) |
 | `maintenance` | Project, repo, and spec upkeep | `batch_validate.py`, `generate_examples_index.py`, `governance_drift_check.py`, `smoke_check.py`, `update_repo.py`, `update_spec.py` | [docs/project.md](./docs/project.md), [docs/update_spec.md](./docs/update_spec.md), README install/update section |
 | `internal helper` | Shared configuration, validation, and service support | `config.py`, `dashboard_launcher.py`, `error_helper.py`, `json_utils.py`, `project_utils.py`, `server_common.py` | [docs/project.md](./docs/project.md), [docs/troubleshooting.md](./docs/troubleshooting.md) |
@@ -172,6 +172,17 @@ SVG quality checks, marks e2e as skipped, and does not prove the deck passed the
 complete end-to-end export validation. Use the full E2E gate plus
 `e2e_validate.py --pptx ...` before treating a fix as end-to-end validated.
 
+Main-pipeline spec compliance also validates the Strategist-owned
+`page_expression.json`: schema/owner, page coverage, content fields, structural
+page exceptions, allowed `content_relation` values, and the verbatim assertion
+in a top-level editable `lead` or `subtitle` group at or above `typography.body`.
+`template-fill` and `beautify` preservation projects are detected from their
+existing `analysis/` artifacts and retain an explicit compatibility warning.
+`spec_lock_digest.py generate` seals both `spec_lock.md` and
+`page_expression.json` when the sidecar exists; `harness_gate.py` requires and
+verifies that seal for sidecar projects, while older projects without the
+sidecar retain the legacy digest-optional path.
+
 Optional consulting content lock:
 
 ```bash
@@ -241,4 +252,4 @@ python3 scripts/update_repo.py --skip-pip
 - [Troubleshooting](./docs/troubleshooting.md)
 - [Skill Entry](../SKILL.md)
 
-_Last updated: 2026-07-03_
+_Last updated: 2026-07-19_

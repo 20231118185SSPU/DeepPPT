@@ -58,6 +58,11 @@ def validate_spec_lock(project_path: str, *, as_json: bool = False) -> int:
     errors: list[str] = []
     warnings: list[str] = []
 
+    if re.search(r"(?mi)^##\s+page_expression\s*$", text):
+        errors.append(
+            "spec_lock.md must not contain ## page_expression; use page_expression.json"
+        )
+
     # Check required sections
     for section in REQUIRED_SECTIONS:
         if section not in found_sections:

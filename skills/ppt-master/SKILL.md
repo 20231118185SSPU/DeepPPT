@@ -403,7 +403,7 @@ Then, read the role definition:
 Read references/strategist.md
 ```
 
-> **Layout pattern selection**: when planning the page structure, check for scenarios that match reusable layout patterns — screenshot comparison grids (`screenshot_grid`), project galleries (`gallery`), deep-dive card pages (`deepdive_card`), and centered transition pages (`transition_centered`). See strategist.md §b.1 for the full selection table and hard rules. All transition pages default to centered layout; content pages with expandable claims must be followed by deep-dive pages.
+> **Layout pattern selection**: when planning the page structure, check for scenarios that match reusable layout patterns — screenshot comparison grids (`screenshot_grid`), project galleries (`gallery`), deep-dive card pages (`deepdive_card`), and centered transition pages (`transition_centered`). See strategist.md §b.1 for the full selection table and hard rules. All transition pages default to centered layout. Keep a claim and its dominant evidence on one page when they remain legible and traceable; add a deep-dive only when the evidence genuinely needs a separate canvas. [NEEDS_HUMAN_REVIEW]
 
 > **Detailed Outline (Conditional)**: if `content_selection.json` exists (from the content-selection workflow), Strategist MUST run the [`detailed-outline`](workflows/detailed-outline.md) workflow **before** the Eight Confirmations. This generates `detailed_outline.json` — a per-page plan with core arguments, content bullets, narrative functions, visual needs, evidence refs, layout slots, and content/deep-dive pairings. The detailed outline feeds into the Eight Confirmations as the content basis (page count, outline structure), into §VIII as the image acquisition basis, and into Step 5 as the image-text context source. Skip if `content_selection.json` does not exist (user provided source files directly). Its `layout_suggestion` values are per-page structure suggestions, not Step 3 template packages; users adjust them before SVG generation through `refine_spec`, not by retroactively applying a template package.
 >
@@ -451,15 +451,15 @@ Read references/strategist.md
    python3 ${SKILL_DIR}/scripts/confirm_ui/server.py <project_path> --shutdown
    ```
    This is **idempotent and required regardless of whether Confirm was clicked**: clicking Confirm already shuts the page down (this is then a no-op), but the chat-fallback path leaves the page running — without this cleanup it would block the live preview launch. Run it after reading the confirmation and before proceeding to Step 5.
-6. **Confirm gate (Mandatory)** — before writing `design_spec.md` / `spec_lock.md`, run:
+6. **Confirm gate (Mandatory)** — before writing `design_spec.md` / `page_expression.json` / `spec_lock.md`, run:
    ```bash
    python3 ${SKILL_DIR}/scripts/confirm_ui_gate.py <project_path>
    # Chat fallback only, after writing fallback_confirmed result.json:
    python3 ${SKILL_DIR}/scripts/confirm_ui_gate.py <project_path> --allow-fallback
    ```
-   Any FAIL means return to the Eight Confirmations step; do not write `design_spec.md` or `spec_lock.md` until the gate passes.
+   Any FAIL means return to the Eight Confirmations step; do not write `design_spec.md`, `page_expression.json`, or `spec_lock.md` until the gate passes.
 
-**Honoring the confirmation (result.json is authoritative — Mandatory)**: the confirmed values **override your own recommendations** when you write `design_spec.md` / `spec_lock.md`. A user who changed any field changed it on purpose. In particular, map `image_usage` to §VIII `Acquire Via` (its value names differ from §h options — translate):
+**Honoring the confirmation (result.json is authoritative — Mandatory)**: the confirmed values **override your own recommendations** when you write `design_spec.md` / `page_expression.json` / `spec_lock.md`. A user who changed any field changed it on purpose. In particular, map `image_usage` to §VIII `Acquire Via` (its value names differ from §h options — translate):
 
 | `result.json.image_usage` | §VIII `Acquire Via` | h.5 + Step 5 generation |
 |---|---|---|
@@ -517,6 +517,7 @@ python3 ${SKILL_DIR}/scripts/analyze_images.py <project_path>/images
 
 **Output**:
 - `<project_path>/design_spec.md` — human-readable design narrative
+- `<project_path>/page_expression.json` — Strategist-owned per-page expression contract; Executor re-reads the current page object before every SVG
 - `<project_path>/spec_lock.md` — machine-readable execution contract (skeleton: `templates/spec_lock_reference.md`); Executor re-reads before every page
 
 **✅ Checkpoint — Phase deliverables complete, auto-proceed to next step**:
@@ -527,6 +528,7 @@ python3 ${SKILL_DIR}/scripts/analyze_images.py <project_path>/images
 - [x] Split-mode note appended below the eight items (heavy or normal variant)
 - [x] Spec-refinement opt-in line appended (default OFF; only the user's explicit request enters the refine-spec workflow)
 - [x] Design Specification & Content Outline generated
+- [x] Page expression contract (page_expression.json) generated
 - [x] Execution lock (spec_lock.md) generated
 - [ ] **Next**: Auto-proceed to [Image_Generator / Executor] phase
 ```
@@ -535,7 +537,7 @@ python3 ${SKILL_DIR}/scripts/analyze_images.py <project_path>/images
 ```
 python3 ${SKILL_DIR}/scripts/spec_lock_digest.py generate <project_path>
 ```
-This stores a SHA-256 digest of `spec_lock.md` so that Step 6 can verify the file has not been accidentally modified.
+This seals `spec_lock.md` and, when present, `page_expression.json` so Step 6 can verify that neither machine contract was modified accidentally.
 
 ---
 
@@ -603,7 +605,7 @@ Workflow:
 
   ```markdown
   ## ✅ Phase A Complete
-  - [x] Spec: `design_spec.md`, `spec_lock.md`
+  - [x] Spec: `design_spec.md`, `page_expression.json`, `spec_lock.md`
   - [x] Resources: `sources/`, `images/`, `templates/`
   - [ ] **Next**: open a fresh chat window and input `继续生成 projects/<project_name>` to enter Phase B via the [`resume-execute`](workflows/resume-execute.md) workflow.
   ```
@@ -620,7 +622,7 @@ Workflow:
 ```
 python3 ${SKILL_DIR}/scripts/spec_lock_digest.py verify <project_path>
 ```
-Exit code 0 = integrity confirmed; exit code 2 = **MISMATCH** — the file was modified since Step 4. If mismatch, **do NOT proceed** — investigate before continuing; re-run `generate` only if the change was intentional. This is a hard gate: Executor MUST NOT start with a mismatched spec_lock.
+Exit code 0 = integrity confirmed; exit code 2 = **MISMATCH** — `spec_lock.md` or `page_expression.json` was modified since Step 4. If mismatch, **do NOT proceed** — investigate before continuing; re-run `generate` only if the change was intentional. This is a hard gate: Executor MUST NOT start with a mismatched machine contract.
 
 **spec_lock structural validation** — also before reading references, verify the contract has all required sections:
 ```
@@ -654,7 +656,7 @@ python3 ${SKILL_DIR}/scripts/svg_editor/server.py <project_path> --live
 
 > Image facts: trust the `analysis/image_analysis.csv` regenerated at the end of Step 5. If `images/` changed since (the user swapped or added files), re-run `python3 ${SKILL_DIR}/scripts/analyze_images.py <project_path>/images` before laying images out — facts are re-derived on use, never a stale store (Step 4 image-facts note).
 
-**Per-page spec_lock re-read (Mandatory)**: before **each** SVG page, `read_file <project_path>/spec_lock.md` and use only its colors / fonts / icons / images, plus the per-page `page_rhythm` / `page_layouts` / `page_charts` lookups (resolves to template SVGs already loaded in the batch read above). Resists context-compression drift on long decks. See executor-base.md §2.1.
+**Per-page contract re-read (Mandatory)**: before **each** SVG page, `read_file <project_path>/spec_lock.md` and the current page object from `<project_path>/page_expression.json`. Use only the lock's colors / fonts / icons / images, plus its per-page `page_rhythm` / `page_layouts` / `page_charts` lookups (resolves to template SVGs already loaded in the batch read above), and render the page-expression assertion/evidence/bridge contract. Resists context-compression drift on long decks. See executor-base.md §2.1.
 
 > ⚠️ **Main-agent only**: SVG generation MUST stay in the current main agent — page design depends on full upstream context. Do NOT delegate to sub-agents.
 > ⚠️ **Generation rhythm**: generate pages sequentially, one at a time, in the same continuous context. Do NOT batch (e.g., 5 per group).

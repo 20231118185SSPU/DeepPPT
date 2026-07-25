@@ -2,7 +2,8 @@
 """
 PPT Master - Harness Gate (Aggregated Quality Gate)
 
-Runs three upstream check scripts and produces a unified PASS/FAIL report.
+Runs upstream check scripts and produces a unified PASS/FAIL report. The
+optional legacy digest check becomes required when page_expression.json exists.
 Designed to be called before Step 7 Post-process to block不合格 output.
 In --quick mode, this is a static gate: e2e validation is explicitly skipped.
 
@@ -82,11 +83,12 @@ def _run_check(cmd: list[str], label: str) -> dict:
 
 def run_harness_gate(project_path: str, quick: bool = False) -> dict:
     """
-    Run all three gate checks and return a unified report.
+    Run static/contract checks and return a unified report.
 
     Returns:
         {
             "spec_compliance": "PASS" | "FAIL",
+            "spec_lock_digest": "PASS" | "FAIL" | "SKIP",
             "svg_quality": "PASS" | "FAIL",
             "e2e": "PASS" | "FAIL" | "SKIP",
             "overall": "PASS" | "FAIL",
@@ -106,11 +108,47 @@ def run_harness_gate(project_path: str, quick: bool = False) -> dict:
     spec_cmd = [python, str(SCRIPTS_DIR / "spec_compliance_check.py"), str(project)]
     checks.append(_run_check(spec_cmd, "spec_compliance"))
 
-    # 2. svg_quality_checker.py
+    # 2. Contract digest, when the project has opted into the existing seal.
+    # Older projects may not have a digest yet; keep that compatibility path
+    # explicit while failing closed on any covered-contract drift.
+    digest_file = project / ".spec_lock.digest"
+    if digest_file.is_file():
+        digest_cmd = [
+            python,
+            str(SCRIPTS_DIR / "spec_lock_digest.py"),
+            "verify",
+            str(project),
+        ]
+        checks.append(_run_check(digest_cmd, "spec_lock_digest"))
+    elif (project / "page_expression.json").is_file():
+        checks.append({
+            "label": "spec_lock_digest",
+            "passed": False,
+            "skipped": False,
+            "stdout": "",
+            "stderr": (
+                "Digest missing for page_expression.json. Run "
+                "spec_lock_digest.py generate before continuing."
+            ),
+            "returncode": 1,
+            "command": [],
+        })
+    else:
+        checks.append({
+            "label": "spec_lock_digest",
+            "passed": True,
+            "skipped": True,
+            "stdout": "Digest skipped; .spec_lock.digest is not present.",
+            "stderr": "",
+            "returncode": 0,
+            "command": [],
+        })
+
+    # 3. svg_quality_checker.py
     svg_cmd = [python, str(SCRIPTS_DIR / "svg_quality_checker.py"), str(project / "svg_output")]
     checks.append(_run_check(svg_cmd, "svg_quality"))
 
-    # 3. e2e_validate.py (optional in quick mode)
+    # 4. e2e_validate.py (optional in quick mode)
     if quick:
         checks.append({
             "label": "e2e",
@@ -194,7 +232,7 @@ def print_report(report: dict) -> None:
     print("  HARNESS GATE REPORT")
     print("=" * 60)
 
-    for label in ["spec_compliance", "svg_quality", "e2e"]:
+    for label in ["spec_compliance", "spec_lock_digest", "svg_quality", "e2e"]:
         status = report.get(label, "N/A")
         if status == "PASS":
             icon = "✅"

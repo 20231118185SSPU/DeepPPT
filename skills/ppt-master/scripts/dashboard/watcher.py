@@ -42,6 +42,8 @@ _WATCH_ROOT_FILES = {
     "README.md",
     "design_spec.md",
     "spec_lock.md",
+    "page_expression.json",
+    ".spec_lock.digest",
     "animations.json",
     "trace.jsonl",
     ".confirm_ui.lock",
@@ -166,6 +168,10 @@ def _stamp(path: Path) -> int:
 
 
 def _rough_type(rel: str) -> str:
+    if rel in {"design_spec.md", "page_expression.json"}:
+        return "spec"
+    if rel in {"spec_lock.md", ".spec_lock.digest"}:
+        return "lock"
     top = rel.split("/", 1)[0]
     if top == "svg_output":
         return "svg"
@@ -191,6 +197,13 @@ def _rough_type(rel: str) -> str:
 
 
 def _rough_step(rel: str) -> int:
+    if rel in {
+        "design_spec.md",
+        "page_expression.json",
+        "spec_lock.md",
+        ".spec_lock.digest",
+    }:
+        return 4
     top = rel.split("/", 1)[0]
     mapping = {
         "sources": 1,
@@ -205,4 +218,3 @@ def _rough_step(rel: str) -> int:
         "backup": 7,
     }
     return mapping.get(top, 1)
-
