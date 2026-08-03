@@ -16,6 +16,7 @@ const state = {
   artifactFilters: {
     query: '',
     step: 'all',
+    phase: 'all',
     sort: 'mtime_desc',
   },
   previewModal: {
@@ -153,6 +154,7 @@ const artifactTypeOrder = [
   'svg_final',
   'svg',
   'image',
+  'research',
   'markdown',
   'json',
   'jsonl',
@@ -186,6 +188,15 @@ function t(key) {
 }
 
 async function handleDocumentClick(event) {
+  const phaseChip = event.target.closest('[data-artifact-phase]');
+  if (phaseChip) {
+    event.preventDefault();
+    const phase = phaseChip.dataset.artifactPhase;
+    state.artifactFilters.phase = state.artifactFilters.phase === phase ? 'all' : phase;
+    render();
+    return;
+  }
+
   const action = event.target.closest('[data-action-run]');
   if (action) {
     event.preventDefault();
@@ -717,9 +728,9 @@ function startPolling() {
 }
 
 function route() {
-  const raw = location.hash || '#/pipeline';
+  const raw = location.hash || '#/artifacts';
   const parts = raw.replace(/^#\//, '').split('/');
-  return { name: parts[0] || 'pipeline', arg: parts[1] };
+  return { name: parts[0] || 'artifacts', arg: parts[1] };
 }
 
 function render() {
@@ -1077,7 +1088,22 @@ function renderArtifacts(app) {
   const visibleArtifacts = filteredArtifacts(artifacts);
   const groups = artifactGroups(visibleArtifacts);
   const selectedVisible = selectedArtifactVisible(visibleArtifacts);
+  const phases = state.artifacts?.phases || {};
+  const phaseNav = [
+    ['idea', '制作思路', phases.idea || 0],
+    ['design', '设计契约', phases.design || 0],
+    ['generate', '生成页面', phases.generate || 0],
+    ['export', '导出成品', phases.export || 0],
+  ].map(([key, label, count]) => `
+    <button type="button" class="phase-chip${state.artifactFilters.phase === key ? ' active' : ''}"
+      data-artifact-phase="${key}" title="只看${label}产物">
+      <span class="phase-chip-label">${label}</span>
+      <span class="phase-chip-count">${count}</span>
+    </button>`).join('');
   app.innerHTML = `
+    <div class="phase-nav" role="group" aria-label="产物阶段">
+      ${phaseNav}
+    </div>
     <div class="summary-grid compact">
       ${metric('产物总数', state.artifacts?.total ?? 0)}
       ${metric('筛选结果', visibleArtifacts.length)}
@@ -1146,6 +1172,12 @@ function artifactFilterBar() {
       >
     </label>
     <label class="filter-field">
+      <span>阶段</span>
+      <select data-artifact-filter="phase">
+        ${artifactPhaseOptions(filters.phase)}
+      </select>
+    </label>
+    <label class="filter-field">
       <span>Step</span>
       <select data-artifact-filter="step">
         ${artifactStepOptions(filters.step)}
@@ -1158,6 +1190,21 @@ function artifactFilterBar() {
       </select>
     </label>
   </div>`;
+}
+
+function artifactPhaseOptions(activePhase) {
+  const options = [['all', '全部阶段']];
+  for (const [value, label] of [
+    ['idea', '制作思路'],
+    ['design', '设计契约'],
+    ['generate', '生成页面'],
+    ['export', '导出成品'],
+  ]) {
+    options.push([value, label]);
+  }
+  return options
+    .map(([value, label]) => `<option value="${value}"${value === activePhase ? ' selected' : ''}>${label}</option>`)
+    .join('');
 }
 
 function artifactStepOptions(activeStep) {
@@ -1417,6 +1464,7 @@ function filteredArtifacts(items) {
   return items
     .filter(matchesArtifactQuery)
     .filter(matchesArtifactStep)
+    .filter(matchesArtifactPhase)
     .slice()
     .sort(sortArtifacts);
 }
@@ -1440,6 +1488,12 @@ function matchesArtifactStep(item) {
   const step = state.artifactFilters.step;
   if (step === 'all') return true;
   return String(item.created_by_step || '') === step;
+}
+
+function matchesArtifactPhase(item) {
+  const phase = state.artifactFilters.phase;
+  if (phase === 'all') return true;
+  return item.phase === phase;
 }
 
 function selectedArtifactVisible(items) {

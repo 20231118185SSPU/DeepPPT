@@ -1815,3 +1815,38 @@ body.modal-open {
 }
 
 
+
+/* Phase navigation (artifact gallery): 制作思路 → 设计契约 → 生成页面 → 导出成品 */
+.phase-nav {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+  margin-bottom: 16px;
+}
+.phase-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 14px;
+  border: 1px solid var(--border, #ddd);
+  border-radius: 8px;
+  background: var(--panel-bg, #fff);
+  cursor: pointer;
+  font: inherit;
+  color: inherit;
+  transition: border-color 0.15s, background 0.15s;
+}
+.phase-chip:hover { border-color: var(--accent, #3b82f6); }
+.phase-chip.active {
+  border-color: var(--accent, #3b82f6);
+  background: var(--accent-soft, rgba(59, 130, 246, 0.08));
+}
+.phase-chip-label { font-weight: 600; }
+.phase-chip-count {
+  background: var(--chip-bg, #eee);
+  border-radius: 999px;
+  padding: 1px 8px;
+  font-size: 0.85em;
+  color: var(--muted, #666);
+}
+.phase-chip.active .phase-chip-count { background: var(--accent, #3b82f6); color: #fff; }

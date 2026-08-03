@@ -136,13 +136,21 @@ def create_app(project_path: Path, bus: EventBus) -> Flask:
     def api_artifacts():
         type_filter = request.args.get("type") or None
         step_filter = request.args.get("step") or None
+        phase_filter = request.args.get("phase") or None
         step_int = None
         if step_filter not in (None, ""):
             try:
                 step_int = int(step_filter)
             except ValueError:
                 return jsonify({"error": "step must be an integer"}), 400
-        return jsonify(list_artifacts(project, type_filter=type_filter, step_filter=step_int))
+        payload = list_artifacts(
+            project,
+            type_filter=type_filter,
+            step_filter=step_int,
+            phase_filter=phase_filter,
+            write_index=project / "dashboard" / "artifacts_index.json",
+        )
+        return jsonify(payload)
 
     @app.route("/api/artifacts/<artifact_type>")
     def api_artifacts_type(artifact_type: str):

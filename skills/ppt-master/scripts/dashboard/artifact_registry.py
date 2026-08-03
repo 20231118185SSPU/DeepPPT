@@ -17,6 +17,7 @@ Dependencies:
 
 from __future__ import annotations
 
+import json
 import re
 import xml.etree.ElementTree as ET
 from pathlib import Path
@@ -37,6 +38,7 @@ _SCAN_DIRS = {
     "audio",
     "confirm_ui",
     "live_preview",
+    "_research",
 }
 
 _ROOT_FILES = {
@@ -48,6 +50,10 @@ _ROOT_FILES = {
     "animations.json",
     "trace.jsonl",
     "metadata.json",
+    "research_report.md",
+    "content_selection.json",
+    "detailed_outline.json",
+    "visual_strategy.json",
 }
 
 _IMAGE_SUFFIXES = {".png", ".jpg", ".jpeg", ".webp", ".gif", ".bmp", ".tif", ".tiff", ".emf", ".wmf"}
@@ -70,6 +76,12 @@ def _artifact_type(rel_path: str, path: Path) -> str:
 
     if top == "sources":
         return "source"
+    if top == "_research":
+        return "research"
+    if name == "research_report.md":
+        return "research"
+    if name in ("content_selection.json", "detailed_outline.json", "visual_strategy.json"):
+        return "research"
     if top == "templates":
         return "template"
     if top == "analysis":
@@ -116,6 +128,7 @@ def _artifact_type(rel_path: str, path: Path) -> str:
 def _created_by_step(artifact_type: str) -> int | None:
     mapping = {
         "source": 1,
+        "research": 1,
         "analysis": 2,
         "template": 3,
         "confirm": 4,
@@ -156,6 +169,38 @@ def _svg_metadata(path: Path) -> dict:
     return metadata
 
 
+_PHASE_BY_TYPE = {
+    "source": "idea",
+    "research": "idea",
+    "analysis": "idea",
+    "template": "design",
+    "confirm": "design",
+    "spec": "design",
+    "lock": "design",
+    "animation": "design",
+    "icon": "design",
+    "image": "generate",
+    "image_ai": "generate",
+    "image_web": "generate",
+    "image_user": "generate",
+    "image_formula": "generate",
+    "svg": "generate",
+    "notes": "generate",
+    "svg_final": "export",
+    "pptx": "export",
+    "backup": "export",
+    "audio": "export",
+    "quality_report": "export",
+}
+
+_PHASE_LABELS = {
+    "idea": "制作思路",
+    "design": "设计契约",
+    "generate": "生成页面",
+    "export": "导出成品",
+}
+
+
 def _artifact_dict(project: Path, path: Path) -> dict:
     rel = path.relative_to(project).as_posix()
     artifact_type = _artifact_type(rel, path)
@@ -175,6 +220,8 @@ def _artifact_dict(project: Path, path: Path) -> dict:
         "size_bytes": size,
         "modified_at": _timestamp_from_epoch(modified_at),
         "created_by_step": _created_by_step(artifact_type),
+        "phase": _PHASE_BY_TYPE.get(artifact_type, "export"),
+        "phase_label": _PHASE_LABELS.get(_PHASE_BY_TYPE.get(artifact_type, "export"), "导出成品"),
         "metadata": metadata,
     }
 
@@ -211,8 +258,15 @@ def list_artifacts(
     *,
     type_filter: Optional[str] = None,
     step_filter: Optional[int] = None,
+    phase_filter: Optional[str] = None,
+    write_index: Optional[Path] = None,
 ) -> dict:
-    """Return the dashboard ArtifactList payload."""
+    """Return the dashboard ArtifactList payload.
+
+    ``write_index`` (optional) writes a browsable index JSON next to the project
+    (default ``<project>/dashboard/artifacts_index.json``) so artifacts are
+    searchable locally without running the dashboard.
+    """
     artifacts = []
     by_type: dict[str, int] = {}
     for path in iter_artifact_files(project):
@@ -221,13 +275,30 @@ def list_artifacts(
             continue
         if step_filter is not None and item["created_by_step"] != step_filter:
             continue
+        if phase_filter and item["phase"] != phase_filter:
+            continue
         artifacts.append(item)
         by_type[item["type"]] = by_type.get(item["type"], 0) + 1
-    return {
+    payload = {
         "artifacts": artifacts,
         "total": len(artifacts),
         "by_type": by_type,
+        "phases": {
+            phase: sum(1 for a in artifacts if a["phase"] == phase)
+            for phase in ("idea", "design", "generate", "export")
+        },
     }
+    if write_index is not None:
+        index_path = write_index if write_index.is_absolute() else project / write_index
+        try:
+            index_path.parent.mkdir(parents=True, exist_ok=True)
+            index_path.write_text(
+                json.dumps(payload, ensure_ascii=False, indent=1),
+                encoding="utf-8",
+            )
+        except OSError:
+            pass
+    return payload
 
 
 def latest_pptx(project: Path) -> str | None:
