@@ -1,6 +1,6 @@
 # DeepPPT2 性能基线与 CI 风险报告（2026-08）
 
-> 状态：Phase 3 基线报告（只读测量产物，2026-08-03 实测）。  
+> 状态：Phase 3 基线报告（只读测量产物，2026-08-03 实测）。§3 的 CI 风险为**历史发现，已关闭**（2026-08-03：examples 29/29 checker + e2e 双门修复完成，CI #12/#13 连续全绿）。
 > 权威性：非运行规则；基线数字仅用于后续优化对比，优化目标阈值待用户确认后写入。  
 > 配套：原始数据 `.tmp/perf_baseline.json`、`.tmp/smoke_timing.json`（gitignored，测量脚本 `.tmp/perf_baseline.py` 可复跑）。
 
@@ -36,7 +36,7 @@
 | `svg_to_pptx` 导出（swiss，10 页） | 3 | 3,724 ms | 4,052 ms | rc=0 ×3 |
 | `finalize_svg`（冷） | 3 | 482.2 ms | 516.2 ms | rc=0 ×3 |
 | `smoke_check --skip-help` | 3 | 2.3 s | 2.3 s | rc=0 |
-| `smoke_check` 完整（162 checks） | 1 | 26.1 s | — | rc=0（勘误：盘点报告 §7 曾记「≈3 分钟」，系后台任务观测误判，实测 26.1s） |
+| `smoke_check` 完整（160 checks） | 1 | 26.1 s | — | rc=0（勘误：盘点报告 §7 曾记「≈3 分钟」，系后台任务观测误判，实测 26.1s/160 checks） |
 
 **候选优化点（仅列为假设，未做任何优化；需 profiling 证明后单变量验证）**：
 1. ~~quality checker 冷启动 import 链懒加载~~ **已实验并回退（2026-08-03）**：将 `svg_to_pptx.drawingml.converter` + `native_objects` 模块级 try/except import 改为函数内懒加载后，完整运行 p50 从 1334ms 升至 1664ms（**负优化 +25%**）——检查函数每次运行必达（每页都执行），openpyxl ~600ms 只是从启动移到检查时。已 `git checkout` 回退（smoke 156/0/4、guard、checker spot 均复验）。该方向关闭；如需继续，须改 `svg_to_pptx/native_objects` 包内部 import 结构（openpyxl 懒加载，波及导出器，风险高）。
@@ -45,7 +45,9 @@
 
 **目标阈值**：按契约 §6，不在基线前臆定；待用户审阅本报告后单独确认（例如：「quality 冷启动 p50 降到 1.0s 以内」等）。
 
-## 3. CI 风险发现（优先级高于性能）
+## 3. CI 风险发现（历史发现，2026-08-03 已关闭）
+
+> 本节为修复前的风险事实链与处置记录，保留原始观测；风险已于当日关闭（§3.3 末）。
 
 ### 3.1 事实链
 
@@ -55,7 +57,7 @@
 | 2 | 全量共因：`spec_lock.md` 缺 `pptx_structure.mode: flat/structured`（v4.3.0 迁移后 release 契约） | swiss/attention/kubernetes 等抽查输出一致 |
 | 3 | 部分示例另有内容级 ERROR（marker 颜色 2 例、emoji 文本、零宽 stroke 渐变等） | kubernetes（05/09 页）、attention（15 页）、building_effective_agents（03 页） |
 | 4 | `kubernetes_blueprint` 导出在新导出器下 traceback（`drawingml/converter.py:1529`） | 实测；swiss/brutalist 导出 rc=0（非全量故障） |
-| 5 | 迁移提交 `31298372`（2026-08-03 18:50）未 push：`main...origin/main [ahead 1]` | `git status -sb`、`git log` |
+| 5 | 迁移提交 `31298372`（2026-08-03 18:50）未 push：`main...origin/main [ahead 1]` | `git status -sb`、`git log`；**后续已 push**（该提交现为「迁移基线提交」，其后 CI #12/#13 全绿） |
 | 6 | CI svg-quality job：对每个有 `svg_output/` 的 examples 跑 checker，`|| status=1` | `.github/workflows/ci.yml:64-75`；checker 任何 ERROR → exit 1（`svg_quality/cli.py`） |
 
 ### 3.2 推断与影响
@@ -78,13 +80,15 @@
 | D. `<g>` 上 filter | home_design_trends、liziqi（2 个） | 页面级 |
 | E. 其他 | kimsoong（clip-path `inset(...)`）、kubernetes（marker 颜色）、lin_huiyin_architect（theme 契约缺 font_family 等）、pritzker（**回填 flat 后 page_layouts 节与 flat 冲突**——此例应为 structured 或删节，特例待决） | 各例单独处理 |
 
-**决策遗留**：B-F 类需逐个修复（选项 B），或调整 CI 门禁（选项 C，不推荐），或暂缓（push 前必须解决）。pritzker 特例需单独判断（回填 flat 是否语义正确）。
+**决策遗留**：B-F 类需逐个修复（选项 B），或调整 CI 门禁（选项 C，不推荐），或暂缓（push 前必须解决）。pritzker 特例需单独判断（回填 flat 是否语义正确）。→ **均已关闭**（见下：L1-L3 修复 + e2e 缺口修复，checker 29/29 + e2e 29/29 双门全绿；pritzker 经删除 legacy page_layouts 节解决）。
 
 5. ✅ **L1 机械层修复执行（2026-08-03 晚）**：A 类 162 SVG 补 width/height（8 示例）+ 4 个 spec_lock 契约行（typography title/body、font_family 族，映射自 legacy 行名）+ doctor 2 个 WEBP 伪装图片转真格式 + kubernetes marker 按色拆分。**绿数 0 → 10/29**。
 6. ✅ **L2/L3 修复执行（2026-08-03 晚）**：L3 语义层删 4 个 legacy `page_layouts` 节（structured 专属契约，消费方有容错）；L2 设计层——B 类 6 示例 line→rect 等值转换（userSpaceOnUse 被 checker 明令禁止）、C 类 emoji 合法 Unicode 替换（✓→√ 等 7 映射）、D 类 `<g>` filter 移背景 rect/单图内层 g、E 类 kimsoong `inset()` → 本地 clipPath；补 liziqi/lin_huiyin typography title 行与 page_rhythm 节。**最终：checker 29/29 全绿**；导出抽查 5 个重度修改示例 rc=0；e2e 全量 24/29。
 7. ✅ **e2e 5 个既有资产缺口 — 已修复（2026-08-03，用户批准「删声明」）**：deepseek/doctor/kaltsit 删 spec_lock `images` 过期声明（7+20+6 条）；arknights/kaltsit 按 design_spec 页序重编号 15 个 svg（`02_chapter_*`/`03_content_*`/`03a_content_*` → 唯一数字前缀，03a 前缀原不被 `normalize_svg_page_id` 识别）；kimsoong 10 个 `slide_NN` → `NN` 数字前缀。**最终：checker 29/29 + e2e 29/29 双门全绿**；改名示例导出 rc=0 抽查通过。
 
 4. ✅ **连带缺陷修复（spec_lock_validate mode 跨节误读）**：回填暴露 `spec_lock_validate.py` 全局搜索 `- mode:` 行，把 `## pptx_structure` 的 `- mode: flat` 误读为叙事模式（模板顺序 pptx_structure 在 mode 之前，所有新项目均受影响，系统性 `Unusual mode value: flat` WARN）——已修复为限定 `## mode` 节内读取；smoke 156/0/4 回归通过；legacy 示例的「缺必需节 FAIL」为既有状态（迁移后新契约，非本批引入）。
+
+**关闭确认（2026-08-03）**：修复链全部完成并 push（`31298372` 基线提交 + 4 个修复提交）；CI #12、#13 连续全绿（smoke 16m52s / svg-quality 21m26s / e2e 1m38s）。本节为历史风险记录，不再构成 push 阻塞。
 
 ## 4. 附注
 

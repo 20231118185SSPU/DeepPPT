@@ -23,6 +23,15 @@
 
 ## Log
 
+### 2026-08-04 — prompt audit manifest 重写（真实 load-set 设计）+ 治理收口
+- **Files**: `skills/ppt-master/scripts/prompt_audit_manifest.json`（重写：7 个 load_sets（global/research/generate/image/template/native，glob 条目带 `select` 按需语义，子集 `include: ["global"]`）+ 1 个 coverage exempt（`pptx_shapes/data/NOTICE.md` 上游版权声明）+ 22 个 exact 重复 accepted（模板族共享契约表/自动生成头/共享引用句）+ corpus `max_tokens` 400k→430k、generate 预算 190k）；配套同步：`plans/deep-ppt-reorganization-contract.md`（D5/D6/D7 与 Phase 2/3/4 状态、`31298372` 标记为迁移基线提交、CI 风险关闭记录）、`docs/reviews/deep-ppt-repository-inventory-2026-08.md`（§0.1 治理后当前快照，原始 Phase 0 基线保留）、`docs/reviews/perf-baseline-2026-08.md`（§3 标记历史 CI 风险已关闭）、`.align/lessons.md`（51→48 条 + 归档最旧 6 条至 `.align/lessons-2026-08-03.archive.md` + 追加 3 条 audit 教训）、`.align/spec.md`（smoke 基线勘误 78/0/3+158/0/4 → 77/0/3/80+156/0/4/160）、`.align/decisions.log.md`（8 条已批准决策）
+- **Reason**: 治理收口——原 manifest 为空壳（load_sets 空、duplicates 无 accepted），audit 报 173 errors（1×BUDGET_CORPUS + 172×LOAD_COVERAGE_GAP）；需按 SKILL.md 加载纪律与四路由归属建立真实 load-set 契约。
+- **Before**: `prompt_audit.py --json --skip-near-duplicates` rc=1：172 文档 / 424,278 tokens / max_tokens 400,000 / 173 errors / 1 warning；coverage 0 covered + 0 exempt + 172 uncovered；22 exact duplicates 全 open。
+- **After**: rc=0：errors 0 / warnings 0；coverage 171 covered + 1 exempt = 172 闭合；22/22 exact accepted；7 个 load_set 预算全部通过（generate max 180,862 ≤ 190,000 等）。near-duplicate 184 对候选保留为 advisory warning（模板 design_spec 共享规则族启发式噪音）。
+- **Smoke check**: 156 passed, 0 failed, 4 skipped / 160 checks（完整模式）；77/0/3/80（--skip-help）；attribution_guard rc=0；governance_drift_check 5 PASS；svg_quality_checker --all examples 29/29 rc=0；git diff --check 干净
+- **Risk**: low（audit-only 配置 + 治理文档；未改任何运行时/CLI/质量门契约）
+- **Human reviewed**: pending
+
 ### 2026-08-03 — README 全面更新（v4.3.0 迁移收尾 + Dashboard 产物展台 + CI/Pages 上线）
 - **Files**: `README.md`、`docs/change-log.md`
 - **Reason**: 仓库介绍对齐 2026-08-03 大规模迁移收尾后的实际状态：重构版导出器/诊断包、structured 接线、29 示例双门全绿、CI/Pages 上线、Dashboard 产物展台定位、Phase 4 治理。

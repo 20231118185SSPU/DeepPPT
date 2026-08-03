@@ -11,17 +11,356 @@
       "skills/ppt-master/templates/charts/charts_index.json"
     ],
     "exclude": [],
-    "max_tokens": 400000
+    "max_tokens": 430000
   },
   "file_budgets": {},
-  "load_sets": {},
+  "load_sets": {
+    "global": {
+      "description": "ALWAYS LOAD entry + route-selection documents (SKILL.md context-loading strategy)",
+      "scope": "always",
+      "files": [
+        "AGENTS.md",
+        "skills/ppt-master/SKILL.md",
+        "skills/ppt-master/workflows/routing.md",
+        "skills/ppt-master/workflows/index.md",
+        "skills/ppt-master/workflows/governance/failure-recovery.md"
+      ],
+      "max_tokens": 20000
+    },
+    "research": {
+      "description": "Pre-pipeline research chain for topic-only input (ppt-briefing -> deep-research 7 steps -> planning chain)",
+      "scope": "on-demand",
+      "include": ["global"],
+      "files": [
+        "skills/ppt-master/workflows/ppt-briefing.md",
+        "skills/ppt-master/workflows/deep-research.md",
+        "skills/ppt-master/workflows/content-selection.md",
+        "skills/ppt-master/workflows/detailed-outline.md",
+        "skills/ppt-master/workflows/image-text-linking.md",
+        {"glob": "skills/ppt-master/workflows/research/*.md", "select": 7}
+      ],
+      "max_tokens": 60000
+    },
+    "generate": {
+      "description": "Generate PPTX route: route authority, role references, mode/visual-style catalogs, stages, profiles, and script docs",
+      "scope": "on-demand",
+      "include": ["global"],
+      "files": [
+        "skills/ppt-master/workflows/generate-pptx.md",
+        "skills/ppt-master/workflows/batch-review.md",
+        "skills/ppt-master/workflows/revision-loop.md",
+        {"glob": "skills/ppt-master/workflows/stages/*.md", "select": 2},
+        {"glob": "skills/ppt-master/workflows/profiles/*.md", "select": 1},
+        "skills/ppt-master/references/strategist.md",
+        "skills/ppt-master/references/executor-base.md",
+        "skills/ppt-master/references/shared-standards.md",
+        "skills/ppt-master/references/shared-standards-core.md",
+        "skills/ppt-master/references/canvas-formats.md",
+        "skills/ppt-master/references/animations.md",
+        "skills/ppt-master/references/svg-image-embedding.md",
+        "skills/ppt-master/references/visual-review.md",
+        "skills/ppt-master/references/reviser.md",
+        "skills/ppt-master/references/semantic-svg.md",
+        "skills/ppt-master/references/pptx-structure-interface.md",
+        "skills/ppt-master/references/svg-effects.md",
+        {"glob": "skills/ppt-master/references/modes/*.md", "select": 2},
+        {"glob": "skills/ppt-master/references/visual-styles/*.md", "select": 2},
+        "skills/ppt-master/scripts/README.md",
+        {
+          "glob": "skills/ppt-master/scripts/docs/*.md",
+          "exclude": ["**/pptx-transitions.md"],
+          "select": 2
+        },
+        "skills/ppt-master/templates/design_spec_reference.md",
+        "skills/ppt-master/templates/spec_lock_reference.md"
+      ],
+      "max_tokens": 190000
+    },
+    "image": {
+      "description": "Image acquisition (Step 5): image-base/generator/searcher references plus rendering/palette/type catalogs and ai-image-comparison",
+      "scope": "on-demand",
+      "include": ["global"],
+      "files": [
+        "skills/ppt-master/references/image-base.md",
+        "skills/ppt-master/references/image-generator.md",
+        "skills/ppt-master/references/image-searcher.md",
+        "skills/ppt-master/references/image-layout-patterns.md",
+        "skills/ppt-master/references/image-layout-spec.md",
+        "skills/ppt-master/references/image-source-routing.md",
+        {"glob": "skills/ppt-master/references/image-renderings/*.md", "select": 2},
+        {"glob": "skills/ppt-master/references/image-palettes/*.md", "select": 2},
+        {"glob": "skills/ppt-master/references/image-type-templates/*.md", "select": 2},
+        {"glob": "skills/ppt-master/references/ai-image-comparison/**/*.md", "select": 3}
+      ],
+      "max_tokens": 80000
+    },
+    "template": {
+      "description": "Create Template route: create-template/create-brand workflows, template-designer reference, template library docs and design_specs",
+      "scope": "on-demand",
+      "include": ["global"],
+      "files": [
+        "skills/ppt-master/workflows/create-template.md",
+        "skills/ppt-master/workflows/create-brand.md",
+        "skills/ppt-master/references/template-designer.md",
+        "skills/ppt-master/templates/README.md",
+        "skills/ppt-master/templates/brands/README.md",
+        "skills/ppt-master/templates/decks/README.md",
+        "skills/ppt-master/templates/layouts/README.md",
+        "skills/ppt-master/templates/charts/README.md",
+        "skills/ppt-master/templates/icons/README.md",
+        "skills/ppt-master/templates/charts/charts_index.json",
+        "skills/ppt-master/templates/charts/CHART_STYLE_GUIDE.md",
+        {"glob": "skills/ppt-master/templates/brands/*/design_spec.md", "select": 1},
+        {"glob": "skills/ppt-master/templates/decks/*/design_spec.md", "select": 1},
+        {"glob": "skills/ppt-master/templates/layouts/*/design_spec.md", "select": 1}
+      ],
+      "max_tokens": 70000
+    },
+    "native": {
+      "description": "Native PPTX routes: Fill / Enhance workflows and the native OOXML data/shape contracts",
+      "scope": "on-demand",
+      "include": ["global"],
+      "files": [
+        "skills/ppt-master/workflows/native-enhance-pptx.md",
+        "skills/ppt-master/workflows/template-fill-pptx.md",
+        "skills/ppt-master/references/native-data-interface.md",
+        "skills/ppt-master/references/native-shape-authoring.md",
+        "skills/ppt-master/scripts/docs/pptx-transitions.md"
+      ],
+      "max_tokens": 40000
+    }
+  },
   "duplicates": {
-    "accepted": []
+    "min_chars": 100,
+    "shingle_words": 4,
+    "min_words": 20,
+    "min_shared_shingles": 3,
+    "max_shingle_frequency": 24,
+    "near_similarity": 0.82,
+    "max_exact_results": 100,
+    "max_near_results": 100,
+    "accepted": [
+      {
+        "kind": "exact",
+        "fingerprint": "ba67fc7d886c",
+        "paths": [
+          "skills/ppt-master/references/native-data-interface.md",
+          "skills/ppt-master/references/shared-standards.md"
+        ],
+        "reason": "Shared OOXML ST_PresetPatternVal enum table between the native-data interface and shared standards"
+      },
+      {
+        "kind": "exact",
+        "fingerprint": "68198364d65f",
+        "paths": [
+          "skills/ppt-master/references/strategist.md",
+          "skills/ppt-master/templates/design_spec_reference.md"
+        ],
+        "reason": "Hero single-focus layout rule shared between Strategist role and the design-spec template"
+      },
+      {
+        "kind": "exact",
+        "fingerprint": "c046323c5d57",
+        "paths": [
+          "skills/ppt-master/templates/layouts/government_blue/design_spec.md",
+          "skills/ppt-master/templates/layouts/government_red/design_spec.md"
+        ],
+        "reason": "Standard SVG authoring rules intentionally shared across government layout templates"
+      },
+      {
+        "kind": "exact",
+        "fingerprint": "5515dc527758",
+        "paths": [
+          "skills/ppt-master/references/shared-standards-core.md",
+          "skills/ppt-master/references/shared-standards.md"
+        ],
+        "reason": "Character-category table is the shared core contract referenced by both standards docs"
+      },
+      {
+        "kind": "exact",
+        "fingerprint": "4c87d2fbe8c1",
+        "paths": [
+          "skills/ppt-master/templates/layouts/government_blue/design_spec.md",
+          "skills/ppt-master/templates/layouts/government_red/design_spec.md"
+        ],
+        "reason": "Layout mode use-case table intentionally shared across government layout templates"
+      },
+      {
+        "kind": "exact",
+        "fingerprint": "d3b5aa46fc9b",
+        "paths": [
+          "skills/ppt-master/templates/decks/中国电信/design_spec.md",
+          "skills/ppt-master/templates/decks/中国电建_常规/design_spec.md",
+          "skills/ppt-master/templates/decks/中国电建_现代/design_spec.md",
+          "skills/ppt-master/templates/decks/中汽研_商务/design_spec.md",
+          "skills/ppt-master/templates/decks/中汽研_常规/design_spec.md",
+          "skills/ppt-master/templates/decks/中汽研_现代/design_spec.md",
+          "skills/ppt-master/templates/decks/招商银行/design_spec.md",
+          "skills/ppt-master/templates/decks/重庆大学/design_spec.md"
+        ],
+        "reason": "Standard deck file-role roster table shared by all deck template design specs"
+      },
+      {
+        "kind": "exact",
+        "fingerprint": "5dcf96a36760",
+        "paths": [
+          "skills/ppt-master/templates/layouts/academic_defense/design_spec.md",
+          "skills/ppt-master/templates/layouts/government_blue/design_spec.md",
+          "skills/ppt-master/templates/layouts/government_red/design_spec.md",
+          "skills/ppt-master/templates/layouts/medical_university/design_spec.md",
+          "skills/ppt-master/templates/layouts/psychology_attachment/design_spec.md"
+        ],
+        "reason": "Standard layout file-role roster table shared by layout template design specs"
+      },
+      {
+        "kind": "exact",
+        "fingerprint": "6e507f0c1daa",
+        "paths": [
+          "skills/ppt-master/templates/layouts/government_blue/design_spec.md",
+          "skills/ppt-master/templates/layouts/government_red/design_spec.md"
+        ],
+        "reason": "Template application steps intentionally shared across government layout templates"
+      },
+      {
+        "kind": "exact",
+        "fingerprint": "2a271b0012e3",
+        "paths": [
+          "skills/ppt-master/templates/decks/中国电建_常规/design_spec.md",
+          "skills/ppt-master/templates/decks/中国电建_现代/design_spec.md"
+        ],
+        "reason": "Forbidden-feature list shared across 中国电建 deck templates"
+      },
+      {
+        "kind": "exact",
+        "fingerprint": "5767bfd63f56",
+        "paths": [
+          "skills/ppt-master/templates/decks/中国电建_常规/design_spec.md",
+          "skills/ppt-master/templates/decks/中汽研_常规/design_spec.md"
+        ],
+        "reason": "Heading font-size table shared across conventional deck templates"
+      },
+      {
+        "kind": "exact",
+        "fingerprint": "becefd852994",
+        "paths": [
+          "skills/ppt-master/templates/decks/中国电建_现代/design_spec.md",
+          "skills/ppt-master/templates/decks/中汽研_现代/design_spec.md"
+        ],
+        "reason": "Canvas property table shared across modern deck templates"
+      },
+      {
+        "kind": "exact",
+        "fingerprint": "574e67013214",
+        "paths": [
+          "skills/ppt-master/templates/decks/中国电建_常规/design_spec.md",
+          "skills/ppt-master/templates/decks/中汽研_常规/design_spec.md",
+          "skills/ppt-master/templates/layouts/government_blue/design_spec.md",
+          "skills/ppt-master/templates/layouts/government_red/design_spec.md"
+        ],
+        "reason": "Standard 16:9 canvas property table shared across layout and deck templates"
+      },
+      {
+        "kind": "exact",
+        "fingerprint": "8205ab03219b",
+        "paths": [
+          "skills/ppt-master/templates/layouts/government_blue/design_spec.md",
+          "skills/ppt-master/templates/layouts/government_red/design_spec.md"
+        ],
+        "reason": "SVG opacity/style rules intentionally shared across government layout templates"
+      },
+      {
+        "kind": "exact",
+        "fingerprint": "43e28bd18021",
+        "paths": [
+          "skills/ppt-master/templates/layouts/medical_university/design_spec.md",
+          "skills/ppt-master/templates/layouts/story_driven/design_spec.md"
+        ],
+        "reason": "Standard SVG authoring rules shared across layout templates"
+      },
+      {
+        "kind": "exact",
+        "fingerprint": "857b44d700e2",
+        "paths": [
+          "skills/ppt-master/templates/layouts/government_blue/design_spec.md",
+          "skills/ppt-master/templates/layouts/government_red/design_spec.md"
+        ],
+        "reason": "Spacing scale table intentionally shared across government layout templates"
+      },
+      {
+        "kind": "exact",
+        "fingerprint": "7d145e0f67fc",
+        "paths": [
+          "skills/ppt-master/references/native-data-interface.md",
+          "skills/ppt-master/references/shared-standards.md"
+        ],
+        "reason": "data-pptx-pattern closed-enum warning shared between native-data interface and shared standards"
+      },
+      {
+        "kind": "exact",
+        "fingerprint": "e7a8a8eeee32",
+        "paths": [
+          "skills/ppt-master/references/shared-standards.md",
+          "skills/ppt-master/references/strategist.md"
+        ],
+        "reason": "canvas-formats pointer sentence intentionally repeated in both references"
+      },
+      {
+        "kind": "exact",
+        "fingerprint": "0d0f56615a1f",
+        "paths": [
+          "skills/ppt-master/references/ai-image-comparison/palette/_manifest.md",
+          "skills/ppt-master/references/ai-image-comparison/rendering/_manifest.md",
+          "skills/ppt-master/references/ai-image-comparison/type/_manifest.md"
+        ],
+        "reason": "Auto-generated manifest header line produced identically by image_gen.py --render-md"
+      },
+      {
+        "kind": "exact",
+        "fingerprint": "e8d4b30d48c7",
+        "paths": [
+          "skills/ppt-master/templates/decks/中国电建_常规/design_spec.md",
+          "skills/ppt-master/templates/decks/中国电建_现代/design_spec.md"
+        ],
+        "reason": "Forbidden color/opacity list shared across 中国电建 deck templates"
+      },
+      {
+        "kind": "exact",
+        "fingerprint": "db80eb74eff3",
+        "paths": [
+          "skills/ppt-master/references/image-palettes/_index.md",
+          "skills/ppt-master/references/image-renderings/_index.md"
+        ],
+        "reason": "custom tail-case hard rule sentence shared by both catalog indexes"
+      },
+      {
+        "kind": "exact",
+        "fingerprint": "d493b4e0ff58",
+        "paths": [
+          "skills/ppt-master/templates/decks/中国电建_常规/design_spec.md",
+          "skills/ppt-master/templates/decks/中汽研_常规/design_spec.md"
+        ],
+        "reason": "Conventional layout description shared across deck templates"
+      },
+      {
+        "kind": "exact",
+        "fingerprint": "3b50a73ce663",
+        "paths": [
+          "skills/ppt-master/templates/decks/README.md",
+          "skills/ppt-master/templates/layouts/README.md"
+        ],
+        "reason": "Templates architecture data-model pointer sentence shared by both READMEs"
+      }
+    ]
   },
   "authority_edges": [],
   "registries": [],
   "schema_grammars": [],
   "coverage": {
-    "exempt": []
+    "exempt": [
+      {
+        "glob": "skills/ppt-master/scripts/pptx_shapes/data/NOTICE.md",
+        "reason": "Upstream attribution notice; not loaded by any agent workflow at runtime"
+      }
+    ]
   }
 }

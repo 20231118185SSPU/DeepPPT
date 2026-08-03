@@ -24,7 +24,7 @@
 - `examples/` 29 个示例、2,016 文件、约 1.5 GiB（全跟踪，CI/Pages 公开回归基线）。
 - `skills/ppt-master/scripts/`：81 个顶层入口（`smoke_check.py` 计 81）+ 20 个子目录 167 个 py = 248 个 Python 文件。
 - smoke 基线（2026-08-03 实测）：完整模式 **158 passed / 0 failed / 4 skipped / 162 checks**；`--skip-help` 模式 **78 / 0 / 3 / 81 checks**。
-- 最新提交 `31298372` 完成 ppt v4.3.0 大规模迁移（重构版导出器整体替换）；`plans/followup-migration-roadmap.md` 的 Phase 2-6 已全部执行但文档仍为「计划」形态。
+- 最新提交 `31298372`（**迁移基线提交**）完成 ppt v4.3.0 大规模迁移（重构版导出器整体替换），其后以该提交为基线完成 examples 29/29 checker + e2e 双门修复与 CI 全绿；`plans/followup-migration-roadmap.md` 的 Phase 2-6 已全部执行但文档仍为「计划」形态。
 - 重复哈希：1,828 组 / 6,568 文件，理论可回收约 3.26 GB，集中在 `projects/backup/` 多版本快照、examples↔projects 同源拷贝、`.codex/` 工具状态、图标库拷贝进项目。
 - Markdown 链接：880 个 tracked md、1,037 条链接校验，0 真断链，8 条占位链接（`xxx.md` / `url` 示例，属既有允许项）。
 
@@ -54,9 +54,9 @@
 | D2 | `docs/reviews/deep-ppt-repository-inventory-2026-08.md`（事实盘点，`[原文]`/`[推断]`/`[待验证]` 三分类） | ✅ 2026-08-03 |
 | D3 | 权威层级矩阵 + 目录 owner/可删性表（在 D2 §2-3） | ✅ 2026-08-03 |
 | D4 | 冗余/死文件/旧路线图/漂移差异清单（在 D2 §4-5，第一阶段不处理） | ✅ 2026-08-03 |
-| D5 | Phase 2 低风险整理批次（索引、导航、状态标记、重复引用），每批 smoke 前后对比 | ⏳ 待批准 |
-| D6 | Phase 3 性能基线报告（p50/p95，同一 fixture 前后对比）→ 量化目标 → 优化批次 | ⏳ 待批准 |
-| D7 | Phase 4 产物治理方案（active/archive/disposable 分类 + 删除清单 + 回滚副本） | ⏳ 待批准 |
+| D5 | Phase 2 低风险整理批次（索引、导航、状态标记、重复引用），每批 smoke 前后对比 | ✅ 已执行（2026-08-03，用户批准） |
+| D6 | Phase 3 性能基线报告（p50/p95，同一 fixture 前后对比）→ 量化目标 → 优化批次 | ✅ 基线报告已交付（2026-08-03）；⏳ 优化批次（基线无证据瓶颈，目标阈值待用户按报告确认） |
+| D7 | Phase 4 产物治理方案（active/archive/disposable 分类 + 删除清单 + 回滚副本） | ✅ 已执行（2026-08-03，用户批准） |
 
 ## 5. 约束（红线）
 
@@ -89,28 +89,28 @@
 - 候选冗余 / 疑似死文件 / 旧路线图 / 重复资源清单（D2 §4），**不删除、不移动、不重命名**。
 - `.align` 过期事实差异报告（D2 §5），更新留待独立获批变更。
 
-### Phase 2 — 低风险整理（⏳ 仅在本契约审核后执行）
+### Phase 2 — 低风险整理（✅ 已执行 2026-08-03，用户批准）
 
 - 优先：索引、文档导航、状态标记、入口说明、重复引用。
 - 候选批次（来自 D2 §4/§5，每批独立审批）：
-  - `plans/followup-migration-roadmap.md` 标记为已完成/归档（Phase 2-6 已执行完毕）；
-  - `pptx_animations.py` 与 `native_pptx_animations.py` 同内容副本（md5 相同）的导入面核验与合并评估（需先出消费者清单）；
-  - `.align/spec.md` 事实刷新（独立获批项）；
+  - `plans/followup-migration-roadmap.md` 标记为已完成/归档（Phase 2-6 已执行完毕）；✅ 已归档（§10.1）；
+  - `pptx_animations.py` 与 `native_pptx_animations.py` 同内容副本（md5 相同）的导入面核验与合并评估（需先出消费者清单）；✅ 方案 A 已执行（§10.1）；
+  - `.align/spec.md` 事实刷新（独立获批项）；✅ 已执行（§10.2）；
   - 其他 D2 清单项。
 - 每批：修改前 smoke → 修改 → 修改后 smoke → 更新 `docs/change-log.md`。
 
-### Phase 3 — 基于证据的性能优化（⏳）
+### Phase 3 — 基于证据的性能优化（✅ 基线已建立 2026-08-03；⏳ 优化批次待目标确认）
 
-- 先建立基线：冷/暖启动、导入、目录扫描、Dashboard 启动、质量检查、代表性导出流程的 p50/p95（≥10 次采样）。已记录的粗基线（单次测量，非 p50/p95）：`svg_to_pptx` 冷导入 0.09s、`svg_quality` 0.06s、`dashboard.server` 0.40s、`confirm_ui.server` 0.50s、全仓 walk 0.33s；完整 smoke 一次约 3 分钟。
+- 先建立基线：冷/暖启动、导入、目录扫描、Dashboard 启动、质量检查、代表性导出流程的 p50/p95（≥10 次采样）。**已建立**（`docs/reviews/perf-baseline-2026-08.md`：smoke 完整 26.1s/160 checks、导出 p50 3.7s、quality 冷 p50 1.33s/暖 0.37s、dashboard 启动 1.86s 等）。粗基线勘误：完整 smoke 实测 26.1s（初版「约 3 分钟」系后台任务观测误判）。
 - 只优化被 profiling 证明的瓶颈（重复扫描 / 重复解析 / 重复上下文读取 / 非必要 eager import / 重复索引加载）。
-- 手段优先：缓存、懒加载、索引复用、路由级上下文裁剪；禁止无证据抽象。
+- 手段优先：缓存、懒加载、索引复用、路由级上下文裁剪；禁止无证据抽象。已实验并回退一项负优化（checker 懒加载 +25%，见 perf-baseline §2）。
 - 目标阈值在基线报告后单独与用户确认，不得自行臆定。
 
-### Phase 4 — 产物治理（⏳ 另立审批）
+### Phase 4 — 产物治理（✅ 已执行 2026-08-03，用户批准）
 
-- `projects/`：active / archive / disposable 分类 + 生命周期与归档规则；删除仅限用户明确批准且具备清单与回滚副本。
-- `examples/`：默认保留为公开 CI/Pages 回归基线；移出大型示例或改造 Pages 必须单独设计发布链路、迁移清单和回滚步骤。
-- 候选（仅列出，不执行）：`projects/backup/` 多版本快照（march7th_hsr 512 MB / deepseek_evolution 175 MB / meditation 154 MB 等，共约 1 GB 级重复）、`.codex/` 261 MB 工具状态（gitignored，需确认是否可清）。
+- `projects/`：active / archive / disposable 分类 + 生命周期与归档规则；删除仅限用户明确批准且具备清单与回滚副本。✅ 已执行（`projects/README.md` Lifecycle Governance + 清理 34 个旧 backup 快照 ~0.9 GB）。
+- `examples/`：默认保留为公开 CI/Pages 回归基线；移出大型示例或改造 Pages 必须单独设计发布链路、迁移清单和回滚步骤。✅ 未改动 examples 定位。
+- 候选（仅列出，不执行）：`projects/backup/` 多版本快照（march7th_hsr 512 MB / deepseek_evolution 175 MB / meditation 154 MB 等，共约 1 GB 级重复）、`.codex/` 261 MB 工具状态（gitignored，需确认是否可清）。→ ✅ 均已执行（backup 清理 + .codex 261 MB → 5 KB）。
 
 ## 7. 验收标准
 
@@ -162,8 +162,11 @@
 
 ### 10.2 后续建议（按序，均需批准）
 
-1. ✅ **`.align/spec.md` / `context.md` 事实刷新 — 已执行（2026-08-03，用户批准）**：spec.md 4 处（CI 存在性、测试语义、Python 3.12.13 实测、smoke 基线 78/0/3 + 158/0/4）、context.md 1 处（「仓库不包含自动化测试」→ 无 tests/ + CI 强制验证），均保持 `[原文]` 标注并加修订注记；另修正盘点报告 §5 一处张冠李戴（spec.md 原文无「38/41」基线数字）。align-check.sh 一键验证通过（smoke --skip-help PASS）。
+1. ✅ **`.align/spec.md` / `context.md` 事实刷新 — 已执行（2026-08-03，用户批准）**：spec.md 4 处（CI 存在性、测试语义、Python 3.12.13 实测、smoke 基线 78/0/3 + 158/0/4）、context.md 1 处（「仓库不包含自动化测试」→ 无 tests/ + CI 强制验证），均保持 `[原文]` 标注并加修订注记；另修正盘点报告 §5 一处张冠李戴（spec.md 原文无「38/41」基线数字）。align-check.sh 一键验证通过（smoke --skip-help PASS）。**基线数字勘误（2026-08-03 晚，治理收口）**：初版刷新沿用了动画合并前的基线；合并后实测为 `--skip-help` 77/0/3/80 checks、完整模式 156/0/4/160 checks，spec.md 已修正并加注记。
 2. ✅ **Phase 3 性能基线 — 已执行（2026-08-03）**：报告见 `docs/reviews/perf-baseline-2026-08.md`（p50/p95：smoke 完整 26.1s、导出 p50 3.7s、quality 冷 p50 1.33s/暖 0.37s、dashboard 启动 1.86s 等；原始数据 `.tmp/perf_baseline.json`）。**未做任何优化**；优化目标阈值待用户按报告确认。基线过程中发现 CI 风险（§10.3），优先于性能处理。
-3. 🔄 **CI 风险处置（发现于 Phase 3 基线）**：✅ 选项 A 已执行（模板 `- mode: flat` bug 修复 + 29 个 legacy spec_lock 回填，5/29 变绿）；⏳ 24 个仍红示例按 A-E 类分类（清单见 `docs/reviews/perf-baseline-2026-08.md` §3.3），B-F 类修复或 CI 门禁调整待用户决策；pritzker 特例（回填 flat 与 page_layouts 节冲突）待单独判断。
+3. ✅ **CI 风险处置 — 已关闭（2026-08-03）**：发现于 Phase 3 基线（29/29 examples checker rc=1，共因 = legacy `spec_lock.md` 缺 `pptx_structure.mode`）。处置链：模板 `- mode: flat` bug 修复 + 29 个 legacy spec_lock 回填 → L1 机械层（162 SVG width/height + 契约行回填 + WEBP 转格式 + marker 拆分）→ L2/L3 语义层（page_layouts 节删除、line→rect 渐变、emoji 映射、`<g>` filter 迁移、kimsoong clipPath）→ e2e 缺口修复（过期 images 声明删除 + svg 按页序重编号）→ **最终 checker 29/29 + e2e 29/29 双门全绿**；`spec_lock_validate` mode 跨节误读连带修复。提交 `31298372` 基线 push 后 CI #12、#13 连续全绿（smoke 16m52s / svg-quality 21m26s / e2e 1m38s）。pritzker 特例（回填 flat 与 page_layouts 节冲突）经删除 legacy page_layouts 节解决（structured 专属契约，消费方有容错）。完整记录见 `docs/reviews/perf-baseline-2026-08.md` §3.3（已标记「历史 CI 风险，已关闭」）。
 4. ✅ **Phase 4 产物治理 — 已执行（2026-08-03，用户批准）**：`projects/README.md` 新增 Lifecycle Governance（active/archive/disposable 三档 + backup/dashboard/validation 可清理清单 + artifacts_index.json 搜找说明）；清理 34 个旧 backup 快照（~0.9 GB，project_manager 官方标注 safe to delete old timestamps）+ `.codex/dashboard-check`/`dashboard-cdp` 缓存（256 MB，保留 config.toml）→ projects/ 5.73 GB → 4.8 GB、.codex 261 MB → 5 KB。
 5. ✅ **Dashboard 重定位为产物展台 — 已执行（2026-08-03，用户批准）**：定位 = 产物在线观看平台（制作 PPT 思路与相关产物集中展示；Confirm UI 不动）。实施：默认路由改产物展台；四阶段导航（制作思路/设计契约/生成页面/导出成品 + 计数 + 点击过滤）；新增 research 类型（`_research/`、research_report、content_selection/detailed_outline/visual_strategy）；`/api/artifacts` 响应写 `<project>/dashboard/artifacts_index.json`（本地 grep/jq 搜找）。浏览器实测通过；smoke 77/0/3。
+6. ✅ **GitHub Pages 工作流精简 — 已执行（2026-08-03，用户批准）**：用户配置 Pages 时提交的 `static.yml` + `jekyll-gh-pages.yml` 经确认后删除，仅保留 `deploy-pages.yml`；Pages 站点生效。
+7. ✅ **README 全面刷新 — 已执行（2026-08-03，已 push）**：CI badge（3 job 全绿）、v4.3.0 迁移完成内容、Dashboard 产物展示定位、结构树、changelog 条目，与远程仓库同步。
+8. ✅ **治理收口 — 已执行（2026-08-03）**：`prompt_audit_manifest.json` 重写（7 个真实 load_sets + 1 个 exempt + 22 个 exact 重复 accepted，audit rc=0 / errors=0 / coverage 172 闭合）；本契约与两份 review 报告状态同步；`.align/lessons.md` 归档至 ≤50 条；`.align/decisions.log.md` 记录已批准决策。未 commit/push（待用户批准）。

@@ -1,6 +1,6 @@
 # DeepPPT2 仓库事实盘点与治理边界报告（2026-08）
 
-> 状态：只读审计报告（Phase 0/1 完成产物，2026-08-03 实测）。  
+> 状态：只读审计报告（Phase 0/1 完成产物，2026-08-03 实测；§0.1 追加「治理后当前快照」）。
 > 权威性：非运行规则；`AGENTS.md`、`skills/ppt-master/SKILL.md`、`workflows/routing.md`、`workflows/generate-pptx.md` 及各 owning workflow 仍是运行权威。本文档不覆盖它们，也不替代 `plans/deep-ppt-reorganization-contract.md` 的执行约束。  
 > 范围：全仓 24,197 个文件（不含 `.git`）；`projects/` 只盘点不处理；`examples/` 只盘点不定位变更。  
 > 标注约定：`[原文]` = 文件/命令/实测直接证据；`[推断]` = 基于证据的合理推论；`[待验证]` = 当前无法确认，需后续动作验证。所有路径、命令、字段名保留英文。
@@ -15,7 +15,24 @@
 
 1. **规模对账通过**：24,193（Brief）≈ 24,197（实测，+4 为本会话临时文件）；7.24 GB（GiB 口径）一致；Git 跟踪 14,534 一致；`projects/` 33 个、`examples/` 29 个一致；scripts 81 入口 / 248 py 一致。
 2. **smoke 基线确认**：`--skip-help` 模式 78 passed / 0 failed / 3 skipped / 81 checks（与 Brief 完全一致）；完整模式 158 / 0 / 4 / 162 checks（与 `plans/followup-migration-roadmap.md` Phase 6 记录一致）。
-3. **事实源已漂移**：`.align/spec.md` 声明「无自动化测试，无 CI 流水线」[原文]，但 `.github/workflows/ci.yml` + `deploy-pages.yml` 已存在且活跃 [原文]；`.align` 中 smoke 基线（38/41）与脚本数量也过期。漂移差异清单见 §5。
+3. **事实源已漂移**：`.align/spec.md` 声明「无自动化测试，无 CI 流水线」[原文]，但 `.github/workflows/ci.yml` + `deploy-pages.yml` 已存在且活跃 [原文]；`.align` 中 smoke 基线（38/41）与脚本数量也过期。漂移差异清单见 §5。→ **2026-08-03 已刷新（独立获批），见 §0.1 快照**。
+
+## 0.1 治理后当前快照（2026-08-03 晚，追加）
+
+> 原始 Phase 0/1 盘点基线（§1-§9）保留为只读快照；本表为本会话全部治理动作完成后的事实增量，供后续对账。执行记录详见 `plans/deep-ppt-reorganization-contract.md` §10。
+
+| 项 | 治理前（本报告基线） | 治理后（2026-08-03 实测） |
+|---|---|---|
+| examples 质量门 | 29/29 checker rc=1（CI push 必红风险） | checker **29/29** + e2e **29/29** 双门全绿；CI #12/#13 连续全绿（smoke 16m52s / svg-quality 21m26s / e2e 1m38s） |
+| 迁移提交 | `31298372` 未 push（ahead 1） | 已 push，重新标记为**迁移基线提交** |
+| `plans/followup-migration-roadmap.md` | 计划形态（R2） | 已归档（头部状态标记，正文保留执行记录） |
+| `pptx_animations` / `native_pptx_animations` | 双文件并存（R1） | 已合并（方案 A：删 native 副本，3 处 import 切换，gate 清单更新） |
+| `.align` 事实 | spec/context 过期（R3） | 已刷新（spec 4 处 + context 1 处，保持 `[原文]` 标注） |
+| `projects/` 体积 | 5,733.7 MB | ≈4.8 GB（34 个旧 backup 快照 ~0.9 GB 已清，`projects/README.md` 新增 Lifecycle Governance） |
+| `.codex/` | 261.5 MB（R6） | 5 KB（dashboard 缓存已清，config.toml 保留） |
+| Dashboard | 全流程展示 | 产物展台（四阶段导航 + research 类型 + `artifacts_index.json` 本地搜找） |
+| GitHub Pages | 3 个 workflow | 仅 `deploy-pages.yml`（static.yml / jekyll-gh-pages.yml 已删）；Pages 生效 |
+| prompt audit manifest | 空 load_sets（173 errors） | 7 个真实 load_sets + 1 exempt + 22 exact 重复 accepted；**rc=0 / errors=0 / coverage 172 闭合**（未 commit，待批准） |
 
 ## 1. 事实盘点（可对账口径）
 
@@ -252,4 +269,4 @@ python .tmp/link_check.py                    # 复跑链接检查
 ### 9.3 复跑说明
 
 - 扫描脚本会重新统计当前文件系统状态；若 `.tmp/` 或 `projects/` 内容变化，数字会随之变化——对账时以扫描当次输出为准。
-- smoke 完整模式约 3 分钟；`--skip-help` 模式约 1-2 分钟，数字应与本文档一致（除非脚本集变更）。
+- smoke 完整模式约 26.1 s（160 checks，2026-08-03 实测修正；初版「≈3 分钟」系后台任务观测误判）；`--skip-help` 模式约 2.3 s，数字应与本文档一致（除非脚本集变更）。

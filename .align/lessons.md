@@ -8,12 +8,6 @@
 
 ## 经验规则
 
-- [SVG → PPTX 文本边界] 规则：Chromium/SVG 渲染通过不代表 DrawingML 字宽不越界 → 下次执行：导出后运行 `pptx_quality_check.py`，按 DrawingML 实测微调短句或坐标并重新导出。
-- [跨 `tspan` 的逐字 assertion] 规则：可见换行可能让 XML 文本拼接丢失语义空格 → 下次执行：用 `&#32;` 保留空格，并用 XML 解析器对 JSON 原文做标准化精确比对。
-- [Windows watcher 回归] 规则：文本写回可能把 `page_expression.json` 的 LF 转成 CRLF，造成真实 digest drift → 下次执行：watcher fixture 用字节级恢复，合同文件保持 UTF-8/LF 后再封存。
-- [SVG assertion 可见性] 规则：隐藏 descendant、透明 paint 或 tspan 字号覆盖都不能算可见 assertion → 下次执行：按可见文本 run 解析 XML，并检查每个 run 的有效字号。
-- [条件工作流合同] 规则：总编排器声明可选能力不等于执行步骤已落地 → 下次执行：统一 `enabled/reason/source` 路由回执，并在 owning step 中规定产出与验证。
-- [新机器 sidecar 合同] 规则：新增必需产物不能只接入连续生成路径 → 下次执行：同步检查连续、split handoff、resume 与 refine 的全生命周期。
 - [研究正文深度门] 规则：机器注释和结构化 sidecar 不能贡献可读正文字数 → 下次执行：计数前先剔除机器注释块，并用短正文反例验证。
 - [上游同源 UI 迁移] 规则：确认目标文件与上游同源时，整份替换新代实现后必须重新叠加本仓库独有扩展，并逐项核对扩展的潜伏缺陷 → 下次执行：替换前先 grep 扩展依赖的常量/路由是否在新文件中有定义（如 `_SKILL_DIR` 未定义）。
 - [跨仓库文件拷贝] 规则：`cp` 整目录后 diff 校验 + 运行 smoke 建立新基线 → 下次执行：先基线后改、改后对比通过数（52→55 确认新增脚本被覆盖）。
@@ -59,3 +53,6 @@
 - [checker 与 e2e 契约面不同] 规则：checker 查 spec_lock mode + SVG 语法；e2e 查 page_rhythm 页数、images 声明存在性、svg 命名模式（P NN）→ legacy 示例可能 checker 全绿但 e2e 红（声明与磁盘漂移、命名不兼容）→ 下次执行：示例全量验收同时跑 checker + e2e 双门。
 - [懒加载负优化陷阱] 规则：把模块级 eager import 改函数内懒加载，若使用函数每次运行必达（checker 每页都跑检查），重依赖（openpyxl ~600ms）只是从启动移到检查时，总耗时不变甚至更差（实测 +25%）→ 下次执行：懒加载前先确认使用路径是否每次必达；用「完整运行 p50」而非「import 耗时」做前后对比。
 - [性能对比的 fixture 一致性] 规则：前后 p50 对比必须同一 fixture（kubernetes 副本 vs swiss 原位检查内容不同，差 ~300ms）→ 下次执行：基线 fixture 保留到优化批次结束，不要中途清理。
+- [prompt_audit load-set selector 契约] 规则：manifest 的 load_sets.files 里 glob 条目必须带 `select`（1..N 的按需加载模型，缺 select 报 `AUDIT_SETUP_ERROR: invalid select=None`）→ 下次执行：glob 条目一律补 select（字符串路径是固定加载，无需 select）。
+- [BUDGET_CORPUS 不受 exempt 影响] 规则：coverage.exempt 只豁免「覆盖率」要求，豁免文档仍计入 corpus tokens，压不动 BUDGET_CORPUS → 下次执行：corpus 超预算只能提高 max_tokens（须配真实 load-set 设计）或收窄 documents.include，别指望 exempt。
+- [prompt_audit --json 输出键名] 规则：duplicates 输出键是 exact/exact_accepted/near/near_accepted（非 open/accepted），load_sets 是数组非字典 → 下次执行：解析输出先看顶层键再写解析器。
