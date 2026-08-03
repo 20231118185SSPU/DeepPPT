@@ -48,3 +48,14 @@
 - [preview 工具是 structured 导向] 规则：template_preview_pptx（ppt 原版）要求 SVG 根 data-pptx-master（structured 预览），普通 fixture 需 --visual-only → 下次执行：模板预览验证用 --visual-only 或构造 structured fixture。
 - [svg_finalize 与导出器配套升级] 规则：新导出器的 tspan_flattener 调用 svg_finalize.flatten_text_with_tspans(preserve_line_breaks=...)——包替换牵出 svg_finalize 全套（7 模块全 DIFFER）→ 下次执行：替换包后先跑真实导出（TypeError 会暴露配套模块），再逐模块核对调用面。
 - [spec_lock 主题契约是新导出器硬门] 规则：flat 导出也要求 spec_lock 的 font_family/title_family/body_family + colors + pptx_structure.mode（DeepPPT2 模板恰好都有）→ 下次执行：手写测试 lock 用模板字段，别写最小子集。
+- [git quotepath 与路径集合比对] 规则：`git ls-files` 默认把非 ASCII 路径转义为八进制（core.quotepath=true，336 个中文名文件），与 os.walk 的 Unicode 路径比对全部失配 → 下次执行：路径集合比对统一用 `git ls-files -z`（NUL 分隔、不转义）。
+- [Windows Git Bash 无 /usr/bin/time] 规则：Git Bash 缺 `/usr/bin/time`，`time -f` 不可用 → 下次执行：计时用 Python `time.perf_counter()` 包 subprocess，或直接 python -c 内计时。
+- [盘点/审计/契约文档惯例] 规则：`plans/` 与 `docs/reviews/` 新增文档不进 `docs/change-log.md`（change-log 只记脚本/工作流/路由变更，既有两篇审计均无条目）→ 下次执行：新增计划/审计/契约文档按 documentation-style.md 声明状态与权威性即可，变更记录留给脚本/工作流改动。
+- [双名副本合并方向] 规则：同内容双名副本（md5 相同）合并时保留与上游同名文件、改少侧消费点 import（native 侧 3 处）、同步 attribution_guard 清单与文档提及，导出器侧零改动 → 下次执行：合并前出消费者×符号矩阵，执行后 smoke（预期 checks -2/文件）+ guard 双验证，change-log 记录「-2 checks 为被删脚本的 import+help」。另注：docs/change-log.md 现为顶部倒序插入（Phase 6/quick/Phase 5 均在 Log 区顶部）。
+- [shell 命令替换吞退出码] 规则：`echo "$(basename $d): rc=$?"` 中 `$?` 在命令替换求值之后才取，反映的是 basename 的 rc（恒 0），循环扫描全变全绿假象 → 下次执行：先 `rc=$?` 存入变量，再拼 echo。
+- [warm 调用 CLI main 需捕获 SystemExit] 规则：入口脚本 main() 会 `sys.exit(N)`（如 svg_quality/cli 任何 ERROR → exit 1），同进程 warm 测量/调用不 catch 会中断测量脚本 → 下次执行：性能 warm 测量统一 `try: main() except SystemExit: pass`，只计时。
+- [行插入式修复的死循环] 规则：遍历 lines 时 `insert` 新行（如内层 `<g filter>`）会被 while/for 后续迭代再次匹配正则，无限嵌套直到超时 → 下次执行：批量修复用「单遍收集 + 重建列表」（while + 显式 i 步进），插入内容显式跳过；写完先跑 dry-run 验证幂等。
+- [emoji 禁区合法替代] 规则：checker `_EMOJI_RE` 禁 2600-26FF / 2700-27BF / 1Fxxx / FE00-FE0F → 下次执行：✓→√、✕→×、✦→◇、★→◆、⚠→!、⚡→▶、💡→!（U+221A/00D7/25C6/25C7/0021/25B6 均合法）。
+- [checker 与 e2e 契约面不同] 规则：checker 查 spec_lock mode + SVG 语法；e2e 查 page_rhythm 页数、images 声明存在性、svg 命名模式（P NN）→ legacy 示例可能 checker 全绿但 e2e 红（声明与磁盘漂移、命名不兼容）→ 下次执行：示例全量验收同时跑 checker + e2e 双门。
+- [懒加载负优化陷阱] 规则：把模块级 eager import 改函数内懒加载，若使用函数每次运行必达（checker 每页都跑检查），重依赖（openpyxl ~600ms）只是从启动移到检查时，总耗时不变甚至更差（实测 +25%）→ 下次执行：懒加载前先确认使用路径是否每次必达；用「完整运行 p50」而非「import 耗时」做前后对比。
+- [性能对比的 fixture 一致性] 规则：前后 p50 对比必须同一 fixture（kubernetes 副本 vs swiss 原位检查内容不同，差 ~300ms）→ 下次执行：基线 fixture 保留到优化批次结束，不要中途清理。

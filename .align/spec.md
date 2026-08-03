@@ -1,12 +1,13 @@
 # .align/spec.md — 项目开发规范
 
 > 由 `align-init` skill 扫描生成。每条标注置信度：`[原文]` / `[推断]` / `[假设]`。
+> 修订记录：2026-08-03 人工按 `docs/reviews/deep-ppt-repository-inventory-2026-08.md` §5 刷新过期事实（CI 存在性、测试语义、Python 版本、smoke 基线）；下次 align-init 重新扫描时可覆盖。
 
 ---
 
 ## 技术栈与版本
 
-- 语言：Python 3.x `[原文]`
+- 语言：Python 3.x `[原文]`（本机实测 3.12.13，uv 托管 cpython-3.12-windows-x86_64）`[原文]`（2026-08-03 实测）
 - 运行时：Python 3（python.org 发行版；Windows 上 `python3` 可能不可用，需用 `python` 替代）`[原文]`
 - 包管理：pip（`requirements.txt`）`[原文]`
 - 核心依赖：python-pptx ≥0.6.21、Pillow ≥9.0.0、PyMuPDF ≥1.23.0、flask ≥3.0.0、google-genai ≥1.0.0、edge-tts ≥7.2.8 `[原文]`
@@ -31,14 +32,14 @@
 
 - 提交风格：混合（部分 conventional commits `feat:/fix:/docs:/chore:`，部分纯描述性）`[推断]`
 - 推荐：采用 Conventional Commits 格式 `type(scope): description` `[假设]`
-- 无自动化测试，无 CI 流水线 `[原文]`
+- 有 CI 流水线：`.github/workflows/ci.yml`（smoke + svg-quality + e2e 三 job，main 推送/PR 触发）+ `deploy-pages.yml`（GitHub Pages）`[原文]`（2026-08-03 修订，原「无 CI 流水线」过期）
 
 ---
 
 ## 测试与验证命令
 
-- 无自动化测试（`tests/` 目录、`test_*.py`、`unittest`/`pytest` 均禁止）`[原文]`
-- 脚本冒烟检查：`python skills/ppt-master/scripts/smoke_check.py --skip-help` `[原文]`
+- 无 `tests/` 目录、无 `test_*.py`；自动化验证 = `smoke_check.py`（81 个入口脚本 import + `--help` + 集成测试），由 CI 自动运行 `[原文]`（2026-08-03 修订，原「无自动化测试」语义过窄）
+- 脚本冒烟检查：`python skills/ppt-master/scripts/smoke_check.py --skip-help` `[原文]`；当前基线 78 passed / 0 failed / 3 skipped / 81 checks（完整模式 158/0/4 / 162 checks）`[原文]`（2026-08-03 实测）
 - 聚合质量门：`python skills/ppt-master/scripts/harness_gate.py <project_path> --quick` `[原文]`
 - 端到端验证：`python skills/ppt-master/scripts/e2e_validate.py <project_path> --pptx <pptx_path>` `[原文]`
 - 代码修改前必须先跑 smoke_check 建立基线，修改后再次验证 `[原文]`

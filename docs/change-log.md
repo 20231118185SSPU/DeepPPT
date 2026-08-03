@@ -23,6 +23,60 @@
 
 ## Log
 
+### 2026-08-03 — examples e2e 缺口修复：声明对齐 + svg 命名兼容（checker+e2e 双门 29/29 全绿）
+- **Files**: `examples/deepseek_evolution_ppt169_20260621/spec_lock.md`（删 7 条过期 images 声明）、`examples/ppt169_doctor_ppt169_20260621/spec_lock.md`（删 20 条过期 images 声明，声明名与磁盘漂移如 `cover_bg.png` vs `p01_cover_bg.png`）、`examples/ppt169_kaltsit_ppt169_20260621/spec_lock.md`（删 6 条 + 15 个 svg 重编号）、`examples/ppt169_arknights_amiya_ppt169_20260621/spec_lock.md` + 15 个 svg 重编号、`examples/ppt169_kimsoong_loyalty_programme/svg_output/`（10 个 `slide_NN_*.svg` → `NN_*.svg`）、`docs/reviews/perf-baseline-2026-08.md`、`docs/change-log.md`
+- **Reason**: e2e 全量 24/29 的 5 个既有缺口收尾（用户批准「删声明」方案）：deepseek/doctor/kaltsit 的 spec_lock `images` 声明与磁盘漂移（过期/错名）；arknights/kaltsit 的 `02_chapter_*`/`03_content_*`/`03a_content_*` 命名使 `normalize_svg_page_id` 重复映射或不识别（03a 前缀返回 None），按 design_spec 页序重编号为唯一前缀（03-07/08-12/13-17/18_ending）；kimsoong 的 `slide_NN` 命名全部不识别，改数字前缀。
+- **Before**: e2e 24/29（5 个缺口：deepseek 7 图 / doctor 20 图 / kaltsit 6 图 + 编号 / arknights 编号 / kimsoong 命名）。
+- **After**: **checker 29/29 + e2e 29/29 双门全绿**（实测）；改名示例导出 rc=0 抽查通过；smoke 156/0/4 无回归。
+- **Smoke check**: 156 passed, 0 failed, 4 skipped / 160 checks（scripts 未改）
+- **Risk**: low（声明删减 + 文件重命名，全部机械；导出抽查验证；可 git revert）
+- **Human reviewed**: pending
+
+### 2026-08-03 — examples 质量修复 L2/L3：设计层与语义层（29/29 checker 全绿）
+- **Files**: 20 个示例的 `svg_output/*.svg` 与 `spec_lock.md`（汇总见 `docs/reviews/perf-baseline-2026-08.md` §3.3；代表性：attention `15_ablations.svg` line→rect、liziqi `03/04/09` filter 与渐变、home_design_trends `04/06/07` filter 重构、kimsoong `slide_03` clipPath、kubernetes marker 拆分、5 个示例 emoji 替换、4 个示例删 page_layouts 节、liziqi/lin_huiyin 补 page_rhythm 节）、`docs/reviews/perf-baseline-2026-08.md`、`docs/change-log.md`
+- **Reason**: 完成 CI 门禁治理剩余层（基线报告 §3.3 分类）。L3 语义层：4 个 legacy 示例的 `page_layouts` 节与 flat mode 冲突（该节为 structured 专属，legacy 内容为页面-布局标签且消费方有容错）→ 删节。L2 设计层：B 类零宽 stroke 渐变（objectBoundingBox 无 bbox）→ line→rect 等值转换；C 类 emoji（checker 禁 2600-26FF/2700-27BF/1Fxxx）→ 合法 Unicode 替换（✓→√、✕→×、✦→◇、★→◆、⚠→!、⚡→▶、💡→!）；D 类 `<g>` filter → 移背景 rect 或单图内层 g；E 类 kimsoong `inset()` → 本地 clipPath。补充：liziqi/lin_huiyin 的 typography title 行与 page_rhythm 节（e2e 契约）。
+- **Before**: checker 红 19 个（L1 后 10/29 绿）；e2e 未全量验证。
+- **After**: **checker 29/29 全绿**；导出抽查 5 个重度修改示例 rc=0；e2e 全量 24/29（5 个既有资产缺口：deepseek/doctor spec_lock images 声明与磁盘文件名漂移、arknights/kaltsit 声明 18 页 vs svg_output 13 页、kimsoong slide_NN 命名与 e2e P 编号解析不兼容——非本批引入，待独立处理）；smoke 156/0/4 无回归。
+- **Smoke check**: 156 passed, 0 failed, 4 skipped / 160 checks（scripts 未改，无变化）
+- **Risk**: medium（改动 20 个公开示例的 SVG/spec_lock 数据；全部机械/等值转换，导出与 e2e 抽查验证；可 git revert）
+- **Human reviewed**: pending
+
+### 2026-08-03 — examples 质量修复 L1（机械层）：162 SVG 补 width/height + 4 个 spec_lock 契约行 + doctor 图片格式 + kubernetes marker
+- **Files**: `examples/*/svg_output/*.svg`（8 个示例 162 文件：根元素补 `width`/`height`，值取自 viewBox）、`examples/deepseek_evolution_ppt169_20260621/spec_lock.md`（+`- title: 32`）、`examples/march7th_hsr_ppt169_20260622/spec_lock.md`（+`- title: 36`/`- body: 22`）、`examples/meditation_hunyuanzhuang_ppt169_20260622/spec_lock.md`（+`- title: 36`/`- body: 22`）、`examples/ppt169_lin_huiyin_architect/spec_lock.md`（+`font_family`/`title_family`/`body_family`，映射自旧行名 font_title/font_body）、`examples/ppt169_doctor_ppt169_20260621/images/web_assets/dim6_doctor_concept.jpg`（WEBP 容器→真 JPEG）、`dim6_doctor_full_art.png`（WEBP→真 PNG）、`examples/ppt169_kubernetes_blueprint_2026/svg_output/05_pod_lifecycle.svg` + `09_api_spine.svg`（marker 按 stroke 颜色拆分 arrowCyanDark/arrow09CyanDark/arrow09CyanGreen）、`docs/reviews/perf-baseline-2026-08.md`、`docs/change-log.md`
+- **Reason**: 继续 CI 门禁治理（基线报告 §3.3 分类）：A 类 root width/height（8 示例）、typography 契约行（3+1 示例，legacy 用旧行名 page_title/body_size/font_title 等，映射有据）、doctor 2 个图片扩展名与魔数不符（RIFF/WEBP 伪装 .jpg/.png，checker 正确拦截）、kubernetes marker fill 与 line stroke 颜色不匹配（按颜色拆分 marker，视觉不变）。
+- **Before**: 29 示例中绿 0 个（本轮起点）；上述 4 类 ERROR 各自命中。
+- **After**: 绿 10/29（+fashion_weekly/deepseek/march7th/meditation/kubernetes；此前回填 5 个）。剩余 19 个 = L2 设计层 15 个（零宽 stroke ×6、emoji ×7、filter ×2、clip-path ×1）+ L3 语义层 4 个（page_layouts 与 flat 冲突：arknights_amiya/kaltsit/pritzker/doctor），待用户决策。
+- **Smoke check**: 未触碰 scripts/ 逻辑（SVG 数据 + spec_lock 数据），不适用；以 checker 全量 29 示例验证代替（前后 rc 对比）
+- **Risk**: low（全部机械映射/格式修复；width/height 与 viewBox 一致渲染不变；marker 拆分视觉不变；图片重编码视觉不变；可 git revert）
+- **Human reviewed**: pending
+
+### 2026-08-03 — 修复 spec_lock_validate 的 mode 跨节误读（pptx_structure 与叙事 mode 冲突）
+- **Files**: `skills/ppt-master/scripts/spec_lock_validate.py`（mode 值读取限定在 `## mode` 节内）、`docs/reviews/perf-baseline-2026-08.md`（§3.3 补记）、`docs/change-log.md`
+- **Reason**: 回填 29 个 legacy spec_lock 的 `## pptx_structure` + `- mode: flat` 后，`spec_lock_validate.py` 用 `re.search(r"^- mode:\s*(\S+)")` 全局搜索第一个 `- mode:` 行——`pptx_structure` 节在 `## mode` 节之前，导致所有含该节的项目（含全部新项目）把 `- mode: flat` 误读为叙事模式，产生系统性 `Unusual mode value: flat` 警告且真实叙事模式值被忽略。
+- **Before**: 全局 `- mode:` 搜索；任何含 pptx_structure 节的项目误读 mode 值（flat → Unusual WARN，narrative 等真实值被忽略）。
+- **After**: mode 读取限定在 `## mode` 节内（复用 `section_content_pattern`）；legacy 示例不再误报 Unusual WARN（缺必需节 FAIL 为既有状态），完整 lock（pptx_structure flat + mode narrative）PASS 无 WARN。
+- **Smoke check**: 156 passed, 0 failed, 4 skipped / 160 checks（修改前后一致，spec_lock_validate import + --help 双 PASS）
+- **Risk**: low（单处正则作用域修正；PASS/FAIL 语义不变；回滚 = git revert）
+- **Human reviewed**: pending
+
+### 2026-08-03 — CI 门禁治理：spec_lock `pptx_structure.mode` 模板 bug 修复 + 29 个 legacy 示例回填
+- **Files**: `skills/ppt-master/templates/spec_lock_reference.md`（`pptx_structure` 节：`- pptx_structure.mode: flat` → `- mode: flat`，更正与 checker 矛盾的 legacy 注释）、`examples/*/spec_lock.md`（29 个 legacy 示例追加 `## pptx_structure` + `- mode: flat`，按原行尾 CRLF×22 / LF×7）、`docs/reviews/perf-baseline-2026-08.md`（§3.3 分类清单）、`plans/deep-ppt-reorganization-contract.md`、`docs/change-log.md`
+- **Reason**: Phase 3 基线测量发现 CI 风险——29/29 examples `svg_quality_checker` rc=1。根因链：v4.3.0 迁移后 release 契约要求 spec_lock 显式声明 `pptx_structure.mode`（解析器 `_PPTX_STRUCTURE_MODE_RE` 只匹配 `- mode:` 行），但模板写的是 `- pptx_structure.mode: flat`（按模板回填必然失败），且 29 个 legacy 示例从未回填、迁移提交未 push（`main` 领先 `origin/main` 1 提交）——一旦 push，CI svg-quality job 必红。用户未直接答复决策时按最佳判断执行最低风险可逆选项（A：机械回填 + 模板修复）。
+- **Before**: 模板格式与解析器不匹配；29/29 examples checker rc=1（spec_lock mode missing + 内容 ERROR）。
+- **After**: 模板与解析器一致；回填后 5/29 变绿（brutalist / cangzhuo / global_ai_capital / lin_huiyin_architect_revised / swiss_grid）；24 个仍红示例已按 A-E 类归类（root width/height ×8、零宽 stroke ×6、emoji ×5、filter ×2、特例 ×3），修复或 CI 门禁调整待决策；pritzker 特例（page_layouts 节与 flat 冲突）待单独判断。
+- **Smoke check**: 未触碰 scripts/ 入口逻辑（仅模板与示例数据），不适用；checker 全量验证代替（29 个示例前后 rc 对比已记录）
+- **Risk**: low（机械回填 + 模板格式修正，可 git revert；不改任何 SVG 内容）
+- **Human reviewed**: pending
+
+### 2026-08-03 — Phase 2 治理首批执行：动画双文件合并（方案 A）+ 迁移路线图归档
+- **Files**: `scripts/native_pptx_animations.py`（删除，同内容双名副本）、`scripts/native_enhance_pptx_core.py`、`scripts/narration_sync.py`、`scripts/pptx_delivery_check.py`（import `native_pptx_animations` → `pptx_animations`，各 1 行）、`scripts/attribution_guard.py`（gate 清单 `native_pptx_animations.py` → `pptx_animations.py`）、`scripts/README.md`（Enhance 路由脚本列表）、`workflows/native-enhance-pptx.md`（`--describe-transition` 命令名与模块说明）、`plans/followup-migration-roadmap.md`（归档标记）、`plans/deep-ppt-reorganization-contract.md`、`docs/change-log.md`
+- **Reason**: 按 `plans/deep-ppt-reorganization-contract.md` Phase 2 首批与用户批准的执行方案 A——v4.3.0 迁移后 `pptx_animations.py` 与 `native_pptx_animations.py` 为同内容双名副本（md5 `c6d7c928…`，各 145,406 B），消除冗余并统一模块名：保留与上游同名的 `pptx_animations.py`，native 侧 3 个消费点改 import（导出器侧 3 个消费点零改动），gate 清单与文档提及同步。
+- **Before**: 双文件并存；native 侧 3 脚本 import `native_pptx_animations`；gate 清单列 `native_pptx_animations.py`；smoke 81 scripts（158 passed / 0 failed / 4 skipped / 162 checks）。
+- **After**: 单一 `pptx_animations.py`（3 消费点导出器侧 + 3 消费点 native 侧）；gate 清单指向 `pptx_animations.py`；README 脚本列表与 native-enhance `--describe-transition` 说明同步；smoke 80 scripts（156 passed / 0 failed / 4 skipped / 160 checks，-2 checks 为被删脚本的 import+help 两项，无新增失败/跳过），attribution_guard 通过。
+- **Smoke check**: 156 passed, 0 failed, 4 skipped / 160 checks（基线 158/0/4 / 162）；attribution_guard 通过
+- **Risk**: low（纯路径替换 + 清单同步；3 个消费脚本 import 与 --help 双 PASS；回滚 = git revert）
+- **Human reviewed**: pending
+
 ### 2026-08-03 — Phase 6：重构版导出器迁移（flat 版 → ppt drawingml/pptx_package 体系 + svg_quality 诊断包）
 - **Files**: `scripts/svg_to_pptx/`（整体替换为 ppt 重构版 40,328 行：`drawingml/` 9 模块、`pptx_package/` 10 模块含 template_structure/template_validation、`native_objects/` 10 模块、`shape_boolean.py`/`text_outline.py`/`canvas_contract.py`/`geometry_properties.py`）、`scripts/svg_quality/`（新增：checker.py 7084 行 + svg_contracts.py + cli.py + `deepppt_extensions.py` 迁移的 DeepPPT2 特有检查）、`scripts/svg_quality_checker.py`（薄入口替换）、`scripts/pptx_animations.py`（旧版 659 → 新版 3932）、`scripts/resource_paths.py`（新增）、`scripts/svg_finalize/`（全套升级）、`scripts/svg_to_pptx/pptx_package/cli.py`（+DeepPPT2 特有 flag：--svg-snapshot/--only/--native/--no-compat/--cache-dir/--no-cache/--keep-cache/--workers，--quick-generate 冲突检查扩展）、`scripts/native_enhance_pptx_core.py`（import 面 + notesMaster 适配）、`scripts/narration_sync.py`、`scripts/pptx_delivery_check.py`、`scripts/template_preview_pptx.py`（恢复 ppt 原版）、`scripts/template_fill_pptx/notes.py`+`transitions.py`（NATIVE_TRANSITIONS）、`scripts/shape_boolean_svg.py`（真实核心）、`scripts/README.md`、`references/` 4 份接口映射注记更新、`templates/spec_lock_reference.md`（pptx_structure 注记更新）、`workflows/profiles/quick-generate.md`（恢复 --stage final --json 指纹契约）、`docs/change-log.md`
 - **Reason**: 用户基于实际痛点（排版/文字元素溢出诊断不足）决定完整迁移 ppt 的重构版导出器与诊断体系。新体系提供真实文字度量硬错误（`estimate_single_line_text_frame_width`、负 letter-spacing 非正框宽）、transform 感知 bounds 溢出契约（量化溢出比 + 修复建议）、21 类 SVG→DrawingML 语法契约；旧 checker 只有字符计数启发式 + 忽略 transform 的安全边距（全 warning）。

@@ -1,6 +1,7 @@
 # .align/context.md — 项目上下文契约
 
 > 由 `align-init` skill 扫描生成。
+> 修订记录：2026-08-03 人工按 `docs/reviews/deep-ppt-repository-inventory-2026-08.md` §5 刷新「仓库不包含自动化测试」过期声明；下次 align-init 重新扫描时可覆盖。
 
 ---
 
@@ -31,9 +32,9 @@
   原因：跨页视觉一致性依赖逐页创作时的完整上游上下文
   影响：Executor Step 6 逐页顺序生成，禁止子代理委托 `[原文]`
 
-- 仓库不包含自动化测试
+- 仓库无 `tests/` 目录；自动化验证 = `smoke_check.py`（81 入口 import + `--help` + 集成测试）+ `harness_gate` + `e2e_validate`，`.github/workflows/ci.yml` 在 main 推送/PR 时自动运行（2026-08-03 修订，原「仓库不包含自动化测试」过期）`[原文]`
   原因：项目性质为工作流/技能包，非应用脚手架
-  影响：验证通过 smoke_check、harness_gate、e2e_validate 完成 `[原文]`
+  影响：验证通过 smoke_check、harness_gate、e2e_validate 完成，由 CI 强制 `[原文]`
 
 - scripts/ 不是 Python 包
   原因：扁平脚本目录结构，每个入口脚本自行注入 sys.path
