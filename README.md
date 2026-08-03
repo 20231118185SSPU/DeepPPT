@@ -18,6 +18,7 @@ Latest production hardening includes:
 - **Complete page-expression lifecycle** - the Strategist-owned `page_expression.json` remains authoritative across continuous, split, resume, and refine-spec paths; compliance checks enforce page coverage and visible assertions, and the contract is sealed together with `spec_lock.md`.
 - **Evidence-backed consulting narratives** - when consulting evidence is enabled, research preserves traceable evidence rows and resolves exactly 2-3 SCR alternatives into one recommendation with evidence IDs, caveats, and explicit rejection reasons.
 - **Artifact showcase Dashboard** - the Dashboard is positioned as an online viewing platform for everything a project produces: the deck-making journey (research → content selection → detailed outline → visual strategy) alongside the artifacts themselves (SVG pages, exports, notes, images, quality reports), browsable by four phases (制作思路 / 设计契约 / 生成页面 / 导出成品) and searchable locally via `dashboard/artifacts_index.json`.
+- **Prompt context governance** - `prompt_audit.py` + `prompt_audit_manifest.json` audit the full prompt corpus (172 documents, o200k_base token budgets): seven real load sets model what an agent actually loads per route (global / research / generate / image / template / native), coverage exemptions and 22 accepted shared-contract duplicates keep the corpus accounting closed (errors=0).
 - **Intent-first composition QA** - the Executor composes from `content_relation`, `information_anchor`, and `visual_act` before choosing layout patterns. Sparse composition, one-sided whitespace, and large image-text gaps remain review signals rather than prompts to add filler; fixes are batched before one re-check.
 
 ---
@@ -31,6 +32,8 @@ DeepPPT 是一个端到端的 AI PPT 生成系统。给定一个主题或源文�
 当前版本进一步将页面表达、图表选型和执行可观测性收敛为机器合同：`page_expression.json` 贯穿连续生成、分段交接、恢复执行和规格精修路径，并与 `spec_lock.md` 一同封存；图表候选从实时目录中确定性召回并校验精确键；Dashboard 和 Harness 会显示并验证合同摘要状态，防止恢复或修改过程中的静默漂移。
 
 **2026-08-03 完成 v4.3.0 大规模迁移收尾**：重构版导出器（真实文字度量硬错误、transform 感知溢出契约、21 类 SVG→DrawingML 语法契约）与 `svg_quality` 诊断包整体接线，`structured` 模板导出模式落地；29 个公开示例全部通过 `svg_quality_checker` + `e2e_validate` 双门（29/29），GitHub Actions CI 三 job 全绿，GitHub Pages 已上线。Dashboard 重新定位为**产物在线观看平台**——按「制作思路 → 设计契约 → 生成页面 → 导出成品」四阶段浏览项目全过程产物，并生成本地可搜找的产物索引。
+
+**2026-08-04 完成治理收口**：`prompt_audit` 契约从空壳重建为真实 load-set 设计（7 个加载集 + 1 个豁免 + 22 个有意共享重复声明，172 文档语料 token 预算审计 rc=0 / errors=0 / coverage 闭合）；仓库盘点、性能基线、执行契约三份治理文档状态同步（Phase 2/3/4 全部完成，CI 风险关闭）；`.align` 经验归档至 50 条上限内并建立决策日志。
 
 **支持 13 个主流 AI Agent 平台**，克隆即用：Claude Code / Cursor / Windsurf / GitHub Copilot / OpenAI Codex / Pi / Cline / Roo Code / Aider / Amazon Q / Kiro / Junie / Hermes Agent。
 
@@ -195,6 +198,7 @@ DeepPPT/
 │   │   ├── pptx_quality_check.py    # 导出后 PPTX 结构 QA
 │   │   ├── consulting_content_lock.py # 咨询内容锁 sidecar
 │   │   ├── attribution_guard.py     # 技能完整性门禁（fail-closed）
+│   │   ├── prompt_audit.py          # prompt 语料审计（load_sets/token 预算/重复声明）
 │   │   ├── vision_backends/  # 视觉检查后端
 │   │   ├── source_to_md/     # 源文件转换器
 │   │   └── research/         # 浏览器自动化搜索和研究/素材门禁
@@ -280,6 +284,13 @@ DeepPPT/
 | [Scripts & Tools](skills/ppt-master/scripts/README.md) | 工具脚本文档 |
 
 ## 更新日志
+
+### 2026-08-04 — 治理收口：prompt audit 契约重建 + 治理文档状态同步
+
+- `prompt_audit_manifest.json` 从空壳重建：7 个真实 load_sets（global / research / generate / image / template / native，glob `select` 按需语义，子集 include global）、1 个 coverage exempt（上游版权 NOTICE）、22 个 exact 重复 accepted（模板族共享契约表 / 自动生成头 / 共享引用句）；audit rc=0 / errors=0 / coverage 172 闭合（原 173 errors）
+- 三份治理文档状态同步：执行契约 D5/D6/D7 与 Phase 2/3/4 全部完成，`31298372` 标记为迁移基线提交，CI 风险关闭记录；盘点报告新增「治理后当前快照」（原始 Phase 0 基线保留）；性能基线 §3 标记历史风险已关闭
+- `.align` 治理：lessons 归档至 48 条（最旧 6 条移入 `.align/lessons-2026-08-03.archive.md`），新增 3 条 audit 教训；`decisions.log.md` 记录 8 条已批准决策；spec.md smoke 基线勘误为当前实测（77/0/3/80 + 156/0/4/160）
+- 全量验证通过：smoke 156/0/4（160 checks）、attribution_guard、governance_drift_check、svg_quality_checker 29/29 examples、git diff --check
 
 ### 2026-08-03 — v4.3.0 迁移收尾：质量门全绿 + Dashboard 产物展台 + CI/Pages 上线
 
