@@ -39,6 +39,8 @@
 - scrim: #F8F4F0 (light theme, minimal scrim)
 
 ## typography
+- body: 22
+- title: 36
 
 - title_family: SimSun, Georgia, serif
 - body_family: "Microsoft YaHei", Arial, sans-serif
@@ -135,3 +137,6 @@
 - web_assets: every deep-dive page MUST include >=1 web-sourced image
 - narrative_continuity: title must explicitly reference preceding content page's core message
 - deduplication: no two deep-dive pages may share the same data point, quote, or evidence block
+
+## pptx_structure
+- mode: flat

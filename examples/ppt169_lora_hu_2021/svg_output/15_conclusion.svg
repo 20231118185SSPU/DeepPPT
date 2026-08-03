@@ -15,7 +15,7 @@
   </g>
 
   <g id="rail-decor">
-    <line x1="120" y1="200" x2="120" y2="520" stroke="url(#concRail)" stroke-width="3" stroke-linecap="round"/>
+    <rect x="118.5" y="200" width="3" height="320" fill="url(#concRail)"/>
   </g>
 
   <g id="take-01">

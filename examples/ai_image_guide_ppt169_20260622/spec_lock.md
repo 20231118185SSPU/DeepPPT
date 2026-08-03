@@ -42,8 +42,8 @@
 - title_family: "Microsoft YaHei", "PingFang SC", Segoe UI, sans-serif
 - body_family: "Microsoft YaHei", "PingFang SC", Segoe UI, sans-serif
 - code_family: Consolas, "Courier New", monospace
-- body: 18px
-- title: 32px
+- body: 18
+- title: 32
 - subtitle: 24px
 - cover_title: 72px
 - chapter_title: 45px
@@ -89,26 +89,9 @@
 | P15 | dense | 迭代方法，截图+步骤 |
 | P16 | anchor | 总结页，公式冲击 |
 
-## page_layouts
-
-| Page | Template | Variant |
-|------|----------|---------|
-| P01 | 01_cover.svg | 浅色版 |
-| P02 | 02_toc.svg | 浅色版 |
-| P03 | 02_chapter.svg | 浅色版 |
-| P04 | 03_content.svg | 浅色版 |
-| P05 | 03a_content.svg | 浅色版 |
-| P07 | 02_chapter.svg | 浅色版 |
-| P08 | 03_content.svg | 浅色版 |
-| P09 | (executor 讲解页) | 卡片式+截图 |
-| P10 | 02_chapter.svg | 浅色版 |
-| P11 | 03_content.svg | 浅色版 |
-| P12 | (executor 讲解页) | 卡片式+截图 |
-| P13 | 02_chapter.svg | 浅色版 |
-| P14 | 03_content.svg | 浅色版 |
-| P15 | (executor 讲解页) | 卡片式+截图 |
-| P16 | 04_ending.svg | 浅色版 |
-
 ## page_charts
 
 （无可数据化图表，全部为空）
+
+## pptx_structure
+- mode: flat

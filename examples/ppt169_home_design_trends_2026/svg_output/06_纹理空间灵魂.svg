@@ -41,8 +41,12 @@
 
   <!-- Two image comparison -->
   <!-- Left: tactile texture -->
-  <g id="p06-left-image" filter="url(#cardShadow06)">
-    <image href="../images/texture_tactile.png" x="60" y="190" width="540" height="310" preserveAspectRatio="xMidYMid slice" clip-path="url(#leftImgClip06)"/>
+  <g id="p06-left-image">
+    <g>
+    <g filter="url(#cardShadow06)">
+      <image href="../images/texture_tactile.png" x="60" y="190" width="540" height="310" preserveAspectRatio="xMidYMid slice" clip-path="url(#leftImgClip06)"/>
+    </g>
+    </g>
     <!-- Label -->
     <rect x="60" y="440" width="540" height="60" fill="#1A1714" fill-opacity="0.75" rx="0"/>
     <use data-icon="tabler-filled/eye" x="80" y="455" width="24" height="24" fill="#C4A882"/>
@@ -55,8 +59,10 @@
   </g>
 
   <!-- Right: visual texture -->
-  <g id="p06-right-image" filter="url(#cardShadow06)">
+  <g id="p06-right-image">
+    <g filter="url(#cardShadow06)">
     <image href="../images/texture_visual.png" x="640" y="190" width="580" height="310" preserveAspectRatio="xMidYMid slice" clip-path="url(#rightImgClip06)"/>
+    </g>
     <!-- Label -->
     <rect x="640" y="440" width="580" height="60" fill="#1A1714" fill-opacity="0.75" rx="0"/>
     <use data-icon="tabler-filled/eye" x="660" y="455" width="24" height="24" fill="#D4956A"/>

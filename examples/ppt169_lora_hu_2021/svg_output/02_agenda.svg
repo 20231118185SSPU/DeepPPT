@@ -15,7 +15,7 @@
   </g>
 
   <g id="rail-decor">
-    <line x1="110" y1="172" x2="110" y2="628" stroke="url(#agendaRail)" stroke-width="3" stroke-linecap="round"/>
+    <rect x="108.5" y="172" width="3" height="456" fill="url(#agendaRail)"/>
   </g>
 
   <g id="item-01">

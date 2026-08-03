@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1280 720">
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1280 720" width="1280" height="720">
     <rect width="1280" height="720" fill="#F8FAFC" />
 
     <!-- 标题区 -->
@@ -12,13 +12,13 @@
 
     <!-- 技巧1: 审阅提示词 -->
     <rect x="85" y="155" width="32" height="32" fill="#2563EB" fill-opacity="0.12" rx="8" />
-    <text x="101" y="177" text-anchor="middle" fill="#2563EB" font-size="18">✦</text>
+    <text x="101" y="177" text-anchor="middle" fill="#2563EB" font-size="18">◇</text>
     <text x="130" y="177" fill="#1E293B" font-family="Microsoft YaHei, PingFang SC, Segoe UI, sans-serif" font-size="17" font-weight="bold">审阅 DeepSeek 输出</text>
     <text x="130" y="200" fill="#64748B" font-family="Microsoft YaHei, PingFang SC, Segoe UI, sans-serif" font-size="14">盯对文案细节，不满意就修改</text>
 
     <!-- 技巧2: 添加负面提示词 -->
     <rect x="85" y="230" width="32" height="32" fill="#F97316" fill-opacity="0.12" rx="8" />
-    <text x="101" y="252" text-anchor="middle" fill="#F97316" font-size="18">✦</text>
+    <text x="101" y="252" text-anchor="middle" fill="#F97316" font-size="18">◇</text>
     <text x="130" y="252" fill="#1E293B" font-family="Microsoft YaHei, PingFang SC, Segoe UI, sans-serif" font-size="17" font-weight="bold">添加负面提示词</text>
     <text x="130" y="275" fill="#64748B" font-family="Microsoft YaHei, PingFang SC, Segoe UI, sans-serif" font-size="14">排除不想要的风格和元素</text>
 
@@ -33,7 +33,7 @@
 
     <!-- 技巧3: 示例提示词模板 -->
     <rect x="85" y="490" width="32" height="32" fill="#10B981" fill-opacity="0.12" rx="8" />
-    <text x="101" y="512" text-anchor="middle" fill="#10B981" font-size="18">✦</text>
+    <text x="101" y="512" text-anchor="middle" fill="#10B981" font-size="18">◇</text>
     <text x="130" y="512" fill="#1E293B" font-family="Microsoft YaHei, PingFang SC, Segoe UI, sans-serif" font-size="17" font-weight="bold">使用示例提示词模板</text>
     <text x="130" y="535" fill="#64748B" font-family="Microsoft YaHei, PingFang SC, Segoe UI, sans-serif" font-size="14">"以结构化方式输出，科研绘图风格，颜色限定为白蓝绿橙"</text>
 

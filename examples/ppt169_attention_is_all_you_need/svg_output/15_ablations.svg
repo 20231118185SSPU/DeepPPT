@@ -24,7 +24,7 @@
   </g>
 
   <g id="track">
-    <line x1="160" y1="172" x2="160" y2="660" stroke="url(#trackGrad)" stroke-width="4" stroke-linecap="round"/>
+    <rect x="158" y="172" width="4" height="488" fill="url(#trackGrad)"/>
   </g>
 
   <g id="item-1">

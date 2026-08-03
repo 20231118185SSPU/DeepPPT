@@ -26,8 +26,8 @@
     <text x="250" y="364" text-anchor="middle" font-family="Impact, &quot;Arial Black&quot;, sans-serif" font-size="22" font-weight="900" fill="#FFF8EE" letter-spacing="4" transform="rotate(-8, 250, 355)">SOLD OUT</text>
     <!-- Features -->
     <line x1="110" y1="400" x2="390" y2="400" stroke="#1A1A2E" stroke-width="1.5"/>
-    <text x="115" y="430" font-family="Arial, &quot;Microsoft YaHei&quot;, sans-serif" font-size="15" font-weight="700" fill="#5C5C7A">✓ 7 天通票</text>
-    <text x="115" y="460" font-family="Arial, &quot;Microsoft YaHei&quot;, sans-serif" font-size="15" font-weight="700" fill="#5C5C7A">✓ 入场不限场</text>
+    <text x="115" y="430" font-family="Arial, &quot;Microsoft YaHei&quot;, sans-serif" font-size="15" font-weight="700" fill="#5C5C7A">√ 7 天通票</text>
+    <text x="115" y="460" font-family="Arial, &quot;Microsoft YaHei&quot;, sans-serif" font-size="15" font-weight="700" fill="#5C5C7A">√ 入场不限场</text>
     <text x="115" y="490" font-family="Arial, &quot;Microsoft YaHei&quot;, sans-serif" font-size="15" font-weight="700" fill="#5C5C7A">— VIP 专区</text>
     <text x="115" y="520" font-family="Arial, &quot;Microsoft YaHei&quot;, sans-serif" font-size="15" font-weight="700" fill="#5C5C7A">— 艺人会面</text>
   </g>
@@ -45,9 +45,9 @@
     <!-- Price -->
     <text x="640" y="350" text-anchor="middle" font-family="Impact, &quot;Arial Black&quot;, sans-serif" font-size="84" font-weight="900" fill="#1A1A2E" letter-spacing="-2">¥799</text>
     <line x1="470" y1="395" x2="810" y2="395" stroke="#1A1A2E" stroke-width="1.5"/>
-    <text x="475" y="425" font-family="Arial, &quot;Microsoft YaHei&quot;, sans-serif" font-size="15" font-weight="700" fill="#1A1A2E"><tspan fill="#00B8D9" font-weight="900">✓</tspan> 7 天通票 · 全部 5 个舞台</text>
-    <text x="475" y="455" font-family="Arial, &quot;Microsoft YaHei&quot;, sans-serif" font-size="15" font-weight="700" fill="#1A1A2E"><tspan fill="#00B8D9" font-weight="900">✓</tspan> 含 1 杯指定饮品</text>
-    <text x="475" y="485" font-family="Arial, &quot;Microsoft YaHei&quot;, sans-serif" font-size="15" font-weight="700" fill="#1A1A2E"><tspan fill="#00B8D9" font-weight="900">✓</tspan> 免费寄存 + 接驳车</text>
+    <text x="475" y="425" font-family="Arial, &quot;Microsoft YaHei&quot;, sans-serif" font-size="15" font-weight="700" fill="#1A1A2E"><tspan fill="#00B8D9" font-weight="900">√</tspan> 7 天通票 · 全部 5 个舞台</text>
+    <text x="475" y="455" font-family="Arial, &quot;Microsoft YaHei&quot;, sans-serif" font-size="15" font-weight="700" fill="#1A1A2E"><tspan fill="#00B8D9" font-weight="900">√</tspan> 含 1 杯指定饮品</text>
+    <text x="475" y="485" font-family="Arial, &quot;Microsoft YaHei&quot;, sans-serif" font-size="15" font-weight="700" fill="#1A1A2E"><tspan fill="#00B8D9" font-weight="900">√</tspan> 免费寄存 + 接驳车</text>
     <text x="475" y="515" font-family="Arial, &quot;Microsoft YaHei&quot;, sans-serif" font-size="15" font-weight="700" fill="#5C5C7A">— VIP 专区</text>
     <!-- BUY NOW button -->
     <rect x="490" y="540" width="300" height="50" rx="25" fill="#FF3DA5" stroke="#1A1A2E" stroke-width="4"/>
@@ -63,10 +63,10 @@
     <text x="1030" y="320" text-anchor="middle" font-family="Impact, &quot;Arial Black&quot;, sans-serif" font-size="64" font-weight="900" fill="#1A1A2E" letter-spacing="-2">¥1999</text>
     <use data-icon="chunk-filled/star" x="1014" y="335" width="32" height="32" fill="#FF3DA5"/>
     <line x1="890" y1="380" x2="1170" y2="380" stroke="#1A1A2E" stroke-width="1.5"/>
-    <text x="895" y="410" font-family="Arial, &quot;Microsoft YaHei&quot;, sans-serif" font-size="15" font-weight="700" fill="#1A1A2E"><tspan fill="#FF3DA5" font-weight="900">✓</tspan> 7 天全程通票</text>
-    <text x="895" y="440" font-family="Arial, &quot;Microsoft YaHei&quot;, sans-serif" font-size="15" font-weight="700" fill="#1A1A2E"><tspan fill="#FF3DA5" font-weight="900">✓</tspan> VIP 专区 + 包厢</text>
-    <text x="895" y="470" font-family="Arial, &quot;Microsoft YaHei&quot;, sans-serif" font-size="15" font-weight="700" fill="#1A1A2E"><tspan fill="#FF3DA5" font-weight="900">✓</tspan> 头牌艺人会面</text>
-    <text x="895" y="500" font-family="Arial, &quot;Microsoft YaHei&quot;, sans-serif" font-size="15" font-weight="700" fill="#1A1A2E"><tspan fill="#FF3DA5" font-weight="900">✓</tspan> 周边礼包 + 限定徽章</text>
+    <text x="895" y="410" font-family="Arial, &quot;Microsoft YaHei&quot;, sans-serif" font-size="15" font-weight="700" fill="#1A1A2E"><tspan fill="#FF3DA5" font-weight="900">√</tspan> 7 天全程通票</text>
+    <text x="895" y="440" font-family="Arial, &quot;Microsoft YaHei&quot;, sans-serif" font-size="15" font-weight="700" fill="#1A1A2E"><tspan fill="#FF3DA5" font-weight="900">√</tspan> VIP 专区 + 包厢</text>
+    <text x="895" y="470" font-family="Arial, &quot;Microsoft YaHei&quot;, sans-serif" font-size="15" font-weight="700" fill="#1A1A2E"><tspan fill="#FF3DA5" font-weight="900">√</tspan> 头牌艺人会面</text>
+    <text x="895" y="500" font-family="Arial, &quot;Microsoft YaHei&quot;, sans-serif" font-size="15" font-weight="700" fill="#1A1A2E"><tspan fill="#FF3DA5" font-weight="900">√</tspan> 周边礼包 + 限定徽章</text>
     <rect x="900" y="520" width="260" height="40" rx="20" fill="#1A1A2E"/>
     <text x="1030" y="546" text-anchor="middle" font-family="Impact, &quot;Arial Black&quot;, sans-serif" font-size="16" font-weight="900" fill="#FFD93D" letter-spacing="3">CONTACT US →</text>
   </g>

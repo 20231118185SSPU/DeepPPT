@@ -88,3 +88,6 @@
 - `<g opacity>` (set opacity on each child element individually)
 - HTML named entities in text (`&nbsp;`, `&mdash;`, `&copy;`, `&ndash;`, `&reg;`, `&hellip;`, `&bull;` …) — write as raw Unicode (`—`, `©`, `→`, NBSP, etc.); XML reserved chars `& < > " '` must be escaped as `&amp; &lt; &gt; &quot; &apos;`
 - Card border-radius > 0 (Risograph 美学 = 硬边、无圆角)
+
+## pptx_structure
+- mode: flat

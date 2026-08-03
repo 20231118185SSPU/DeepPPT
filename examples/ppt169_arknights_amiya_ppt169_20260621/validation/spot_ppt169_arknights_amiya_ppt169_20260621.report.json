@@ -1,0 +1,160 @@
+{
+  "schema": "ppt-master.pptx-postflight-report.v1",
+  "status": "passed-with-warnings",
+  "output": {
+    "path": "C:\\Users\\FUTIAN\\Desktop\\DeepPPT2\\.tmp\\spot_ppt169_arknights_amiya_ppt169_20260621.pptx",
+    "bytes": 50161141
+  },
+  "source": {
+    "svg_slide_count": 18,
+    "layout_definition_count": 0,
+    "fingerprint": {
+      "algorithm": "sha256",
+      "digest": "71262536d388a8dae4561f870590541af7cd42904e5fff40607f35521d6a2405",
+      "file_count": 18,
+      "files": [
+        {
+          "file": "01_cover.svg",
+          "sha256": "d5e649e1aa683f231e42ab86a66d297c94a6541819b375b099999824a24e07cd"
+        },
+        {
+          "file": "02_toc.svg",
+          "sha256": "b7ae1d6f99e3ebf50a5157782a6f1de4c2e667d3f6ff8a4e5ae016dfed50bace"
+        },
+        {
+          "file": "03_01.svg",
+          "sha256": "faff7f0e78a635b30a8e2d6b42d7a4c70941981e78bf7c1ef02d5c5d7e39815f"
+        },
+        {
+          "file": "04_02.svg",
+          "sha256": "2b3511dc1ebc2d772e362451c5910a59f022aabccda6cb5476e2fb013993c571"
+        },
+        {
+          "file": "05_03.svg",
+          "sha256": "daf1f3614afa2b051cbfe578855852d3f91eb192323a609a946602373cf4efcf"
+        },
+        {
+          "file": "06_04.svg",
+          "sha256": "03f6c51b2acaa348a9fb3dfcca18d9d8d6a72367f1c1113da986c9938dcc8608"
+        },
+        {
+          "file": "07_05.svg",
+          "sha256": "5758a73e4451dd040e1a6d61c78e0596d35a1297ad0a3521208c9a69bef9bbab"
+        },
+        {
+          "file": "08_amiya_origin.svg",
+          "sha256": "1b37ce18857393bab8e4fe309401bd48ff0a65f2dc370dc5b4e4c48968f86ca9"
+        },
+        {
+          "file": "09_demon_king.svg",
+          "sha256": "55405a268b7cfdcec89472da08ac2f8e72af4ebc422bb43e3514431e04167435"
+        },
+        {
+          "file": "10_design_symbolism.svg",
+          "sha256": "6c3a4baea8c45bf315a14fb0bdd29f2c1ee7d05b92a2a9f2696fcae424aa118a"
+        },
+        {
+          "file": "11_doctor_bond.svg",
+          "sha256": "c3732153eebb4a7da0c516d8051c42731dbd6d16ec4da878498411621d3d413d"
+        },
+        {
+          "file": "12_skullshatterer.svg",
+          "sha256": "d12c7949d1794a590af08445029c04fdf2cfbb894e04bb002388eefe7a3624c1"
+        },
+        {
+          "file": "13_chen_parallel.svg",
+          "sha256": "0d93940678c1ef2dccfdaaa801f338bd1654cefb445289387381b0294471b37e"
+        },
+        {
+          "file": "14_community_impact.svg",
+          "sha256": "558ba80d7009cb4f14da7d831a5d40378a737fb2b4a8bccdf339ec6d4093cfad"
+        },
+        {
+          "file": "15_frostnova.svg",
+          "sha256": "3d9a4e5f6e033a5759f11735fc45c2f80534cd8ec0e81dd6aa426786a6d3cc83"
+        },
+        {
+          "file": "16_rhodes_island.svg",
+          "sha256": "0bf418c2b021c8b35a171af66cf1ff02c4109b7f9dfa8c77e61d6330761f35dd"
+        },
+        {
+          "file": "17_three_forms.svg",
+          "sha256": "c6cb432d195288384c0faf051e2208e845fc8f25388f941ea460a4510ef2bac5"
+        },
+        {
+          "file": "18_ending.svg",
+          "sha256": "d8f09f888a4353d60422e6425a74f368145f5ec18e911e459458241796a7a984"
+        }
+      ]
+    }
+  },
+  "package": {
+    "zip_integrity": "passed",
+    "corrupt_member": null,
+    "slides": 18,
+    "notes": 2,
+    "masters": 1,
+    "layouts": 1
+  },
+  "checks": {
+    "zip_integrity": "passed",
+    "slide_count": "passed",
+    "internal_relationships": "enforced-at-build",
+    "structured_package": "not-applicable",
+    "transitions": "enforced-at-build",
+    "animations": "enforced-at-build",
+    "quality_gate": "not-provided",
+    "quality_warnings": "passed",
+    "template_tokens": "passed",
+    "external_images": "passed",
+    "font_portability": "passed"
+  },
+  "quality": {
+    "status": "not-provided",
+    "path": "examples\\ppt169_arknights_amiya_ppt169_20260621\\validation\\svg_quality_report.json"
+  },
+  "resources": {
+    "unresolved_template_tokens": [],
+    "fonts": {
+      "stacks": [
+        "Microsoft YaHei, Arial, sans-serif",
+        "Source Han Sans SC, Microsoft YaHei, sans-serif"
+      ],
+      "generic_only_stacks": [],
+      "unsafe_exported_faces": []
+    },
+    "images": {
+      "data_uri": 0,
+      "local": 18,
+      "external": 0,
+      "external_references": []
+    }
+  },
+  "deck_motion": {
+    "transition": {
+      "effect": "fade",
+      "effect_options": {},
+      "duration": 0.4,
+      "auto_advance": null
+    },
+    "animation": {
+      "effect": "none",
+      "effect_request": null,
+      "duration": 0.4,
+      "stagger": 0.5,
+      "trigger": "after-previous"
+    },
+    "cli_overrides": {
+      "transition": false,
+      "transition_duration": false,
+      "auto_advance": false,
+      "animation": false,
+      "animation_duration": false,
+      "animation_stagger": false,
+      "animation_trigger": false
+    },
+    "narration_timings": false
+  },
+  "backup_path": null,
+  "conversion_trace_path": null
+}

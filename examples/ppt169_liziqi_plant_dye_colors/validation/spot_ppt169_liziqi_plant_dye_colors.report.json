@@ -1,0 +1,136 @@
+{
+  "schema": "ppt-master.pptx-postflight-report.v1",
+  "status": "passed-with-warnings",
+  "output": {
+    "path": "C:\\Users\\FUTIAN\\Desktop\\DeepPPT2\\.tmp\\spot_ppt169_liziqi_plant_dye_colors.pptx",
+    "bytes": 10398746
+  },
+  "source": {
+    "svg_slide_count": 12,
+    "layout_definition_count": 0,
+    "fingerprint": {
+      "algorithm": "sha256",
+      "digest": "90d16a303dde16213bf5dde828a76309e529b8b0a933a115b317e6b6a4f26229",
+      "file_count": 12,
+      "files": [
+        {
+          "file": "01_cover.svg",
+          "sha256": "9c15438350a2bb69125b2c93108ef93989fd74a6341a353ae7272de0544ab8b8"
+        },
+        {
+          "file": "02_intro.svg",
+          "sha256": "dd0831e5cd68ce040e1fa0c0b3255db7bc6c8d2bf5754de879770f8761d85a4b"
+        },
+        {
+          "file": "03_zhanpao_decode.svg",
+          "sha256": "402df482010dd09a880f97aab432dae0463e9ebe2efc3b630ec24793c3dfe098"
+        },
+        {
+          "file": "04_history.svg",
+          "sha256": "da69ccce756fb997fb84d70477fed46ee1fb39b73ea653495972aade2b19edb6"
+        },
+        {
+          "file": "05_natural_colors_1.svg",
+          "sha256": "515a3a9fd2c5affaf5019edb2c14966fde4e183b69fe3c0aebb337d0a2f81c15"
+        },
+        {
+          "file": "06_natural_colors_2.svg",
+          "sha256": "5c677f18bde5c47cba4bbd79611c5aeecd4d50764112d1927facc9cdfb87a2ad"
+        },
+        {
+          "file": "07_poetic_colors_1.svg",
+          "sha256": "52db88d09681ebd8d6334e4e179414e48e167d183dd3770a1a6563eaf4b214ed"
+        },
+        {
+          "file": "08_poetic_colors_2.svg",
+          "sha256": "f2b3d2206580c5b93e4d44e1d1309e286dd1951a447bc0a7a5db7a9816370aff"
+        },
+        {
+          "file": "09_dye_plants.svg",
+          "sha256": "1cf9412a1e209dc82c19641d643ebecf1bd5de592f32b03e7fcfb0f58c587e3e"
+        },
+        {
+          "file": "10_diy_dyeing.svg",
+          "sha256": "3a13592b04da39827d42028db1d1a156b7b6f2e02686b93883070b132070c4e6"
+        },
+        {
+          "file": "11_xuetaojian.svg",
+          "sha256": "4858b8bbbcd45125af1a696fc0ce7d0623b7ca6ea329680594874dbbeabf1709"
+        },
+        {
+          "file": "12_ending.svg",
+          "sha256": "b1091dfa342c63581b39a8e62e3d0757234e236046490689befdf4c2e665a99d"
+        }
+      ]
+    }
+  },
+  "package": {
+    "zip_integrity": "passed",
+    "corrupt_member": null,
+    "slides": 12,
+    "notes": 12,
+    "masters": 1,
+    "layouts": 1
+  },
+  "checks": {
+    "zip_integrity": "passed",
+    "slide_count": "passed",
+    "internal_relationships": "enforced-at-build",
+    "structured_package": "not-applicable",
+    "transitions": "enforced-at-build",
+    "animations": "enforced-at-build",
+    "quality_gate": "not-provided",
+    "quality_warnings": "passed",
+    "template_tokens": "passed",
+    "external_images": "passed",
+    "font_portability": "passed"
+  },
+  "quality": {
+    "status": "not-provided",
+    "path": "examples\\ppt169_liziqi_plant_dye_colors\\validation\\svg_quality_report.json"
+  },
+  "resources": {
+    "unresolved_template_tokens": [],
+    "fonts": {
+      "stacks": [
+        "Arial",
+        "KaiTi, STKaiti, Georgia, serif"
+      ],
+      "generic_only_stacks": [],
+      "unsafe_exported_faces": []
+    },
+    "images": {
+      "data_uri": 0,
+      "local": 16,
+      "external": 0,
+      "external_references": []
+    }
+  },
+  "deck_motion": {
+    "transition": {
+      "effect": "fade",
+      "effect_options": {},
+      "duration": 0.4,
+      "auto_advance": null
+    },
+    "animation": {
+      "effect": "none",
+      "effect_request": null,
+      "duration": 0.4,
+      "stagger": 0.5,
+      "trigger": "after-previous"
+    },
+    "cli_overrides": {
+      "transition": false,
+      "transition_duration": false,
+      "auto_advance": false,
+      "animation": false,
+      "animation_duration": false,
+      "animation_stagger": false,
+      "animation_trigger": false
+    },
+    "narration_timings": false
+  },
+  "backup_path": null,
+  "conversion_trace_path": null
+}

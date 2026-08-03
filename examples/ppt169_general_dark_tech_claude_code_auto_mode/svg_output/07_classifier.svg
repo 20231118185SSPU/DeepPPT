@@ -41,11 +41,11 @@
     <text x="670" y="173" font-family="Arial, Helvetica, sans-serif" font-size="22" font-weight="bold" fill="#F97316">What Gets Stripped</text>
 
     <rect x="630" y="195" width="580" height="36" rx="6" fill="#F97316" fill-opacity="0.08"/>
-    <text x="646" y="219" font-family="Calibri, Arial, sans-serif" font-size="16" fill="#F97316">✕ Assistant text</text>
+    <text x="646" y="219" font-family="Calibri, Arial, sans-serif" font-size="16" fill="#F97316">× Assistant text</text>
     <text x="870" y="219" font-family="Calibri, Arial, sans-serif" font-size="14" fill="#8B949E">— can't "talk" classifier into bad calls</text>
 
     <rect x="630" y="240" width="580" height="36" rx="6" fill="#F97316" fill-opacity="0.05"/>
-    <text x="646" y="264" font-family="Calibri, Arial, sans-serif" font-size="16" fill="#F97316">✕ Tool results</text>
+    <text x="646" y="264" font-family="Calibri, Arial, sans-serif" font-size="16" fill="#F97316">× Tool results</text>
     <text x="870" y="264" font-family="Calibri, Arial, sans-serif" font-size="14" fill="#8B949E">— primary prompt-injection defense</text>
   </g>
 
@@ -57,11 +57,11 @@
     <text x="670" y="338" font-family="Arial, Helvetica, sans-serif" font-size="22" font-weight="bold" fill="#34D399">What Remains</text>
 
     <rect x="630" y="360" width="580" height="36" rx="6" fill="#34D399" fill-opacity="0.08"/>
-    <text x="646" y="384" font-family="Calibri, Arial, sans-serif" font-size="16" fill="#34D399">✓ User messages</text>
+    <text x="646" y="384" font-family="Calibri, Arial, sans-serif" font-size="16" fill="#34D399">√ User messages</text>
     <text x="870" y="384" font-family="Calibri, Arial, sans-serif" font-size="14" fill="#8B949E">— the ground truth for intent</text>
 
     <rect x="630" y="405" width="580" height="36" rx="6" fill="#34D399" fill-opacity="0.05"/>
-    <text x="646" y="429" font-family="Calibri, Arial, sans-serif" font-size="16" fill="#34D399">✓ Tool call commands</text>
+    <text x="646" y="429" font-family="Calibri, Arial, sans-serif" font-size="16" fill="#34D399">√ Tool call commands</text>
     <text x="870" y="429" font-family="Calibri, Arial, sans-serif" font-size="14" fill="#8B949E">— the executable payload</text>
   </g>
 

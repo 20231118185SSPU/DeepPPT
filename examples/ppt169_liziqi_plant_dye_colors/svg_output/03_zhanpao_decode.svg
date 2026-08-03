@@ -29,8 +29,8 @@
     <text x="60" y="140" font-family="KaiTi, STKaiti, Georgia, serif" font-size="20" fill="#7A7068" letter-spacing="2">黄为土地 · 青为春天 · 一绳一染，成就水墨般的渐变</text>
   </g>
 
-  <g id="color-huanglu" transform="translate(60,180)" filter="url(#cardShadow03)">
-    <rect x="0" y="0" width="360" height="300" rx="10" fill="#FFFFFF"/>
+  <g id="color-huanglu" transform="translate(60,180)">
+    <rect x="0" y="0" width="360" height="300" rx="10" fill="#FFFFFF" filter="url(#cardShadow03)"/>
     <rect x="0" y="0" width="360" height="110" rx="10" fill="url(#huangluGrad)"/>
     <rect x="0" y="100" width="360" height="10" fill="url(#huangluGrad)"/>
     <text x="24" y="52" font-family="KaiTi, STKaiti, Georgia, serif" font-size="34" font-weight="bold" fill="#F7F2E8" letter-spacing="4">黄栌黄</text>
@@ -45,8 +45,8 @@
     <text x="24" y="275" font-family="KaiTi, STKaiti, Georgia, serif" font-size="16" fill="#9B948B" font-style="italic">黄帝制玄冠黄裳 · 以草木之汁染之</text>
   </g>
 
-  <g id="color-malan" transform="translate(440,180)" filter="url(#cardShadow03)">
-    <rect x="0" y="0" width="360" height="300" rx="10" fill="#FFFFFF"/>
+  <g id="color-malan" transform="translate(440,180)">
+    <rect x="0" y="0" width="360" height="300" rx="10" fill="#FFFFFF" filter="url(#cardShadow03)"/>
     <rect x="0" y="0" width="360" height="110" rx="10" fill="url(#malanGrad)"/>
     <rect x="0" y="100" width="360" height="10" fill="url(#malanGrad)"/>
     <text x="24" y="52" font-family="KaiTi, STKaiti, Georgia, serif" font-size="34" font-weight="bold" fill="#F7F2E8" letter-spacing="4">马兰青</text>

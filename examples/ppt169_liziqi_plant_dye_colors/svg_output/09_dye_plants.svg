@@ -29,8 +29,8 @@
     <text x="60" y="178" font-family="KaiTi, STKaiti, Georgia, serif" font-size="18" fill="#7A7068" letter-spacing="2">花果叶茎皆可入染 · 喜庆 · 高贵 · 高雅 · 神秘</text>
   </g>
 
-  <g id="card-red" transform="translate(60,240)" filter="url(#cardShadow09)">
-    <rect x="0" y="0" width="270" height="380" rx="10" fill="#FFFFFF"/>
+  <g id="card-red" transform="translate(60,240)">
+    <rect x="0" y="0" width="270" height="380" rx="10" fill="#FFFFFF" filter="url(#cardShadow09)"/>
     <rect x="0" y="0" width="270" height="100" rx="10" fill="#B04A5C"/>
     <rect x="0" y="90" width="270" height="10" fill="#B04A5C"/>
     <circle cx="40" cy="50" r="26" fill="#FFFFFF" fill-opacity="0.2"/>
@@ -57,8 +57,8 @@
     <text x="44" y="348" font-family="KaiTi, STKaiti, Georgia, serif" font-size="15" fill="#7A7068">染银红 · 与朱砂相配</text>
   </g>
 
-  <g id="card-yellow" transform="translate(350,240)" filter="url(#cardShadow09)">
-    <rect x="0" y="0" width="270" height="380" rx="10" fill="#FFFFFF"/>
+  <g id="card-yellow" transform="translate(350,240)">
+    <rect x="0" y="0" width="270" height="380" rx="10" fill="#FFFFFF" filter="url(#cardShadow09)"/>
     <rect x="0" y="0" width="270" height="100" rx="10" fill="#C99E62"/>
     <rect x="0" y="90" width="270" height="10" fill="#C99E62"/>
     <circle cx="40" cy="50" r="26" fill="#FFFFFF" fill-opacity="0.2"/>
@@ -85,8 +85,8 @@
     <text x="44" y="348" font-family="KaiTi, STKaiti, Georgia, serif" font-size="15" fill="#7A7068">深厚浓郁 · 汉服常用色</text>
   </g>
 
-  <g id="card-blue" transform="translate(640,240)" filter="url(#cardShadow09)">
-    <rect x="0" y="0" width="270" height="380" rx="10" fill="#FFFFFF"/>
+  <g id="card-blue" transform="translate(640,240)">
+    <rect x="0" y="0" width="270" height="380" rx="10" fill="#FFFFFF" filter="url(#cardShadow09)"/>
     <rect x="0" y="0" width="270" height="100" rx="10" fill="#6B9AAE"/>
     <rect x="0" y="90" width="270" height="10" fill="#6B9AAE"/>
     <circle cx="40" cy="50" r="26" fill="#FFFFFF" fill-opacity="0.2"/>
@@ -113,8 +113,8 @@
     <text x="44" y="348" font-family="KaiTi, STKaiti, Georgia, serif" font-size="15" fill="#7A7068">专司蓝染 · 官营规模化</text>
   </g>
 
-  <g id="card-black" transform="translate(930,240)" filter="url(#cardShadow09)">
-    <rect x="0" y="0" width="290" height="380" rx="10" fill="#FFFFFF"/>
+  <g id="card-black" transform="translate(930,240)">
+    <rect x="0" y="0" width="290" height="380" rx="10" fill="#FFFFFF" filter="url(#cardShadow09)"/>
     <rect x="0" y="0" width="290" height="100" rx="10" fill="#3A3530"/>
     <rect x="0" y="90" width="290" height="10" fill="#3A3530"/>
     <circle cx="40" cy="50" r="26" fill="#FFFFFF" fill-opacity="0.2"/>

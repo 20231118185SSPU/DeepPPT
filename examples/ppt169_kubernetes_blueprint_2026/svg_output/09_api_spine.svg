@@ -11,6 +11,12 @@
     <marker id="arrow09Cyan" markerWidth="10" markerHeight="10" refX="9" refY="5" orient="auto">
       <path d="M 0,0 L 10,5 L 0,10 Z" fill="#5BA3E0"/>
     </marker>
+    <marker id="arrow09CyanDark" markerWidth="10" markerHeight="10" refX="9" refY="5" orient="auto">
+      <path d="M 0,0 L 10,5 L 0,10 Z" fill="#3E7AB8"/>
+    </marker>
+    <marker id="arrow09CyanGreen" markerWidth="10" markerHeight="10" refX="9" refY="5" orient="auto">
+      <path d="M 0,0 L 10,5 L 0,10 Z" fill="#7FD99F"/>
+    </marker>
     <marker id="arrow09Amber" markerWidth="10" markerHeight="10" refX="9" refY="5" orient="auto">
       <path d="M 0,0 L 10,5 L 0,10 Z" fill="#FFB627"/>
     </marker>
@@ -122,7 +128,7 @@
     <text x="295" y="173" font-family="Consolas, 'Courier New', monospace" font-size="10" fill="#A0B8D0">POST · PUT</text>
     <line x1="280" y1="253" x2="540" y2="263" stroke="#5BA3E0" stroke-width="1.5" marker-end="url(#arrow09Cyan)"/>
     <text x="305" y="244" font-family="Consolas, 'Courier New', monospace" font-size="10" fill="#A0B8D0">watch unscheduled</text>
-    <line x1="540" y1="290" x2="280" y2="270" stroke="#7FD99F" stroke-width="1.2" marker-end="url(#arrow09Cyan)"/>
+    <line x1="540" y1="290" x2="280" y2="270" stroke="#7FD99F" stroke-width="1.2" marker-end="url(#arrow09CyanGreen)"/>
     <text x="338" y="285" font-family="Consolas, 'Courier New', monospace" font-size="10" fill="#7FD99F">bind decision</text>
 
     <line x1="280" y1="323" x2="540" y2="333" stroke="#5BA3E0" stroke-width="1.5" marker-end="url(#arrow09Cyan)"/>
@@ -130,13 +136,13 @@
 
     <line x1="280" y1="393" x2="540" y2="403" stroke="#5BA3E0" stroke-width="1.5" marker-end="url(#arrow09Cyan)"/>
     <text x="320" y="386" font-family="Consolas, 'Courier New', monospace" font-size="10" fill="#A0B8D0">watch pods/node</text>
-    <line x1="540" y1="425" x2="280" y2="420" stroke="#7FD99F" stroke-width="1.2" marker-end="url(#arrow09Cyan)"/>
+    <line x1="540" y1="425" x2="280" y2="420" stroke="#7FD99F" stroke-width="1.2" marker-end="url(#arrow09CyanGreen)"/>
     <text x="380" y="418" font-family="Consolas, 'Courier New', monospace" font-size="10" fill="#7FD99F">report status</text>
 
     <line x1="280" y1="463" x2="540" y2="475" stroke="#5BA3E0" stroke-width="1.5" marker-end="url(#arrow09Cyan)"/>
     <text x="318" y="456" font-family="Consolas, 'Courier New', monospace" font-size="10" fill="#A0B8D0">watch services</text>
 
-    <line x1="280" y1="533" x2="540" y2="510" stroke="#3E7AB8" stroke-width="1.2" stroke-dasharray="4 3" marker-end="url(#arrow09Cyan)"/>
+    <line x1="280" y1="533" x2="540" y2="510" stroke="#3E7AB8" stroke-width="1.2" stroke-dasharray="4 3" marker-end="url(#arrow09CyanDark)"/>
     <text x="320" y="523" font-family="Consolas, 'Courier New', monospace" font-size="10" fill="#3E7AB8">cloud sync (optional)</text>
 
     <line x1="740" y1="345" x2="1000" y2="345" stroke="#FFB627" stroke-width="2" marker-end="url(#arrow09Amber)"/>

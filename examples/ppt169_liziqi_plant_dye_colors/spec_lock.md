@@ -19,6 +19,7 @@
 - border: #D7CEB9
 
 ## typography
+- title: 32
 - font_family: "KaiTi", "STKaiti", "Microsoft YaHei", "PingFang SC", Georgia, serif
 - cover_title: 66
 - chapter_title: 50
@@ -66,3 +67,20 @@
 - rgba()
 - `<style>`, `class`, `<foreignObject>`, `textPath`, `@font-face`, `<animate*>`, `<script>`, `<iframe>`, `<symbol>`+`<use>`
 - `<g opacity>` (set opacity on each child element individually)
+
+## page_rhythm
+- P01: anchor
+- P02: anchor
+- P03: anchor
+- P04: anchor
+- P05: anchor
+- P06: anchor
+- P07: anchor
+- P08: anchor
+- P09: anchor
+- P10: anchor
+- P11: anchor
+- P12: anchor
+
+## pptx_structure
+- mode: flat

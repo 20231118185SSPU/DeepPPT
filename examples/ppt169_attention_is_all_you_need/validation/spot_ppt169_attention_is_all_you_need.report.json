@@ -1,0 +1,154 @@
+{
+  "schema": "ppt-master.pptx-postflight-report.v1",
+  "status": "passed-with-warnings",
+  "output": {
+    "path": "C:\\Users\\FUTIAN\\Desktop\\DeepPPT2\\.tmp\\spot_ppt169_attention_is_all_you_need.pptx",
+    "bytes": 4291024
+  },
+  "source": {
+    "svg_slide_count": 16,
+    "layout_definition_count": 0,
+    "fingerprint": {
+      "algorithm": "sha256",
+      "digest": "4d3ec21a5cccea3ea2a7ed91b7786321d5ee3a966cd75fe2d76ba01e9cb90c5f",
+      "file_count": 16,
+      "files": [
+        {
+          "file": "01_cover.svg",
+          "sha256": "8520e32ff9ffd28bfef1d3b54d27f40337256fe4ef5bf6d4d6da743b697db25c"
+        },
+        {
+          "file": "02_why_it_matters.svg",
+          "sha256": "fc9f957824eb05d50cb776198076c949f0cf76892ef02b7dc19bcc7162ed74d4"
+        },
+        {
+          "file": "03_sequence_evolution.svg",
+          "sha256": "7d60dafb6e820851fd4c155ea9cb4c488afec60baa0106dd9c1f1e89d7e675a9"
+        },
+        {
+          "file": "04_rnn_cnn_limits.svg",
+          "sha256": "8f5fd2f0b4a81448d3153c8ac3e6e3202ebda8e3497dee1a5f08ff0599fe75c0"
+        },
+        {
+          "file": "05_architecture_overview.svg",
+          "sha256": "d611077bbbe7422e265a63bf7f3bba1c76fd8eb6cac8eb13b76a091caa6660aa"
+        },
+        {
+          "file": "06_encoder_decoder.svg",
+          "sha256": "03660475c52075d55d926ce3f11ed4bf15732ed292918caa71c30c8f323cae48"
+        },
+        {
+          "file": "07_scaled_dot_product.svg",
+          "sha256": "81d0a56c3e867bf6f8f719e35114b84bbd32119f1d49ff047246b4fbeec6ecd2"
+        },
+        {
+          "file": "08_multi_head_attention.svg",
+          "sha256": "0de6b614f00f744b34a8dc66d46487aa425d6346f073b4d3d60507f667a6b026"
+        },
+        {
+          "file": "09_three_uses.svg",
+          "sha256": "536ed0d01ca5343db3bfe1281a77a196c674c9afbf568b29916379eb58204224"
+        },
+        {
+          "file": "10_ffn_residual_layernorm.svg",
+          "sha256": "e99b89e64807391445aec2f1382940197a133ec7b501367b038407b6c3cf7cc5"
+        },
+        {
+          "file": "11_positional_encoding.svg",
+          "sha256": "69493238be8401b37349ffae4100e0ca8b982c940f9a994e5dae85412d56cadd"
+        },
+        {
+          "file": "12_complexity_table.svg",
+          "sha256": "471b83edbbba8cb3b48655cf6a49fad8ef6c9612d59ca923cfa371f6d869c0a9"
+        },
+        {
+          "file": "13_training_setup.svg",
+          "sha256": "c055b65a8d4f18172c3412241c852d85c1dac5d16f86a658b034beb6f3f31e05"
+        },
+        {
+          "file": "14_results.svg",
+          "sha256": "615f1e8d90f0225163a7ebf9d513faf7b34b7ff4b2cef2f7c712e0fdf24634e9"
+        },
+        {
+          "file": "15_ablations.svg",
+          "sha256": "5d15328aca4a1db85424b0faadc8ab3da7d3241b3b7fe67cc5ab32803c25ba26"
+        },
+        {
+          "file": "16_conclusion.svg",
+          "sha256": "7ef8ae86e842ad2eceb87d8f56bb8b591953390381fd0663f8820a33737c366c"
+        }
+      ]
+    }
+  },
+  "package": {
+    "zip_integrity": "passed",
+    "corrupt_member": null,
+    "slides": 16,
+    "notes": 16,
+    "masters": 1,
+    "layouts": 1
+  },
+  "checks": {
+    "zip_integrity": "passed",
+    "slide_count": "passed",
+    "internal_relationships": "enforced-at-build",
+    "structured_package": "not-applicable",
+    "transitions": "enforced-at-build",
+    "animations": "enforced-at-build",
+    "quality_gate": "not-provided",
+    "quality_warnings": "passed",
+    "template_tokens": "passed",
+    "external_images": "passed",
+    "font_portability": "passed"
+  },
+  "quality": {
+    "status": "not-provided",
+    "path": "examples\\ppt169_attention_is_all_you_need\\validation\\svg_quality_report.json"
+  },
+  "resources": {
+    "unresolved_template_tokens": [],
+    "fonts": {
+      "stacks": [
+        "Arial, \"Microsoft YaHei\", sans-serif",
+        "Consolas, \"Courier New\", monospace",
+        "Consolas, monospace",
+        "Georgia, \"Microsoft YaHei\", serif"
+      ],
+      "generic_only_stacks": [],
+      "unsafe_exported_faces": []
+    },
+    "images": {
+      "data_uri": 0,
+      "local": 11,
+      "external": 0,
+      "external_references": []
+    }
+  },
+  "deck_motion": {
+    "transition": {
+      "effect": "fade",
+      "effect_options": {},
+      "duration": 0.35,
+      "auto_advance": null
+    },
+    "animation": {
+      "effect": "auto",
+      "effect_request": "auto",
+      "duration": 0.38,
+      "stagger": 0.16,
+      "trigger": "after-previous"
+    },
+    "cli_overrides": {
+      "transition": false,
+      "transition_duration": false,
+      "auto_advance": false,
+      "animation": false,
+      "animation_duration": false,
+      "animation_stagger": false,
+      "animation_trigger": false
+    },
+    "narration_timings": false
+  },
+  "backup_path": null,
+  "conversion_trace_path": null
+}

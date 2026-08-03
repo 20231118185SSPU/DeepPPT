@@ -60,7 +60,7 @@
   <!-- Incident examples -->
   <g id="incidents">
     <rect x="180" y="580" width="920" height="60" rx="8" fill="#161B22" stroke="#30363D" stroke-width="1"/>
-    <text x="210" y="608" font-family="Calibri, Arial, sans-serif" font-size="14" fill="#F97316">⚠ Real incidents:</text>
+    <text x="210" y="608" font-family="Calibri, Arial, sans-serif" font-size="14" fill="#F97316">! Real incidents:</text>
     <text x="340" y="608" font-family="Calibri, Arial, sans-serif" font-size="14" fill="#8B949E">Deleting remote branches · Uploading auth tokens · Production DB migrations</text>
   </g>
 

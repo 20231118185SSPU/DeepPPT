@@ -44,13 +44,15 @@
   </text>
 
   <!-- Main book cover image -->
-  <g id="p11-book-cover" filter="url(#cardShadow11)">
+  <g id="p11-book-cover">
+    <g filter="url(#cardShadow11)">
     <image href="../images/book_cover1.png" x="60" y="160" width="360" height="260" preserveAspectRatio="xMidYMid slice" clip-path="url(#bookClip1)"/>
+    </g>
   </g>
 
   <!-- Author & info card -->
-  <g id="p11-author-card" filter="url(#cardShadow11)">
-    <rect x="440" y="160" width="380" height="260" rx="12" fill="#2A2520"/>
+  <g id="p11-author-card">
+    <rect x="440" y="160" width="380" height="260" rx="12" fill="#2A2520" filter="url(#cardShadow11)"/>
     <rect x="440" y="160" width="380" height="4" rx="2" fill="#C4A882"/>
 
     <text x="465" y="200" font-family="'Microsoft YaHei', 'PingFang SC', Arial, sans-serif" font-size="16" font-weight="bold" fill="#C4A882">
@@ -83,8 +85,8 @@
   </g>
 
   <!-- Content chapters card -->
-  <g id="p11-chapters-card" filter="url(#cardShadow11)">
-    <rect x="840" y="160" width="380" height="260" rx="12" fill="#2A2520"/>
+  <g id="p11-chapters-card">
+    <rect x="840" y="160" width="380" height="260" rx="12" fill="#2A2520" filter="url(#cardShadow11)"/>
     <rect x="840" y="160" width="380" height="4" rx="2" fill="#8B7355"/>
 
     <text x="865" y="200" font-family="'Microsoft YaHei', 'PingFang SC', Arial, sans-serif" font-size="16" font-weight="bold" fill="#E8E0D4">

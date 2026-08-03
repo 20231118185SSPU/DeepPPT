@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1280 720">
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1280 720" width="1280" height="720">
     <g id="background"><rect width="1280" height="720" fill="#1C1C1C" /></g>
     <g id="header">
         <text x="60" y="55" fill="#8B1A1A" fill-opacity="0.6" font-family="Microsoft YaHei, Arial, sans-serif" font-size="13">苏醒 · 02</text>

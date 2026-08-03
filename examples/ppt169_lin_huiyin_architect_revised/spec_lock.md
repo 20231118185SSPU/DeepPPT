@@ -69,3 +69,6 @@
 - rgba()
 - `<style>`, `class`, `<foreignObject>`, `textPath`, `@font-face`, `<animate*>`, `<script>`, `<iframe>`, `<symbol>`+`<use>`
 - `<g opacity>` (set opacity on each child element individually)
+
+## pptx_structure
+- mode: flat

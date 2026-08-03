@@ -80,3 +80,6 @@
 - `<style>`, `class`, `<foreignObject>`, `textPath`, `@font-face`, `<animate*>`, `<script>`, `<iframe>`, `<symbol>`+`<use>`
 - `<g opacity>` (set opacity on each child element individually)
 - HTML named entities in text — write raw Unicode; XML reserved chars escape as `&amp; &lt; &gt; &quot; &apos;`
+
+## pptx_structure
+- mode: flat

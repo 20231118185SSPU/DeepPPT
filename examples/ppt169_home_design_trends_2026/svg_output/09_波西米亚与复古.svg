@@ -33,8 +33,10 @@
   </g>
 
   <!-- Left: Bohemian image (portrait) -->
-  <g id="p09-bohemian" filter="url(#cardShadow09)">
+  <g id="p09-bohemian">
+    <g filter="url(#cardShadow09)">
     <image href="../images/bohemian_style.png" x="60" y="130" width="380" height="450" preserveAspectRatio="xMidYMid slice" clip-path="url(#leftImgClip09)"/>
+    </g>
     <rect x="60" y="510" width="380" height="70" fill="#1A1714" fill-opacity="0.75"/>
     <text x="80" y="543" font-family="Georgia, SimSun, serif" font-size="20" font-weight="bold" fill="#D4956A">
       波西米亚风
@@ -91,8 +93,10 @@
   </g>
 
   <!-- Right: Retro image -->
-  <g id="p09-retro" filter="url(#cardShadow09)">
+  <g id="p09-retro">
+    <g filter="url(#cardShadow09)">
     <image href="../images/retro_style.png" x="710" y="130" width="510" height="290" preserveAspectRatio="xMidYMid slice" clip-path="url(#rightImgClip09)"/>
+    </g>
     <rect x="710" y="355" width="510" height="65" fill="#1A1714" fill-opacity="0.75"/>
     <text x="730" y="388" font-family="Georgia, SimSun, serif" font-size="20" font-weight="bold" fill="#C4A882">
       怀旧复古风

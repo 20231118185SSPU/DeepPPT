@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1280 720">
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1280 720" width="1280" height="720">
     <rect width="1280" height="720" fill="#F8FAFC" />
 
     <!-- 标题区 -->
@@ -22,7 +22,7 @@
     <text x="103" y="284" text-anchor="middle" fill="#FFFFFF" font-family="Segoe UI, Arial, sans-serif" font-size="18" font-weight="bold">2</text>
     <text x="135" y="284" fill="#1E293B" font-family="Microsoft YaHei, PingFang SC, Segoe UI, sans-serif" font-size="18" font-weight="bold">获取 API 密钥</text>
     <text x="135" y="310" fill="#64748B" font-family="Microsoft YaHei, PingFang SC, Segoe UI, sans-serif" font-size="14">控制台 → API 密钥 → 复制保存</text>
-    <text x="135" y="330" fill="#F97316" font-family="Microsoft YaHei, PingFang SC, Segoe UI, sans-serif" font-size="13">⚠ 请妥善保管，不要泄露</text>
+    <text x="135" y="330" fill="#F97316" font-family="Microsoft YaHei, PingFang SC, Segoe UI, sans-serif" font-size="13">! 请妥善保管，不要泄露</text>
 
     <!-- Step 3 -->
     <rect x="85" y="370" width="36" height="36" fill="#F97316" rx="8" />

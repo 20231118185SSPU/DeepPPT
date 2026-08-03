@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1280 720">
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1280 720" width="1280" height="720">
     <g id="background"><rect width="1280" height="720" fill="#1C1C1C" /><image href="images/p26_ending_stars.png" x="0" y="0" width="1280" height="720" preserveAspectRatio="xMidYMid slice" /><rect x="0" y="160" width="1280" height="420" fill="#1C1C1C" fill-opacity="0.65" /></g>
     <g id="title-block">
         <line x1="440" y1="230" x2="840" y2="230" stroke="#8B1A1A" stroke-width="2" stroke-opacity="0.5" />

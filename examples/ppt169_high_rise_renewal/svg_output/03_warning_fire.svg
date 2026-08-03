@@ -32,8 +32,8 @@
     <text x="60" y="294" font-family="&quot;Microsoft YaHei&quot;, sans-serif" font-size="15" fill="#D6CFC0" font-style="italic">2025.11.26 · 香港大埔宏福苑</text>
   </g>
 
-  <g id="card-1" filter="url(#cardLift)">
-    <rect x="640" y="340" width="280" height="156" rx="6" fill="#F5F2EC"/>
+  <g id="card-1">
+    <rect x="640" y="340" width="280" height="156" rx="6" fill="#F5F2EC" filter="url(#cardLift)"/>
     <use data-icon="tabler-outline/flame" x="664" y="362" width="32" height="32" fill="#C2410C"/>
     <text x="704" y="386" font-family="&quot;Microsoft YaHei&quot;, sans-serif" font-size="13" font-weight="700" fill="#5A6B7A" letter-spacing="2">事故现场</text>
     <text x="664" y="430" font-family="Georgia, KaiTi, serif" font-size="44" font-weight="700" fill="#2B3A4A">7<tspan font-size="20" font-weight="500" fill="#5A6B7A" dx="6">栋</tspan></text>
@@ -41,8 +41,8 @@
     <text x="664" y="488" font-family="&quot;Microsoft YaHei&quot;, sans-serif" font-size="13" fill="#5A6B7A">楼龄已达 <tspan fill="#C2410C" font-weight="700">42 年</tspan></text>
   </g>
 
-  <g id="card-2" filter="url(#cardLift)">
-    <rect x="940" y="340" width="280" height="156" rx="6" fill="#F5F2EC"/>
+  <g id="card-2">
+    <rect x="940" y="340" width="280" height="156" rx="6" fill="#F5F2EC" filter="url(#cardLift)"/>
     <use data-icon="tabler-outline/chart-bar" x="964" y="362" width="32" height="32" fill="#C2410C"/>
     <text x="1004" y="386" font-family="&quot;Microsoft YaHei&quot;, sans-serif" font-size="13" font-weight="700" fill="#5A6B7A" letter-spacing="2">全国数据</text>
     <text x="964" y="430" font-family="Georgia, KaiTi, serif" font-size="44" font-weight="700" fill="#C2410C">3.6<tspan font-size="20" font-weight="500" fill="#5A6B7A" dx="6">万起</tspan></text>
@@ -50,8 +50,8 @@
     <text x="964" y="488" font-family="&quot;Microsoft YaHei&quot;, sans-serif" font-size="13" fill="#5A6B7A">超过 <tspan fill="#2B3A4A" font-weight="700">2023 年全年总量</tspan></text>
   </g>
 
-  <g id="card-3" filter="url(#cardLift)">
-    <rect x="640" y="516" width="580" height="120" rx="6" fill="#F5F2EC"/>
+  <g id="card-3">
+    <rect x="640" y="516" width="580" height="120" rx="6" fill="#F5F2EC" filter="url(#cardLift)"/>
     <use data-icon="tabler-outline/building-skyscraper" x="664" y="538" width="32" height="32" fill="#2B3A4A"/>
     <text x="704" y="562" font-family="&quot;Microsoft YaHei&quot;, sans-serif" font-size="13" font-weight="700" fill="#5A6B7A" letter-spacing="2">救援困局</text>
     <text x="664" y="600" font-family="&quot;Microsoft YaHei&quot;, sans-serif" font-size="17" fill="#2B3A4A">地面消防救援高度通常 <tspan font-weight="700" fill="#C2410C">50–80 米</tspan></text>

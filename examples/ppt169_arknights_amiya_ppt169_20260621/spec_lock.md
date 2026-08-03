@@ -84,29 +84,12 @@
 - P17: dense
 - P18: anchor
 
-## page_layouts
-- P01: 01_cover
-- P02: 02_toc
-- P03: 02_chapter
-- P04: 03_content
-- P05: 03a_content
-- P06: 02_chapter
-- P07: 03_content
-- P08: 03a_content
-- P09: 02_chapter
-- P10: 03_content
-- P11: 03a_content
-- P12: 02_chapter
-- P13: 03_content
-- P14: 03a_content
-- P15: 02_chapter
-- P16: 03_content
-- P17: 03a_content
-- P18: 04_ending
-
 ## forbidden
 - Mixing icon libraries
 - rgba()
 - `<style>`, `class`, `<foreignObject>`, `textPath`, `@font-face`, `<animate*>`, `<script>`, `<iframe>`, `<symbol>`+`<use>`
 - `<g opacity>` (set opacity on each child element individually)
 - HTML named entities in text (`&nbsp;`, `&mdash;`, `&copy;`, `&ndash;`, `&reg;`, `&hellip;`, `&bull;` …) — write as raw Unicode (`—`, `©`, `→`, NBSP, etc.); XML reserved chars `& < > " '` must be escaped as `&amp; &lt; &gt; &quot; &apos;`
+
+## pptx_structure
+- mode: flat

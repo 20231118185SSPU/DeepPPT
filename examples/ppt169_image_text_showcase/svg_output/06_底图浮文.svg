@@ -67,8 +67,8 @@
         font-size="15" fill="#6A5A4A" fill-opacity="0.8">图像 ↓ 作为页面底座  ·  文字 ↑ 向上生长</text>
 
   <!-- Decorative sketch doodle — small stars -->
-  <text x="240" y="200" font-family="Arial, sans-serif" font-size="16" fill="#B8A9E0" fill-opacity="0.7">✦</text>
-  <text x="990" y="170" font-family="Arial, sans-serif" font-size="12" fill="#A8D8C0" fill-opacity="0.7">✦</text>
+  <text x="240" y="200" font-family="Arial, sans-serif" font-size="16" fill="#B8A9E0" fill-opacity="0.7">◇</text>
+  <text x="990" y="170" font-family="Arial, sans-serif" font-size="12" fill="#A8D8C0" fill-opacity="0.7">◇</text>
   <text x="180" y="300" font-family="Arial, sans-serif" font-size="10" fill="#F5C5A3" fill-opacity="0.7">◆</text>
   <text x="1060" y="290" font-family="Arial, sans-serif" font-size="10" fill="#B8A9E0" fill-opacity="0.7">◆</text>
 

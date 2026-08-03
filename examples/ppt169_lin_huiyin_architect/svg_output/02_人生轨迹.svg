@@ -36,7 +36,7 @@
   <!-- 主时间线 y=360 -->
   <line x1="80" y1="360" x2="1200" y2="360" stroke="#2A2A4A" stroke-width="3" stroke-linecap="round"/>
   <!-- 渐变高亮 -->
-  <line x1="80" y1="360" x2="1200" y2="360" stroke="url(#timelineGrad)" stroke-width="3" stroke-linecap="round" stroke-opacity="0.5"/>
+  <rect x="80" y="358.5" width="1120" height="3" fill="url(#timelineGrad)"/>
 
   <!-- 节点1: 1904 出生 — 上方卡片 -->
   <circle cx="120" cy="360" r="10" fill="url(#nodeGlow)" stroke="#1A1A2E" stroke-width="2" filter="url(#nodeShadow)"/>

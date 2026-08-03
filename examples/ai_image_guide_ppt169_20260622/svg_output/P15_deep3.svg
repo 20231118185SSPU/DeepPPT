@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1280 720">
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1280 720" width="1280" height="720">
     <rect width="1280" height="720" fill="#F8FAFC" />
 
     <!-- 标题区 -->
@@ -27,7 +27,7 @@
 
     <!-- 关键提示 -->
     <rect x="85" y="540" width="510" height="40" fill="#2563EB" fill-opacity="0.08" rx="8" />
-    <text x="340" y="566" text-anchor="middle" fill="#2563EB" font-family="Microsoft YaHei, PingFang SC, Segoe UI, sans-serif" font-size="15" font-weight="bold">💡 技巧："请参考上传图片，制作风格一致的图片"</text>
+    <text x="340" y="566" text-anchor="middle" fill="#2563EB" font-family="Microsoft YaHei, PingFang SC, Segoe UI, sans-serif" font-size="15" font-weight="bold">! 技巧："请参考上传图片，制作风格一致的图片"</text>
 
     <!-- 右侧：截图 -->
     <rect x="650" y="130" width="570" height="460" fill="#FFFFFF" rx="12" stroke="#CBD5E1" stroke-width="1" />

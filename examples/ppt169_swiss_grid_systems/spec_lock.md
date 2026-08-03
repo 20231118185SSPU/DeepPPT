@@ -78,3 +78,6 @@
 - Rounded corners (rx > 0) — except inside `simple-icons` brand glyphs
 - Linear/radial gradients — pure flat color only
 - Drop shadows / filter effects
+
+## pptx_structure
+- mode: flat

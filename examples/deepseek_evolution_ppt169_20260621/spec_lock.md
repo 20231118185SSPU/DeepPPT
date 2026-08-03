@@ -21,6 +21,7 @@
 - warning: #FF6B35
 
 ## typography
+- title: 32
 - title_family: Inter, "Microsoft YaHei", sans-serif
 - body_family: "Microsoft YaHei", Inter, sans-serif
 - emphasis_family: Inter, "Microsoft YaHei", sans-serif
@@ -62,16 +63,9 @@
 
 ### Web assets (deep dive pages)
 - web_nvidia_crash_data: images/web_assets/web_nvidia_crash_data.png
-- web_sputnik_comparison: images/web_assets/web_sputnik_comparison.png
-- web_training_cost_trend: images/web_assets/web_training_cost_trend.png
-- web_scaling_vs_algorithm: images/web_assets/web_scaling_vs_algorithm.png
-- web_highflyer_story: images/web_assets/web_highflyer_story.png
 - web_mla_architecture: images/web_assets/web_mla_architecture.png
-- web_v3_vs_gpt4: images/web_assets/web_v3_vs_gpt4.png
 - web_r1_training_detail: images/web_assets/web_r1_training_detail.png
 - web_ai_stock_timeline: images/web_assets/web_ai_stock_timeline.png
-- web_industry_reactions: images/web_assets/web_industry_reactions.png
-- web_deepseek_vs_llama: images/web_assets/web_deepseek_vs_llama.png
 
 ## page_rhythm
 - P01: anchor        # 封面 — 视觉冲击
@@ -110,3 +104,7 @@
 - rgba()
 - `<style>`, `class`, `<foreignObject>`, `textPath`, `@font-face`, `<animate*>`, `<script>`, `<iframe>`, `<symbol>`+`<use>`
 - `<g opacity>` (set opacity on each child element individually)
+
+## pptx_structure
+- mode: flat
+

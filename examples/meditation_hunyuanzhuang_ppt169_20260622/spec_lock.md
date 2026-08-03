@@ -36,6 +36,8 @@
 ---
 
 ## typography
+- body: 22
+- title: 36
 
 - title_family: SimSun, Georgia, serif
 - body_family: "Microsoft YaHei", Arial, sans-serif
@@ -135,3 +137,6 @@
 - layout: structured (cards/columns/timeline/data-callouts), never plain text
 - web_assets: every deep_dive page has ≥1 web-sourced image
 - narrative_continuity: title echoes preceding content page's core claim
+
+## pptx_structure
+- mode: flat

@@ -44,7 +44,7 @@
 
   <g id="timeline-axis">
     <line x1="200" y1="155" x2="200" y2="660" stroke="#FFFFFF" stroke-opacity="0.1" stroke-width="6" stroke-linecap="round"/>
-    <line x1="200" y1="155" x2="200" y2="660" stroke="url(#timelineGrad)" stroke-width="4" stroke-linecap="round"/>
+    <rect x="198" y="155" width="4" height="505" fill="url(#timelineGrad)"/>
   </g>
 
   <g id="ms-1">
@@ -134,7 +134,7 @@
       <text x="844" y="514" font-family="&quot;Microsoft YaHei&quot;, &quot;PingFang SC&quot;, sans-serif" font-size="13" font-weight="500" fill="#A8B0D0">30 天 SLO ≥ 99.5% · 成本月度下降</text>
     </g>
     <line x1="800" y1="545" x2="1190" y2="545" stroke="#FFFFFF" stroke-opacity="0.12"/>
-    <text x="816" y="580" font-family="&quot;Microsoft YaHei&quot;, &quot;PingFang SC&quot;, sans-serif" font-size="14" font-weight="700" fill="#A8B0D0">⚡ 不达标不晋级 — 每个阶段</text>
+    <text x="816" y="580" font-family="&quot;Microsoft YaHei&quot;, &quot;PingFang SC&quot;, sans-serif" font-size="14" font-weight="700" fill="#A8B0D0">▶ 不达标不晋级 — 每个阶段</text>
     <text x="816" y="604" font-family="&quot;Microsoft YaHei&quot;, &quot;PingFang SC&quot;, sans-serif" font-size="14" font-weight="700" fill="#A8B0D0">必须有"通关"硬指标</text>
     <text x="816" y="628" font-family="&quot;Microsoft YaHei&quot;, &quot;PingFang SC&quot;, sans-serif" font-size="13" font-weight="500" fill="#6B7299">否则只是"进度"假象</text>
   </g>

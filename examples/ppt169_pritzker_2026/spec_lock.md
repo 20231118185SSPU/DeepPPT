@@ -81,8 +81,6 @@
 - P10: dense
 - P11: anchor
 
-## page_layouts
-
 ## page_charts
 
 ## forbidden
@@ -91,3 +89,6 @@
 - `<style>`, `class`, `<foreignObject>`, `textPath`, `@font-face`, `<animate*>`, `<script>`, `<iframe>`, `<symbol>`+`<use>`
 - `<g opacity>` (set opacity on each child element individually)
 - HTML named entities in text — write as raw Unicode
+
+## pptx_structure
+- mode: flat

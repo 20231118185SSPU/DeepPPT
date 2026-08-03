@@ -1,0 +1,146 @@
+{
+  "schema": "ppt-master.pptx-postflight-report.v1",
+  "status": "passed-with-warnings",
+  "output": {
+    "path": "C:\\Users\\FUTIAN\\Desktop\\DeepPPT2\\.tmp\\post_backfill_check.pptx",
+    "bytes": 1541430
+  },
+  "source": {
+    "svg_slide_count": 14,
+    "layout_definition_count": 0,
+    "fingerprint": {
+      "algorithm": "sha256",
+      "digest": "3d4409ffb1dd92a4153147cb0c778c99aa432d94280964651d385b8ae758936b",
+      "file_count": 14,
+      "files": [
+        {
+          "file": "01_cover.svg",
+          "sha256": "5e3476af584dcd7fd4b352e73aa14266676c2127b0d00450f5a3f670607c43c9"
+        },
+        {
+          "file": "02_quote.svg",
+          "sha256": "603d85dd17d13eec6847f2a9ec71efc4bbdd19d665e7d7d0be372435108f4597"
+        },
+        {
+          "file": "03_origin.svg",
+          "sha256": "0bbfb5f883061e0c50feb4a3d2c582bb6f744ee195c259f0cb24b338fe2ead22"
+        },
+        {
+          "file": "04_principles.svg",
+          "sha256": "d807a43a126e6ee959c0c2791e9fae8923d4141ca755e8ea07ce2a0634b89b03"
+        },
+        {
+          "file": "05_figures.svg",
+          "sha256": "17660fa043130a43b130b3c122c0820aaa60ccd4599bc359c6433e55d4043c21"
+        },
+        {
+          "file": "06_brockmann.svg",
+          "sha256": "a8255ae55ce53a164bd0823f5495b4b1da0132b1316ae728c1c0b3e2efbe78a8"
+        },
+        {
+          "file": "07_typefaces.svg",
+          "sha256": "55d3bfa7ec3d93ed58f1c1c1185f16b437f8e16d9dbe19d2ab2dd5ed5f9fd390"
+        },
+        {
+          "file": "08_grid_types.svg",
+          "sha256": "8cfcb9137705d3406370b1e2900459ed6156df2f230261d8fba7ec8c99e3bd13"
+        },
+        {
+          "file": "09_modular.svg",
+          "sha256": "6814d8d22f32c833490dbff71a2903dc88178027450c6c42e3ffc7b3500c58ad"
+        },
+        {
+          "file": "10_negative_space.svg",
+          "sha256": "6aa7594fa0bd776b9bfc05d3041f82be98c4d2c741a420298333ec24853d6003"
+        },
+        {
+          "file": "11_outputs.svg",
+          "sha256": "b1d86f40b424fead4bb3f81c52378bb9d3459ad5f258c10aaffff0f0eccb0dba"
+        },
+        {
+          "file": "12_digital_era.svg",
+          "sha256": "35a1018ae0350c7ae3acc0bb7eccdb2c77131b06fdf53e3ea218454648d99d3f"
+        },
+        {
+          "file": "13_brands.svg",
+          "sha256": "0807d0942a2d52ee9ff3413697b5506e0b885ad8269845e39a48190fa1955b88"
+        },
+        {
+          "file": "14_closing.svg",
+          "sha256": "2fd7d7668a3cc6de08414dc8814d3a4a9a39367f029b0dac6da0602f9f1ebc8d"
+        }
+      ]
+    }
+  },
+  "package": {
+    "zip_integrity": "passed",
+    "corrupt_member": null,
+    "slides": 14,
+    "notes": 14,
+    "masters": 1,
+    "layouts": 1
+  },
+  "checks": {
+    "zip_integrity": "passed",
+    "slide_count": "passed",
+    "internal_relationships": "enforced-at-build",
+    "structured_package": "not-applicable",
+    "transitions": "enforced-at-build",
+    "animations": "enforced-at-build",
+    "quality_gate": "not-provided",
+    "quality_warnings": "passed",
+    "template_tokens": "passed",
+    "external_images": "passed",
+    "font_portability": "passed"
+  },
+  "quality": {
+    "status": "not-provided",
+    "path": "examples\\ppt169_swiss_grid_systems\\validation\\svg_quality_report.json"
+  },
+  "resources": {
+    "unresolved_template_tokens": [],
+    "fonts": {
+      "stacks": [
+        "\"Arial Black\", \"Microsoft YaHei\", sans-serif",
+        "Arial, \"Microsoft YaHei\", sans-serif",
+        "Arial, sans-serif",
+        "Consolas, \"Courier New\", monospace"
+      ],
+      "generic_only_stacks": [],
+      "unsafe_exported_faces": []
+    },
+    "images": {
+      "data_uri": 0,
+      "local": 3,
+      "external": 0,
+      "external_references": []
+    }
+  },
+  "deck_motion": {
+    "transition": {
+      "effect": "fade",
+      "effect_options": {},
+      "duration": 0.35,
+      "auto_advance": null
+    },
+    "animation": {
+      "effect": "entrance_fade",
+      "effect_request": "fade",
+      "duration": 0.4,
+      "stagger": 0.2,
+      "trigger": "after-previous"
+    },
+    "cli_overrides": {
+      "transition": false,
+      "transition_duration": false,
+      "auto_advance": false,
+      "animation": false,
+      "animation_duration": false,
+      "animation_stagger": false,
+      "animation_trigger": false
+    },
+    "narration_timings": false
+  },
+  "backup_path": null,
+  "conversion_trace_path": null
+}

@@ -46,26 +46,6 @@
 - inventory: hexagon, crosshair, link, eye, users, clock, lock, target
 
 ## images
-- cover_bg: images/cover_bg.png
-- toc_bg: images/toc_bg.png
-- trans_01_hook: images/trans_01_hook.png
-- content_precursor: images/content_precursor.png
-- content_sarcophagus: images/content_sarcophagus.png
-- trans_02_awakening: images/trans_02_awakening.png
-- content_amnesia: images/content_amnesia.png
-- trans_03_fragments: images/trans_03_fragments.png
-- content_tactics: images/content_tactics.png
-- content_chessboard: images/content_chessboard.png
-- trans_04_mirror: images/trans_04_mirror.png
-- content_relationships: images/content_relationships.png
-- content_theresa_letter: images/content_theresa_letter.png
-- trans_05_mask: images/trans_05_mask.png
-- content_five_layers: images/content_five_layers.png
-- content_self_insert: images/content_self_insert.png
-- content_community: images/content_community.png
-- content_ships: images/content_ships.png
-- ending_stars: images/ending_stars.png
-- ending_walk: images/ending_walk.png
 - dim2_sarcophagus_interior: images/web_assets/dim2_sarcophagus_interior.png | no-crop
 - dim4_theresa: images/web_assets/dim4_theresa.png | no-crop
 - dim3_tactical_command: images/web_assets/dim3_tactical_command.png | no-crop
@@ -101,37 +81,13 @@
 - P25: dense
 - P26: anchor
 
-## page_layouts
-- P01: 01_cover
-- P02: 02_toc
-- P03: 02_chapter
-- P04: 03_content
-- P05: 03a_content
-- P06: 03_content
-- P07: 03a_content
-- P08: 03_content
-- P09: 03a_content
-- P10: 03_content
-- P11: 03_content
-- P12: 02_chapter
-- P13: 03a_content
-- P14: 03_content
-- P15: 03_content
-- P16: 02_chapter
-- P17: 03_content
-- P18: 03a_content
-- P19: 03_content
-- P20: 03_content
-- P21: 03a_content
-- P22: 03_content
-- P23: 03_content
-- P24: 02_chapter
-- P25: 03_content
-- P26: 04_ending
-
 ## forbidden
 - Mixing icon libraries
 - rgba()
 - `<style>`, `class`, `<foreignObject>`, `textPath`, `@font-face`, `<animate*>`, `<script>`, `<iframe>`, `<symbol>`+`<use>`
 - `<g opacity>` (set opacity on each child element individually)
 - HTML named entities in text (`&nbsp;`, `&mdash;`, `&copy;`, `&ndash;`, `&reg;`, `&hellip;`, `&bull;` …) — write as raw Unicode (`—`, `©`, `→`, NBSP, etc.); XML reserved chars `& < > " '` must be escaped as `&amp; &lt; &gt; &quot; &apos;`. See shared-standards.md §1.0
+
+## pptx_structure
+- mode: flat
+

@@ -70,8 +70,8 @@
   </text>
 
   <!-- Right side: explanation cards -->
-  <g id="p07-card-physical" filter="url(#cardShadow07)">
-    <rect x="650" y="120" width="580" height="105" rx="12" fill="#2A2520"/>
+  <g id="p07-card-physical">
+    <rect x="650" y="120" width="580" height="105" rx="12" fill="#2A2520" filter="url(#cardShadow07)"/>
     <rect x="650" y="120" width="5" height="105" rx="2" fill="#C4A882"/>
     <text x="675" y="152" font-family="'Microsoft YaHei', 'PingFang SC', Arial, sans-serif" font-size="18" font-weight="bold" fill="#C4A882">
       物理层感知
@@ -84,8 +84,8 @@
     </text>
   </g>
 
-  <g id="p07-card-psychological" filter="url(#cardShadow07)">
-    <rect x="650" y="245" width="580" height="105" rx="12" fill="#2A2520"/>
+  <g id="p07-card-psychological">
+    <rect x="650" y="245" width="580" height="105" rx="12" fill="#2A2520" filter="url(#cardShadow07)"/>
     <rect x="650" y="245" width="5" height="105" rx="2" fill="#D4956A"/>
     <text x="675" y="277" font-family="'Microsoft YaHei', 'PingFang SC', Arial, sans-serif" font-size="18" font-weight="bold" fill="#D4956A">
       心理层联想

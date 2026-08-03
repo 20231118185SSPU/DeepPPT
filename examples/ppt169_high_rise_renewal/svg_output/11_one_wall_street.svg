@@ -43,8 +43,10 @@
     <text x="60" y="688" font-family="&quot;Microsoft YaHei&quot;, sans-serif" font-size="13" fill="#5A6B7A">改造后的 One Wall Street · 装饰艺术摩天楼</text>
   </g>
 
-  <g id="inset-image" filter="url(#p11Lift)">
+  <g id="inset-image">
+    <g filter="url(#p11Lift)">
     <image href="../images/640_14.png" x="650" y="290" width="290" height="200" preserveAspectRatio="xMidYMid slice" clip-path="url(#p11Inset)"/>
+    </g>
     <rect x="650" y="290" width="290" height="80" fill="url(#p11InsetTop)"/>
     <g id="inset-tag">
       <rect x="666" y="306" width="12" height="12" fill="#F5F2EC"/>

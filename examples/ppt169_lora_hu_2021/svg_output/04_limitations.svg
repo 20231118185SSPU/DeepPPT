@@ -15,7 +15,7 @@
   </g>
 
   <g id="rail-decor">
-    <line x1="120" y1="222" x2="120" y2="610" stroke="url(#limRail)" stroke-width="3" stroke-linecap="round"/>
+    <rect x="118.5" y="222" width="3" height="388" fill="url(#limRail)"/>
   </g>
 
   <g id="lim-01">

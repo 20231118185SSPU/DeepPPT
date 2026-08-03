@@ -47,7 +47,7 @@
   </g>
 
   <g id="flow-axis">
-    <line x1="60" y1="200" x2="1220" y2="200" stroke="url(#flowLine)" stroke-width="2" stroke-dasharray="6 6"/>
+    <rect x="60" y="199" width="1160" height="2" fill="url(#flowLine)"/>
   </g>
 
   <g id="step-1">

@@ -46,22 +46,16 @@ Not applicable — no icons used in this deck.
 ## images
 - P01_cover_bg: images/P01_cover_bg.png | no-crop
 - P02_toc_bg: images/P02_toc_bg.png | no-crop
-- P03_chapter: images/P03_chapter.png | no-crop
 - P04_content: images/P04_content.png
 - P05_content: images/P05_content.png
-- P06_chapter: images/P06_chapter.png | no-crop
 - P07_content: images/P07_content.png
 - P08_content: images/P08_content.png
-- P09_chapter: images/P09_chapter.png | no-crop
 - P10_content: images/P10_content.png
 - P11_content: images/P11_content.png
-- P12_chapter: images/P12_chapter.png | no-crop
 - P13_content: images/P13_content.png
 - P14_content: images/P14_content.png
-- P15_chapter: images/P15_chapter.png | no-crop
 - P16_content: images/P16_content.png
 - P17_content: images/P17_content.png
-- P18_ending: images/P18_ending.png | no-crop
 
 ## page_rhythm
 - P01: anchor
@@ -83,29 +77,14 @@ Not applicable — no icons used in this deck.
 - P17: dense
 - P18: anchor
 
-## page_layouts
-- P01: 01_cover
-- P02: 02_toc
-- P03: 02_chapter
-- P04: 03_content
-- P05: 03a_content
-- P06: 02_chapter
-- P07: 03_content
-- P08: 03a_content
-- P09: 02_chapter
-- P10: 03_content
-- P11: 03a_content
-- P12: 02_chapter
-- P13: 03_content
-- P14: 03a_content
-- P15: 02_chapter
-- P16: 03_content
-- P17: 03a_content
-- P18: 04_ending
-
 ## forbidden
 - Mixing icon libraries
 - rgba()
 - `<style>`, `class`, `<foreignObject>`, `textPath`, `@font-face`, `<animate*>`, `<script>`, `<iframe>`, `<symbol>`+`<use>`
 - `<g opacity>` (set opacity on each child element individually)
 - HTML named entities in text (`&nbsp;`, `&mdash;`, `&copy;`, `&ndash;`, `&reg;`, `&hellip;`, `&bull;` ...) — write as raw Unicode (`—`, `©`, `→`, NBSP, etc.); XML reserved chars `& < > " '` must be escaped as `&amp; &lt; &gt; &quot; &apos;`. See shared-standards.md §1.0
+
+## pptx_structure
+- mode: flat
+
+
