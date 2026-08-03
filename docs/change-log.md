@@ -23,6 +23,14 @@
 
 ## Log
 
+### 2026-08-03 — README 全面更新（v4.3.0 迁移收尾 + Dashboard 产物展台 + CI/Pages 上线）
+- **Files**: `README.md`、`docs/change-log.md`
+- **Reason**: 仓库介绍对齐 2026-08-03 大规模迁移收尾后的实际状态：重构版导出器/诊断包、structured 接线、29 示例双门全绿、CI/Pages 上线、Dashboard 产物展台定位、Phase 4 治理。
+- **Before**: README 停留在 2026-08-03 五阶段迁移条目（structured 仍为 opt-in 描述）；Dashboard 描述为"统一只读 Dashboard"；无 CI 徽章；项目结构树仍指向旧 workflows 平铺布局。
+- **After**: 顶部加 CI 徽章；Overview/简介补 v4.3.0 迁移收尾与产物展台；差异化表更新 Dashboard/门禁/排版三行；更新日志顶部新增 2026-08-03 收尾条目；项目结构树更新为四路由 + stages/profiles 架构与 29 示例状态。链接检查 0 断链。
+- **Risk**: low（文档更新；0 断链验证）
+- **Human reviewed**: pending
+
 ### 2026-08-03 — Dashboard 定位为产物展台（制作思路 → 导出成品 四阶段 + 本地搜找索引）+ Phase 4 产物治理
 - **Files**: `skills/ppt-master/scripts/dashboard/artifact_registry.py`（新增 research 类型：`_research/`、`research_report.md`、`content_selection.json`、`detailed_outline.json`、`visual_strategy.json`；新增 `phase` 阶段字段（idea/design/generate/export + 中文标签）；`list_artifacts` 新增 `phase_filter` 与 `write_index`（写 `<project>/dashboard/artifacts_index.json` 供本地搜找））、`skills/ppt-master/scripts/dashboard/server.py`（`/api/artifacts` 支持 `phase` 参数 + 每次响应写索引）、`skills/ppt-master/scripts/dashboard/static/app.js`（默认路由改 `#/artifacts` 产物展台；新增四阶段导航条（制作思路/设计契约/生成页面/导出成品，计数 + 点击过滤）；筛选栏新增阶段下拉；`artifactTypeOrder` 加 research）、`skills/ppt-master/scripts/dashboard/static/style.css`（phase-nav/phase-chip 样式）、`projects/README.md`（新增 Lifecycle Governance：active/archive/disposable 三档 + backup/dashboard 可清理清单 + artifacts_index.json 搜找说明）、`docs/change-log.md`
 - **Reason**: 用户对 Dashboard 的新定位——产物在线观看平台：集中展示项目产生的产物（制作 PPT 的思路与相关产物），确认 UI 保持现状；产物治理方便本地搜找。Confirm UI 未改动。

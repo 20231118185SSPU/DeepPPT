@@ -1,6 +1,7 @@
 # DeepPPT - Research-Driven, Native-Editable AI Presentations
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+[![CI](https://github.com/20231118185SSPU/DeepPPT/actions/workflows/ci.yml/badge.svg)](https://github.com/20231118185SSPU/DeepPPT/actions/workflows/ci.yml)
 
 > An extension of [ppt-master](https://github.com/hugohe3/ppt-master) with briefing-led deep research, evidence-backed planning, deterministic chart recall, intent-first page composition, contract-aware observability, and production quality gates.
 
@@ -12,10 +13,11 @@ DeepPPT turns a topic or source document into a natively editable PPTX. It coord
 
 Latest production hardening includes:
 
+- **v4.3.0 migration completed** - the SVG→DrawingML exporter was replaced with the refactored upstream package (real text-metric hard errors, transform-aware overflow contracts, 21 SVG→DrawingML syntax contracts) plus the `svg_quality` diagnostic pack, while all DeepPPT-specific CLI flags and quality gates were preserved. `pptx_structure.mode: flat|structured` is wired (structured compiles real Master/Layout parts).
 - **Deterministic chart recall** - `chart_recall.py` ranks up to the requested number of candidates from the live visualization catalog using 3-8 content-shape tags, gates semantic fallback on low lexical confidence, and validates exact selected keys.
 - **Complete page-expression lifecycle** - the Strategist-owned `page_expression.json` remains authoritative across continuous, split, resume, and refine-spec paths; compliance checks enforce page coverage and visible assertions, and the contract is sealed together with `spec_lock.md`.
 - **Evidence-backed consulting narratives** - when consulting evidence is enabled, research preserves traceable evidence rows and resolves exactly 2-3 SCR alternatives into one recommendation with evidence IDs, caveats, and explicit rejection reasons.
-- **Digest-aware observability** - the read-only Dashboard exposes page-expression and digest state, while Harness verifies the seal for sidecar projects and fails closed on contract drift.
+- **Artifact showcase Dashboard** - the Dashboard is positioned as an online viewing platform for everything a project produces: the deck-making journey (research → content selection → detailed outline → visual strategy) alongside the artifacts themselves (SVG pages, exports, notes, images, quality reports), browsable by four phases (制作思路 / 设计契约 / 生成页面 / 导出成品) and searchable locally via `dashboard/artifacts_index.json`.
 - **Intent-first composition QA** - the Executor composes from `content_relation`, `information_anchor`, and `visual_act` before choosing layout patterns. Sparse composition, one-sided whitespace, and large image-text gaps remain review signals rather than prompts to add filler; fixes are batched before one re-check.
 
 ---
@@ -27,6 +29,8 @@ DeepPPT 是一个端到端的 AI PPT 生成系统。给定一个主题或源文�
 当输入只有一个主题时，DeepPPT 会先生成可确认的 `ppt_brief.md` / `ppt_brief.json`，明确目标、受众、叙事、素材策略和验收标准；用户确认后才进入深度调研，避免在方向未锁定时直接搜索和生成。
 
 当前版本进一步将页面表达、图表选型和执行可观测性收敛为机器合同：`page_expression.json` 贯穿连续生成、分段交接、恢复执行和规格精修路径，并与 `spec_lock.md` 一同封存；图表候选从实时目录中确定性召回并校验精确键；Dashboard 和 Harness 会显示并验证合同摘要状态，防止恢复或修改过程中的静默漂移。
+
+**2026-08-03 完成 v4.3.0 大规模迁移收尾**：重构版导出器（真实文字度量硬错误、transform 感知溢出契约、21 类 SVG→DrawingML 语法契约）与 `svg_quality` 诊断包整体接线，`structured` 模板导出模式落地；29 个公开示例全部通过 `svg_quality_checker` + `e2e_validate` 双门（29/29），GitHub Actions CI 三 job 全绿，GitHub Pages 已上线。Dashboard 重新定位为**产物在线观看平台**——按「制作思路 → 设计契约 → 生成页面 → 导出成品」四阶段浏览项目全过程产物，并生成本地可搜找的产物索引。
 
 **支持 13 个主流 AI Agent 平台**，克隆即用：Claude Code / Cursor / Windsurf / GitHub Copilot / OpenAI Codex / Pi / Cline / Roo Code / Aider / Amazon Q / Kiro / Junie / Hermes Agent。
 
@@ -40,12 +44,12 @@ DeepPPT 是一个端到端的 AI PPT 生成系统。给定一个主题或源文�
 | 搜索 | 内置 WebSearch | deep-research 计划搜索路径（Agent-Reach / 平台 / 浏览器自动化），内置 WebSearch 仅作记录式 fallback |
 | 叙事 | 模板化大纲 | 故事弧线 + 转折点 + 过渡标记 |
 | 视觉 | 通用设计规范 | 从调研内容中提取视觉身份 |
-| 工作台 | 分散脚本输出 | 统一 Dashboard 追踪项目状态、产物、质量报告、执行轨迹和预览入口 |
-| 门禁 | 基础脚本校验 | confirm / research / asset / rendered visual / harness / e2e 多阶段质量门禁 |
+| 工作台 | 分散脚本输出 | 统一 Dashboard **产物展台**——按制作思路/设计契约/生成页面/导出成品四阶段浏览项目全过程产物，本地 `artifacts_index.json` 可搜找；桥接 Confirm / Live Preview |
+| 门禁 | 基础脚本校验 | confirm / research / asset / rendered visual / harness / e2e 多阶段质量门禁 + 重构版 `svg_quality` 诊断包（真实文字度量、transform 感知溢出契约、21 类语法契约） |
 | 页面表达合同 | 无独立逐页机器合同 | `page_expression.json` 锁定 assertion / evidence / visual act / takeaway / next beat，并覆盖 continuous / split / resume / refine 生命周期 |
 | 图表选型 | 手动浏览图表索引 | 基于 3-8 个内容形态标签确定性召回候选，低置信度时才开放语义 fallback，入锁前校验精确键 |
 | 协同性治理 | 依赖人工维护 | 链接扫描、workflow Exit Evidence、脚本分层、语言规则现实化和审计修复记录 |
-| 排版 | 无自动检测 | 静态合同检查 + 本地渲染截图门禁 + 意图优先的留白审查；宽松构图只提示复核，不用填充物“修正” |
+| 排版 | 无自动检测 | 重构版导出器真实文字度量硬错误（负 letter-spacing、文本超模块 bounds 量化溢出）+ 静态合同检查 + 本地渲染截图门禁 + 意图优先的留白审查；宽松构图只提示复核，不用填充物“修正” |
 | 视觉审查 | 无独立视觉回看 | 视觉检查工作流 + OpenAI/Anthropic/Ollama 兼容后端 |
 | 动画 | 通用动画 | 默认页间转场；页内元素动画显式 opt-in，可用 `customize-animations` 调整对象级顺序/效果/时序；完整动画链（seq_targets → timing XML → trace 富化）支持导出期校验 |
 | 视频导出 | 无原生视频链路 | 本机 PowerPoint COM 编码 MP4（h264 1080p）+ 动效规划 + 字幕对齐 + 旁白指纹同步 |
@@ -176,42 +180,39 @@ AI 会自动执行完整流程：深度调研 → 八项确认 → 图片生成 
 ```
 DeepPPT/
 ├── skills/ppt-master/
-│   ├── SKILL.md              # 主管线工作流
+│   ├── SKILL.md              # 薄入口主管线工作流（四路由分发）
 │   ├── references/           # 角色定义和技术规范
 │   ├── scripts/              # 运行工具脚本
-│   │   ├── confirm_ui/       # 八项确认交互界面
-│   │   ├── dashboard/        # 统一 Dashboard
+│   │   ├── confirm_ui/       # 八项确认三阶段交互界面
+│   │   ├── dashboard/        # 产物展台 Dashboard（四阶段浏览 + 本地索引）
 │   │   ├── svg_editor/       # 实时预览编辑器
+│   │   ├── svg_quality/      # 重构版质量诊断包（真实文字度量/溢出契约）
+│   │   ├── svg_to_pptx/      # 重构版导出器（drawingml/pptx_package/native_objects）
 │   │   ├── image_backends/   # 15+ AI 图片后端
 │   │   ├── image_source_router.py  # 图片来源路由
 │   │   ├── chart_recall.py         # 确定性图表候选召回与键校验
 │   │   ├── rendered_layout_check.py # 渲染级布局检查
 │   │   ├── pptx_quality_check.py    # 导出后 PPTX 结构 QA
 │   │   ├── consulting_content_lock.py # 咨询内容锁 sidecar
+│   │   ├── attribution_guard.py     # 技能完整性门禁（fail-closed）
 │   │   ├── vision_backends/  # 视觉检查后端
 │   │   ├── source_to_md/     # 源文件转换器
 │   │   └── research/         # 浏览器自动化搜索和研究/素材门禁
-│   ├── templates/            # 布局模板、图表模板、图标库
-│   │   └── layouts/story_driven/  # 叙事驱动模板 (DeepPPT 新增)
-│   └── workflows/            # 独立工作流
+│   ├── templates/            # 布局模板、图表模板、图标库、品牌预设
+│   └── workflows/            # 路由 + 独立工作流
+│       ├── routing.md        # 四路由选择权威（Generate/Template/Fill/Enhance）
+│       ├── generate-pptx.md  # 主管线 Step 1-8（门禁/合同/导出）
 │       ├── ppt-briefing.md   # 主题输入前置构思与确认
 │       ├── deep-research.md  # 深度调研编排器 (7步协调)
 │       ├── research/         # 7步独立工作流
-│       │   ├── step1_outline.md       # 大纲生成
-│       │   ├── step2_search_plan.md   # 搜索需求拆分
-│       │   ├── step3_search.md        # 逐页多AI搜索
-│       │   ├── step4_consolidate.md   # 汇总
-│       │   ├── step5_analysis.md      # 结构化分析
-│       │   ├── step6_narrative.md     # 叙事构建
-│       │   └── step7_visual.md        # 视觉策略
-│       ├── live-preview.md   # 实时预览
-│       ├── visual-review.md  # 视觉审查
-│       ├── batch-review.md   # 分批生成审阅
-│       └── ...
-├── docs/                     # 文档
+│       ├── stages/           # 阶段工作流（resume/refine/live-preview/verify-charts/visual-review/animations/audio）
+│       ├── profiles/         # 生成 profile（quick-generate / beautify-pptx）
+│       ├── create-template.md / create-brand.md / template-fill-pptx.md / native-enhance-pptx.md
+│       └── governance/       # failure-recovery 恢复矩阵
+├── docs/                     # 文档（含 reviews/ 审计、rules/ 治理规则、zh/ 中文镜像）
 ├── scripts/setup/            # 依赖检查与自动安装脚本
-├── examples/                 # 示例项目
-└── projects/                 # 用户项目工作区
+├── examples/                 # 29 个公开回归示例（checker + e2e 双门全绿，CI/Pages 使用）
+└── projects/                 # 用户项目工作区（active/archive/disposable 生命周期治理）
 ```
 
 模板和品牌预设只在用户给出明确目录路径时应用；裸模板名、品牌名或风格描述不会自动触发套用。可先询问 Dashboard / Confirm UI 中的模板列表，再把选中的 `skills/ppt-master/templates/.../<id>/` 路径交给工作流。
@@ -279,6 +280,28 @@ DeepPPT/
 | [Scripts & Tools](skills/ppt-master/scripts/README.md) | 工具脚本文档 |
 
 ## 更新日志
+
+### 2026-08-03 — v4.3.0 迁移收尾：质量门全绿 + Dashboard 产物展台 + CI/Pages 上线
+
+**迁移收尾：**
+- 重构版导出器整体迁移（`svg_to_pptx` 40K 行：drawingml / pptx_package / native_objects）+ `svg_quality` 诊断包（真实文字度量硬错误、transform 感知 bounds 溢出契约、21 类 SVG→DrawingML 语法契约）；全部 DeepPPT 特有 CLI flag 保留
+- `pptx_structure.mode: flat|structured` 接线完成（structured 编译真实 Master/Layout 部件）；`svg_to_pptx.shape_boolean` 真实核心可用
+- 动画链完整移植（trace 的 page_role/animation/motion 字段 + 导出期校验）；视频导出（本机 PowerPoint 编码 MP4）+ 旁白/动效/字幕同步
+
+**质量门全绿：**
+- 29 个公开示例全部通过 `svg_quality_checker` + `e2e_validate` 双门（29/29）：批量回填 spec_lock 契约（pptx_structure.mode / typography / page_rhythm）、修复 SVG 合规（width/height、渐变 stroke、emoji 替换、filter/clip-path/marker 重构）、对齐图片与声明、svg 命名兼容
+- 修复 `spec_lock_reference` 模板 mode 行与解析器不一致、`spec_lock_validate` mode 跨节误读
+- GitHub Actions CI 三 job（smoke / svg-quality / e2e）全绿；GitHub Pages 上线
+
+**Dashboard 产物展台：**
+- Dashboard 重新定位为**产物在线观看平台**：默认路由进入产物展台，按「制作思路 → 设计契约 → 生成页面 → 导出成品」四阶段导航（计数 + 点击过滤）
+- 新增 research 产物分类（`_research/`、research_report、content_selection、detailed_outline、visual_strategy）——制作 PPT 的思路链完整可见
+- `/api/artifacts` 每次响应写 `<project>/dashboard/artifacts_index.json`，本地 grep/jq 即可搜找
+
+**治理：**
+- 动画双文件（`pptx_animations` / `native_pptx_animations` 同内容副本）合并；`.align` 事实刷新（CI 存在性、smoke 基线）
+- Phase 4 产物治理：`projects/` 生命周期规则（active/archive/disposable）+ 清理 34 个旧 backup 快照（~0.9 GB）与 `.codex` 缓存（256 MB）
+- 仓库盘点与性能基线报告：`docs/reviews/deep-ppt-repository-inventory-2026-08.md`、`docs/reviews/perf-baseline-2026-08.md`
 
 ### 2026-08-03 — 五阶段迁移完成（对齐 ppt v4.3.0 并消化为自身架构）
 
