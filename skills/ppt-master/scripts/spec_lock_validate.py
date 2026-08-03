@@ -88,16 +88,27 @@ def validate_spec_lock(project_path: str, *, as_json: bool = False) -> int:
         if "viewBox" not in text:
             errors.append("## canvas missing viewBox value")
 
-    # Check mode has a value
-    mode_match = re.search(r"^- mode:\s*(\S+)", text, re.MULTILINE)
-    if mode_match:
-        mode_val = mode_match.group(1)
-        if mode_val == "pyramid" or mode_val in (
-            "narrative", "instructional", "showcase", "briefing", "custom"
-        ):
-            pass  # valid
-        else:
-            warnings.append(f"Unusual mode value: {mode_val}")
+    # Check mode has a value — read only from the ## mode section. The
+    # ## pptx_structure section also declares a `- mode:` row (flat/structured);
+    # a bare global search would misread that row as the narrative mode.
+    mode_section = next(
+        (
+            m.group(2)
+            for m in section_content_pattern.finditer(text)
+            if m.group(1) == "mode"
+        ),
+        None,
+    )
+    if mode_section is not None:
+        mode_match = re.search(r"^- mode:\s*(\S+)", mode_section, re.MULTILINE)
+        if mode_match:
+            mode_val = mode_match.group(1)
+            if mode_val == "pyramid" or mode_val in (
+                "narrative", "instructional", "showcase", "briefing", "custom"
+            ):
+                pass  # valid
+            else:
+                warnings.append(f"Unusual mode value: {mode_val}")
 
     # Check colors have hex values
     hex_pattern = re.compile(r"#[0-9a-fA-F]{6}")
