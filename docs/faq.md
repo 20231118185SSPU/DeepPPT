@@ -165,7 +165,7 @@ Think of "using an existing PPT" as two questions: **keep its content or not**, 
 | Keep only content, redo design and pagination | **main pipeline** | Source facts; story structure and page count may change |
 | Keep content + keep design | No generation needed | Use the original file |
 
-Use **beautify** when the source deck's page split is part of the requested output: text stays verbatim, page count and order are preserved 1:1, only layout / hierarchy / whitespace are redone while inheriting the original palette/fonts. Say "make this deck look better" / "re-layout this, keep the wording". See the [beautify workflow](../skills/ppt-master/workflows/beautify-pptx.md).
+Use **beautify** when the source deck's page split is part of the requested output: text stays verbatim, page count and order are preserved 1:1, only layout / hierarchy / whitespace are redone while inheriting the original palette/fonts. Say "make this deck look better" / "re-layout this, keep the wording". See the [beautify workflow](../skills/ppt-master/workflows/profiles/beautify-pptx.md).
 
 Use the **main pipeline** when the source PPT is just material: extract it to Markdown with `ppt_to_md`, read PPTX intake facts from `analysis/`, then let Strategist re-architect the outline freely (merge / split / reorder pages). Say "build a better deck from this one's content" or "turn this into a 10-page executive briefing".
 

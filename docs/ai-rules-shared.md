@@ -52,7 +52,7 @@ Route by the role of the existing deck:
 
 | User intent | Route |
 |-------------|-------|
-| Preserve page count, page order, and per-slide wording; only improve layout / hierarchy / whitespace | `skills/ppt-master/workflows/beautify-pptx.md` |
+| Preserve page count, page order, and per-slide wording; only improve layout / hierarchy / whitespace | `skills/ppt-master/workflows/profiles/beautify-pptx.md` |
 | Reuse the original deck's design and fill it with new content | `skills/ppt-master/workflows/template-fill-pptx.md` |
 | Treat the PPTX as source material and freely restructure story, merge / split / drop / reorder pages, or change page count | Main pipeline with `skills/ppt-master/scripts/source_to_md/ppt_to_md.py` |
 | Turn the PPTX into a reusable template package | `skills/ppt-master/workflows/create-template.md` |
@@ -62,8 +62,8 @@ If the request is ambiguous, ask whether page count/order and wording must be pr
 ### Other Common Boundaries
 
 - Topic-only with no source material: run `skills/ppt-master/workflows/ppt-briefing.md` first, wait for confirmation, then run `skills/ppt-master/workflows/deep-research.md`; do not substitute ordinary WebSearch.
-- Animation: page transitions are on by default; per-element entrance animations are off by default. Use `skills/ppt-master/workflows/customize-animations.md` only for object-level order / effect / timing requests.
-- Live preview: Step 6 starts live preview automatically. Do not apply submitted annotations during generation; the annotation-application window opens after Step 7 via `skills/ppt-master/workflows/live-preview.md`.
+- Animation: page transitions are on by default; per-element entrance animations are off by default. Use `skills/ppt-master/workflows/stages/customize-animations.md` only for object-level order / effect / timing requests.
+- Live preview: Step 6 starts live preview automatically. Do not apply submitted annotations during generation; the annotation-application window opens after Step 7 via `skills/ppt-master/workflows/stages/live-preview.md`.
 - Visual review: follow the current `skills/ppt-master/SKILL.md` rule. As of this file, `visual-review` is recommended by default after quality gates and is skipped only by explicit opt-out.
 
 ## Configuration

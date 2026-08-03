@@ -294,6 +294,29 @@ The interesting design choice is the animation **anchor**, not the effect list.
 
 ---
 
+## Native Enhance & Export Suite
+
+**Four routes, one export core.** The route table in `workflows/routing.md` dispatches Generate (default pipeline), Create Template, Fill (template-fill, direct PPTX editing), and Enhance Native PPTX. All four share the same SVG-to-PPTX exporter; the enhance route operates append-oriented on an existing package.
+
+**Enhance is patch, not rebuild.** `native_enhance_pptx` appends notes slides (with an optional notesMaster), narration audio parts, per-slide auto-advance timing, and page transitions into an existing PPTX. Slides are never reconstructed; delivery checks and OPC validation gate the result.
+
+**Video export runs on the local PowerPoint.** `powerpoint_video` drives PowerPoint COM to encode an MP4 (h264 1920×1080). Motion is planned from the conversion trace (`video_motion_plan`), subtitles align against the recorded narration timeline (`narration_sync` fingerprint/animations/subtitles), and `stable-ts` remains an optional dependency.
+
+**Animation chain is export-validated.** `svg_to_pptx/animation_config.py` builds sequence targets (`shape_id`, `delay`, `effect`, `duration`) that compile to `p:timing` XML; the export writes both transitions and timing into the slide XML, then re-reads the written package through the shared validators to enrich the conversion trace (best-effort, never export-fatal).
+
+**Native shapes are authored, not invented.** `pptx_shapes` ships a locked 187-preset catalog; `preset_shape_svg.py` emits canonical SVG fragments at authoring time and `prstgeom_to_svg` converts `a:prstGeom` back to SVG for the beautify route. Structured template export (Master/Layout inheritance) is a documented opt-in declared by `spec_lock.md` `pptx_structure.mode` — the default `flat` export keeps every object slide-local.
+
+**Quick Generate is a profile, not a route.** `profiles/quick-generate.md` short-circuits Generate on explicit fast intent: minimal workspace (`init --quick-generate`), direct flat SVG authoring, one lockless checker run, and a `--quick-generate` export with notes off by default — no Strategist, confirmation, spec, or lock artifacts.
+
+---
+
 ## Standalone Workflows
 
-Six capabilities (`create-template`, `verify-charts`, `customize-animations`, `live-preview`, `generate-audio`, `visual-review`) live as standalone workflows rather than inline pipeline code. Most remain sparsely triggered — per-template, per-chart-deck, per-animation-tuning request, per-complaint, or per-video-export. `visual-review` is the exception: it is recommended by default after Executor quality gates and before Step 7, skipped only when the user explicitly says "skip visual review" / "跳过视觉自检" or when `confirm_ui/result.json` contains `skip_visual_review: true`; for chart decks, run `verify-charts` first. Keeping these capabilities as standalone workflows keeps each `workflows/<name>.md` self-contained and loaded only when its trigger condition fires.
+Standalone workflows live as self-contained files under `workflows/` (top level and `stages/`, `profiles/`, `research/` subdirectories), each loaded only when its trigger condition fires:
+
+- **Main flow**: `generate-pptx.md` (Steps 1–8), `routing.md` (route table), `profiles/quick-generate.md`, `profiles/beautify-pptx.md` (1:1 re-layout, content preserved), `stages/refine-spec.md` (opt-in spec review), `stages/resume-execute.md` (Phase B resumption)
+- **Routes**: `template-fill-pptx.md` (fill content into an existing deck), `native-enhance-pptx.md` (append-oriented enhancement), `create-template.md`
+- **Research**: `ppt-briefing.md`, `deep-research.md`, `detailed-outline.md`, `content-selection.md`, `image-text-linking.md`, `revision-loop.md`, `batch-review.md`
+- **Capability stages**: `verify-charts.md`, `generate-audio.md`, `customize-animations.md`, `live-preview.md`, `visual-review.md`, `create-brand.md`
+
+`visual-review` is the exception to sparse triggering: it is recommended by default after Executor quality gates and before Step 7, skipped only when the user explicitly says "skip visual review" / "跳过视觉自检" or when `confirm_ui/result.json` contains `skip_visual_review: true`; for chart decks, run `verify-charts` first. Keeping these capabilities as standalone workflows keeps each file self-contained and loaded only when its trigger condition fires.

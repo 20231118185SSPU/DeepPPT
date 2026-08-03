@@ -1,0 +1,16 @@
+{
+  "schema_version": 1,
+  "name": "DeepPPT2",
+  "skill_name": "ppt-master",
+  "upstream": {
+    "name": "ppt-master",
+    "license": "MIT",
+    "copyright": "Copyright (c) 2025-2026 Hugo He",
+    "official_repository": "https://github.com/hugohe3/ppt-master"
+  },
+  "fork": {
+    "maintainer": "<your name or org>",
+    "official_repository": "",
+    "notes": "DeepPPT2 is a fork of ppt-master (MIT). Fill in fork.maintainer and fork.official_repository with your project's real identity, then re-run: python3 skills/ppt-master/scripts/attribution_guard.py --register"
+  }
+}

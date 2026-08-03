@@ -167,7 +167,7 @@ python3 skills/ppt-master/scripts/svg_to_pptx.py <project> -a auto --animation-t
 | 只留内容，设计与分页都重来 | **主管线** | 源事实；故事结构和页数都可重构 |
 | 留内容 + 留设计 | 不必生成 | 直接用原文件 |
 
-用 **beautify** 的前提是：原 PPT 的分页本身就是输出要求的一部分。文字逐字不动、页数页序 1:1 保留，只重排版式、层级和留白，并继承原配色字体。典型说法是「把这份 PPT 美化一下 / 重新排版，内容别动」。见 [beautify 工作流](../../skills/ppt-master/workflows/beautify-pptx.md)。
+用 **beautify** 的前提是：原 PPT 的分页本身就是输出要求的一部分。文字逐字不动、页数页序 1:1 保留，只重排版式、层级和留白，并继承原配色字体。典型说法是「把这份 PPT 美化一下 / 重新排版，内容别动」。见 [beautify 工作流](../../skills/ppt-master/workflows/profiles/beautify-pptx.md)。
 
 用 **主管线** 的前提是：原 PPT 只是内容材料。流程会用 `ppt_to_md` 抽成 Markdown，并读取 `analysis/` 里的 PPTX intake 事实，再由 Strategist 自由重构大纲（合页 / 拆页 / 换序）。典型说法是「用这份 PPT 的内容重做一份更好的」或「提炼成 10 页高管汇报」。
 

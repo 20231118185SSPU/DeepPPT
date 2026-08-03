@@ -1,0 +1,370 @@
+---
+description: Content-faithful PPT beautification — re-layout an existing deck while preserving its text verbatim and inheriting its visual identity, so regenerated elements share the original's palette/fonts and blend with it when pasted back.
+---
+
+# Beautify PPTX (Re-layout) Workflow
+
+> Mirror of [`template-fill-pptx.md`](../template-fill-pptx.md): template-fill reuses a deck's design and swaps in new content; beautify keeps a deck's content and redoes its layout.
+
+Re-lays-out an existing `.pptx`: the text is preserved **verbatim**, the source deck's visual identity (palette / fonts) is **inherited as truth**, and only layout, hierarchy, and whitespace are redesigned. Output is a brand-new native deck generated through the standard SVG pipeline — not a patch over the original.
+
+**Trigger**: the user supplies a `.pptx` and asks to beautify / re-layout / 重新排版 / 美化 while keeping the content. Explicit intent + a provided file only; never auto-infer.
+
+---
+
+## 1. When to Run
+
+| Pattern | Example |
+|---|---|
+| Existing `.pptx` + beautify intent | "把这份 PPT 美化一下" / "make this deck look better" |
+| Existing `.pptx` + re-layout intent | "重新排版这份 PPT，内容别动" / "re-layout this, keep the wording" |
+| Existing `.pptx` + paste-back intent | "重排后我要把元素贴回原来的模板" |
+
+**Hard rule — content is frozen**: every text string from the source is preserved exactly (no add / remove / reword / reorder). Beautification freedom lives only in layout, hierarchy, spacing, and visual rhythm.
+
+**Hard rule — not a patch, not a fill**: this regenerates a native deck through Strategist → Executor → export (SKILL.md Steps 4–7). It does **not** edit the source file in place, and it is **not** [`template-fill-pptx`](../template-fill-pptx.md) (which clones source slides and replaces text). It also does not parse an arbitrary third-party template for text-only substitution (the rejected #53 direction) — it builds every page from scratch.
+
+**Distinct from mirror templates**: `replication_mode: mirror` (executor §1.1) keeps layout + visuals verbatim and edits text. Beautify is the inverse — content verbatim, layout redone, identity inherited.
+
+**When this is the wrong route — re-architecture belongs to the main pipeline**: beautify preserves the source's page count and page order 1:1. It is for "keep this deck, just lay it out better". When the user instead wants the original page breakdown reconsidered — merge / split / reorder pages, re-outline the structure, build a *better deck* from the same content rather than a prettier version of the same pages — that is not beautify. This includes re-pagination for fit: "keep every word but split a crowded page so it reads better" changes page count, so it is the main pipeline, not beautify. Convert the deck with [`ppt_to_md`](../../scripts/source_to_md/ppt_to_md.py) and run the main SKILL.md pipeline, where the Strategist re-architects the outline freely from the extracted content. The deciding question: is the source's page split information to preserve, or just the previous author's structure to improve? Preserve → beautify (here); improve → `ppt_to_md` + main pipeline.
+
+---
+
+## 2. Inputs
+
+🚧 **GATE**: the user has provided:
+
+| Input | Required | Notes |
+|---|---:|---|
+| Source PPTX | Yes | The deck to re-lay-out |
+| Beautify scope | Optional | Density / emphasis preference — never content rewrites, and never page drops (v1 is strict 1:1) |
+
+---
+
+## 3. Create the Project Workspace
+
+Match the canvas to the source so 1:1 pages and paste-back align. Determine the source aspect first — before the project exists, run `beautify_identity.py <source.pptx>` to **stdout** and read `canvas.aspect` (the formal standard intake bundle is written in Step 4, after `init`) — then `init` with the matching format:
+
+| Source aspect | Format |
+|---|---|
+| ≈1.778 (16:9) | `ppt169` |
+| ≈1.333 (4:3) | `ppt43` |
+| other | nearest format in [`canvas-formats.md`](../../references/canvas-formats.md); record the source pixel size in the spec |
+
+```bash
+python3 ${SKILL_DIR}/scripts/project_manager.py init <project_name> --format <format>
+python3 ${SKILL_DIR}/scripts/project_manager.py import-sources <project_path> <source.pptx>
+```
+
+Use the unflagged default for user-provided decks so originals outside the repo are copied, not moved. Add `--move` only when the user explicitly wants the source deck relocated.
+
+---
+
+## 4. Extract Identity and Data; Assemble Inventory
+
+Use the standard PPTX intake bundle from Step 3. `project_manager.py import-sources` already writes it under `analysis/` for PPTX-family inputs. If the bundle is missing because the project predates this workflow, generate it once:
+
+```bash
+python3 ${SKILL_DIR}/scripts/pptx_intake.py <project_path>/sources/<source.pptx> -o <project_path>/analysis
+```
+
+**Content + images — already produced by Step 3.** `import-sources` ran `ppt_to_md` on the deck, so the **frozen content contract** is `sources/<stem>.md` (one source slide per block, in order). If the source deck contains pictures, they are already propagated to `images/` with per-slide binding in `images/image_manifest.json` (`occurrences[].slide_index`). Do **not** re-run `ppt_to_md` — it would duplicate the conversion and write images to `analysis/<stem>_files/` instead of `images/`.
+
+**Visual identity (theme + observed sample + canvas)**: read `<project_path>/analysis/<stem>.identity.json` (intake prefixes per-deck artifacts by source-file stem).
+
+| Field | Use |
+|---|---|
+| `theme.palette.background` / `text` / `primary` / `accent1..6` | the deck's *declared* colors |
+| `theme.fonts.title` / `body` (`ea` = CJK, `latin`) | the deck's *declared* fonts |
+| `observed.colors` / `observed.fonts` (`latin` / `ea`, frequency-ranked) | a usage **sample / frequency hint** — run-level fonts + explicit `srgbClr` fills across slides |
+| `canvas.aspect` | drives the Step 3 format choice |
+
+> Note: `theme` is what the deck declares; `observed` is a frequency sample of run-level overrides (not a complete style resolution — it misses `schemeClr` and master/layout inheritance, and counts chart/gradient fills). A hand-edited deck can diverge from `theme` — Step 5 recommends which to inherit and the user confirms.
+
+**Chart + table data (for regeneration)**: read `<project_path>/analysis/<stem>.slide_library.json`. It contains the source chart and table *data* so they can be redrawn natively in the inherited style:
+
+| `<stem>.slide_library.json` field | Use |
+|---|---|
+| `slides[].charts[]` (`chart_type` / `categories` / `series[].values`) | regenerate as a native SVG chart via the `§VII` `templates/charts/` path |
+| `slides[].tables[]` (`row_count` / `column_count` / cell text) | regenerate as a native SVG table |
+
+**Hard rule — regenerate visuals, do not carry them over**: charts / tables / images are rebuilt from their data in the inherited style, never spliced in byte-for-byte. This keeps the deck style-consistent and natively editable. **Data values are frozen** (categories / series / cell text / numbers unchanged); only their rendering is the deck's own. Pictures (`ppt_to_md`-extracted files) are reused but re-laid-out — position / crop / size follow the new layout, not the source slot. A user who wants an original element verbatim copies it across themselves.
+
+**Optional source-SVG visual reference**: when the source deck has complex vector decoration, distinctive page chrome, or a visual language that cannot be captured by `<stem>.identity.json` colors/fonts alone, create a read-only SVG reference package under `analysis/`. This is for understanding style only; it is not a carry-over asset path.
+
+```bash
+python3 ${SKILL_DIR}/scripts/pptx_to_svg.py <project_path>/sources/<source.pptx> -o <project_path>/analysis/source_svg_import
+python3 ${SKILL_DIR}/scripts/extract_svg_assets.py <project_path>/analysis/source_svg_import/svg-flat \
+    --icons-dir <project_path>/analysis/source_svg_import/icons \
+    --inplace --id-prefix source_flat --min-decoration-bytes 3000 --clean-stale
+```
+
+Use the cleaned `analysis/source_svg_import/svg-flat/slide_*.svg` files plus `analysis/source_svg_import/svg-flat_vector_asset_inventory.json` in Step 5/Strategist. Extraction is required for inspection when complex vectors exist: it creates a candidate pool the AI can index, compare, and judge for possible reuse without reading every heavy vector body. Read an individual `analysis/source_svg_import/icons/*.svg` only when the cleaned page and inventory indicate that candidate may be promoted or materially affects the style decision. These candidates are analysis artifacts first, not automatic output assets.
+
+Default: do **not** copy these candidates into the project `icons/`, do **not** list them as reusable output assets, and do **not** preserve original vector decorations byte-for-byte in the beautified deck. The Executor still regenerates fresh native shapes from the confirmed plan.
+
+Optional reuse gate: if a candidate is a non-text brand/logo/motif/decorative asset that should survive the beautification, list it in the Step 5 plan with source slide, candidate filename, intended reuse, and dependency notes from the inventory. Wait for user confirmation. Only confirmed candidates may be promoted into `<project_path>/icons/` and referenced from generated SVGs with `<use data-icon="..."/>`; `finalize_svg.py` then re-inlines them as native shapes. Never promote text-bearing groups, charts/tables, source page layouts, or dense slide composites as reusable assets.
+
+**Assemble the inventory** — the deterministic join into one per-slide ledger, `analysis/beautify_inventory.json`, the contract Step 5 confirms and Step 7 verifies against:
+
+```bash
+python3 ${SKILL_DIR}/scripts/beautify_inventory.py <project_path>/analysis/<stem>.slide_library.json \
+    --images <project_path>/images/image_manifest.json -o <project_path>/analysis/beautify_inventory.json
+```
+
+If `images/image_manifest.json` does not exist because the source deck has no extracted pictures, omit `--images`. The script joins per slide: `text_blocks` (slot text + geometry), `tables` (cell grid) / `charts` (categories + series values) — the **frozen data values inlined**, so the inventory is a self-contained contract, not a pointer back to `slide_library.json` — and `images` (bound via `image_manifest` `occurrences[].slide_index`, with geometry / `usage_count`). It emits `ignored` and `needs_confirmation` as **empty arrays** — fill them with judgment before Step 5:
+
+| Field | Fill with |
+|---|---|
+| `ignored` | hidden slides / shapes, master-only text, image crop / opacity / rotation / mask (not captured upstream) |
+| `needs_confirmation` | combo / dual-axis / waterfall charts (only the first plot type is captured), merged-cell or multi-header tables, density-outlier pages — **either** overcrowded **or** near-empty / title-only (e.g. a divider page with a heading and no body) |
+
+```markdown
+## ✅ Extraction Complete
+
+- [x] `sources/<stem>.md` (from Step 3) holds every source slide's text, in order; extracted pictures, if any, are in `images/` + `images/image_manifest.json`
+- [x] `analysis/<stem>.identity.json` has theme + observed identity + canvas aspect
+- [x] `analysis/<stem>.slide_library.json` holds chart + table data for regeneration
+- [x] `analysis/source_profile.json` (multi-deck index) summarizes the source facts in its `decks[]` entry
+- [x] `analysis/beautify_inventory.json` ledgers per-slide text / images / data + ignored + needs-confirmation
+- [ ] **Next**: Step 4.5 — Layout Analysis
+```
+
+---
+
+## 4.5 Layout Analysis
+
+> **Purpose**: bridge the gap between raw content extraction and Executor layout decisions. Without this step, the Executor defaults to card grids for every page. This step produces a per-page layout analysis that the Strategist (Step 5) consumes when writing `design_spec.md §IX` and `spec_lock.md page_rhythm`.
+
+Read `analysis/beautify_inventory.json` + `sources/<stem>.md`. For **each source page**, the Strategist performs semantic analysis of the content and produces `analysis/beautify_layout_analysis.json`.
+
+### 4.5.1 Per-page analysis fields
+
+Reuse the layout-thinking enumerations from [`detailed-outline.md §3.1b`](../detailed-outline.md):
+
+| Field | Type | Source | Description |
+|---|---|---|---|
+| `slide_index` | int | inventory | 1-based source slide index |
+| `refined_page_type` | enum | analysis | `cover` \| `toc` \| `chapter` \| `content` \| `timeline` \| `comparison` \| `data` \| `quote` \| `synthesis` \| `ending` — finer than inventory's coarse `page_type` |
+| `page_mode` | enum | analysis | `rational` \| `emotional` — determines visual treatment |
+| `persuasion_action` | enum | analysis | `define` \| `prove` \| `compare` \| `sequence` \| `structure` \| `summarize` \| `emotionalize` — what persuasion task does this page perform? |
+| `content_relation` | enum | analysis | `single_claim` \| `parallel_set` \| `weighted_set` \| `compare` \| `sequence` \| `hierarchy` \| `evidence_chain` \| `matrix` \| `summary` — how do content elements relate to each other? |
+| `layout_family` | string | analysis | Layout logic family (e.g. `L03_timeline`, `L05_comparison`, `L08_quote`, `L10_hero_image`, `L12_process_flow`). See mapping below |
+| `layout_suggestion` | string | optional | Specific template from `content_pages/` library, if a good match exists |
+| `page_rhythm` | enum | derived | `anchor` \| `dense` \| `breathing` — derived from page_mode + layout_family |
+| `why_not_card_grid` | string | **required for content pages** | ≤80 chars. Explain why this page should NOT be a generic card grid. If it genuinely is a parallel set, say so explicitly |
+| `preserve_source_logic` | string | analysis | If the source page uses a narrative layout (timeline, flowchart, progression arrows, hierarchy tree), describe it here and mark it for preservation. Empty if the source layout has no narrative logic worth keeping |
+| `background_strategy` | enum | analysis | `image_canvas` \| `gradient` \| `solid` \| `inherited` — recommended background treatment. `image_canvas` when source page had image background or when the page has associated images that work well as full-bleed backgrounds with mask overlay |
+
+### 4.5.2 Layout family mapping
+
+The `content_relation` field drives the `layout_family` selection:
+
+| content_relation | → layout_family | Rationale | Card grid allowed? |
+|---|---|---|---|
+| `sequence` | `L03_timeline` or `L12_process_flow` | Time/step progression needs directional layout | **No** — use timeline or flow |
+| `hierarchy` | `L06_hierarchy` or `L14_nested` | Nested structure needs visual depth | **No** |
+| `single_claim` | `L08_quote` or `L10_hero_image` | One strong statement needs space | **No** — use full emphasis |
+| `compare` | `L05_comparison` | Side-by-side needs symmetric split | **No** — use L/R or T/B split |
+| `weighted_set` | `L04_weighted` | Unequal items need asymmetric layout | **No** |
+| `evidence_chain` | `L09_evidence` | Argument→proof flow | **No** |
+| `parallel_set` | `L01_card_grid` or `L02_columns` | Equal-weight items → cards are valid | **Yes** |
+| `matrix` | `L07_matrix` or `L01_card_grid` | Two-axis structure → grid/matrix | **Yes** |
+| `summary` | `L13_summary` or `L08_quote` | Condensed takeaway | **No** |
+
+### 4.5.3 Diversity check gate
+
+Before finalizing the analysis, run these checks across the full deck:
+
+| Check | Threshold | Action if failed |
+|---|---|---|
+| `unique_layout_families` | ≥ 3 (for decks with >5 content pages) | Reassign at least one page to a different family |
+| `consecutive_same_family_max` | ≤ 3 | Break the run by inserting a different family between them |
+| `card_grid_percentage` | ≤ 40% of content pages | Reassign excess card-grid pages — check if their `content_relation` was misclassified |
+
+### 4.5.4 Output
+
+Write `<project_path>/analysis/beautify_layout_analysis.json`:
+
+```json
+{
+  "pages": [
+    {
+      "slide_index": 1,
+      "refined_page_type": "cover",
+      "page_mode": "emotional",
+      "persuasion_action": "emotionalize",
+      "content_relation": "single_claim",
+      "layout_family": "L10_hero_image",
+      "layout_suggestion": "",
+      "page_rhythm": "anchor",
+      "why_not_card_grid": "",
+      "preserve_source_logic": "",
+      "background_strategy": "image_canvas"
+    }
+  ],
+  "diversity_check": {
+    "unique_layout_families": 5,
+    "consecutive_same_family_max": 2,
+    "card_grid_percentage": 25,
+    "pass": true
+  }
+}
+```
+
+```markdown
+## ✅ Layout Analysis Complete
+
+- [x] Every page has `refined_page_type`, `persuasion_action`, `content_relation`, `layout_family`
+- [x] Every content page has `why_not_card_grid` filled
+- [x] Narrative layouts (timelines, flowcharts) identified in `preserve_source_logic`
+- [x] Diversity check passed (≥3 families, ≤40% card grids)
+- [x] `background_strategy` set for each page
+- [ ] **Next**: Step 5 — Beautify Plan (recommend & confirm)
+```
+
+---
+
+## 5. Beautify Plan — Recommend & Confirm
+
+**Prerequisite**: `analysis/beautify_layout_analysis.json` from Step 4.5 MUST exist. The Strategist reads it to populate `design_spec.md §IX` (per-page layout plan) and `spec_lock.md page_rhythm` — do NOT use generic defaults; every page's rhythm and layout direction comes from the analysis.
+
+⛔ **BLOCKING**: the scope is not hard-coded — same spirit as the Eight Confirmations. Recommend each item below from what the deck actually contains (the Step 4 inventory + Step 4.5 layout analysis), present the plan, and **wait for the user to confirm or adjust** before writing any spec. Chat is the canonical channel; the confirm UI below is the visual convenience surface over it for the palette + typography review (its result is honored identically to a chat reply).
+
+This step has two halves:
+- **Visual re-confirm via the confirm UI** — the **full** Step 4 confirm page (below), seeded from the source so every targeted-confirmation field (canvas, mode, visual style, palette, icons, typography incl. body baseline, image strategy, generation mode) is **pre-filled with the inherited / source-derived default and left editable**. Beautify *recommends* keeping the source's identity, but never removes the user's place to override any field — you may choose not to change a value, but you must not deny the place to change it. This is also where the deck's text size is set: `<stem>.identity.json` carries fonts and palette but **no body font size** (source decks inherit sizes from master placeholders), so the body baseline is undetermined and must be chosen here, not silently defaulted to a small dense value.
+- **Structural scope** — the inventory-driven list decisions below (ignored, reuse, needs-confirmation, verification level) stay in **chat**; they have no confirm-UI widget.
+
+| Plan item | Recommend from | Default lean |
+|---|---|---|
+| Identity source | `<stem>.identity.json` `theme` vs `observed` | present **both as color / typography candidates in the confirm UI** so the user picks the one that looks right (theme first when the deck is theme-driven; observed first when slides override heavily) — recommend a default ordering and say why |
+| Preserve scope | inventory `text_blocks` / `images` / `charts` / `tables` | all text verbatim; data values frozen; pictures reused |
+| Ignored | inventory `ignored` | name them so the user sees what drops (hidden / master-only text / image crop / rotation) |
+| Needs confirmation | inventory `needs_confirmation` | flag complex charts + overcrowded pages explicitly; ask how to handle |
+| Verification level | deck size / risk | recommend the Step 7 per-page checks; user sets strictness |
+
+**Hard rule — content is frozen, not the scope decisions**: text strings and chart/table/table-cell data values are non-negotiable (verbatim). *Which* identity to inherit, what to ignore, and how to treat flagged items are recommend-then-confirm, never silently decided.
+
+**Recommend honestly — name the v1 ceiling**:
+
+| Item | What v1 delivers |
+|---|---|
+| Overcrowded source page | layout / hierarchy / whitespace improve **within the page as-is** — v1 does **not** relieve information overload (that needs re-pagination / rewrite, deferred). Flag such pages; the user may accept or note them for manual split |
+| Paste-back into the original | regenerated elements share the inherited palette + fonts, so they **blend visually** when pasted. v1 does **not** guarantee a seamless coordinate-level drop-in (slide coordinates, master placeholders, font availability are the original deck's, not ours) |
+| Complex charts / merged-cell tables | best-effort from the captured data; combo / dual-axis / waterfall lose the un-captured plots — flagged for the user |
+
+**Visual re-confirm — full confirm UI seeded from the source**:
+
+Write the **three staged recommendation files** (`recommendations.stage1.json` / `stage2` / `stage3.json`) and launch the same confirm server SKILL.md Step 4 uses, following the same staged handoffs (`--daemon` → `--wait-only --wait-stage stage1` → write stage2 → `--wait-only --wait-stage stage2` → write stage3 → `--wait-only` → `--shutdown`). Do **not** hide fields: seed **every** targeted-confirmation field with the inherited / source-derived default so the user sees the recommendation and keeps the place to change it. Schema → [`scripts/docs/confirm_ui.md`](../../scripts/docs/confirm_ui.md).
+
+Stage 1 seeds the open communication contract from the source's apparent audience and purpose, plus `recommend.canvas`; `content_divergence` is **locked** to verbatim preservation (`{ "value": "keep source wording and page structure verbatim", "locked": true }`) — beautify never reshapes content (text is verbatim), so the page renders it read-only and the server restores it on every staged submit. A request to reshape wording or page structure routes to the main pipeline instead of weakening this profile. Stages 2 and 3 then carry the complete solution and production mechanics, e.g. Stage 2:
+
+```json
+{
+  "stage": "stage2",
+  "lang": "zh",
+  "recommend": {
+    "delivery_purpose": "<reading mode matching the source>",
+    "mode": "briefing",
+    "visual_style": "<closest visual-style id to the source look>",
+    "icons": "<sensible default icon library>",
+    "image_usage": "provided"
+  },
+  "page_count": { "value": "<source-slide-count>" },
+  "image_notes": { "value": "图片全部复用源 PPT 素材，不新增生成/网络来源。" },
+  "custom_candidates": {
+    "mode": { "name_zh": "简报复刻", "behavior_zh": "按源结构逐页复刻排版，保持内容逐字不变。" },
+    "visual_style": { "name_zh": "源风格复刻", "behavior_zh": "严格继承源 PPT 的视觉性格与排版习惯。" }
+  },
+  "design_directions": {
+    "selected": 0,
+    "candidates": [
+      {
+        "name_zh": "复刻源 PPT（推荐）", "name_en": "Source replica (recommended)",
+        "visual_style": "<closest visual-style id to the source look>",
+        "icons": "<sensible default icon library>",
+        "color": { "name_zh": "复刻源 PPT（推荐）", "name_en": "Source replica (recommended)", "palette": { "background": "#...", "secondary_bg": "#...", "primary": "#...", "accent": "#...", "secondary_accent": "#...", "body_text": "#..." } },
+        "typography": { "name_zh": "复刻源 PPT（推荐）", "name_en": "Source replica (recommended)", "heading": { "primary": "...", "english": "...", "css": "<PPT-safe stack>" }, "body": { "primary": "...", "english": "...", "css": "<PPT-safe stack>" }, "body_size": <canvas-appropriate baseline> }
+      },
+      { "name_zh": "实际用色（observed）", "name_en": "Observed palette", "visual_style": "...", "icons": "...", "color": { "name_zh": "实际用色（observed）", "name_en": "Observed palette", "palette": { "background": "#...", "secondary_bg": "#...", "primary": "#...", "accent": "#...", "secondary_accent": "#...", "body_text": "#..." } }, "typography": { "name_zh": "实际字体（observed）", "name_en": "Observed fonts", "heading": { "primary": "...", "english": "...", "css": "<PPT-safe stack>" }, "body": { "primary": "...", "english": "...", "css": "<PPT-safe stack>" }, "body_size": <canvas-appropriate baseline> } },
+      { "name_zh": "备选方向 A", "name_en": "Alternative direction A", "visual_style": "...", "icons": "...", "color": { "name_zh": "备选配色 A", "name_en": "Alternative palette A", "palette": { "background": "#...", "secondary_bg": "#...", "primary": "#...", "accent": "#...", "secondary_accent": "#...", "body_text": "#..." } }, "typography": { "name_zh": "备选字体 A", "name_en": "Alternative pairing A", "heading": { "primary": "...", "english": "...", "css": "<PPT-safe stack>" }, "body": { "primary": "...", "english": "...", "css": "<PPT-safe stack>" }, "body_size": <canvas-appropriate baseline> } }
+    ]
+  }
+}
+```
+
+- **Recommend keep, allow override**: pre-fill canvas / mode / visual style / icons / image strategy with the source-faithful default (canvas = Step 3 format, mode = `briefing`, image_usage = `provided` since pictures are reused). Enumerable fields already list every catalog option with the source-faithful one badged, so the user can switch. Beautify's only true non-choices are the frozen text and the strict 1:1 page count (changing those means routing to the main pipeline instead — see CLAUDE.md). The §c material-divergence field is therefore locked to verbatim in Stage 1 — beautify never reshapes content (text is verbatim).
+- **Our recommendation is the pre-selected default = the source replica**: the first `design_directions` candidate is what beautify recommends — the bundle that **best replicates the source deck's style** (the truest reading of `theme` / `observed`). Replicate-by-default.
+- **Judge the other alternatives exactly as the from-scratch flow does — fonts as much as colors**: don't invent a beautify-specific rule. Author each non-replica candidate with the **same content-driven judgment the Strategist uses when generating from scratch** (color §e, typography §g), applied to the material this project provides — the source document's content and subject, the company's own theme colors, and any brand signal. Pick the palette **and** the font pairing by what fits *this* deck's content; fonts are chosen by content fit, not just defaulted to a safe face. Reach **≥3 candidates total** (PPT-safe stacks; the same creative-choice rule used elsewhere) so a user who departs from the replica still lands on a considered, content-fitting direction — depart-by-choice.
+- **`body_size` is the load-bearing field**: seed it from a canvas-appropriate baseline (the page hints ≈2.5–3.3% of canvas height) — for a presentation / projection deck lean toward the relaxed end (e.g. `24` → 18pt), for a dense document deck the compact end (e.g. `18` → 13.5pt). The user sets the final value here; this is what prevents the deck from exporting at an unintentionally small size.
+
+```bash
+python3 ${SKILL_DIR}/scripts/confirm_ui/server.py <project_path> --daemon
+python3 ${SKILL_DIR}/scripts/confirm_ui/server.py <project_path> --wait-only --wait-stage stage1
+# read result.json (stage1) → write recommendations.stage2.json
+python3 ${SKILL_DIR}/scripts/confirm_ui/server.py <project_path> --wait-only --wait-stage stage2
+# read result.json (stage2) → write recommendations.stage3.json
+python3 ${SKILL_DIR}/scripts/confirm_ui/server.py <project_path> --wait-only
+```
+
+Read the confirmed canvas + palette + typography (incl. `body_size`) and any other overrides from `<project_path>/confirm_ui/result.json`. Chat is the canonical fallback when the page cannot open (remote / headless) — present the same three stages in chat and honor the reply identically (write the equivalent `result.json` with `fallback_confirmed: true` if a gate run is needed). Always run `--shutdown` on exit (page-confirm or chat-fallback) so port 5050 is free for Step 6 live preview.
+
+On confirmation, enter SKILL.md Step 4 as Strategist with the plan pre-resolved. The two beautify invariants always hold: the content-faithful clause ([`strategist.md`](../../references/strategist.md) §d Layer 1) and page count = source slide count (strict 1:1). Everything else comes from the **confirmed** `result.json` — `mode` (recommended `briefing`), canvas, `visual_style`, color (e) + typography (g) incl. `body_size` (the reviewed values; skip both recommendation flows) — honoring whatever the user kept or overrode. §VII = chart/table data → `templates/charts/`, §VIII = source pictures for re-layout.
+
+**Hard rule — §IX is verbatim and 1:1**: each source slide becomes exactly one page, in source order, its text transcribed word-for-word from `sources/<stem>.md`. Do not merge, split, drop, or rewrite. Write `design_spec.md` + `spec_lock.md` per `strategist.md` §6, then hand off to the Executor.
+
+**Hard rule — §IX layout comes from Step 4.5**: when writing `design_spec.md §IX`, the per-page layout columns (`page_type`, `layout_suggestion`, `persuasion_action`, `content_relation`) MUST be populated from `beautify_layout_analysis.json`. The `page_rhythm` values in `spec_lock.md` MUST match the analysis. Do not override the analysis with generic defaults — if a page was analyzed as `sequence` → `L03_timeline`, it must appear in the spec as a timeline layout, not a card grid.
+
+---
+
+## 6. Executor + Export
+
+Run the standard pipeline (SKILL.md Steps 6–7). The Executor re-lays-out each page — hierarchy, spacing, alignment, page rhythm — using **only** the inherited palette + fonts from `spec_lock.md`, regenerates charts / tables as native SVG from the extracted data, and re-lays-out the source pictures.
+
+```bash
+python3 ${SKILL_DIR}/scripts/finalize_svg.py <project_path>
+python3 ${SKILL_DIR}/scripts/svg_to_pptx.py <project_path>
+```
+
+---
+
+## 7. Validate Output
+
+```bash
+python3 ${SKILL_DIR}/scripts/source_to_md/ppt_to_md.py <project_path>/exports/<output.pptx>
+```
+
+| Check | Expected |
+|---|---|
+| Text fidelity | every source text string appears in the output, unaltered |
+| Data fidelity | chart categories / series / table cells match the source exactly |
+| Page count | output slide count equals the source slide count |
+| Regenerated visuals | charts / tables are native SVG re-themed to the inherited palette |
+| Identity | generated text / shapes use only `<stem>.identity.json` colors + fonts |
+| Paste-back | copying a beautified element into the original deck looks native |
+
+```markdown
+## ✅ Beautify Complete
+
+- [x] Content + data values verbatim (read-back Markdown matches the source)
+- [x] 1:1 page count preserved
+- [x] Source colors + fonts inherited as locked truth
+- [x] Charts / tables regenerated as native SVG in the inherited style
+- [x] Native PPTX exported to `exports/`
+```
+
+---
+
+## Current Boundary
+
+| Capability | Status |
+|---|---|
+| Re-layout with verbatim text | Supported |
+| Inherit source palette / fonts as truth | Supported |
+| Strict 1:1 page mapping | Supported |
+| Regenerate charts / tables as native SVG from extracted data | Supported |
+| Re-lay-out source pictures | Supported |
+| Re-pagination (split dense / merge sparse) | Not in v1 |
+| Carry source charts / tables / images over byte-for-byte | Out of scope — user copies originals manually if wanted |
+| Free visual-style application / cleanup deviating from source identity | Not in v1 |
+| Batch / multi-deck beautification | Not in v1 |

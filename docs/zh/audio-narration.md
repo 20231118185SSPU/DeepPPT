@@ -17,7 +17,7 @@ PPT Master 可以把演讲者备注转成逐页音频旁白（默认基于 [`edg
 3. **一次问完，一次回答**。AI 在一条消息里同时问三件事——生成模式、音色、是否把音频嵌入回 PPTX——每项都标了推荐值。回"好"接受全部默认，或者只说要改的部分（如"音色 2，语速 -5%"）。
 4. **执行**。脚本写出逐页音频到 `audio/`，再（如果你保留嵌入）重新导出带音频的 PPTX。不支持长音频导入或自动拆分。
 
-完整流程见 [`workflows/generate-audio.md`](../../skills/ppt-master/workflows/generate-audio.md)。
+完整流程见 [`workflows/stages/generate-audio.md`](../../skills/ppt-master/workflows/stages/generate-audio.md)。
 
 ## 两条嵌入路径
 
@@ -144,20 +144,36 @@ python3 -m pip install edge-tts
 
 ## 导出为视频
 
-带旁白的 PPTX 在 `exports/` 里就绪后，PowerPoint 自带"创建视频"功能可以直接把它导出成 MP4——不需要任何第三方工具。嵌入的音频会作为每页旁白播放；页间切换时间已经由 PPT Master 在嵌入时按音频长度自动设好（用 `--recorded-narration audio` 重新导出时），所以视频节奏和旁白完全同步。`--recorded-narration` 会拒绝 `on-click` 对象动画，因为 PPT Master 不生成对象级点击计时。
+### 自动导出（Windows / Office 2016+，PowerPoint COM）
+
+先探测可用性——不要直接假设可用：
+
+```bash
+python3 skills/ppt-master/scripts/powerpoint_video.py --check
+```
+
+然后编码带旁白的 PPTX（默认 1080p / 30fps / 质量 85；`-o` 只接受 `.mp4` / `.wmv`）：
+
+```bash
+python3 skills/ppt-master/scripts/powerpoint_video.py   "projects/<deck>/exports/<deck>.pptx" -o "projects/<deck>/exports/<deck>.mp4"
+```
+
+PowerPoint 原生编码器会按"录制的计时和旁白"播放：嵌入的音频作为每页旁白，页间自动推进时间（用 `--recorded-narration audio` 重新导出时按音频长度写入）驱动视频节奏，保留 PPT 自身的转场与动画——不重渲染幻灯片。`--recorded-narration` 会拒绝 `on-click` 对象动画，因为 PPT Master 不生成对象级点击计时。
+
+可选同步字幕（需 `pip install stable-ts`，`ffmpeg`/`ffprobe` 在 PATH 上）：
+
+```bash
+python3 skills/ppt-master/scripts/video_subtitles.py <project_path>   --video "projects/<deck>/exports/<deck>.mp4" --language zh --force
+```
+
+字幕保持外部文件（视频旁的 `.srt`），不烧录进画面。
+
+### 手动导出（任意平台）
+
+带旁白的 PPTX 在 `exports/` 里就绪后，PowerPoint 自带"创建视频"功能可以直接把它导出成 MP4——不需要任何第三方工具。嵌入的音频会作为每页旁白播放；页间切换时间已经由 PPT Master 在嵌入时按音频长度自动设好（用 `--recorded-narration audio` 重新导出时），所以视频节奏和旁白完全同步。
 
 **PowerPoint（Windows / Mac，Office 2016+）**：
 
 1. 打开 `exports/` 里那份带旁白的 `.pptx`。
 2. **文件 → 导出 → 创建视频**。
 3. 选清晰度（4K / 全高清 / 高清 / 标准）以及"使用录制的计时和旁白"——PPT Master 已经替你录好了。
-4. **创建视频** → 保存为 `.mp4`（Windows 也支持 `.wmv`）。
-
-**Keynote（Mac）**：打开 deck → **文件 → 导出到 → 影片…** ——Keynote 同样会读取嵌入的音频和分页计时，输出 `.m4v` / `.mov`。
-
-**经验值**：
-
-- **不需要麦克风、不需要录制环节**——音频是合成的，重跑可重现。
-- **动画保留**：默认页间转场和任何显式启用的页内元素入场动画都是真正的 OOXML 动画，导出视频后正常播放。详见 [转场与动画](./animations.md)。
-- **单页改音频**：改对应 `notes/<page>.md`，再跑一遍 `notes_to_audio.py` + 嵌入步骤，再重新导出视频——单页迭代通常不到一分钟。
-- **文件大小**：20 页全高清 deck 通常是 30–80 MB，取决于图片量。需要小文件分享时降到高清就行。

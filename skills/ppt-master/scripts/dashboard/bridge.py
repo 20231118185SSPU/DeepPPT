@@ -135,7 +135,12 @@ def confirm_ui_status(project: Path) -> dict:
     lock_path = project / ".confirm_ui.lock"
     status = _status_from_lock(project, lock_path, read_lock(lock_path), "confirm")
     result_file = _latest_file(project, ["confirm_ui/result.json"])
-    recommendations_file = _latest_file(project, ["confirm_ui/recommendations.json"])
+    recommendations_file = _latest_file(project, [
+        "confirm_ui/recommendations.stage3.json",
+        "confirm_ui/recommendations.stage2.json",
+        "confirm_ui/recommendations.stage1.json",
+        "confirm_ui/recommendations.json",
+    ])
     log_file = _file_info(project, "confirm_ui/server.log")
     status.update({
         "last_result_file": result_file,

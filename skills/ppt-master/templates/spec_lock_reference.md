@@ -14,6 +14,13 @@
 
 > Strategist: fill viewBox and format for the chosen canvas. Common values: `0 0 1280 720` (PPT 16:9), `0 0 1024 768` (PPT 4:3), `0 0 1242 1660` (Xiaohongshu), `0 0 1080 1080` (WeChat Moments), `0 0 1080 1920` (Story).
 
+## pptx_structure
+- pptx_structure.mode: flat
+
+> Export structure declaration. Default value: `flat` — every object stays Slide-local, one project-owned Master + one Blank Layout is materialized from the color/typography lock, and no Master/Layout/layer/placeholder metadata is authored in SVG. The alternative `structured` compiles real `p:sldMaster` / `p:sldLayout` inheritance: it requires `template_reuse_scope: mirror|layout`, full `pptx_masters` / `pptx_layouts` / `page_pptx_layouts` rosters, and the markers in `references/semantic-svg.md` / `references/pptx-structure-interface.md`. Default-flow projects keep `flat`; choose `structured` only when generating into a deck/layout template workspace.
+>
+> Remove the section entirely for legacy decks (equivalent to `flat`). New decks MUST declare it.
+
 ## mode
 - mode: pyramid
 

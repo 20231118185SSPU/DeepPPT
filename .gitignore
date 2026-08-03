@@ -203,3 +203,8 @@ PERSONAL_NOTES.md
 # Use cloud sync (iCloud/Dropbox) for backup and multi-device access
 projects/*
 !projects/README.md
+
+# Agent tooling runtime state (not source): alignment-protocol lifecycle
+# receipts and ZCode client plan artifacts.
+.align/.runtime/
+.zcode/

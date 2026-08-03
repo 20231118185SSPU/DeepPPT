@@ -47,7 +47,11 @@ DeepPPT 是一个端到端的 AI PPT 生成系统。给定一个主题或源文�
 | 协同性治理 | 依赖人工维护 | 链接扫描、workflow Exit Evidence、脚本分层、语言规则现实化和审计修复记录 |
 | 排版 | 无自动检测 | 静态合同检查 + 本地渲染截图门禁 + 意图优先的留白审查；宽松构图只提示复核，不用填充物“修正” |
 | 视觉审查 | 无独立视觉回看 | 视觉检查工作流 + OpenAI/Anthropic/Ollama 兼容后端 |
-| 动画 | 通用动画 | 默认页间转场；页内元素动画显式 opt-in，可用 `customize-animations` 调整对象级顺序/效果/时序 |
+| 动画 | 通用动画 | 默认页间转场；页内元素动画显式 opt-in，可用 `customize-animations` 调整对象级顺序/效果/时序；完整动画链（seq_targets → timing XML → trace 富化）支持导出期校验 |
+| 视频导出 | 无原生视频链路 | 本机 PowerPoint COM 编码 MP4（h264 1080p）+ 动效规划 + 字幕对齐 + 旁白指纹同步 |
+| 原生增强 | 重建幻灯片 | 追加式补丁已完成的 PPTX（备注/音频/时序/转场，不重建幻灯片） |
+| 快速通道 | 无 | `quick-generate` 直通 profile：显式快速意图 → 手写 SVG → lockless 检查 → 导出，不建 spec/lock |
+| 原生形状 | 基础图元 | 187 个锁定 Office 预设 + 反向转换（beautify 复用同事实源）；structured 模板导出为文档化 opt-in |
 | 模板治理 | 基础模板库 | 模板发现、质量审查、低分模板下线和显式路径应用 |
 | 页面类型 | 6 种基础类型 | 11 种（含讲解页、对比页、数据页、时间线页等） |
 | 图片策略 | 单轨（AI 或网络） | 来源路由 + 双轨——视觉页 AI 生图 + 信息页网络素材 |
@@ -275,6 +279,18 @@ DeepPPT/
 | [Scripts & Tools](skills/ppt-master/scripts/README.md) | 工具脚本文档 |
 
 ## 更新日志
+
+### 2026-08-03 — 五阶段迁移完成（对齐 ppt v4.3.0 并消化为自身架构）
+
+**阶段 1（Confirm UI）：** 三阶段确认向导迁移 + 完整性/审计工具（stage 基准验证、confirmation 门禁）。
+
+**阶段 2（四路由重构）：** `SKILL.md` 收敛为薄入口，`workflows/routing.md` 承载 Generate / Create Template / Fill / Enhance Native PPTX 路由矩阵；主流程提取到 `workflows/generate-pptx.md`，全仓链接重写。
+
+**阶段 3（原生增强）：** `native_enhance_pptx` 追加式补丁套件（备注、音频、时序、转场），不重建幻灯片；notesMaster 支持与 OPC 校验。
+
+**阶段 4（视频导出）：** 本机 PowerPoint 编码 MP4 + 动画链完整移植（seq_targets、trace 富化）+ 动效规划 + 字幕 + 旁白同步。
+
+**阶段 5（原生形状/模板）：** `pptx_shapes`（187 预设）+ `preset_shape_svg` / `prstgeom_to_svg`（beautify 反向闭环）+ 6 份规范文档接口映射 + `spec_lock` 的 `pptx_structure.mode` 声明（structured 导出为文档化 opt-in）；`quick-generate` 直通 profile 落地。
 
 ### 2026-07-25 — 页面表达、图表召回与证据合同强化
 

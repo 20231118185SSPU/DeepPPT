@@ -28,7 +28,7 @@ Generate a complete set of reusable PPT templates for the **global template libr
 | User wants brand identity only — colors, typography, logo, voice, icon style — while keeping future page layouts free | [`create-brand.md`](./create-brand.md) |
 | User provides an existing `.pptx` plus new content and wants to fill the new material back into that deck's native design | [`template-fill-pptx.md`](./template-fill-pptx.md) |
 | User wants to use an already-created template for one PPT project | SKILL.md Step 3 with the explicit template directory path |
-| User wants to beautify / re-layout an existing deck while preserving its page count, order, and wording | [`beautify-pptx.md`](./beautify-pptx.md) |
+| User wants to beautify / re-layout an existing deck while preserving its page count, order, and wording | [`beautify-pptx.md`](./profiles/beautify-pptx.md) |
 | User provides source material or a topic and wants a generated presentation, not a reusable library asset | Main SKILL.md pipeline |
 
 ## Kind decision — deck (default) vs layout

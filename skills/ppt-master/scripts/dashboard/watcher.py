@@ -50,6 +50,14 @@ _WATCH_ROOT_FILES = {
     ".live_preview.lock",
 }
 
+# Staged-flow recommendation files plus the legacy single file.
+_RECOMMENDATION_FILE_NAMES = {
+    "confirm_ui/recommendations.stage1.json",
+    "confirm_ui/recommendations.stage2.json",
+    "confirm_ui/recommendations.stage3.json",
+    "confirm_ui/recommendations.json",
+}
+
 
 class ProjectWatcher:
     """Lightweight polling watcher for project state changes."""
@@ -134,7 +142,7 @@ class ProjectWatcher:
                     },
                 )
         for rel in added + changed:
-            if rel == "confirm_ui/recommendations.json":
+            if rel in _RECOMMENDATION_FILE_NAMES:
                 self.bus.publish(
                     "confirm:needed",
                     {

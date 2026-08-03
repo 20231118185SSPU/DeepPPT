@@ -1,0 +1,27 @@
+{
+  "schema_version": 1,
+  "audit_only": true,
+  "runtime_consumed": false,
+  "budget_policy": "current_growth_ceiling",
+  "encoding": "o200k_base",
+  "documents": {
+    "include": [
+      "AGENTS.md",
+      "skills/ppt-master/**/*.md",
+      "skills/ppt-master/templates/charts/charts_index.json"
+    ],
+    "exclude": [],
+    "max_tokens": 400000
+  },
+  "file_budgets": {},
+  "load_sets": {},
+  "duplicates": {
+    "accepted": []
+  },
+  "authority_edges": [],
+  "registries": [],
+  "schema_grammars": [],
+  "coverage": {
+    "exempt": []
+  }
+}

@@ -15,7 +15,7 @@ PPT Master can turn the speaker notes into per-slide narration via [`edge-tts`](
 3. **One question, one answer.** You are asked once — voice, rate, and "embed audio back into PPTX (yes/no)" — all with a recommended default. Reply "ok" to accept everything, or just call out the part you want to change.
 4. **Generation runs.** The script writes page-level audio to `audio/`, then (if you kept embedding) re-exports the deck with audio attached. Long-audio import and automatic long-audio splitting are not supported.
 
-The full step-by-step is in [`workflows/generate-audio.md`](../skills/ppt-master/workflows/generate-audio.md).
+The full step-by-step is in [`workflows/stages/generate-audio.md`](../skills/ppt-master/workflows/stages/generate-audio.md).
 
 ## Two embedding paths
 
@@ -156,7 +156,33 @@ Cloud TTS providers do not require extra Python packages; they use HTTPS directl
 
 ## Export as video
 
-Once the narrated PPTX is in `exports/`, PowerPoint exports it as a video natively — no third-party tool needed. The embedded audio plays as each slide's narration, and the per-slide auto-advance timings (set from audio length when you let the AI re-export with `--recorded-narration audio`) drive the video's pacing. `--recorded-narration` rejects `on-click` object animation because it does not generate object-level click timings.
+### Automatic (PowerPoint COM, Windows, Office 2016+)
+
+Probe availability first — never assume it works:
+
+```bash
+python3 skills/ppt-master/scripts/powerpoint_video.py --check
+```
+
+Then encode the narrated deck (default 1080p / 30fps / quality 85; `-o` accepts `.mp4` / `.wmv`):
+
+```bash
+python3 skills/ppt-master/scripts/powerpoint_video.py   "projects/<deck>/exports/<deck>.pptx" -o "projects/<deck>/exports/<deck>.mp4"
+```
+
+PowerPoint's native encoder plays the recorded narration and per-slide auto-advance timings and keeps the deck's own transitions/animations — it does not re-render the slides. The embedded audio plays as each slide's narration, and the per-slide auto-advance timings (set from audio length when you let the AI re-export with `--recorded-narration audio`) drive the video's pacing. `--recorded-narration` rejects `on-click` object animation because it does not generate object-level click timings.
+
+Optional synced subtitles (requires `pip install stable-ts`; `ffmpeg`/`ffprobe` on PATH):
+
+```bash
+python3 skills/ppt-master/scripts/video_subtitles.py <project_path>   --video "projects/<deck>/exports/<deck>.mp4" --language zh --force
+```
+
+Subtitles stay external (`.srt` beside the video), never burned in.
+
+### Manual (any platform)
+
+Open the narrated PPTX in PowerPoint and use **File → Export → Create a Video** (or **Save As** → MP4). The same recorded timings drive the pacing; no third-party tool is needed.
 
 **PowerPoint (Windows / Mac, Office 2016+)**:
 

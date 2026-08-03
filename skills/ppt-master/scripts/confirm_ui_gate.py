@@ -25,6 +25,11 @@ from typing import Any
 
 CONFIRM_DIR = "confirm_ui"
 RECOMMENDATIONS_NAME = "recommendations.json"
+RECOMMENDATION_STAGE_NAMES = (
+    "recommendations.stage1.json",
+    "recommendations.stage2.json",
+    "recommendations.stage3.json",
+)
 RESULT_NAME = "result.json"
 
 
@@ -66,13 +71,24 @@ def build_parser() -> argparse.ArgumentParser:
     return parser
 
 
+def _latest_recommendations_file(confirm_dir: Path) -> Path | None:
+    """Return the newest existing recommendation file (staged or legacy)."""
+    candidates = [
+        confirm_dir / name
+        for name in (*RECOMMENDATION_STAGE_NAMES, RECOMMENDATIONS_NAME)
+    ]
+    existing = [path for path in candidates if path.is_file()]
+    if not existing:
+        return None
+    return max(existing, key=lambda path: path.stat().st_mtime)
+
+
 def main(argv: list[str] | None = None) -> int:
     parser = build_parser()
     args = parser.parse_args(argv)
 
     project = Path(args.project_path).resolve()
     confirm_dir = project / CONFIRM_DIR
-    rec_path = confirm_dir / RECOMMENDATIONS_NAME
     result_path = confirm_dir / RESULT_NAME
 
     print("=" * 72)
@@ -84,10 +100,13 @@ def main(argv: list[str] | None = None) -> int:
         print(f"[FAIL] Project directory not found: {project}")
         print("       Fix: pass the canonical project folder created by project_manager.py.")
         return 2
-    if not rec_path.exists():
+    rec_path = _latest_recommendations_file(confirm_dir)
+    if rec_path is None:
         print("FAIL")
-        print(f"[FAIL] Missing {rec_path}")
-        print("       Fix: write confirm_ui/recommendations.json before launching or using chat fallback.")
+        print(f"[FAIL] Missing recommendation files in {confirm_dir}")
+        print("       Fix: write confirm_ui/recommendations.stage1.json (and the later")
+        print("             stage files as the flow proceeds) before launching or using")
+        print("             the chat fallback.")
         return 1
     if not result_path.exists():
         print("FAIL")
@@ -105,7 +124,7 @@ def main(argv: list[str] | None = None) -> int:
     if result.get("status") != "confirmed":
         errors.append("result.json status must be 'confirmed'. Fix: confirm in the UI or write chat fallback status=confirmed.")
     if result.get("stage") != "final":
-        errors.append("result.json stage must be 'final'. Fix: finish Tier 2 in the UI or write an equivalent chat fallback result.")
+        errors.append("result.json stage must be 'final'. Fix: finish Stage 3 in the UI or write an equivalent chat fallback result.")
 
     template_selection = result.get("template_selection")
     if isinstance(template_selection, dict) and template_selection.get("action") == "apply_template":
@@ -116,10 +135,11 @@ def main(argv: list[str] | None = None) -> int:
         )
 
     is_fallback = bool(result.get("fallback_confirmed"))
-    if not is_fallback and rec.get("tier") != 2:
+    if not is_fallback and not (confirm_dir / "recommendations.stage3.json").is_file():
         errors.append(
-            "browser confirmation must be based on a Tier-2 recommendations.json payload (tier=2). "
-            "Fix: start Step 4 with tier=1, wait for stage=tier1, rewrite recommendations.json with tier=2, then run --wait-only."
+            "browser confirmation must be based on a Stage-3 recommendations payload "
+            "(confirm_ui/recommendations.stage3.json). Fix: run the three-stage Step 4 "
+            "flow (stage1 → stage2 → stage3) and confirm in the UI."
         )
 
     confirmed_at = _parse_time(result.get("confirmed_at"))
@@ -136,7 +156,8 @@ def main(argv: list[str] | None = None) -> int:
             result_mtime = 0
         if result_mtime < rec_mtime or confirmed_at < rec_mtime:
             errors.append(
-                "result.json is older than recommendations.json. Fix: re-confirm after the latest recommendations were written."
+                "result.json is older than the latest recommendations file. "
+                "Fix: re-confirm after the latest recommendations were written."
             )
 
     if is_fallback and not args.allow_fallback:

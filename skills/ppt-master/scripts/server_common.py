@@ -3,15 +3,17 @@
 PPT Master - Local Preview Server Helpers
 
 Shared per-project mutual-exclusion (lock) and liveness helpers for the local
-Flask preview servers (`svg_editor/server.py`, `confirm_ui/server.py`). Each
-server keeps its own lock filename and Flask app; this module owns only the
-cross-platform process-liveness check and the claim/read/release lock logic so
-the two servers cannot drift apart.
+Flask preview servers (`svg_editor/server.py`, `confirm_ui/server.py`, the
+dashboard). Each server keeps its own lock filename and Flask app; this module
+owns only the cross-platform process-liveness check, the claim/read/release
+lock logic, port validation / discovery, and detached-process launch helpers
+so the servers cannot drift apart.
 
 Usage:
     from server_common import (
         process_alive, read_lock, lock_pid, claim_lock,
         release_lock, clear_lock, find_free_port,
+        validate_port, popen_detached,
     )
 
 Dependencies:
@@ -19,10 +21,59 @@ Dependencies:
 """
 
 import json
+import logging
 import os
 import socket
+import subprocess
 from pathlib import Path
 from typing import Optional
+
+
+MIN_PORT = 1
+MAX_PORT = 65535
+
+
+def validate_port(port: int) -> int:
+    """Return a valid TCP port, raising ``ValueError`` outside 1..65535."""
+    if isinstance(port, bool) or not isinstance(port, int):
+        raise ValueError('port must be an integer between 1 and 65535')
+    if not MIN_PORT <= port <= MAX_PORT:
+        raise ValueError(f'port must be between {MIN_PORT} and {MAX_PORT}: {port}')
+    return port
+
+
+def popen_detached(
+    args: list[str],
+    *,
+    logger: Optional[logging.Logger] = None,
+    **kwargs: object,
+) -> subprocess.Popen:
+    """Start a long-running child process detached from the caller.
+
+    Windows hosts such as terminal sandboxes may place child processes in the
+    caller's Job Object. ``CREATE_BREAKAWAY_FROM_JOB`` lets the local UI server
+    survive after the launcher command returns; when that flag is forbidden, the
+    function falls back to the previous detached-process flags.
+    """
+    if os.name != 'nt':
+        return subprocess.Popen(args, start_new_session=True, **kwargs)
+
+    base_flags = subprocess.CREATE_NEW_PROCESS_GROUP | subprocess.DETACHED_PROCESS
+    breakaway_flag = getattr(subprocess, 'CREATE_BREAKAWAY_FROM_JOB', 0x01000000)
+    try:
+        return subprocess.Popen(
+            args,
+            creationflags=base_flags | breakaway_flag,
+            **kwargs,
+        )
+    except OSError as exc:
+        if logger is not None:
+            logger.warning(
+                'Windows process breakaway failed; falling back to detached '
+                'process-group launch (%s)',
+                exc,
+            )
+        return subprocess.Popen(args, creationflags=base_flags, **kwargs)
 
 
 def find_free_port(preferred: int, host: str = '127.0.0.1', span: int = 50) -> int:

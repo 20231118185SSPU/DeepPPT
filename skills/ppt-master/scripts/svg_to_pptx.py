@@ -24,4 +24,6 @@ sys.path.insert(0, str(Path(__file__).resolve().parent))
 from svg_to_pptx import main
 
 if __name__ == '__main__':
-    main()
+    # Propagate the CLI exit code: pptx_cli.main returns 0/1 and prints errors
+    # to stderr, so a bare call would silently mask every failure as rc=0.
+    raise SystemExit(main())

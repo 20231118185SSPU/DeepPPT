@@ -62,7 +62,7 @@ Fix any `must_fix` issues before proceeding.
 
 #### 2c. Visual Self-Check
 
-Run [`visual-review.md`](visual-review.md) on current batch pages only (set K = batch_size).
+Run [`visual-review.md`](stages/visual-review.md) on current batch pages only (set K = batch_size).
 
 #### 2d. Present to User (BLOCKING)
 

@@ -14,7 +14,7 @@ from xml.etree import ElementTree as ET
 from .ooxml import NS, P14_NS, _qn
 
 try:
-    from pptx_animations import TRANSITIONS
+    from pptx_transitions import NATIVE_TRANSITIONS as TRANSITIONS
 except ImportError:
     TRANSITIONS = {}
 

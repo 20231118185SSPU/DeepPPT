@@ -380,6 +380,24 @@ def _confirmation_status(project: Path) -> tuple[str | None, str | None, bool | 
     )
 
 
+# Staged flow recommendation files (newest first) plus the legacy single file.
+_RECOMMENDATION_FILE_NAMES = (
+    "recommendations.stage3.json",
+    "recommendations.stage2.json",
+    "recommendations.stage1.json",
+    "recommendations.json",
+)
+
+
+def _latest_recommendations_file(project: Path) -> Path | None:
+    """Return the newest existing recommendation file (staged or legacy)."""
+    confirm_dir = project / "confirm_ui"
+    existing = [confirm_dir / name for name in _RECOMMENDATION_FILE_NAMES if (confirm_dir / name).is_file()]
+    if not existing:
+        return None
+    return max(existing, key=lambda path: path.stat().st_mtime)
+
+
 def _template_option_state(project: Path, has_templates: bool) -> tuple[str, str, bool]:
     route = template_route_state(project)
     if route["route"] == "template_applied":
@@ -516,7 +534,8 @@ def _build_steps(project: Path, page_count: int | None, svg_count: int) -> list[
     )
     initialized = project.is_dir() and (project / "README.md").is_file()
     has_templates = _dir_has_files(project / "templates")
-    has_recommendations = (project / "confirm_ui" / "recommendations.json").is_file()
+    latest_recommendations = _latest_recommendations_file(project)
+    has_recommendations = latest_recommendations is not None
     confirm_status, _, _ = _confirmation_status(project)
     has_design = (project / "design_spec.md").is_file()
     has_lock = (project / "spec_lock.md").is_file()
@@ -598,7 +617,7 @@ def _build_steps(project: Path, page_count: int | None, svg_count: int) -> list[
                 _sub_step("spec_lock", "Spec lock", "completed" if has_lock else "pending"),
             ],
             gate=_gate([("Step 3 complete or skipped", step3_state in {"completed", "skipped"}, None)]),
-            started_at=_file_time(project / "confirm_ui" / "recommendations.json"),
+            started_at=_file_time(latest_recommendations) if latest_recommendations else None,
             completed_at=_file_time(project / "spec_lock.md") if has_lock else None,
         ),
         _step(

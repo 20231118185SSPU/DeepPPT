@@ -235,6 +235,7 @@ class ProjectManager:
         project_name: str,
         canvas_format: str = "ppt169",
         base_dir: str | None = None,
+        quick_generate: bool = False,
     ) -> str:
         base_path = Path(base_dir) if base_dir else self.base_dir
 
@@ -258,14 +259,23 @@ class ProjectManager:
         # templates/, images/web_assets/, images/ref/) are created lazily
         # by the scripts that write to them, avoiding empty leftovers in
         # projects that never reach those stages.
-        for rel_path in (
+        # Quick Generate creates only svg_output/ (no README, no sources/
+        # or images/ scaffolding): capability inputs are added on demand by
+        # the scripts that need them.
+        project_dirs = ("svg_output",) if quick_generate else (
             "svg_output",
             "images",
             SOURCE_DIRNAME,
-        ):
+        )
+        for rel_path in project_dirs:
             (project_path / rel_path).mkdir(parents=True, exist_ok=True)
 
         canvas_info = self.CANVAS_FORMATS[normalized_format]
+        if quick_generate:
+            print(f"Project created (quick-generate): {project_path}")
+            print(f"Canvas: {canvas_info['name']} ({canvas_info['dimensions']})")
+            print("Quick mode: only svg_output/ was created; no README or lock artifacts.")
+            return str(project_path)
         readme_path = project_path / "README.md"
         readme_path.write_text(
             (
@@ -1125,6 +1135,12 @@ def build_parser() -> argparse.ArgumentParser:
     init.add_argument("project_name", help="Project name")
     init.add_argument("--format", default="ppt169", help="Canvas format (default: ppt169)")
     init.add_argument("--dir", default=None, help="Base directory for the project")
+    init.add_argument(
+        "--quick-generate",
+        action="store_true",
+        help="Create a minimal Quick Generate workspace (svg_output/ only, "
+             "no README, no sources/images scaffolding)",
+    )
     add_dashboard_options(init)
 
     import_sources = subparsers.add_parser(
@@ -1167,6 +1183,7 @@ def main(argv: list[str] | None = None) -> int:
                 args.project_name,
                 args.format,
                 base_dir=args.dir,
+                quick_generate=args.quick_generate,
             )
             print(f"[OK] Project initialized: {project_path}")
             print("Next:")

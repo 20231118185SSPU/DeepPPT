@@ -1,7 +1,7 @@
 # DeepPPT — GitHub Copilot Instructions
 # https://docs.github.com/en/copilot/customizing-copilot/adding-repository-custom-instructions-for-github-copilot
 
-> Shared rules: see [`docs/ai-rules-shared.md`](docs/ai-rules-shared.md) and [`docs/routing.md`](docs/routing.md). Always read [`skills/ppt-master/SKILL.md`](skills/ppt-master/SKILL.md) before any PPT generation task or repository modification.
+> Shared rules: see [`../docs/ai-rules-shared.md`](../docs/ai-rules-shared.md) and [`../docs/routing.md`](../docs/routing.md). Always read [`../skills/ppt-master/SKILL.md`](../skills/ppt-master/SKILL.md) before any PPT generation task or repository modification.
 
 ## Routing Guardrails
 
