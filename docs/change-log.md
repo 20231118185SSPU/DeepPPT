@@ -23,6 +23,15 @@
 
 ## Log
 
+### 2026-08-03 — Dashboard 定位为产物展台（制作思路 → 导出成品 四阶段 + 本地搜找索引）+ Phase 4 产物治理
+- **Files**: `skills/ppt-master/scripts/dashboard/artifact_registry.py`（新增 research 类型：`_research/`、`research_report.md`、`content_selection.json`、`detailed_outline.json`、`visual_strategy.json`；新增 `phase` 阶段字段（idea/design/generate/export + 中文标签）；`list_artifacts` 新增 `phase_filter` 与 `write_index`（写 `<project>/dashboard/artifacts_index.json` 供本地搜找））、`skills/ppt-master/scripts/dashboard/server.py`（`/api/artifacts` 支持 `phase` 参数 + 每次响应写索引）、`skills/ppt-master/scripts/dashboard/static/app.js`（默认路由改 `#/artifacts` 产物展台；新增四阶段导航条（制作思路/设计契约/生成页面/导出成品，计数 + 点击过滤）；筛选栏新增阶段下拉；`artifactTypeOrder` 加 research）、`skills/ppt-master/scripts/dashboard/static/style.css`（phase-nav/phase-chip 样式）、`projects/README.md`（新增 Lifecycle Governance：active/archive/disposable 三档 + backup/dashboard 可清理清单 + artifacts_index.json 搜找说明）、`docs/change-log.md`
+- **Reason**: 用户对 Dashboard 的新定位——产物在线观看平台：集中展示项目产生的产物（制作 PPT 的思路与相关产物），确认 UI 保持现状；产物治理方便本地搜找。Confirm UI 未改动。
+- **Before**: Dashboard 默认管线总览；产物视图无阶段概念、无 research（制作思路）产物分类、无本地索引；backup 旧快照与 .codex 缓存累计 ~1.2 GB。
+- **After**: 默认进入产物展台；四阶段导航（含计数与过滤）；research 产物（content_selection/detailed_outline/_research 等）入分类；`/api/artifacts` 响应即写 `dashboard/artifacts_index.json`（类型/阶段/大小/mtime，可 grep/jq 搜找）；Phase 4 清理：34 个旧 backup 快照（~0.9 GB，官方标注 safe to delete）+ `.codex/dashboard-check`/`dashboard-cdp` 缓存（256 MB，保留 config.toml）→ projects/ 5.73 GB → 4.8 GB。
+- **Smoke check**: 77 passed, 0 failed, 3 skipped / 80 checks（dashboard/server.py PASS）
+- **Risk**: low（dashboard 独立服务加性改动 + 自动生成产物清理；浏览器实测四阶段过滤与布局正常）
+- **Human reviewed**: pending
+
 ### 2026-08-03 — examples e2e 缺口修复：声明对齐 + svg 命名兼容（checker+e2e 双门 29/29 全绿）
 - **Files**: `examples/deepseek_evolution_ppt169_20260621/spec_lock.md`（删 7 条过期 images 声明）、`examples/ppt169_doctor_ppt169_20260621/spec_lock.md`（删 20 条过期 images 声明，声明名与磁盘漂移如 `cover_bg.png` vs `p01_cover_bg.png`）、`examples/ppt169_kaltsit_ppt169_20260621/spec_lock.md`（删 6 条 + 15 个 svg 重编号）、`examples/ppt169_arknights_amiya_ppt169_20260621/spec_lock.md` + 15 个 svg 重编号、`examples/ppt169_kimsoong_loyalty_programme/svg_output/`（10 个 `slide_NN_*.svg` → `NN_*.svg`）、`docs/reviews/perf-baseline-2026-08.md`、`docs/change-log.md`
 - **Reason**: e2e 全量 24/29 的 5 个既有缺口收尾（用户批准「删声明」方案）：deepseek/doctor/kaltsit 的 spec_lock `images` 声明与磁盘漂移（过期/错名）；arknights/kaltsit 的 `02_chapter_*`/`03_content_*`/`03a_content_*` 命名使 `normalize_svg_page_id` 重复映射或不识别（03a 前缀返回 None），按 design_spec 页序重编号为唯一前缀（03-07/08-12/13-17/18_ending）；kimsoong 的 `slide_NN` 命名全部不识别，改数字前缀。

@@ -46,3 +46,20 @@ Projects can remain at different stages and do not necessarily have all artifact
 - Contents under this directory are excluded by `.gitignore`
 - Completed projects can be moved to the `examples/` directory for sharing
 - Files outside the workspace are copied by default; files within the workspace are moved directly to the project's `sources/`
+
+## Lifecycle Governance (2026-08-03)
+
+Project folders are classified into three tiers; only active and archived projects may live here long-term.
+
+| Tier | Criteria | Handling |
+|---|---|---|
+| **active** | Being generated or recently delivered (default) | Keep as-is; Dashboard 产物展台 (`dashboard/artifacts_index.json`) is the local search index |
+| **archive** | Delivered and no longer being edited | Keep the folder (or move out of the repo); export a final PPTX copy before archiving |
+| **disposable** | Auto-generated snapshots and caches | Safe to delete; see below |
+
+**Disposable artifacts** (auto-generated, safe to delete):
+
+- `backup/<timestamp>/` — `svg_output/` archive written automatically in default-flow export mode; **keep only the latest timestamp, old timestamps may be deleted** (project_manager.py documents this). A cleanup pass on 2026-08-03 removed 34 old snapshots (~0.9 GB).
+- `dashboard/`, `.preview/`, `.review/`, `validation/` (regenerated reports), `__pycache__/` — runtime state, gitignored.
+
+**Search**: each project's `dashboard/artifacts_index.json` (written whenever the Dashboard serves `/api/artifacts`) lists every artifact with type, phase (制作思路 / 设计契约 / 生成页面 / 导出成品), size and mtime — grep/jq it for local artifact search without starting the Dashboard.
