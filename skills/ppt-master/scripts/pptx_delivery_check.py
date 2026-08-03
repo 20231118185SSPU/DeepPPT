@@ -43,7 +43,7 @@ from pptx_opc_validation import (  # noqa: E402
     resolve_internal_opc_target,
     verify_internal_relationships,
 )
-from native_pptx_animations import (  # noqa: E402
+from pptx_animations import (  # noqa: E402
     object_animation_fingerprint,
     read_slide_animation_sequence,
     validate_pptx_animation_package,

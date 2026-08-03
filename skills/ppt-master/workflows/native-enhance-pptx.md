@@ -161,10 +161,9 @@ the notes artifact.
 
 The confirmed `modules.transitions` object may include `effect_options` beside
 an explicit canonical `effect`. Use
-`native_pptx_animations.py --describe-transition <effect>` for its exact fields
-(the upstream animation module ships in DeepPPT2 as `native_pptx_animations.py`;
-the local `pptx_animations.py` is the older exporter-side helper and does not
-carry this command).
+`pptx_animations.py --describe-transition <effect>` for its exact fields
+(the upstream animation module ships in DeepPPT2 as `pptx_animations.py`, the
+unified name since the 2026-08-03 dedupe).
 Old names remain accepted only when reading compatibility input; a newly
 written plan stores the canonical effect and any implied options.
 

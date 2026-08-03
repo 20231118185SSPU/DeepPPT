@@ -51,7 +51,7 @@ if str(_SCRIPTS_DIR) not in sys.path:
     sys.path.insert(0, str(_SCRIPTS_DIR))
 
 from console_encoding import configure_utf8_stdio  # noqa: E402
-from native_pptx_animations import (  # noqa: E402
+from pptx_animations import (  # noqa: E402
     ANIMATION_TIMING_OPTION_FIELDS,
     animation_seconds_to_milliseconds,
     normalize_animation_effect,

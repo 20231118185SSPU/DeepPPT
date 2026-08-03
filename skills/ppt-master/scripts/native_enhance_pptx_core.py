@@ -48,7 +48,7 @@ if str(_SCRIPTS_DIR) not in sys.path:
 from attribution_guard import require_skill_integrity  # noqa: E402
 from console_encoding import configure_utf8_stdio  # noqa: E402
 from pptx_delivery_check import audit_pptx_delivery  # noqa: E402
-from native_pptx_animations import (  # noqa: E402
+from pptx_animations import (  # noqa: E402
     object_animation_fingerprint,
     validate_pptx_animation_package,
 )

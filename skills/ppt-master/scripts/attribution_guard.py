@@ -70,7 +70,7 @@ _REQUIRED_GATE_FILES = (
     "scripts/pptx_opc_validation.py",
     "scripts/pptx_delivery_check.py",
     "scripts/pptx_transitions.py",
-    "scripts/native_pptx_animations.py",
+    "scripts/pptx_animations.py",
     "scripts/powerpoint_video.py",
     "scripts/video_motion_plan.py",
     "scripts/video_subtitles.py",
