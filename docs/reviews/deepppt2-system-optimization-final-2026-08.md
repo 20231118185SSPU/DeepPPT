@@ -60,7 +60,7 @@
 | 性能（干净环境） | 导出 4.2s / checker 冷 1.4s / dashboard 2.3s | 同基线 | 无性能批次（无热点） |
 | CLI 错误路径静默 | 未测 | 65 入口 0 静默 + 12 缺文件 0 静默 | 新覆盖 |
 | 质量门回归 | — | Test 7（状态链）+ Test 8/9（gate 13 场景） | 新覆盖 |
-| CI | 3 job（smoke/svg-quality/e2e） | 未改（评估完成，`--integration` 可加待批准） | — |
+| CI | 3 job（smoke/svg-quality/e2e） | smoke job 加 `--integration`（187 checks 全量入 CI；预计 +60-90s） | 已改（本批） |
 
 ## 4. Public CLI / artifact / schema 兼容性说明
 
@@ -76,7 +76,7 @@
 | checker image-lock 检查禁用 | 记录 | `_parse_spec_lock_image_value` 幽灵契约（path/source/pattern/crop/legacy 五字段）需专门设计 |
 | quality/validation/analysis 报告写侧未统一 | 记录 | 读侧已收敛 `find_quality_report`；写侧属 T2.9 边界 |
 | conversion trace 未入统一 envelope | 记录 | 导出器内部契约，保持独立 |
-| CI 未加 --integration/prompt_audit | 待批准 | 本地等价命令稳定（187 checks）；prompt_audit 需 tiktoken |
+| CI 未加 --integration/prompt_audit | ✅ 已改（用户批准） | smoke job 已加 `--integration`（本地 187 checks 稳定，预计 +60-90s）；prompt_audit 需 tiktoken，未纳入 CI |
 | 用户修订次数指标未采集 | 记录 | 无 artifact 承载；不伪造默认值（T5.6） |
 | 演练产物 `.tmp/ab/` | 保留 | 3 份 deck 供用户检查；gitignored |
 

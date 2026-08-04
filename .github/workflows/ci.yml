@@ -41,9 +41,9 @@ jobs:
         run: |
           pip install -r skills/ppt-master/requirements.txt
 
-      - name: Run smoke check (import + --help)
+      - name: Run smoke check (import + --help + integration contracts)
         run: |
-          python3 skills/ppt-master/scripts/smoke_check.py
+          python3 skills/ppt-master/scripts/smoke_check.py --integration
 
   svg-quality:
     name: SVG Quality Check
