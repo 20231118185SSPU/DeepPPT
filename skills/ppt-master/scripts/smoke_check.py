@@ -651,6 +651,24 @@ print("partial states OK")
                 print("  [FAIL] pptx fidelity media image1.png missing")
                 failed += 1
 
+            # Beautify 1:1: page split preserved verbatim through ppt_to_md
+            beautify_copy = fixture_tmp / "beautify"
+            beautify_copy.mkdir(parents=True, exist_ok=True)
+            shutil.copy2(fixtures_dir / "beautify_1to1" / "sources" / "beautify_source.pptx",
+                         beautify_copy / "beautify_source.pptx")
+            beautify_out = fixture_tmp / "beautify_out.md"
+            _run([python, str(scripts_dir / "source_to_md" / "ppt_to_md.py"), str(beautify_copy / "beautify_source.pptx"),
+                  "-o", str(beautify_out)], "beautify 1:1 convert -> 0")
+            beautify_md = beautify_out.read_text(encoding="utf-8", errors="replace") if beautify_out.exists() else ""
+            for token in ("Total slides: 3", "## Slide 1", "第一章 背景与动机",
+                          "## Slide 2", "第二章 方案设计", "## Slide 3", "第三章 验证与结论"):
+                if token in beautify_md:
+                    print(f"  [PASS] beautify 1:1 token {token!r}")
+                    passed += 1
+                else:
+                    print(f"  [FAIL] beautify 1:1 token missing: {token!r}")
+                    failed += 1
+
             # F3: structured lock + checker (on a tmp copy)
             structured_copy = fixture_tmp / "structured"
             shutil.copytree(fixtures_dir / "structured", structured_copy)

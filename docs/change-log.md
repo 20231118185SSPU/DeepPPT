@@ -22,6 +22,15 @@
 ---
 
 ## Log
+### 2026-08-04 — CI pip cache + beautify 1:1 fixture + smoke Test 10 扩展
+- **Files**: `.github/workflows/ci.yml`（三 job Setup Python 加 `cache: pip` + `cache-dependency-path: skills/ppt-master/requirements.txt`）、`skills/ppt-master/fixtures/beautify_1to1/`（新增：3 页合成源 + rebuild 脚本 + README）、`skills/ppt-master/scripts/smoke_check.py`（Test 10 加 beautify 1:1 断言 +8 checks）、`skills/ppt-master/fixtures/README.md`
+- **Reason**: `plans/deepppt2-practical-delivery-optimization-agent-brief.md` Phase 6.1（用户全部授权）+ 6.2 收尾：CI 依赖安装无缓存；beautify 路线确定性端点（1:1 页拆分契约）无专属 fixture。
+- **Before**: 三 job 每次冷装依赖；beautify 无 1:1 提取契约断言。
+- **After**: `cache: pip`（不跳过任何门禁，仅减少依赖安装耗时）；beautify fixture 断言 `Total slides: 3` + 三页标题逐字保留（AI 重排版步骤如实 excluded）；本地等价耗时基线：smoke-check 44s、svg-quality 93s（29 项目）、e2e-validate 待测（CI 真实 p50/p95 需 Actions 页确认，匿名 API 限流不可查）。
+- **Verified**: smoke --integration 278/0/4/282（beautify 1:1 8 checks 全 PASS）；ci.yml YAML 解析有效（3 job cache=pip）；guard rc=0（下批提交前复跑）。
+- **Risk**: low（pip cache 是 setup-python 标准参数，行为等价仅提速；fixture/测试纯新增）
+- **Human reviewed**: pending
+
 ### 2026-08-04 — trace 写侧接入：image_gen/svg_to_pptx 埋点 + run_summary 标注计数 + smoke Test 14
 - **Files**: `skills/ppt-master/scripts/image_gen.py`（`_run_manifest._one` 每 manifest 尝试发 `image_gen_attempt` 事件：operation `image_gen:<stem>`、status PASS/FAIL、error_code=异常类名；**不含 prompt 正文**）、`skills/ppt-master/scripts/svg_to_pptx.py`（包装器每次导出发 `pptx_export`：status/duration_ms/step=7）、`skills/ppt-master/scripts/run_summary.py`（`live_preview_count` 改读 `<project>/annotations.jsonl`（svg_editor 产物，缺省回退 trace 事件）；`pptx_reexport_count` 匹配 `pptx_export`）、`skills/ppt-master/scripts/docs/trace-contract.md`（§3 指标来源表更新）、`skills/ppt-master/scripts/smoke_check.py`（Test 11 断言更新 + **Test 14**：image_gen stub 白盒验证事件落地且无 prompt 泄漏）、`skills/ppt-master/fixtures/trace_calibration/`（+annotations.jsonl 3 条 + pptx_export 事件，events 10→11；README 契约同步）
 - **Reason**: `plans/deepppt2-practical-delivery-optimization-agent-brief.md` Phase 4 收尾项（上轮回执列为未完成）：图片尝试/导出次数/标注数此前无写侧事件，`run_summary` 只能报 null + not-wired；SVG 重生成为 agent 手改无脚本钩子，维持如实 null。
