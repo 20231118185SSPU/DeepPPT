@@ -10,6 +10,7 @@ on:
       - 'skills/ppt-master/scripts/**'
       - 'skills/ppt-master/references/**'
       - 'skills/ppt-master/templates/**'
+      - 'skills/ppt-master/fixtures/**'
       - 'examples/**'
       - '.github/workflows/ci.yml'
   pull_request:
@@ -17,6 +18,7 @@ on:
       - 'skills/ppt-master/scripts/**'
       - 'skills/ppt-master/references/**'
       - 'skills/ppt-master/templates/**'
+      - 'skills/ppt-master/fixtures/**'
       - 'examples/**'
       - '.github/workflows/ci.yml'
   workflow_dispatch:
