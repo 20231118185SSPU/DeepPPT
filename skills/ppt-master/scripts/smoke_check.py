@@ -897,7 +897,7 @@ print("partial states OK")
                     for proj in plan.get("projects", [])
                     for item in proj.get("items", [])
                 }
-                if items == {"trace.jsonl": 40, "backup/old.zip": 200, "quality/harness.json": 50,
+                if items == {"trace.jsonl": 40, "backup/old.bin": 200, "quality/harness.json": 50,
                              "validation/report.json": 60}:
                     print("  [PASS] space_report archive plan paths+sizes exact")
                     passed += 1

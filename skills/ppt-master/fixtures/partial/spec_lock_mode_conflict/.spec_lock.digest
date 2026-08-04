@@ -1,8 +1,8 @@
 {
-  "spec_lock_sha256": "1ca8548feb6b46f85a89969412ed0e7ef1da4d49ad58d3277e572c587c6c3ac0",
-  "generated_at": "2026-08-04T09:14:24Z",
+  "spec_lock_sha256": "63b72267f97d6f9728747207d7b7dbb838863e8913d5830dfd4b61a793ca8caa",
+  "generated_at": "2026-08-04T10:05:38Z",
   "source": "spec_lock.md",
   "files": {
-    "spec_lock.md": "1ca8548feb6b46f85a89969412ed0e7ef1da4d49ad58d3277e572c587c6c3ac0"
+    "spec_lock.md": "63b72267f97d6f9728747207d7b7dbb838863e8913d5830dfd4b61a793ca8caa"
   }
 }
