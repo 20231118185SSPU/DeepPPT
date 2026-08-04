@@ -1,0 +1,10 @@
+{"detail": "strategist start", "operation": "strategist", "route": "generate", "schema_version": 1, "step": 4, "ts": "2026-08-04T10:00:00.000+00:00", "type": "step_start"}
+{"detail": "strategist done", "duration_ms": 2000, "operation": "strategist", "route": "generate", "schema_version": 1, "status": "PASS", "step": 4, "ts": "2026-08-04T10:00:02.000+00:00", "type": "step_complete"}
+{"detail": "images start", "operation": "images", "route": "generate", "schema_version": 1, "step": 5, "ts": "2026-08-04T10:00:03.000+00:00", "type": "step_start"}
+{"detail": "first attempt failed", "error_code": "SVG_E002", "gate": "svg_quality", "route": "generate", "schema_version": 1, "status": "FAIL", "step": 6, "ts": "2026-08-04T10:00:04.000+00:00", "type": "gate_result"}
+{"detail": "retry passed", "gate": "svg_quality", "route": "generate", "schema_version": 1, "status": "PASS", "step": 6, "ts": "2026-08-04T10:00:05.000+00:00", "type": "gate_result"}
+{"detail": "image generated", "operation": "image_gen_attempt", "route": "generate", "schema_version": 1, "status": "PASS", "ts": "2026-08-04T10:00:06.000+00:00", "type": "gate_result"}
+{"artifact_type": "pptx", "path": "exports/deck.pptx", "producer": "svg_to_pptx", "schema_version": 1, "size_bytes": 12345, "ts": "2026-08-04T10:00:07.000+00:00", "type": "artifact_created"}
+{"detail": "zero ms", "duration_ms": 0, "operation": "noop", "route": "generate", "schema_version": 1, "step": 9, "ts": "2026-08-04T10:00:08.000+00:00", "type": "step_complete"}
+{"detail": "legacy shape event", "ts": "2026-08-04T10:00:09.000+00:00", "type": "bridge_status"}
+{"detail": "search failed", "error_code": "IMG_E001", "operation": "image_search", "route": "generate", "schema_version": 1, "ts": "2026-08-04T10:00:10.000+00:00", "type": "error"}

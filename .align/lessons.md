@@ -8,19 +8,6 @@
 
 ## 经验规则
 
-- [研究正文深度门] 规则：机器注释和结构化 sidecar 不能贡献可读正文字数 → 下次执行：计数前先剔除机器注释块，并用短正文反例验证。
-- [上游同源 UI 迁移] 规则：确认目标文件与上游同源时，整份替换新代实现后必须重新叠加本仓库独有扩展，并逐项核对扩展的潜伏缺陷 → 下次执行：替换前先 grep 扩展依赖的常量/路由是否在新文件中有定义（如 `_SKILL_DIR` 未定义）。
-- [跨仓库文件拷贝] 规则：`cp` 整目录后 diff 校验 + 运行 smoke 建立新基线 → 下次执行：先基线后改、改后对比通过数（52→55 确认新增脚本被覆盖）。
-- [同秒写入的门禁新鲜度] 规则：`confirmed_at` 为秒级精度而文件 mtime 含亚秒，同秒写入会被误判为过期 → 下次执行：测试驱动在关键写入间留 ≥1.1s，或比对时先截断 mtime 到秒。
-- [uv 托管 Python 禁 pip] 规则：uv 管理的解释器是 externally-managed，`pip install`/`uv pip install` 均拒绝（需 venv）→ 下次执行：可选依赖不硬装，按上游同样处理（可选标注），不要在用户环境强装。
-- [文档搬迁链接失效] 规则：把 SKILL.md 的段落搬入 workflows/ 子目录时，裸 `references/`、`scripts/`、`templates/`、`../../docs/` 相对链接全部失效 → 下次执行：搬迁后立即跑全仓 markdown 链接解析校验（正则提取 `](...)` 逐一 resolve），先修再收工。
-- [sed 链接重写顺序] 规则：先改目标文档自身的链接（如 generate-pptx.md 内 workflows/→stages/），再做全仓 sed，避免双重替换 → 下次执行：重写规则按「自内向外」排序，并 grep 校验 `stages/stages` 之类双前缀。
-- [Windows 日志锁] 规则：dashboard 守护进程持有 dashboard.log，--shutdown 后需等待 1-2s 才能删除项目目录 → 下次执行：_smoke_ 清理前先 /api/shutdown + sleep + 再 rmtree。
-- [Windows 目录句柄] 规则：Bash 会话 cwd 停留在目标目录（或 ffmpeg/ffprobe 子进程句柄）会让 rmtree 报 WinError 32 → 下次执行：先 cd 离开 + taskkill 媒体进程，仍锁则用 PowerShell Remove-Item -Force。
-- [哑音频会误导导出验证] 规则：`--recorded-narration` 会用 ffprobe 校验 MPEG 帧，伪造字节音频被正确拦截（校验本身有效）→ 下次执行：音频契约测试必须用 `ffmpeg -f lavfi -i anullsrc...` 生成合法静音 mp3。
-- [notes 命名宽度继承 SVG 文件名] 规则：total_md_split 按 SVG stem 命名（01.svg→01.md，001.svg→001.md），非固定三位 → 下次执行：断言前先确认 fixture 的 SVG 命名宽度；native_enhance `_audio_path` 接受 001/01/1/slide001 全部宽度。
-- [同血缘模块替换判断] 规则：上游重构模块（如 pptx_animations 3932 行新版）与被本仓导出器消费的旧版 API 不兼容时，不可整体替换 → 下次执行：以新模块名引入（native_pptx_animations.py）+ 改导入点，导出器零改动。
-- [函数参数化路由差异] 规则：同一 XML 生成函数被两条路由消费但契约不同（Generate 无 notesMaster 部件 vs Enhance 有）→ 下次执行：加默认 False 的参数而非复制函数，Generate 默认路径输出保持不变（用断言验证两模式）。
 - [heredoc 写 Python 源码] 规则：bash heredoc 内嵌 Python 字符串拼接写文件时 `\n` 转义链易碎（实际写入换行导致 SyntaxError）→ 下次执行：改用 Write/Edit 工具写代码文件，或写入后用 py_compile 立即验证。
 - [上游严格校验器 vs 本仓导出器契约] 规则：ppt 的 validate_generated_animation_xml 要求动画目标为文本承载 p:sp 且 effect options 可解析，DeepPPT2 的组动画（grpSp）必然触发 ValueError → 下次执行：先探测校验器对真实产物的行为，再决定 trace 数据来源；配置派生回退（同源 seq_targets）保证一致性。
 - [trace 路径与旗标] 规则：DeepPPT2 的 conversion trace 需 `--conversion-trace` 旗标且路径为 `<输出>.pptx.trace.json`（非 validation/）→ 下次执行：断言前先核对 CLI 旗标与输出位置。
@@ -56,3 +43,32 @@
 - [prompt_audit load-set selector 契约] 规则：manifest 的 load_sets.files 里 glob 条目必须带 `select`（1..N 的按需加载模型，缺 select 报 `AUDIT_SETUP_ERROR: invalid select=None`）→ 下次执行：glob 条目一律补 select（字符串路径是固定加载，无需 select）。
 - [BUDGET_CORPUS 不受 exempt 影响] 规则：coverage.exempt 只豁免「覆盖率」要求，豁免文档仍计入 corpus tokens，压不动 BUDGET_CORPUS → 下次执行：corpus 超预算只能提高 max_tokens（须配真实 load-set 设计）或收窄 documents.include，别指望 exempt。
 - [prompt_audit --json 输出键名] 规则：duplicates 输出键是 exact/exact_accepted/near/near_accepted（非 open/accepted），load_sets 是数组非字典 → 下次执行：解析输出先看顶层键再写解析器。
+- [管道吞退出码] 规则：`cmd | tail; echo EXIT=$?` 取到的是 tail 的退出码，误记门禁 PASS/FAIL → 下次执行：重定向到文件（`cmd > f; echo $?`）再取退出码。
+- [双门禁对同一字段语义冲突] 规则：spec_lock_validate 与 svg_quality_checker 对 flat 模式 `page_layouts` 一强制存在一禁止存在 → 下次执行：改共享契约前先 grep 所有消费方对同一字段的断言方向，修成模式感知而非单侧让步。
+- [子串匹配误伤] 规则：拉丁词条子串匹配会命中普通单词（"ip" ⊂ "discipline"），CJK 多字符词无此问题 → 下次执行：拉丁词条一律 `\b…\b` 词边界，CJK 保持子串。
+- [全局 font-size 串扰] 规则：宽度估计取页面首个 font-size，150px 装饰数字污染所有估计 → 下次执行：估计宽度用元素自身 font-size。
+- [docx 摊平表格不可作权威] 规则：mammoth 摊平合并单元格表格（vMerge 全续行成幻影行、gridSpan 列丢失），且圈号码位是 `<w:sym>`（Wingdings 2 F06A–F073 / Wingdings F081–F08A 双字体）非 w:t → 下次执行：表格链路以 docx XML 直接解析为权威，摊平文本仅辅助；复核对账在图表完成后必须做一次。
+- [vMerge 语义] 规则：vMerge 重启格（无 w:vMerge 属性）拥有内容；续行（val=continue）为幻影行跳过，部分续列才重复重启格文本 → 下次执行：恢复合并单元格表格时先列语义分支再实现。
+- [断言契约精确 id] 规则：检查器认顶层组 id 精确 `lead`/`subtitle`，变体（lead-assertion）报 role-missing；断言必须等于单个 `<text>` 整句，跨兄弟元素报 not-editable → 下次执行：先读 spec_compliance_check.py 的检查名再写 executor 文档，别凭示意图命名。
+- [字形盒 vs 行盒] 规则：getBoundingClientRect/行盒会高估文字范围（含行距），字形交叠判定须用 baseline±(0.78,0.22)×fs 的字形盒交集 → 下次执行：几何审计用字形盒模型，检测器报警默认信真、用源码坐标二次验证而非视觉模型否决。
+- [tspan dy 累积语义] 规则：SVG tspan 的 dy 相对上一行 baseline（累积），非相对 text 根；行解析错误会把整组行误算到同一 y 产生假交叠 → 下次执行：解析 tspan 行时维护游标 y += dy。
+- [后绘 rect 覆盖先绘文字] 规则：文档顺序即 z-order；填充 rect 出现在 text 之后且相交 = 遮挡（P11 卡片遮断言、P13 断言条切面板）→ 下次执行：审计工具检查"rect.doc_order > text.doc_order 且相交"。
+- [PowerPoint 渲染是最终真相] 规则：Chromium 与 PowerPoint 字体度量不同（雅黑行高/字宽 headroom），浏览器预览差 2px 的地方 PowerPoint 可能肉眼可见重叠 → 下次执行：版式复核以 pptx_render_export.py 的 Slide.Export PNG 为基准，几何审计只作第一道防线。
+- [视觉模型 OCR 连读掩盖遮挡] 规则：两行文字重叠时视觉模型常 OCR 成一行（P07 下一步×来源重叠 34.5px 被连读）→ 下次执行：把视觉模型 OCR 与源码 text 内容 diff，缺失/合并行本身就是遮挡信号。
+- [新顶层脚本自动进 smoke] 规则：smoke_check 自动 glob scripts/*.py 做 import+--help 覆盖，新 CLI 只需满足"模块级 import 无副作用 + --help 15s 内 exit 0" → 下次执行：新增工具后跑 smoke 确认 checks 数 +2/脚本。
+- [PowerShell 字符串勿用 .format] 规则：PowerShell 脚本含 {0:D2} 等格式符，与 str.format 冲突且反斜杠不需转义 → 下次执行：COM 自动化脚本用占位符 replace 而非 format，路径直接传原样。
+- [native_enhance init 项目落点] 规则：`native_enhance_pptx.py init` 默认把项目建到 `projects/`（非临时区），需 `--project-dir` 显式指到 .tmp → 下次执行：fixture/临时验证一律传 `--project-dir`，误建即删（`projects/` 只留真实用户项目）。
+- [enhance plan JSON 是字典] 规则：enhancement_plan.json 的 `modules` 是 dict 非 list，`modules.audio.enabled=false` 才是关闭键位；用 list 遍历关闭会静默无效 → 下次执行：改 plan 前先 dump 顶层键结构。
+- [fixture 网格合法性] 规则：DOCX tblGrid 列数必须 ≥ 行内全部 tc 的 gridSpan 之和（3 列 + span2 + 1 tc = 4 列不合法）；恢复逻辑对超宽行截断是正确行为，先验 fixture 再判工具缺陷 → 下次执行：构造合并表格 fixture 时先算列账，把超宽当"修复"前先自查 fixture。
+- [finally 内 import 的函数级作用域] 规则：函数内 `finally: import shutil` 会把 shutil 提升为整个函数的局部名，函数体任何提前引用都 UnboundLocalError → 下次执行：函数内 import 前先确认作用域，或提到函数顶部/模块顶部。
+- [普通字符串的 {{ 转义] 规则：非 f-string 模板字符串里写 `{{` 会原样保留，拼出的源码 `{{...}}` 解析成「dict 作 key」→ TypeError: unhashable type: 'dict'（Test 7 用 f-string 风格所以 OK）→ 下次执行：.replace 式模板用单括号，只有 f-string 才需要双括号。
+- [手写 trace 事件须带 schema_version] 规则：fixture 手造事件缺 schema_version 会被聚合器全量计为 legacy（10/10 误报）；trace_writer 写入时自动补，手写必须显式 → 下次执行：非 legacy 事件一律显式 `"schema_version": 1`，只留目标事件当 legacy 样本。
+- [gate_result 重试归组键] 规则：gate_result 事件无 operation 时按 type 归组会让全部 gate 共享 "gate_result" 键、重试计数虚高 → 下次执行：操作键回退顺序 operation → gate → type。
+- [step 配对不是重试] 规则：step_start+step_complete 是单次运行两事件，重试统计只数 start 类事件（step_start/gate_result/*attempt*）的重复 → 下次执行：重试指标按 start 类事件计数。
+- [duration_ms 0 是实测] 规则：写入方带 duration_ms: 0 的完成事件是真实 0ms 测量，不能被「无 start 无法计算→null」吞掉 → 下次执行：stage 聚合优先保留写入方实测值，null 只表示未测量。
+- [spec_lock_digest 消息走 stderr] 规则：verify_digest 的 OK/MISMATCH 输出用 `file=sys.stderr`，只 redirect_stdout 拦不住，CLI JSON 输出被污染 → 下次执行：调用 digest 校验时同时 redirect stdout+stderr（`contextlib.redirect_stderr`）。
+- [诊断 fixture 需完整合法上下文] 规则：诊断场景 fixture 必须带合法 spec_lock+digest，否则 SPEC_LOCK_MISSING/DIGEST_MISMATCH 无关 blocker 叠加污染目标场景 → 下次执行：每场景 fixture 只留目标缺陷，其余契约完整（digest 用 generate 生成）。
+- [中间态不是 blocker] 规则：svg_final 已存在未导出是正常中间态（status=partial + next=EXPORT_PENDING），不是错误 blocker；blocker 只用于真正卡住/损坏的状态 → 下次执行：诊断 status 语义 = ok/partial/blocked 三档，EXPORT 类下一步归 partial。
+- [真实项目 digest 过期是真发现] 规则：gan_hemt 的 spec_lock 在 digest 生成后被修改（verify rc≠0），诊断正确暴露 SPEC_LOCK_DIGEST_MISMATCH——说明 spec_lock 改动后未重跑 digest generate → 下次执行：任何 spec_lock 修改后必须 regenerate digest（.align/spec.md 高风险清单已列，实际又踩一次）。
+- [空间分类按文件级规则] 规则：`live_preview/server.log` 等任何 `.log` 文件按后缀归可再生（日志可重生成），与所在目录无关；归档计划 item.class 显示顶层目录名可能误导 → 下次执行：分类标注区分「目录类」与「后缀类」规则来源，或接受日志可再生语义并在文档写明。
+- [可再生 ≠ 可删] 规则：space_report 只列可再生候选（backup 309.8 MiB 主导），dry-run 计划仅供用户确认；任何清理命令必须精确路径 + 恢复方式 + 再次确认，禁止 bulk-clean → 下次执行：治理类工具只报告，删除动作永远留给显式授权。

@@ -22,6 +22,51 @@
 ---
 
 ## Log
+### 2026-08-04 — Phase 6.2 只读项目空间报告：space_report + archive plan dry-run + smoke Test 13
+- **Files**: `skills/ppt-master/scripts/space_report.py`（新增：只读空间报告，schema `ppt-master.space-report.v1`）、`skills/ppt-master/scripts/smoke_check.py`（integration Test 13：分类/汇总/归档计划/坏路径，+14 checks）、`skills/ppt-master/fixtures/space_report/`（新增：2 合成项目精确尺寸文件 + README）、`skills/ppt-master/fixtures/README.md`
+- **Reason**: `plans/deepppt2-practical-delivery-optimization-agent-brief.md` Phase 6.2（用户单独批准）；F7 显示 projects/ 约 4.82 GiB 但无按类型的只读占用报告；容量治理只报告不删除。
+- **Before**: 无按项目/artifact 类型的只读空间统计；无可再生候选清单。
+- **After**: `space_report.py <root>` 输出每项目总量 + 按类占用（renewable/non-renewable/other）+ Top N + 汇总；`--archive-plan` 输出精确路径/大小/恢复方式 dry-run 计划（backup/dashboard/validation/quality/.preview/trace.jsonl/log 为可再生；images/sources/exports/spec/notes/SVG/annotations 不可再生）；零删除零写入。
+- **Verified**: 合成 fixture 断言全 PASS（880 B/可再生 350 B/分类/排序/计划路径精确）；真实 projects/：34 项目 4.82 GiB（与 Phase 0 一致），可再生候选 327.1 MiB（6.6%，其中 backup 309.8 MiB 主导）；smoke --integration 267/0/4/271；完整 smoke 170/0/4/174（+2 新脚本）；guard rc=0；governance drift 5 PASS。
+- **Risk**: low（纯只读新脚本 + 测试；无删除/移动功能，无门禁变化）
+- **Human reviewed**: pending
+
+### 2026-08-04 — Phase 5 中断恢复诊断：diagnose_project + project_manager diagnose + smoke Test 12
+- **Files**: `skills/ppt-master/scripts/project_utils.py`（新增 `diagnose_project()`：只读诊断 owner，schema `ppt-master.project-diagnosis.v1`）、`skills/ppt-master/scripts/project_manager.py`（新增 `diagnose` 子命令，坏路径 rc=2）、`skills/ppt-master/scripts/smoke_check.py`（integration Test 12：15 场景契约 + 确定性 + 只读 + 坏路径，+18 checks）、`skills/ppt-master/fixtures/partial/`（5 → 15 场景：confirmation stale/malformed、spec_lock mode conflict、images partial、manifest failed、svg count/naming、quality gate failed、exported failed、resume Phase B，含合法 digest 上下文）、`skills/ppt-master/fixtures/README.md`、`skills/ppt-master/fixtures/partial/README.md`
+- **Reason**: `plans/deepppt2-practical-delivery-optimization-agent-brief.md` Phase 5（Gate G1 已批准）；中断恢复无确定性诊断——`derive_pipeline_state` 只有 step/next_step，无 blocker、无唯一 next action、无只读保证。
+- **Before**: 只有 `derive_pipeline_state()`（step/artifacts/next_step）；partial 项目状态靠人工读文件判断。
+- **After**: `diagnose_project()` 在 derive 之上（同一 owner，dashboard/checkpoint 继续消费 derive，不写第二套）输出 route/step/status + evidence + 稳定 blocker 码（NO_SOURCES/CONFIRMATION_*/SPEC_LOCK_*/IMAGES_PARTIAL/IMAGE_MANIFEST_FAILED/SVG_*/EXPORT_PENDING/DELIVERY_FAILED/E2E_FAILED）+ 唯一 next_action（含命令预览；RESUME_PHASE_B 指向 resume-execute 工作流）。确认新鲜度按 recommendations mtime 判定；digest 校验静默化（redirect stdout+stderr）；manifest 只计数不读 prompt 正文；全程零写入。
+- **Verified**: 15/15 场景 PASS（step/blockers/next/status 逐项断言）；确定性（去 checked_at 后 byte 一致）；只读（诊断前后 fixture 指纹一致）；derive 兼容（diagnose.step == derive.step）；真实项目 gan_hemt 诊断发现真 blocker（spec_lock digest 过期——digest 生成后 spec_lock 被修改，实测 verify rc≠0）；smoke --integration 253/0/4/257；完整 smoke 168/0/4/172；guard rc=0；governance drift 5 PASS。
+- **Risk**: low（纯新增只读诊断 + CLI 子命令 + 测试；derive/checkpoint/dashboard 行为零变化）
+- **Human reviewed**: pending
+
+### 2026-08-04 — Phase 4 本地运行指标闭环：run_summary 聚合器 + smoke Test 11
+- **Files**: `skills/ppt-master/scripts/run_summary.py`（新增：trace.jsonl + sidecar 报告 → 版本化 `quality/run_summary.json` 聚合器，stdlib-only）、`skills/ppt-master/scripts/smoke_check.py`（integration Test 11：聚合契约 +22 checks）、`skills/ppt-master/fixtures/trace_calibration/`（新增：合成 trace 10 事件 + harness/pptx_quality sidecars + README 契约）
+- **Reason**: `plans/deepppt2-practical-delivery-optimization-agent-brief.md` Phase 4（Gate G1 已批准）；trace envelope 已版本化（T5.2）但无聚合产物——「哪步最慢/为何失败/重试多少/人工改几次」不可从现有 artifact 直接回答；用户修订次数等未采集指标此前无承载。
+- **Before**: 无 run_summary；指标散在 trace.jsonl 与 sidecar 报告中；null/0 语义无自动化断言。
+- **After**: `run_summary.py` 聚合 route/slide_count（pptx_quality.json）/阶段耗时（step_start↔step_complete 配对，写入方实测 duration_ms 优先，null=未测量、0=实测）/gate 最新状态/error by_code/retry_count（仅 start 类事件重复计数，step 配对不算重试）/image 尝试次数（image_gen/search/attempt 精确匹配，不含 stage 名）/annotations（未接入 → null + not-wired warning，不伪造 0）/final_results（delivery/e2e/visual）。敏感字段（prompt/api_key/token/secret…）fail-closed rc=1 且不写文件；legacy 事件（无 schema_version）容忍并计数；纯函数输出可确定性重复。
+- **Verified**: Test 11 全绿（schema/null-0/确定性 byte-identical/敏感负面/坏路径 rc=2）；smoke --integration 235/0/4/239；完整 smoke 168/0/4/172（新脚本 +2 checks）；guard rc=0；governance drift 5 PASS；真实项目 gan_hemt 聚合（-o .tmp，项目零写入）：slides=14、gates.harness=PASS、未接线指标 null + warning。
+- **Risk**: low（纯新增只读聚合器 + 测试；无运行行为变化；trace 写侧未动）
+- **Human reviewed**: pending
+
+### 2026-08-04 — Phase 2-3 合成路线 fixtures + smoke Test 10 契约断言
+- **Files**: `skills/ppt-master/fixtures/`（新增：`template_fill/`、`enhance/`、`structured/`、`partial/`、`docx_complex/`、`pptx_complex/` 六套合成非敏感 fixture + 各 README（命令链/预期门禁）+ 4 个 `rebuild_*.py` 重建脚本）、`skills/ppt-master/scripts/smoke_check.py`（integration Test 10：路线契约断言 +26 checks）、`.align/lessons.md`（+5 条本批教训）
+- **Reason**: `plans/deepppt2-practical-delivery-optimization-agent-brief.md` Phase 2-3（Gate G1 已批准；G3 fixture 提升获批准）；structured/template-fill/beautify 缺公开 fixture（F3），source 保真无契约断言（Phase 3 目标）。
+- **Before**: smoke integration 187/0/4/191；structured/template-fill/enhance/partial-state/DOCX-PPTX 保真全部无自动化契约；fixture 散落在 .tmp。
+- **After**: 六套 fixture 入受跟踪目录（全部合成自建、零网络/零付费 API/零用户数据；二进制可经 `rebuild_*.py` 重建，内容等价、时间戳可变）；Test 10 断言 partial-state 诊断（5 态稳定+确定性+gate/digest fail-closed）、DOCX 保真（vMerge/gridSpan/sym 双字体圈号/多段落/图片 9 token）、PPTX 保真（合并表格/备注/符号/图片 9 token+media）、structured 契约（spec_lock_validate + checker）；损坏输入 fail-closed 实测 rc≠0（Phase 3 验收）。
+- **Verified**: smoke --integration 213/0/4/217（+26）；完整 smoke 166/0/4/170 与基线一致；guard rc=0；governance drift 5 PASS；fixture 全链（F1 template-fill 四步、F2 enhance init→plan→validate→apply、F3 structured 导出真实 slideMaster/slideLayout + e2e 7/7、F4 五态、F5/F6 保真）在提升前于 .tmp 逐套实测通过。
+- **Risk**: low（纯新增测试面 + 测试数据；无运行行为变化；CI smoke job 已跑 --integration，预计 +30-60s）
+- **Human reviewed**: pending
+
+### 2026-08-04 — Phase 1 校准修复：svg_geometry_audit 行内 tspan 误报 + translate 展开
+- **Files**: `skills/ppt-master/scripts/svg_geometry_audit.py`（`check_line_spacing` 跳过 `gap <= 0` 行内延续；`_Collector` 累积 `translate()` 偏移至 rect/image/text 坐标；docstring 局限更新）、`skills/ppt-master/scripts/docs/geometry-audit.md`（新增：检查项/用法/复核顺序/校准记录）
+- **Reason**: `plans/deepppt2-practical-delivery-optimization-agent-brief.md` Phase 1（Gate G1 已批准）；Golden Set（k8s/swiss/ai_capital 44 页）PowerPoint PNG 裁决显示 `line-spacing` 58/58 为同 baseline 行内 tspan（如 `$297<tspan>B`）误判、`rect-over-text`/`rect-overlap` 16+30 为 schema 组 `translate()` 未展开的坐标空间错位——全部 FP。
+- **Before**: 无 dy 的 tspan 被当作新行（gap=0.0 报 tight spacing）；transform 完全不展开（schema 局部坐标与页面坐标混比）。
+- **After**: 同 baseline 行不参与行距判定；`translate()` 嵌套累积后 rect/image/text 坐标统一到页面空间；仅剩 text-overlap 3 条（2 TP 像素验证 + 1 FP 系 0.22 descent 模型对 Arial Black 高估，已记录）。已知缺陷合成注入召回 5/5 修复前后不变。
+- **Verified**: 修改前后同一 Golden Set：gs1 15w→0、gs2 18w/30i→3e/0w/0i、gs3 41w→0；召回 5/5 无回归；完整 smoke 166/0/4/170 + integration 187/0/4/191 + guard rc=0（修改后复跑）。
+- **Risk**: low（audit-only 行为变化：删除了 74 条已裁决 FP；advisory 默认 exit 0 不变；`--strict` 语义不变）
+- **Human reviewed**: pending
+
 ### 2026-08-04 — Phase 7 依赖/Provider/CLI 卫生：入口统一 SystemExit + 盘点验证
 - **Files**: `analyze_images.py`、`finalize_svg.py`、`gemini_watermark_remover.py`、`generate_examples_index.py`、`image_gen.py`、`pptx_animations.py`、`svg_patch.py`、`svg_quality_checker.py`、`total_md_split.py`、`vision_check.py`（10 个入口 `main()` 裸调用 → `raise SystemExit(main())`）
 - **Reason**: `plans/deepppt2-system-optimization-agent-brief.md` Phase 7 T7.6；裸调用会在 main 未来返回非 0 int 时静默丢 rc（当前 main 均返回 None，错误靠内部 sys.exit——行为零变化，契约显式化）。

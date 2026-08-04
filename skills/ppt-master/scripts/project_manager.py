@@ -1093,6 +1093,12 @@ def build_parser() -> argparse.ArgumentParser:
     ck.add_argument("action", choices=["save", "load"], help="save or load checkpoint")
     ck.add_argument("project_path", help="Project directory")
     ck.add_argument("--notes", default="", help="Optional notes to attach to checkpoint")
+
+    diagnose = subparsers.add_parser(
+        "diagnose",
+        help="Read-only interruption-recovery diagnosis (step/evidence/blockers/next action)",
+    )
+    diagnose.add_argument("project_path", help="Project directory")
     return parser
 
 
@@ -1233,6 +1239,17 @@ def main(argv: list[str] | None = None) -> int:
                 if ck.get("notes"):
                     print(f"Notes: {ck['notes']}")
                 return 0
+
+        if args.command == "diagnose":
+            from project_utils import diagnose_project
+            import json as _json
+            project_path = Path(args.project_path)
+            if not project_path.is_dir():
+                print(f"[ERROR] Project directory not found: {project_path}", file=sys.stderr)
+                return 2
+            diagnosis = diagnose_project(str(project_path))
+            print(_json.dumps(diagnosis, ensure_ascii=False, indent=2))
+            return 0
 
         parser.error(f"Unknown command: {args.command}")
     except Exception as exc:

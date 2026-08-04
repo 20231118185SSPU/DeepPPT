@@ -563,6 +563,333 @@ def integration_smoke(scripts_dir: Path) -> tuple[int, int, int]:
             print(f"  [SKIP] confirm_ui_gate.py not found")
             skipped += 1
 
+        # --- Test 10: route fixture contract checks (synthetic fixtures) ---
+        print("\n  [10] route fixture contract checks")
+        fixtures_dir = scripts_dir.parent / "fixtures"
+        if not fixtures_dir.is_dir():
+            print(f"  [SKIP] fixtures dir not found: {fixtures_dir}")
+            skipped += 1
+        else:
+            import shutil  # bind before the finally-block's local import shadows it
+            fixture_tmp = tmp_path / "fixtures_run"
+            fixture_tmp.mkdir(parents=True, exist_ok=True)
+
+            # F4: partial-state diagnostics (derive_pipeline_state stable steps)
+            partial_dir = fixtures_dir / "partial"
+            probe = '''import sys, pathlib
+sys.path.insert(0, r"{SCRIPTS}")
+from project_utils import derive_pipeline_state
+states = {
+    "only_sources": "2-sources",
+    "confirmation_pending": "4-design-spec",
+    "spec_lock_no_digest": "5-spec-lock",
+    "svg_no_export": "7c-export",
+    "exported": "8-export",
+}
+base = pathlib.Path(r"{FIX}")
+for name, expect in states.items():
+    step = derive_pipeline_state(base / name)["step"]
+    assert step == expect, f"{{name}}: got {{step}} != {{expect}}"
+    assert derive_pipeline_state(base / name)["step"] == step, "non-deterministic"
+print("partial states OK")
+'''.replace("{SCRIPTS}", str(scripts_dir)).replace("{FIX}", str(partial_dir))
+            try:
+                r = subprocess.run([python, "-c", probe], capture_output=True, text=True,
+                                   encoding="utf-8", errors="replace", timeout=30)
+                if r.returncode == 0:
+                    print("  [PASS] partial-state diagnostics: 5 states stable + deterministic")
+                    passed += 1
+                else:
+                    detail = ((r.stdout or "") + (r.stderr or "")).strip()[:200]
+                    print(f"  [FAIL] partial-state diagnostics — {detail}")
+                    failed += 1
+            except subprocess.TimeoutExpired:
+                print("  [FAIL] partial-state diagnostics — timed out (30s)")
+                failed += 1
+            _run([python, str(scripts_dir / "confirm_ui_gate.py"), str(partial_dir / "confirmation_pending")],
+                 "confirm_ui_gate missing confirmation -> non-zero", expect_exit=1)
+            _run([python, str(scripts_dir / "spec_lock_digest.py"), "verify", str(partial_dir / "spec_lock_no_digest")],
+                 "spec_lock_digest verify missing digest -> non-zero", expect_exit=1)
+
+            # F5: DOCX fidelity — run on a tmp copy; converters never write into fixtures/
+            docx_copy = fixture_tmp / "docx"
+            docx_copy.mkdir(parents=True, exist_ok=True)
+            shutil.copy2(fixtures_dir / "docx_complex" / "complex_v2.docx", docx_copy / "complex_v2.docx")
+            docx_out = fixture_tmp / "docx_out.md"
+            _run([python, str(scripts_dir / "source_to_md" / "doc_to_md.py"), str(docx_copy / "complex_v2.docx"),
+                  "-o", str(docx_out)], "docx fidelity convert -> 0")
+            docx_md = docx_out.read_text(encoding="utf-8", errors="replace") if docx_out.exists() else ""
+            for token in ("原生表格", "① 区域一", "② 区域二", "2026 Q1", "12.4%",
+                          "指标 A", "指标 B", "多段落 第二段内容", "42"):
+                if token in docx_md:
+                    print(f"  [PASS] docx fidelity token {token!r}")
+                    passed += 1
+                else:
+                    print(f"  [FAIL] docx fidelity token missing: {token!r}")
+                    failed += 1
+
+            # F6: PPTX fidelity
+            pptx_copy = fixture_tmp / "pptx"
+            pptx_copy.mkdir(parents=True, exist_ok=True)
+            shutil.copy2(fixtures_dir / "pptx_complex" / "complex_source.pptx", pptx_copy / "complex_source.pptx")
+            pptx_out = fixture_tmp / "pptx_out.md"
+            _run([python, str(scripts_dir / "source_to_md" / "ppt_to_md.py"), str(pptx_copy / "complex_source.pptx"),
+                  "-o", str(pptx_out)], "pptx fidelity convert -> 0")
+            pptx_md = pptx_out.read_text(encoding="utf-8", errors="replace") if pptx_out.exists() else ""
+            for token in ("核心指标", "1,234", "12.4%", "19,912", "Speaker Notes",
+                          "本页备注", "①②③", "±2℃", "¥7.12"):
+                if token in pptx_md:
+                    print(f"  [PASS] pptx fidelity token {token!r}")
+                    passed += 1
+                else:
+                    print(f"  [FAIL] pptx fidelity token missing: {token!r}")
+                    failed += 1
+            if (fixture_tmp / "pptx_out_files" / "image1.png").is_file():
+                print("  [PASS] pptx fidelity media image1.png extracted")
+                passed += 1
+            else:
+                print("  [FAIL] pptx fidelity media image1.png missing")
+                failed += 1
+
+            # F3: structured lock + checker (on a tmp copy)
+            structured_copy = fixture_tmp / "structured"
+            shutil.copytree(fixtures_dir / "structured", structured_copy)
+            _run([python, str(scripts_dir / "spec_lock_validate.py"), str(structured_copy)],
+                 "structured spec_lock_validate -> 0")
+            _run([python, str(scripts_dir / "svg_quality_checker.py"), str(structured_copy)],
+                 "structured svg_quality_checker -> 0")
+
+        # --- Test 11: run_summary.py aggregation contract ---
+        print("\n  [11] run_summary.py aggregation contract")
+        calib_dir = fixtures_dir / "trace_calibration"
+        if not calib_dir.is_dir():
+            print("  [SKIP] trace_calibration fixture not found")
+            skipped += 1
+        else:
+            calib_copy = fixture_tmp / "trace_calibration"
+            shutil.copytree(calib_dir, calib_copy)
+            summary_out = fixture_tmp / "run_summary_a.json"
+            _run([python, str(scripts_dir / "run_summary.py"), str(calib_copy), "-o", str(summary_out)],
+                 "run_summary on calibration trace -> 0")
+            try:
+                summary = json.loads(summary_out.read_text(encoding="utf-8"))
+            except (OSError, json.JSONDecodeError):
+                summary = None
+            if not isinstance(summary, dict):
+                print("  [FAIL] run_summary output not valid JSON")
+                failed += 1
+            else:
+                checks = [
+                    ("schema v1", summary.get("schema") == "ppt-master.run-summary.v1"),
+                    ("route generate", summary.get("route") == "generate"),
+                    ("slide_count 3", summary.get("slide_count") == 3),
+                    ("events_total 10", summary.get("events_total") == 10),
+                    ("stage strategist 2000ms", summary.get("stages", {}).get("strategist", {}).get("duration_ms") == 2000),
+                    ("stage images null (not measured)", summary.get("stages", {}).get("images", {}).get("duration_ms") is None),
+                    ("stage noop 0 preserved (real zero)", summary.get("stages", {}).get("noop", {}).get("duration_ms") == 0),
+                    ("gate svg_quality PASS", summary.get("gates", {}).get("svg_quality") == "PASS"),
+                    ("error by_code IMG_E001", summary.get("errors", {}).get("by_code") == {"IMG_E001": 1}),
+                    ("retry_count 1", summary.get("retry_count") == 1),
+                    ("image_attempts 2", summary.get("image_attempts") == 2),
+                    ("annotations null (not wired)", summary.get("annotations", {}).get("live_preview_count") is None),
+                    ("final e2e PASS", summary.get("final_results", {}).get("e2e") == "PASS"),
+                    ("final visual null", summary.get("final_results", {}).get("visual") is None),
+                ]
+                for label, ok in checks:
+                    if ok:
+                        print(f"  [PASS] run_summary {label}")
+                        passed += 1
+                    else:
+                        print(f"  [FAIL] run_summary {label}")
+                        failed += 1
+                # determinism: second aggregation must be identical
+                summary_out2 = fixture_tmp / "run_summary_b.json"
+                _run([python, str(scripts_dir / "run_summary.py"), str(calib_copy), "-o", str(summary_out2)],
+                     "run_summary second aggregation -> 0")
+                try:
+                    summary2 = json.loads(summary_out2.read_text(encoding="utf-8"))
+                    if summary2 == summary:
+                        print("  [PASS] run_summary deterministic (identical JSON)")
+                        passed += 1
+                    else:
+                        print("  [FAIL] run_summary non-deterministic")
+                        failed += 1
+                except (OSError, json.JSONDecodeError):
+                    print("  [FAIL] run_summary second output unreadable")
+                    failed += 1
+            # sensitive fail-closed: forbidden key -> exit 1, no file written
+            sensitive_proj = fixture_tmp / "trace_sensitive"
+            sensitive_proj.mkdir(parents=True, exist_ok=True)
+            (sensitive_proj / "trace.jsonl").write_text(
+                '{"schema_version": 1, "ts": "2026-08-04T10:00:00+00:00", '
+                '"type": "gate_result", "prompt": "secret body", "detail": "x"}\n',
+                encoding="utf-8")
+            sensitive_out = fixture_tmp / "sensitive_out.json"
+            _run([python, str(scripts_dir / "run_summary.py"), str(sensitive_proj), "-o", str(sensitive_out)],
+                 "run_summary sensitive key -> non-zero", expect_exit=1)
+            if sensitive_out.exists():
+                print("  [FAIL] run_summary wrote file on sensitive input")
+                failed += 1
+            else:
+                print("  [PASS] run_summary no file written on sensitive input")
+                passed += 1
+            # bad project path -> exit 2
+            _run([python, str(scripts_dir / "run_summary.py"), str(fixture_tmp / "no_such_project")],
+                 "run_summary bad project path -> 2", expect_exit=2)
+
+        # --- Test 12: interruption-recovery diagnosis (project_manager diagnose) ---
+        print("\n  [12] interruption-recovery diagnosis")
+        partial_dir = fixtures_dir / "partial"
+        if not partial_dir.is_dir():
+            print("  [SKIP] partial fixtures not found")
+            skipped += 1
+        else:
+            pm_script = scripts_dir / "project_manager.py"
+            scenarios = {
+                "only_sources": ("2-sources", ["NO_SOURCES"], "NO_SOURCES", "blocked"),
+                "confirmation_pending": ("4-design-spec", ["CONFIRMATION_PENDING"], "CONFIRMATION_PENDING", "blocked"),
+                "confirmation_stale": ("4-design-spec", ["CONFIRMATION_STALE"], "CONFIRMATION_STALE", "blocked"),
+                "confirmation_malformed": ("4-design-spec", ["CONFIRMATION_MALFORMED"], "CONFIRMATION_MALFORMED", "blocked"),
+                "spec_lock_no_digest": ("5-spec-lock", ["SPEC_LOCK_DIGEST_MISMATCH"], "SPEC_LOCK_DIGEST_MISMATCH", "blocked"),
+                "spec_lock_mode_conflict": ("5-spec-lock", ["SPEC_LOCK_MODE_CONFLICT"], "SPEC_LOCK_MODE_CONFLICT", "blocked"),
+                "images_partial": ("6-images", ["IMAGES_PARTIAL"], "IMAGES_PARTIAL", "blocked"),
+                "image_manifest_failed": ("6-images", ["IMAGE_MANIFEST_FAILED"], "IMAGE_MANIFEST_FAILED", "blocked"),
+                "svg_count_mismatch": ("7a-svg-gen", ["SVG_COUNT_MISMATCH"], "SVG_COUNT_MISMATCH", "blocked"),
+                "svg_naming_conflict": ("7a-svg-gen", ["SVG_NAMING_CONFLICT"], "SVG_NAMING_CONFLICT", "blocked"),
+                "quality_failed": ("7b-postprocess", ["SVG_QUALITY_GATE_FAILED"], "SVG_QUALITY_GATE_FAILED", "blocked"),
+                "svg_no_export": ("7c-export", [], "EXPORT_PENDING", "partial"),
+                "exported": ("8-export", [], "VALIDATE_EXPORT", "ok"),
+                "exported_failed": ("8-export", ["E2E_FAILED", "DELIVERY_FAILED"], "E2E_FAILED", "blocked"),
+                "resume_phase_b": ("5-spec-lock", [], "RESUME_PHASE_B", "partial"),
+            }
+            for name, (exp_step, exp_codes, exp_next, exp_status) in scenarios.items():
+                r = subprocess.run([python, str(pm_script), "diagnose", str(partial_dir / name)],
+                                   capture_output=True, text=True, encoding="utf-8", errors="replace", timeout=30)
+                if r.returncode != 0:
+                    print(f"  [FAIL] diagnose {name} — rc={r.returncode}")
+                    failed += 1
+                    continue
+                try:
+                    d = json.loads(r.stdout)
+                except json.JSONDecodeError:
+                    print(f"  [FAIL] diagnose {name} — stdout not clean JSON")
+                    failed += 1
+                    continue
+                codes = [b["code"] for b in d.get("blockers", [])]
+                if (d.get("step") == exp_step and codes == exp_codes
+                        and d.get("next_action", {}).get("code") == exp_next
+                        and d.get("status") == exp_status):
+                    print(f"  [PASS] diagnose {name} (step={exp_step}, blockers={exp_codes or 'none'})")
+                    passed += 1
+                else:
+                    print(f"  [FAIL] diagnose {name} — got step={d.get('step')} "
+                          f"codes={codes} next={d.get('next_action', {}).get('code')} "
+                          f"status={d.get('status')}")
+                    failed += 1
+            # determinism (minus checked_at) on a fixed fixture
+            probe_target = partial_dir / "svg_count_mismatch"
+
+            def _run_diag() -> dict:
+                r = subprocess.run([python, str(pm_script), "diagnose", str(probe_target)],
+                                   capture_output=True, text=True, encoding="utf-8",
+                                   errors="replace", timeout=30)
+                d = json.loads(r.stdout)
+                d.pop("checked_at", None)
+                return d
+
+            try:
+                if _run_diag() == _run_diag():
+                    print("  [PASS] diagnose deterministic (identical minus checked_at)")
+                    passed += 1
+                else:
+                    print("  [FAIL] diagnose non-deterministic")
+                    failed += 1
+            except (json.JSONDecodeError, OSError):
+                print("  [FAIL] diagnose determinism probe unreadable")
+                failed += 1
+            # read-only: no writes to the fixture tree during diagnosis
+            before = {
+                rel: (p.read_bytes() if p.is_file() else None)
+                for rel, p in ((str(f.relative_to(partial_dir)), f)
+                               for f in partial_dir.rglob("*") if f.is_file())
+            }
+            for name in scenarios:
+                subprocess.run([python, str(pm_script), "diagnose", str(partial_dir / name)],
+                               capture_output=True, text=True, encoding="utf-8", errors="replace", timeout=30)
+            after = {
+                rel: (p.read_bytes() if p.is_file() else None)
+                for rel, p in ((str(f.relative_to(partial_dir)), f)
+                               for f in partial_dir.rglob("*") if f.is_file())
+            }
+            if before == after:
+                print("  [PASS] diagnose read-only (no fixture writes)")
+                passed += 1
+            else:
+                print("  [FAIL] diagnose wrote into the fixture tree")
+                failed += 1
+            _run([python, str(pm_script), "diagnose", str(fixture_tmp / "no_such_project")],
+                 "diagnose bad project path -> 2", expect_exit=2)
+
+        # --- Test 13: read-only project space report ---
+        print("\n  [13] space_report.py classification + archive plan")
+        space_dir = fixtures_dir / "space_report"
+        if not space_dir.is_dir():
+            print("  [SKIP] space_report fixture not found")
+            skipped += 1
+        else:
+            space_copy = fixture_tmp / "space_report"
+            shutil.copytree(space_dir, space_copy)
+            report_out = fixture_tmp / "space.json"
+            _run([python, str(scripts_dir / "space_report.py"), str(space_copy),
+                  "--json-out", str(report_out)], "space_report -> 0")
+            try:
+                report = json.loads(report_out.read_text(encoding="utf-8"))
+            except (OSError, json.JSONDecodeError):
+                report = None
+            if not isinstance(report, dict):
+                print("  [FAIL] space_report output not valid JSON")
+                failed += 1
+            else:
+                checks = [
+                    ("schema v1", report.get("schema") == "ppt-master.space-report.v1"),
+                    ("summary 2 projects", report.get("summary", {}).get("projects") == 2),
+                    ("summary bytes 880", report.get("summary", {}).get("bytes") == 880),
+                    ("summary renewable 350", report.get("summary", {}).get("renewable_bytes") == 350),
+                    ("proj_a renewable 290", next((p["renewable_bytes"] for p in report.get("projects", []) if p["project"] == "proj_a"), None) == 290),
+                    ("proj_a non-renewable 430", next((p["by_class"].get("non-renewable", {}).get("bytes") for p in report.get("projects", []) if p["project"] == "proj_a"), None) == 430),
+                    ("proj_b renewable 60", next((p["renewable_bytes"] for p in report.get("projects", []) if p["project"] == "proj_b"), None) == 60),
+                    ("top order proj_a first", report.get("top_projects", [{}])[0].get("project") == "proj_a"),
+                ]
+                for label, ok in checks:
+                    if ok:
+                        print(f"  [PASS] space_report {label}")
+                        passed += 1
+                    else:
+                        print(f"  [FAIL] space_report {label}")
+                        failed += 1
+            plan_out = fixture_tmp / "space_plan.json"
+            _run([python, str(scripts_dir / "space_report.py"), str(space_copy),
+                  "--archive-plan", str(plan_out)], "space_report archive-plan -> 0")
+            try:
+                plan = json.loads(plan_out.read_text(encoding="utf-8"))
+                items = {
+                    item["path"]: item["bytes"]
+                    for proj in plan.get("projects", [])
+                    for item in proj.get("items", [])
+                }
+                if items == {"trace.jsonl": 40, "backup/old.zip": 200, "quality/harness.json": 50,
+                             "validation/report.json": 60}:
+                    print("  [PASS] space_report archive plan paths+sizes exact")
+                    passed += 1
+                else:
+                    print(f"  [FAIL] space_report archive plan mismatch: {items}")
+                    failed += 1
+            except (OSError, json.JSONDecodeError):
+                print("  [FAIL] space_report archive plan unreadable")
+                failed += 1
+            _run([python, str(scripts_dir / "space_report.py"), str(fixture_tmp / "no_such_root")],
+                 "space_report bad root -> 2", expect_exit=2)
+
     finally:
         # Cleanup temp directory
         import shutil

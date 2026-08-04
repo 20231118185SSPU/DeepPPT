@@ -1,0 +1,9 @@
+{
+  "schema": "ppt-master.harness.v1",
+  "overall": "PASS",
+  "e2e": "PASS",
+  "summary": "static pass",
+  "mode": "quick",
+  "scope": "all",
+  "checked_at": "2026-08-04T10:00:11+00:00"
+}

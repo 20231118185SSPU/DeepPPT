@@ -1,0 +1,8 @@
+{
+  "schema": "ppt_master.pptx_quality_check.v1",
+  "status": "passed",
+  "summary": {
+    "slide_count": 3,
+    "native_text_shapes": 20
+  }
+}

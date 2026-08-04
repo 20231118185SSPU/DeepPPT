@@ -715,5 +715,253 @@ def main(argv: list[str] | None = None) -> int:
     return 0 if is_valid else 1
 
 
+DIAGNOSIS_SCHEMA = "ppt-master.project-diagnosis.v1"
+
+
+def _confirm_ui_state(project_path: str) -> Dict:
+    """Read confirm_ui/result.json fail-closed. Returns present/valid/status/confirmed_at."""
+    result_path = Path(project_path) / "confirm_ui" / "result.json"
+    if not result_path.is_file():
+        return {"present": False, "valid": True, "status": None, "confirmed_at": None}
+    try:
+        data = json.loads(result_path.read_text(encoding="utf-8"))
+    except (json.JSONDecodeError, OSError):
+        return {"present": True, "valid": False, "status": None, "confirmed_at": None}
+    if not isinstance(data, dict):
+        return {"present": True, "valid": False, "status": None, "confirmed_at": None}
+    confirmed_at = data.get("confirmed_at")
+    try:
+        if isinstance(confirmed_at, str) and confirmed_at:
+            datetime.fromisoformat(confirmed_at.replace("Z", "+00:00"))
+        else:
+            confirmed_at = None
+    except ValueError:
+        confirmed_at = None
+    return {
+        "present": True,
+        "valid": True,
+        "status": data.get("status"),
+        "confirmed_at": confirmed_at,
+    }
+
+
+def _spec_lock_mode_conflict(project_path: str) -> Optional[str]:
+    """Detect mode/page_layouts conflicts (spec_lock_validate vs checker)."""
+    lock_text = spec_lock_path(project_path).read_text(encoding="utf-8", errors="replace")
+    structure_m = re.search(
+        r"^## pptx_structure\s*\n(.*?)(?=^## |\Z)", lock_text, re.MULTILINE | re.DOTALL
+    )
+    mode = None
+    if structure_m:
+        mode_m = re.search(r"^- mode:\s*(\S+)", structure_m.group(1), re.MULTILINE)
+        if mode_m:
+            mode = mode_m.group(1).strip().lower()
+    has_page_layouts = bool(re.search(r"^## page_layouts\s*$", lock_text, re.MULTILINE))
+    if mode == "flat" and has_page_layouts:
+        return "spec_lock mode flat with ## page_layouts present — svg_quality_checker rejects the section in flat mode; remove it or switch to structured"
+    if mode == "structured" and not has_page_layouts:
+        return "spec_lock mode structured requires ## page_layouts — add the per-page roster"
+    return None
+
+
+def _page_rhythm_pages(project_path: str) -> int:
+    lock_text = spec_lock_path(project_path).read_text(encoding="utf-8", errors="replace")
+    rhythm_m = re.search(
+        r"^## page_rhythm\s*\n(.*?)(?=^## |\Z)", lock_text, re.MULTILINE | re.DOTALL
+    )
+    if not rhythm_m:
+        return 0
+    return len(re.findall(r"^- P\d+:", rhythm_m.group(1), re.MULTILINE))
+
+
+def _svg_page_id(stem: str) -> Optional[str]:
+    """Normalize an SVG stem to its page id (P<NN>) per svg-pipeline.md."""
+    match = re.match(r"^(?:P)?(\d{1,3})", stem)
+    return f"P{int(match.group(1)):02d}" if match else None
+
+
+def _images_manifest_state(project_path: str) -> Tuple[Optional[Dict], Optional[str]]:
+    """(manifest_info, error) — counts only, never echoes prompt bodies."""
+    manifest_path = Path(project_path) / "images" / "image_prompts.json"
+    if not manifest_path.is_file():
+        return None, None
+    try:
+        data = json.loads(manifest_path.read_text(encoding="utf-8"))
+    except (json.JSONDecodeError, OSError):
+        return None, "manifest unreadable"
+    items = data.get("items") if isinstance(data, dict) else None
+    if not isinstance(items, list):
+        return None, "manifest items missing"
+    declared = len(items)
+    present = len([
+        f for f in (Path(project_path) / "images").glob("*")
+        if f.suffix.lower() in {".png", ".jpg", ".jpeg", ".webp", ".gif"}
+    ])
+    return {"declared": declared, "present": present}, None
+
+
+def diagnose_project(project_path) -> Dict:
+    """Read-only interruption-recovery diagnosis (Phase 5).
+
+    Builds on ``derive_pipeline_state`` (single step owner) and adds stable
+    blockers with actionable messages plus exactly one recommended next action
+    with an optional command preview. Never writes or executes anything;
+    deterministic across repeats except ``checked_at``. Manifest prompts are
+    counted, never echoed.
+    """
+    p = Path(project_path)
+    derive = derive_pipeline_state(project_path)
+    step = derive["step"]
+    blockers: List[Dict[str, str]] = []
+
+    def add(code: str, message: str, action: str, command: Optional[str] = None) -> None:
+        entry: Dict[str, str] = {"code": code, "message": message, "action": action}
+        if command:
+            entry["command"] = command
+        blockers.append(entry)
+
+    if step in ("1-init", "2-sources"):
+        add("NO_SOURCES", "project has no sources yet", "import source documents",
+            "python3 skills/ppt-master/scripts/project_manager.py import-sources <project> <files...>")
+
+    # Confirmation (Step 4 gate)
+    confirm = _confirm_ui_state(project_path)
+    if confirm["present"] and not confirm["valid"]:
+        add("CONFIRMATION_MALFORMED", "confirm_ui/result.json is not a valid object with status/confirmed_at", "rewrite result.json from Confirm UI")
+    elif confirm["present"] and confirm["confirmed_at"] is None:
+        add("CONFIRMATION_STALE", "confirm_ui/result.json confirmed_at is missing or invalid", "re-run Confirm UI and confirm")
+    elif confirm["present"] and confirm["status"] == "confirmed" and confirm["confirmed_at"]:
+        rec_paths = list((p / "confirm_ui").glob("recommendations*.json"))
+        if rec_paths:
+            try:
+                rec_mtime = max(path.stat().st_mtime for path in rec_paths)
+                confirmed_ts = datetime.fromisoformat(
+                    confirm["confirmed_at"].replace("Z", "+00:00")
+                ).timestamp()
+                if confirmed_ts < rec_mtime:
+                    add("CONFIRMATION_STALE", "confirm_ui/result.json confirmed_at predates the recommendations files", "re-run Confirm UI and confirm")
+            except (ValueError, OSError):
+                pass
+    elif step == "4-design-spec" and not confirm["present"]:
+        add("CONFIRMATION_PENDING", "design_spec.md exists but confirmation is pending", "run Confirm UI and confirm the eight items")
+
+    # spec_lock (Step 5)
+    if spec_lock_path(project_path).is_file():
+        digest_file = p / ".spec_lock.digest"
+        if not digest_file.is_file():
+            add("SPEC_LOCK_DIGEST_MISMATCH", "spec_lock.md digest file missing", "regenerate the digest",
+                "python3 skills/ppt-master/scripts/spec_lock_digest.py generate <project>")
+        else:
+            try:
+                import io
+                import contextlib
+                from spec_lock_digest import verify_digest
+                with contextlib.redirect_stdout(io.StringIO()), contextlib.redirect_stderr(io.StringIO()):
+                    digest_ok = verify_digest(Path(project_path)) == 0
+                if not digest_ok:
+                    add("SPEC_LOCK_DIGEST_MISMATCH", "spec_lock.md digest is stale", "regenerate the digest",
+                        "python3 skills/ppt-master/scripts/spec_lock_digest.py generate <project>")
+            except ImportError:
+                pass
+        conflict = _spec_lock_mode_conflict(project_path)
+        if conflict:
+            add("SPEC_LOCK_MODE_CONFLICT", conflict, "align spec_lock mode with page_layouts")
+    elif step in ("7a-svg-gen", "7b-postprocess", "7c-export", "8-export"):
+        add("SPEC_LOCK_MISSING", "spec_lock.md missing — SVG/export artifacts exist without the execution lock", "seal the execution lock (update_spec)")
+
+    # Images (Step 6)
+    manifest_info, manifest_error = _images_manifest_state(project_path)
+    if manifest_error:
+        add("IMAGE_MANIFEST_FAILED", f"images/image_prompts.json: {manifest_error}", "fix the manifest")
+    elif manifest_info and manifest_info["declared"] > manifest_info["present"]:
+        add("IMAGES_PARTIAL", f"image manifest declares {manifest_info['declared']} image(s) but {manifest_info['present']} exist", "resume image generation",
+            "python3 skills/ppt-master/scripts/image_gen.py --manifest <project>/images/image_prompts.json")
+
+    # SVG (Step 7a)
+    svg_pages_list = svg_pages(project_path)
+    if svg_pages_list:
+        ids = [_svg_page_id(f.stem) for f in svg_pages_list]
+        seen: set = set()
+        for page_id in ids:
+            if page_id is None:
+                continue
+            if page_id in seen:
+                add("SVG_NAMING_CONFLICT", f"duplicate normalized page id {page_id}", "rename one SVG so ids are unique")
+            seen.add(page_id)
+        expected = _page_rhythm_pages(project_path) if spec_lock_path(project_path).is_file() else 0
+        if expected and len(seen) < expected:
+            add("SVG_COUNT_MISMATCH", f"spec_lock page_rhythm expects {expected} page(s) but {len(seen)} SVG(s) exist", "generate the missing pages")
+
+    # Quality gate result (read-only)
+    harness_path = p / "quality" / "harness.json"
+    if harness_path.is_file():
+        try:
+            harness = json.loads(harness_path.read_text(encoding="utf-8"))
+        except (json.JSONDecodeError, OSError):
+            harness = None
+        if isinstance(harness, dict):
+            if harness.get("svg_quality") == "FAIL":
+                add("SVG_QUALITY_GATE_FAILED", "svg_quality gate FAIL (quality/harness.json)", "fix SVG issues and re-run the checker",
+                    "python3 skills/ppt-master/scripts/svg_quality_checker.py <project>")
+            if harness.get("overall") == "FAIL":
+                add("E2E_FAILED", "harness gate FAIL (quality/harness.json)", "fix reported issues and re-run the gate")
+
+    # Delivery (post-export)
+    if step == "8-export":
+        quality_path = p / "quality" / "pptx_quality.json"
+        if quality_path.is_file():
+            try:
+                quality = json.loads(quality_path.read_text(encoding="utf-8"))
+            except (json.JSONDecodeError, OSError):
+                quality = None
+            if isinstance(quality, dict) and quality.get("status") == "failed":
+                add("DELIVERY_FAILED", "pptx_quality_check reports failed status", "fix issues and re-export",
+                    "python3 skills/ppt-master/scripts/svg_to_pptx.py <project>")
+
+    # Unique recommended next action
+    if blockers:
+        first = blockers[0]
+        next_action = {"action": first["action"], "code": first["code"]}
+        if first.get("command"):
+            next_action["command"] = first["command"]
+    elif step == "8-export":
+        next_action = {"action": "validate the export", "code": "VALIDATE_EXPORT",
+                       "command": "python3 skills/ppt-master/scripts/e2e_validate.py <project> --pptx <exports/xxx.pptx>"}
+    elif step == "7c-export":
+        next_action = {"action": "export the deck", "code": "EXPORT_PENDING",
+                       "command": "python3 skills/ppt-master/scripts/svg_to_pptx.py <project>"}
+    elif step == "7b-postprocess":
+        next_action = {"action": "post-process SVG and export", "code": "POSTPROCESS_PENDING",
+                       "command": "python3 skills/ppt-master/scripts/total_md_split.py <project> && python3 skills/ppt-master/scripts/finalize_svg.py <project> && python3 skills/ppt-master/scripts/svg_to_pptx.py <project>"}
+    elif step == "7a-svg-gen":
+        next_action = {"action": "finish SVG generation, then quality check", "code": "SVG_GENERATION",
+                       "command": "python3 skills/ppt-master/scripts/svg_quality_checker.py <project>"}
+    elif step == "6-images":
+        next_action = {"action": "generate SVG pages (SKILL.md Step 6)", "code": "SVG_GENERATION"}
+    elif step == "5-spec-lock":
+        if confirm.get("status") == "confirmed":
+            next_action = {"action": "resume Phase B (Step 6: images + SVG generation)", "code": "RESUME_PHASE_B",
+                           "command": "open a fresh session and follow workflows/stages/resume-execute.md"}
+        else:
+            next_action = {"action": "complete Eight Confirmations, seal spec_lock.md", "code": "CONFIRMATION_PENDING"}
+    elif step == "4-design-spec":
+        next_action = {"action": "complete Eight Confirmations", "code": "CONFIRMATION_PENDING"}
+    else:
+        next_action = {"action": "import sources and start the pipeline", "code": "NO_SOURCES"}
+
+    status = "ok" if (step == "8-export" and not blockers) else ("blocked" if blockers else "partial")
+    return {
+        "schema": DIAGNOSIS_SCHEMA,
+        "project": str(p),
+        "route": "generate",
+        "step": step,
+        "status": status,
+        "evidence": sorted(derive["artifacts"]),
+        "blockers": blockers,
+        "next_action": next_action,
+        "checked_at": datetime.now().astimezone().isoformat(),
+    }
+
+
 if __name__ == '__main__':
     raise SystemExit(main())

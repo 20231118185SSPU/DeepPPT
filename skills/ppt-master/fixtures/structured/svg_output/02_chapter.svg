@@ -1,0 +1,11 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1280" height="720" viewBox="0 0 1280 720"
+     data-pptx-master="master-default" data-pptx-master-name="Default Master"
+     data-pptx-layout="content" data-pptx-layout-name="Content">
+  <rect id="master-bg" data-pptx-layer="master" x="0" y="0" width="1280" height="720" fill="#F4F6F9"/>
+  <rect id="layout-rule" data-pptx-layer="layout" x="72" y="128" width="1136" height="2" fill="#E8A33D"/>
+  <g id="title-slot" data-pptx-placeholder="title" data-pptx-bounds="72 140 1136 60">
+  <text id="title-carrier" data-pptx-carrier="true" x="72" y="170" font-family="Arial, 'Microsoft YaHei', sans-serif" font-size="30" fill="#16324F">章节页</text>
+</g>
+  <text x="72" y="320" font-family="Arial" font-size="22" fill="#1A1A1A">同一 master/layout 绑定，页本地内容可变。</text>
+  <text x="72" y="688" font-family="Arial, 'Microsoft YaHei', sans-serif" font-size="11" fill="#5A6572">STRUCTURED FIXTURE · 02</text>
+</svg>
