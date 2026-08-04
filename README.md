@@ -20,6 +20,7 @@ Latest production hardening includes:
 - **Artifact showcase Dashboard** - the Dashboard is positioned as an online viewing platform for everything a project produces: the deck-making journey (research → content selection → detailed outline → visual strategy) alongside the artifacts themselves (SVG pages, exports, notes, images, quality reports), browsable by four phases (制作思路 / 设计契约 / 生成页面 / 导出成品) and searchable locally via `dashboard/artifacts_index.json`.
 - **Prompt context governance** - `prompt_audit.py` + `prompt_audit_manifest.json` audit the full prompt corpus (173 documents, o200k_base token budgets): six route-level load sets plus a `generate-on-demand` set model what an agent actually loads per route, with concern-level authority edges, six live registries (modes / visual styles / image catalogs / charts), and two schema-grammar owners enforcing single-definition contracts. Generate-route typical load dropped **21.4%** (165.7K → 130.2K tokens) by moving on-demand references (effects catalog, animations, structured-mode markers, optional workflows) into their own load set with real `load_event` triggers; coverage exemptions and 22 accepted shared-contract duplicates keep the corpus accounting closed (errors=0).
 - **System optimization Phase 1-8 (2026-08-04)** - convergence pass over the whole repo: pipeline state and artifact paths now have a single source of truth (`project_utils` canonical accessors + `derive_pipeline_state`; checkpoint and Dashboard agree on `exports/*.pptx`), `spec_lock.md` is parsed by exactly one owner (`spec_lock_reader.py`), trace events carry a versioned envelope, `pptx_animations.py` was split into `animation_constants` + `animation_effects` (characterization 18/18 identical), all 85 CLI entries exit through `raise SystemExit(main())`, and the CI smoke job now runs the full 187-check integration suite. Verification: guard/governance/prompt-audit all green, examples 29/29 checker + e2e, 3-fixed-brief end-to-end rehearsal 3/3. Reports: `docs/reviews/deepppt2-system-optimization-baseline-2026-08.md` + `-final-2026-08.md`.
+- **Practical delivery optimization Phase 1-6 (2026-08-04)** - PowerPoint real render is now the final layout truth: `pptx_render_export.py` renders exported decks via PowerPoint COM (`Slide.Export` PNG per slide; exit 2 without Office), and the calibrated `svg_geometry_audit.py` glyph-box audit is the advisory first pass — Golden Set calibration eliminated 74 false positives (inline-tspan + unexpanded-transform bugs), known-defect recall 5/5, and it stays advisory (precision 67% below the 95% upgrade bar; PowerPoint PNGs adjudicate disputes). Nine synthetic route fixtures under `fixtures/` (template-fill / enhance / structured / 15 partial-state scenarios / DOCX+PPTX source fidelity / trace calibration / space report / beautify 1:1) ship with rebuild scripts and run as smoke integration Tests 10-14 (282 checks in the CI smoke job). Source fidelity reconciles DOCX merged cells (vMerge/gridSpan) + Wingdings circled digits and PPTX merged tables / notes / symbol runs exactly; corrupted inputs fail closed. Local run metrics: `run_summary.py` aggregates trace + sidecars into versioned `quality/run_summary.json` (null≠0 semantics; image attempts / pptx exports / live-preview annotations wired; sensitive keys abort rc=1). Interruption recovery: `project_manager.py diagnose` returns step / evidence / stable blockers / one next action for 15 partial states (read-only, deterministic). Space governance: `space_report.py` read-only report + archive dry-run plan (first authorized cleanup released 307 MiB of old snapshots). First real CI runs are green after fixing fixture line-ending/digest drift, gitignore'd test assets, and the push path filter; pip cache active. Final report: `docs/reviews/deepppt2-practical-delivery-optimization-final-2026-08.md`.
 - **Intent-first composition QA** - the Executor composes from `content_relation`, `information_anchor`, and `visual_act` before choosing layout patterns. Sparse composition, one-sided whitespace, and large image-text gaps remain review signals rather than prompts to add filler; fixes are batched before one re-check.
 
 ---
@@ -35,6 +36,8 @@ DeepPPT 是一个端到端的 AI PPT 生成系统。给定一个主题或源文�
 **2026-08-03 完成 v4.3.0 大规模迁移收尾**：重构版导出器（真实文字度量硬错误、transform 感知溢出契约、21 类 SVG→DrawingML 语法契约）与 `svg_quality` 诊断包整体接线，`structured` 模板导出模式落地；29 个公开示例全部通过 `svg_quality_checker` + `e2e_validate` 双门（29/29），GitHub Actions CI 三 job 全绿，GitHub Pages 已上线。Dashboard 重新定位为**产物在线观看平台**——按「制作思路 → 设计契约 → 生成页面 → 导出成品」四阶段浏览项目全过程产物，并生成本地可搜找的产物索引。
 
 **2026-08-04 完成系统优化收尾（Phase 1-8）**：`prompt_audit` 契约从空壳重建为真实 load-set 设计（6 个路由加载集 + 1 个 generate-on-demand 加载集、9 条权威边、6 个活注册表、2 个 schema-grammar 所有者、22 个有意共享重复声明；173 文档语料 token 预算审计 rc=0 / errors=0 / coverage 闭合，Generate 路由典型加载 −21.4%）；管线状态与产物路径收敛为单一事实源（`project_utils` 规范 accessors + `derive_pipeline_state`，checkpoint 与 Dashboard 一致认 `exports/*.pptx`）；`spec_lock.md` 由唯一解析所有者 `spec_lock_reader.py` 承载；trace 事件携带版本化信封；`pptx_animations` 拆分为 `animation_constants` + `animation_effects`（特征化 18/18 无差异）；全部 85 个 CLI 入口统一 `raise SystemExit(main())`；CI smoke job 升级为 187 项集成套件。基线/收尾双报告见 `docs/reviews/deepppt2-system-optimization-*.md`，三份治理文档状态同步、`.align` 经验归档至 50 条上限并建立决策日志。
+
+**2026-08-04 完成实际交付优化收尾（Phase 1-6）**：以 PowerPoint 真实渲染为最终版式依据（`pptx_render_export.py` 经本机 COM `Slide.Export` 逐页出图，非 Windows 优雅 exit 2；`svg_geometry_audit.py` 字形盒级审计为 advisory 首道防线——Golden Set 校准消除 74 条误报、已知缺陷注入召回 5/5、precision 67% 未达 95% 升级线故保持不阻断，争议由 PowerPoint PNG 裁决）；9 套合成非敏感路线 fixture 入库 `skills/ppt-master/fixtures/`（template-fill / enhance / structured / 15 个 partial 状态 / DOCX+PPTX 内容保真 / trace 校准 / 空间报告 / beautify 1:1，附 rebuild 脚本），smoke integration Tests 10-14（282 项断言，CI smoke job 自动运行）；源内容保真对账（DOCX vMerge/gridSpan/双字体圈号/多段落/图片、PPTX 合并表格/备注/符号关键数字逐项一致，损坏输入 fail-closed）；本地运行指标闭环（`run_summary.py` → 版本化 `quality/run_summary.json`，null≠0 语义，图片尝试/导出次数/预览标注已埋点，敏感字段 fail-closed rc=1）；中断恢复只读诊断（`project_manager.py diagnose`：15 态稳定 blocker + 唯一 next action，零写入）；只读空间报告 + 归档 dry-run（已批准清理 307.2 MiB 旧快照，4.82 → 4.52 GiB）。首次真实 CI 跑测修复三类问题（fixtures 行尾/digest 漂移、gitignore 吞测试资产、push paths 过滤器缺 fixtures/**），当前三 job 全绿、pip cache 生效。收尾报告：`docs/reviews/deepppt2-practical-delivery-optimization-final-2026-08.md`。
 
 **支持 13 个主流 AI Agent 平台**，克隆即用：Claude Code / Cursor / Windsurf / GitHub Copilot / OpenAI Codex / Pi / Cline / Roo Code / Aider / Amazon Q / Kiro / Junie / Hermes Agent。
 
@@ -200,9 +203,14 @@ DeepPPT/
 │   │   ├── consulting_content_lock.py # 咨询内容锁 sidecar
 │   │   ├── attribution_guard.py     # 技能完整性门禁（fail-closed）
 │   │   ├── prompt_audit.py          # prompt 语料审计（load_sets/token 预算/重复声明）
+│   │   ├── svg_geometry_audit.py     # 字形盒级几何审计（advisory 首道防线）
+│   │   ├── pptx_render_export.py     # PowerPoint COM 真实渲染导出（最终版式依据）
+│   │   ├── run_summary.py            # 本地运行指标聚合（quality/run_summary.json）
+│   │   ├── space_report.py           # 只读空间报告 + 归档 dry-run
 │   │   ├── vision_backends/  # 视觉检查后端
 │   │   ├── source_to_md/     # 源文件转换器
 │   │   └── research/         # 浏览器自动化搜索和研究/素材门禁
+│   ├── fixtures/             # 合成路线回归 fixture（template-fill/enhance/structured/partial 15 态/保真/trace/space/beautify 1:1，rebuild 脚本可重建）
 │   ├── templates/            # 布局模板、图表模板、图标库、品牌预设
 │   └── workflows/            # 路由 + 独立工作流
 │       ├── routing.md        # 四路由选择权威（Generate/Template/Fill/Enhance）
@@ -285,6 +293,17 @@ DeepPPT/
 | [Scripts & Tools](skills/ppt-master/scripts/README.md) | 工具脚本文档 |
 
 ## 更新日志
+
+### 2026-08-04 — 实际交付优化（Phase 1-6）：PowerPoint 真实渲染终裁 + 路线 fixture + 运行指标 + 中断诊断
+
+- PowerPoint 真实渲染成为最终版式依据：`pptx_render_export.py`（COM `Slide.Export` 逐页 PNG，非 Windows exit 2 优雅退出）；`svg_geometry_audit.py` 字形盒级审计（文字交叠/行距/页脚贴边/rect 遮挡/越界/图片尺寸；translate 展开、行内 tspan 误报修复）——Golden Set 44 页校准 74 条 FP → 0，已知缺陷注入召回 5/5，precision 67% 未达 95% 升级线，保持 advisory
+- 9 套合成非敏感 fixture 入库 `skills/ppt-master/fixtures/`（template-fill / enhance / structured / partial 15 态 / DOCX+PPTX 保真 / trace 校准 / space / beautify 1:1，含 rebuild 脚本与 README），smoke integration Tests 10-14（+95 checks → 282）
+- 源内容完整性对账：DOCX vMerge/gridSpan/双字体圈号/多段落/图片与 PPTX 合并表格/备注/符号关键数字逐项一致；损坏输入（坏 zip / 坏 XML / 截断）全部 fail-closed rc≠0
+- 运行指标闭环：`run_summary.py` 聚合 trace + sidecar → 版本化 `quality/run_summary.json`（null≠0 语义、retry/image/标注/导出计数、敏感字段 rc=1 不写文件）；写侧埋点：image_gen 每 manifest 尝试、svg_to_pptx 每次导出、annotations.jsonl 计数
+- 中断恢复：`project_manager.py diagnose`（owner=`project_utils.diagnose_project`）15 态稳定 blocker + 唯一 next action，只读零写入、确定性（除 checked_at）；真实项目 gan_hemt 实测暴露并修复 spec_lock digest 过期
+- 空间治理：`space_report.py` 只读报告 + 归档 dry-run；已批准清理 4 个旧快照 backup（307.2 MiB，4.82 → 4.52 GiB）
+- CI：pip cache 三 job 生效；push paths 补 `fixtures/**`；首次真实跑测修复 fixture 行尾/digest 漂移与 gitignore 吞测试资产；当前三 job 全绿（smoke-check 282 项 / svg-quality 29 项目 / e2e 29 项目）
+- 验证：guard / governance drift / prompt audit 全绿；收尾报告 `docs/reviews/deepppt2-practical-delivery-optimization-final-2026-08.md`
 
 ### 2026-08-04 — 系统优化收尾（Phase 1-8）：单一事实源 + 契约治理 + CLI 卫生
 
