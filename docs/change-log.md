@@ -22,6 +22,15 @@
 ---
 
 ## Log
+### 2026-08-04 — CI 修复批次：fixtures 行尾/digest/资产入库 + push path filter 补全
+- **Files**: `.gitattributes`（新增：`skills/ppt-master/fixtures/** -text`，禁止行尾转换，checkout 字节一致）、`skills/ppt-master/scripts/smoke_check.py`（Test 13 断言 `backup/old.zip` → `backup/old.bin`）、`skills/ppt-master/fixtures/`（文本统一 LF + 10 个 digest 基于 LF 重新生成；`space_report/proj_a/backup/old.bin` 改名替代被 `*.zip` 忽略的 old.zip；`git add -f` 入库 3 个被 `*.png` 忽略的测试资产）、`.github/workflows/ci.yml`（push paths 增加 `skills/ppt-master/fixtures/**`）
+- **Reason**: 首次真实 CI 跑测暴露三类问题：① `*.zip`/`*.png` 忽略规则吞掉 fixture 测试资产（old.zip 从未入库 → Test 13 缺文件；a.png×2/sample_badge.png 未入库 → derive 无图片回退 5-spec-lock → Test 12 失败）；② Windows autocrlf 使本地 spec_lock.md 为 CRLF 而入库 LF，digest 基于 CRLF 生成 → CI 全 fixture `SPEC_LOCK_DIGEST_MISMATCH`；③ fixtures-only 提交命中 push paths 过滤器缺项 → 静默跳过 CI（cb72d3f1 无 run）。
+- **Before**: CI smoke job 连续失败（Test 12/13）；fixture 资产不可复现。
+- **After**: `.gitattributes -text` 保证 fixtures checkout 字节一致（全端 LF，digest 匹配）；测试资产显式入库（-f，用户忽略规则不受影响）；fixtures 加入 push paths（fixture-only 提交也触发 CI）。
+- **Verified**: 逐轮修复验证——f8d29aa6 后 digest 类失败清零（剩 2 项 a.png）；cb72d3f1 + cb8b884e 后 **CI run 30901427444 completed success（2m7s，三 job 全绿）**；本地 integration 278/0/4/282 + guard rc=0；pip cache 首轮即命中（12.1 优化生效）。
+- **Risk**: low（测试数据与 CI 配置修复；`.gitattributes -text` 仅作用于 fixtures 目录）
+- **Human reviewed**: pending
+
 ### 2026-08-04 — CI pip cache + beautify 1:1 fixture + smoke Test 10 扩展
 - **Files**: `.github/workflows/ci.yml`（三 job Setup Python 加 `cache: pip` + `cache-dependency-path: skills/ppt-master/requirements.txt`）、`skills/ppt-master/fixtures/beautify_1to1/`（新增：3 页合成源 + rebuild 脚本 + README）、`skills/ppt-master/scripts/smoke_check.py`（Test 10 加 beautify 1:1 断言 +8 checks）、`skills/ppt-master/fixtures/README.md`
 - **Reason**: `plans/deepppt2-practical-delivery-optimization-agent-brief.md` Phase 6.1（用户全部授权）+ 6.2 收尾：CI 依赖安装无缓存；beautify 路线确定性端点（1:1 页拆分契约）无专属 fixture。
