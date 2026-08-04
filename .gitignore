@@ -208,3 +208,6 @@ projects/*
 # receipts and ZCode client plan artifacts.
 .align/.runtime/
 .zcode/
+
+# OfficeCLI pinned runtime (managed by install_officecli.py)
+.tools/officecli/

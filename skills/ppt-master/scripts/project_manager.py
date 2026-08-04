@@ -971,7 +971,41 @@ class ProjectManager:
             else:
                 summary["notes"].append(f"{item}: archived only, no automatic conversion")
 
+        # Best-effort OfficeCLI source inspection for .docx/.xlsx/.pptx sources
+        self._run_office_source_inspect(project_dir, summary)
         return summary
+
+    @staticmethod
+    def _run_office_source_inspect(project_dir: Path, summary: dict) -> None:
+        """Best-effort: run OfficeCLI source inspection after Office sources are imported.
+
+        Silently skipped when OfficeCLI is not installed or inspection fails.
+        Non-Office sources (MD/PDF/URL) do not trigger this.
+        """
+        office_suffixes = {".docx", ".xlsx", ".pptx"}
+        has_office = any(
+            Path(a).suffix.lower() in office_suffixes
+            for a in summary.get("archived", [])
+        )
+        if not has_office:
+            return
+
+        try:
+            import subprocess
+            import sys
+            inspect_script = (
+                Path(__file__).resolve().parent / "office_source_inspect.py"
+            )
+            if not inspect_script.exists():
+                return
+            subprocess.run(
+                [sys.executable, str(inspect_script), str(project_dir), "--json"],
+                capture_output=True,
+                text=True,
+                timeout=30,
+            )
+        except Exception:
+            pass  # best-effort, never block the import flow
 
     def validate_project(self, project_path: str) -> tuple[bool, list[str], list[str]]:
         project_path_obj = Path(project_path)

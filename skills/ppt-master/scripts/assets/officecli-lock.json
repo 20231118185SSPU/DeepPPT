@@ -1,0 +1,60 @@
+{
+  "schema": "ppt_master.officecli_lock.v1",
+  "version": "1.0.143",
+  "repository": "https://github.com/iOfficeAI/OfficeCLI",
+  "tag": "v1.0.143",
+  "release_url": "https://github.com/iOfficeAI/OfficeCLI/releases/tag/v1.0.143",
+  "license": "Apache-2.0",
+  "license_url": "https://github.com/iOfficeAI/OfficeCLI/blob/v1.0.143/LICENSE",
+  "platforms": {
+    "windows-x86_64": {
+      "asset": "officecli-win-x64.exe",
+      "url": "https://github.com/iOfficeAI/OfficeCLI/releases/download/v1.0.143/officecli-win-x64.exe",
+      "sha256": "d4d4c10fced307e209744cf98a56b003a6e613424fd651b08469274704afd2c6",
+      "executable": "officecli.exe"
+    },
+    "windows-arm64": {
+      "asset": "officecli-win-arm64.exe",
+      "url": "https://github.com/iOfficeAI/OfficeCLI/releases/download/v1.0.143/officecli-win-arm64.exe",
+      "sha256": "51baf511fe136ee216fcc13cf0da9d18078da42212b22805c3a81f4163a4d7b9",
+      "executable": "officecli.exe"
+    },
+    "linux-x86_64": {
+      "asset": "officecli-linux-x64",
+      "url": "https://github.com/iOfficeAI/OfficeCLI/releases/download/v1.0.143/officecli-linux-x64",
+      "sha256": "6a29c598a789b57c92c03e560907d3f131a4bd0a068785b1d338a86fc31a58a7",
+      "executable": "officecli"
+    },
+    "linux-arm64": {
+      "asset": "officecli-linux-arm64",
+      "url": "https://github.com/iOfficeAI/OfficeCLI/releases/download/v1.0.143/officecli-linux-arm64",
+      "sha256": "c50298e4698fcd1b15fe1a0f096405ad260b5c84d4440882582d0bba1e57bd49",
+      "executable": "officecli"
+    },
+    "linux-alpine-x86_64": {
+      "asset": "officecli-linux-alpine-x64",
+      "url": "https://github.com/iOfficeAI/OfficeCLI/releases/download/v1.0.143/officecli-linux-alpine-x64",
+      "sha256": "6bdae606e4fd1b31da1b75f5e6e0280ee4cf203059c8844c15ec7a5cc200e6bb",
+      "executable": "officecli"
+    },
+    "linux-alpine-arm64": {
+      "asset": "officecli-linux-alpine-arm64",
+      "url": "https://github.com/iOfficeAI/OfficeCLI/releases/download/v1.0.143/officecli-linux-alpine-arm64",
+      "sha256": "3445c0992d4c746ed55606b30d366fc936ed87eed0cddbc18f0c0dfa40cf8cee",
+      "executable": "officecli"
+    },
+    "darwin-x86_64": {
+      "asset": "officecli-mac-x64",
+      "url": "https://github.com/iOfficeAI/OfficeCLI/releases/download/v1.0.143/officecli-mac-x64",
+      "sha256": "693d243db616c74705fec9d92fdfc8a3db36acfcea378edb7264c2a30d339d9c",
+      "executable": "officecli"
+    },
+    "darwin-arm64": {
+      "asset": "officecli-mac-arm64",
+      "url": "https://github.com/iOfficeAI/OfficeCLI/releases/download/v1.0.143/officecli-mac-arm64",
+      "sha256": "2f158d46f9b6c5eb0dfe4eb02038114001e17acc47b67347417c56dcf9659096",
+      "executable": "officecli"
+    }
+  },
+  "install_root": ".tools/officecli"
+}

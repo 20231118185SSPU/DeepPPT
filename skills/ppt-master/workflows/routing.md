@@ -101,7 +101,22 @@ Object animation for generated SVG projects uses the animation stage (`customize
 
 ---
 
-## 7. Template Name Boundary
+## 7. Shared Native Revision (OfficeCLI)
+
+When the user explicitly requests last-mile native edits on an already-exported PPTX (text/color/position/shape changes that preserve slide count, masters, and unaddressed objects), routes enter the shared [`native-revision`](./stages/native-revision.md) child workflow. Native revision never activates automatically — it is always opt-in.
+
+| Trigger | Behavior |
+|---|---|
+| "改现有 PPT 里的文字/颜色/位置/对象，同时保留原生格式" | Enter the owning route, then invoke `native-revision` child |
+| "重新设计、拆页、合页、换结构" | Enter Generate PPTX; do not bypass SVG pipeline |
+| "把新内容填回模板壳" | Enter Fill Native PPTX |
+| "只加备注/配音/时序/转场" | Use existing Enhance Native PPTX core |
+
+Native revision produces a timestamped derivative in `exports/`; the original PPTX is never modified. For generated exports, `svg_divergence: true` is recorded and subsequent content rework defaults to SVG regeneration.
+
+---
+
+## 8. Template Name Boundary
 
 | User input | Behavior |
 |---|---|

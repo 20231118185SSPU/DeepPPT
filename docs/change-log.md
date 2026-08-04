@@ -22,6 +22,51 @@
 ---
 
 ## Log
+### 2026-08-04 — OfficeCLI 集成收尾：import-sources hook + trace 事件
+- **Files**: `skills/ppt-master/scripts/project_manager.py`（新增 `_run_office_source_inspect` 方法：import-sources 归档 .docx/.xlsx/.pptx 后自动调用只读检查）、`skills/ppt-master/scripts/office_source_inspect.py`（新增 `office_source_inspect` trace 事件）、`skills/ppt-master/scripts/native_revision_pptx.py`（新增 `native_revision_inspect`/`native_revision_preview`/`native_revision_plan`/`native_revision_apply` 四个 trace 事件）、`skills/ppt-master/scripts/office_source_repair.py`（新增 `office_source_repair` trace 事件）
+- **Reason**: Phase 3/4 遗留项补齐：import-sources hook 自动触发 Office source inspection；trace 事件提供可观测性。
+- **Before**: import-sources 后需手动运行 inspect；OfficeCLI 操作无 trace 事件。
+- **After**: import-sources 导入 Office 源文件后自动调用 `office_source_inspect.py` 生成 `analysis/office_sources.json`（best-effort，不阻断导入流程）；三个脚本 6 个 trace 操作全部埋点（格式计数/操作数/状态，不含源文本/props/凭据）。
+- **Verified**: import-sources + PPTX → `office_sources.json` 自动生成（4 slides/13 shapes 正确）；trace 事件无 source text/props/prompts 泄漏；完整 smoke 180/0/4/184；integration 288/0/4/292；attribution_guard rc=0。
+- **Risk**: low（纯增量 best-effort hook + 非敏感 trace 事件；无行为变化）
+- **Human reviewed**: pending
+
+### 2026-08-04 — OfficeCLI 深度集成 Phase 4：质量门、Dashboard、Trace 与 CI
+- **Files**: `skills/ppt-master/scripts/dashboard/officecli_reader.py`（新增：Dashboard 只读状态 reader）、`skills/ppt-master/scripts/dashboard/state_reader.py`（+3 新 state keys：`officecli_runtime`、`office_sources`、`native_revision`）、`.github/workflows/ci.yml`（smoke-check job 新增 OfficeCLI install + check 步骤；push/PR paths 新增 `scripts/assets/**` 和 `workflows/**`）
+- **Reason**: `plans/officecli-deep-integration-agent-brief.md` Phase 4：把前三阶段接入统一质量门和日常回归。
+- **Before**: Dashboard 无 OfficeCLI 运行时、源文件检查或原生修订状态展示；CI 不安装/验证 OfficeCLI。
+- **After**: Dashboard `/api/state` 新增 `officecli_runtime`（available/version/platform/status）、`office_sources`（source summary + issue counts + converter mapping）、`native_revision`（plan_status/operation_count/svg_divergence/export_path/validation/preview）三个只读状态键；`officecli_reader.py` 提供完整状态聚合逻辑；CI smoke-check job 在 Linux runner 上安装 pinned OfficeCLI 并运行 `check --json` 验证；push/PR 路径覆盖新增脚本和 assets。
+- **Verified**: Dashboard state_reader + officecli_reader import 成功；完整 smoke 180/0/4/184（+10 checks from 5 new scripts）；integration smoke 288/0/4/292（全部既有契约通过）；attribution_guard rc=0；四条路由结构不变。
+- **Risk**: low（Dashboard 纯只读增量；CI 仅安装验证不执行 mutation；无既有测试回归）
+- **Human reviewed**: pending
+
+### 2026-08-04 — OfficeCLI 深度集成 Phase 3：Office 源文件增强与副本修复
+- **Files**: `skills/ppt-master/scripts/office_source_inspect.py`（新增：只读结构检查 CLI）、`skills/ppt-master/scripts/office_source_repair.py`（新增：DOCX/XLSX 副本修复 CLI）
+- **Reason**: `plans/officecli-deep-integration-agent-brief.md` Phase 3：提升 Office 源文件结构理解并提供显式、副本式 DOCX/XLSX 修复。
+- **Before**: Office 源文件导入后无结构清单/问题报告/按需查询；无原生 DOCX/XLSX 修复能力。
+- **After**: `office_source_inspect.py` 对 sources/ 中 .pptx/.docx/.xlsx 生成 `analysis/office_sources.json`（schema `ppt_master.office_sources.v1`，含 format-specific stats/outline/issues/converter 映射）；检查前后断言 source SHA-256 不变；非 Office 源（MD/PDF/URL）不触发 OfficeCLI。`office_source_repair.py scaffold/check-plan/apply` 三命令：原件永不为 mutation target（先复制到 `.tmp/`）；成功 apply 后发布 timestamped 修复副本到 `sources/repaired/` 并重跑原 converter（新 Markdown 不覆盖旧）；未确认的 draft plan 被拒绝（RC=1）；原始 SHA 不变。
+- **Verified**: `office_source_inspect` 对 2 个 PPTX 生成正确 manifest（stats/outline/issues 均正确；source SHA 不变）；`office_source_repair` scaffold + 确认 + apply 全流程通过（DOCX 修复副本 + converter 重新输出 .md）；未确认 plan apply 被拒绝（RC=1）；原始 source SHA 始终不变；smoke 89/0/3/92（+2 新脚本）；attribution_guard rc=0。
+- **Risk**: low（纯增量只读检查 + opt-in 副本修复；不自动修复、不覆盖原件、不触发现有 converter 权威）
+- **Human reviewed**: pending
+
+### 2026-08-04 — OfficeCLI 深度集成 Phase 2：原生 PPTX 修订子工作流
+- **Files**: `skills/ppt-master/scripts/native_revision_pptx.py`（新增：8 子命令 CLI）、`skills/ppt-master/workflows/stages/native-revision.md`（新增：shared child workflow doc）、`skills/ppt-master/fixtures/officecli/`（新增：4 页合成 fixture + rebuild 脚本 + README）、`skills/ppt-master/workflows/routing.md`（§7 新增 Shared Native Revision 路由表 + 判别器；§8 重编号）、`skills/ppt-master/workflows/index.md`（新增 native-revision 条目）、`skills/ppt-master/SKILL.md`（新增 native-revision 链接）、`AGENTS.md`（新增 native-revision 执行需求链接）、`skills/ppt-master/scripts/officecli_bridge.py`（修复 `run_atomic_batch` stdin 格式：裸数组替代 `{commands:...}` 包裹）、`skills/ppt-master/scripts/native_revision_pptx.py`（修复 postflight 校验基线 delta 对比）
+- **Reason**: `plans/officecli-deep-integration-agent-brief.md` Phase 2：交付可预览、可选择、可确认、原子 apply 的原生 PPTX 修订子工作流；保持四条顶层路线不变。
+- **Before**: 无原生 PPTX 修订能力；所有修改只能通过 SVG 管线重新生成。
+- **After**: `native_revision_pptx.py init/inspect/watch/selected/unwatch/check-plan/apply/validate` 八命令全功能；合成 fixture（4 页 text/table/chart/picture/group）可 rebuild + OfficeCLI validate 通过（chart 6 warnings 为 python-pptx 已知 axId 问题）；apply 流程通过 7 门禁（runtime probe → check-plan → temp-copy → atomic batch → baseline-delta validate → slide roster → source immutability）；中途失败 rollback 验证通过（source SHA-256 不变、candidate 被丢弃、无 export）；stale plan 检测 fail-closed；COM render 本地通过；路由表新增 native-revision 判别器但不增加第五条 route。
+- **Verified**: `init` + `inspect` 正常（4 slides / 13 shapes / 0 issues）；`check-plan` stable hash/target positive+stale negative 双路径通过；`apply` 单 op success + COM render ok（export 产出 `exports/<stem>_native_revision_<ts>.pptx`）；`apply` 两 op（1 good + 1 bad）+ rollback true + source SHA unchanged（RC=1 无 export）；smoke 87/0/3/90（+1 新脚本 native_revision_pptx.py）；attribution_guard rc=0；四条顶层 route 文件未增加。
+- **Risk**: medium（新增核心脚本 + 工作流文档 + 路由接入；不影响现有 SVG 管线/converter/template-fill/native-enhance/PowerPoint COM 权威；反例覆盖充分）
+- **Human reviewed**: pending
+
+### 2026-08-04 — OfficeCLI 深度集成 Phase 1：固定运行时与桥接层
+- **Files**: `.gitignore`（新增 `.tools/officecli/`）、`skills/ppt-master/scripts/assets/officecli-lock.json`（新增：8 平台 lock manifest，schema `ppt_master.officecli_lock.v1`）、`skills/ppt-master/scripts/install_officecli.py`（新增：download/verify/atomic install CLI）、`skills/ppt-master/scripts/officecli_bridge.py`（新增：typed bridge + 14 稳定错误码）、`skills/ppt-master/scripts/docs/officecli.md`（新增：Phase 1 最小文档）
+- **Reason**: `plans/officecli-deep-integration-agent-brief.md` Phase 1：建立唯一、可验证、跨平台的 OfficeCLI 调用层，不接入业务 mutation。
+- **Before**: 无 OfficeCLI 运行时依赖；本地 Office 文件能力通过 PowerPoint COM（仅 Windows）和 python-pptx 实现。
+- **After**: OfficeCLI v1.0.143 固定安装到 gitignored `.tools/officecli/`；`install_officecli.py install/check/path` 提供 SHA-256 + 版本双重验证（当前平台 windows-x86_64 通过）；`officecli_bridge.py` 提供 `resolve_officecli`/`probe_officecli`/`run_officecli`/`run_atomic_batch`/`validate_office_file`/`inspect_office_file` 六个 typed API + 14 个稳定错误码；六个既有 PPTX fixture validate 全部 SHA-256 不变（4/6 OfficeCLI validate 通过，2/6 报告既有结构问题但源文件不变）。
+- **Verified**: `install --json` rc=0（版本/checksum 精确匹配 `d4d4c10f…`）；`check --json` rc=0 status=ready；`path --json` rc=0 exists=true；bridge probe/runtime 全部正确；6 PPTX validate SHA-256 前后一致（6/6）；不存在文件/invalid command 负测 fail closed；smoke 174/0/4/178（+4 新 checks：install_officecli/officecli_bridge import+help）；attribution_guard rc=0。
+- **Risk**: low（纯增量，仅新增 gitignored 二进制 + 只读桥接层；无 workflow 或 路由变更）
+- **Human reviewed**: pending
+
 ### 2026-08-04 — CI 修复批次：fixtures 行尾/digest/资产入库 + push path filter 补全
 - **Files**: `.gitattributes`（新增：`skills/ppt-master/fixtures/** -text`，禁止行尾转换，checkout 字节一致）、`skills/ppt-master/scripts/smoke_check.py`（Test 13 断言 `backup/old.zip` → `backup/old.bin`）、`skills/ppt-master/fixtures/`（文本统一 LF + 10 个 digest 基于 LF 重新生成；`space_report/proj_a/backup/old.bin` 改名替代被 `*.zip` 忽略的 old.zip；`git add -f` 入库 3 个被 `*.png` 忽略的测试资产）、`.github/workflows/ci.yml`（push paths 增加 `skills/ppt-master/fixtures/**`）
 - **Reason**: 首次真实 CI 跑测暴露三类问题：① `*.zip`/`*.png` 忽略规则吞掉 fixture 测试资产（old.zip 从未入库 → Test 13 缺文件；a.png×2/sample_badge.png 未入库 → derive 无图片回退 5-spec-lock → Test 12 失败）；② Windows autocrlf 使本地 spec_lock.md 为 CRLF 而入库 LF，digest 基于 CRLF 生成 → CI 全 fixture `SPEC_LOCK_DIGEST_MISMATCH`；③ fixtures-only 提交命中 push paths 过滤器缺项 → 静默跳过 CI（cb72d3f1 无 run）。

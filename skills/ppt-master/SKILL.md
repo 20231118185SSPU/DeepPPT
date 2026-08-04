@@ -62,6 +62,7 @@ Load [`workflows/routing.md`](workflows/routing.md) to select exactly one top-le
 - Pre-pipeline flows for topic-only inputs: [`ppt-briefing`](workflows/ppt-briefing.md) → [`deep-research`](workflows/deep-research.md).
 - Generate-route stages and profiles: [`workflows/index.md`](workflows/index.md).
 - Failure recovery: [`workflows/governance/failure-recovery.md`](workflows/governance/failure-recovery.md).
+- Shared native PPTX revision (OfficeCLI): [`workflows/stages/native-revision.md`](workflows/stages/native-revision.md).
 
 ## Context Loading Strategy
 

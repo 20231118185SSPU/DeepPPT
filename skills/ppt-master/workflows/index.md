@@ -31,6 +31,7 @@ description: Full DeepPPT2 workflow index with route ownership and the PPTX rout
 | `batch-review` | [`batch-review.md`](./batch-review.md) | Generate helper | Optional batch-by-batch generation with intermediate user visual feedback. Activate: "分批审阅" / "batch review". |
 | `revision-loop` | [`revision-loop.md`](./revision-loop.md) | Generate helper | Multi-turn local revision — apply targeted patches to generated SVG pages without full regeneration. Enter when user says "修改"/"调整"/"revise" after Step 6. Uses Plan-Act-Guard pipeline. |
 | `failure-recovery` | [`governance/failure-recovery.md`](./governance/failure-recovery.md) | All routes | Stop/continue governance with the recovery matrix |
+| `native-revision` | [`stages/native-revision.md`](./stages/native-revision.md) | All routes (shared child) | OfficeCLI-backed native PPTX edit — inspection, browser preview, plan, atomic apply; always opt-in |
 
 ## PPTX Route Boundary
 

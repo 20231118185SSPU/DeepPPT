@@ -8,17 +8,21 @@ on:
     branches: ["main"]
     paths:
       - 'skills/ppt-master/scripts/**'
+      - 'skills/ppt-master/scripts/assets/**'
       - 'skills/ppt-master/references/**'
       - 'skills/ppt-master/templates/**'
       - 'skills/ppt-master/fixtures/**'
+      - 'skills/ppt-master/workflows/**'
       - 'examples/**'
       - '.github/workflows/ci.yml'
   pull_request:
     paths:
       - 'skills/ppt-master/scripts/**'
+      - 'skills/ppt-master/scripts/assets/**'
       - 'skills/ppt-master/references/**'
       - 'skills/ppt-master/templates/**'
       - 'skills/ppt-master/fixtures/**'
+      - 'skills/ppt-master/workflows/**'
       - 'examples/**'
       - '.github/workflows/ci.yml'
   workflow_dispatch:
@@ -44,6 +48,11 @@ jobs:
       - name: Install dependencies
         run: |
           pip install -r skills/ppt-master/requirements.txt
+
+      - name: Install OfficeCLI (pinned v1.0.143)
+        run: |
+          python3 skills/ppt-master/scripts/install_officecli.py install --json
+          python3 skills/ppt-master/scripts/install_officecli.py check --json
 
       - name: Run smoke check (import + --help + integration contracts)
         run: |

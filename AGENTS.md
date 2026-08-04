@@ -42,6 +42,7 @@ PPT Master is an AI-driven presentation generation system. Multi-role collaborat
 - Technical SVG/PPT constraints live in [`skills/ppt-master/references/shared-standards.md`](skills/ppt-master/references/shared-standards.md).
 - Canvas choices live in [`skills/ppt-master/references/canvas-formats.md`](skills/ppt-master/references/canvas-formats.md).
 - Icon library details live in [`skills/ppt-master/templates/icons/README.md`](skills/ppt-master/templates/icons/README.md).
+- For native PPTX last-mile edits (text/color/position on an exported deck), read [`skills/ppt-master/workflows/stages/native-revision.md`](skills/ppt-master/workflows/stages/native-revision.md).
 
 ## Required Conventions
 

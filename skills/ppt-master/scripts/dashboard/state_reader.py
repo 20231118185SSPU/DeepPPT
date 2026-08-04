@@ -33,6 +33,11 @@ from update_spec import parse_lock  # noqa: E402
 from artifact_registry import latest_pptx  # noqa: E402
 from bridge import dashboard_status, confirm_ui_status, live_preview_status  # noqa: E402
 from health_reader import health_summary  # noqa: E402
+from officecli_reader import (  # noqa: E402
+    officecli_runtime_state,
+    office_sources_state,
+    native_revision_state,
+)
 from quality_reader import page_expression_summary, quality_summary  # noqa: E402
 
 _SKILL_DIR = Path(__file__).resolve().parents[2]
@@ -714,6 +719,9 @@ def read_pipeline_state(project: Path) -> dict:
         "dashboard": dashboard_status(project),
         "live_preview": live_preview_status(project),
         "confirm_ui": confirm_ui_status(project),
+        "officecli_runtime": officecli_runtime_state(project),
+        "office_sources": office_sources_state(project),
+        "native_revision": native_revision_state(project),
         "derived_at": _now(),
     }
     payload["health_summary"] = health_summary(project, payload)
