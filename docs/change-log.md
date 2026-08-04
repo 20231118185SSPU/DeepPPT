@@ -22,6 +22,15 @@
 ---
 
 ## Log
+### 2026-08-04 — trace 写侧接入：image_gen/svg_to_pptx 埋点 + run_summary 标注计数 + smoke Test 14
+- **Files**: `skills/ppt-master/scripts/image_gen.py`（`_run_manifest._one` 每 manifest 尝试发 `image_gen_attempt` 事件：operation `image_gen:<stem>`、status PASS/FAIL、error_code=异常类名；**不含 prompt 正文**）、`skills/ppt-master/scripts/svg_to_pptx.py`（包装器每次导出发 `pptx_export`：status/duration_ms/step=7）、`skills/ppt-master/scripts/run_summary.py`（`live_preview_count` 改读 `<project>/annotations.jsonl`（svg_editor 产物，缺省回退 trace 事件）；`pptx_reexport_count` 匹配 `pptx_export`）、`skills/ppt-master/scripts/docs/trace-contract.md`（§3 指标来源表更新）、`skills/ppt-master/scripts/smoke_check.py`（Test 11 断言更新 + **Test 14**：image_gen stub 白盒验证事件落地且无 prompt 泄漏）、`skills/ppt-master/fixtures/trace_calibration/`（+annotations.jsonl 3 条 + pptx_export 事件，events 10→11；README 契约同步）
+- **Reason**: `plans/deepppt2-practical-delivery-optimization-agent-brief.md` Phase 4 收尾项（上轮回执列为未完成）：图片尝试/导出次数/标注数此前无写侧事件，`run_summary` 只能报 null + not-wired；SVG 重生成为 agent 手改无脚本钩子，维持如实 null。
+- **Before**: image_gen 无 trace；导出无事件；标注数无来源；run_summary 三个指标全 null + not-wired。
+- **After**: 每张图片 manifest 尝试一条非敏感事件（可测：stub 后端白盒 probe 断言 operation/status 且 prompt 正文不泄漏）；每次导出一条 `pptx_export`（真实导出实测 PASS/1877ms/step 7）；标注数直接读 annotations.jsonl（3 条 fixture 断言）；SVG 重生成保持 null + not-wired 并文档化。
+- **Verified**: smoke --integration 270/0/4/274（Test 11 全 PASS：events=11、live_preview=3、reexport=1、regen=null；Test 14 PASS）；完整 smoke 170/0/4/174；guard rc=0；governance drift 5 PASS；真实导出事件落地。
+- **Risk**: low（纯增量事件写入，best-effort 不阻断主流程；行为零变化）
+- **Human reviewed**: pending
+
 ### 2026-08-04 — Phase 6.2 只读项目空间报告：space_report + archive plan dry-run + smoke Test 13
 - **Files**: `skills/ppt-master/scripts/space_report.py`（新增：只读空间报告，schema `ppt-master.space-report.v1`）、`skills/ppt-master/scripts/smoke_check.py`（integration Test 13：分类/汇总/归档计划/坏路径，+14 checks）、`skills/ppt-master/fixtures/space_report/`（新增：2 合成项目精确尺寸文件 + README）、`skills/ppt-master/fixtures/README.md`
 - **Reason**: `plans/deepppt2-practical-delivery-optimization-agent-brief.md` Phase 6.2（用户单独批准）；F7 显示 projects/ 约 4.82 GiB 但无按类型的只读占用报告；容量治理只报告不删除。

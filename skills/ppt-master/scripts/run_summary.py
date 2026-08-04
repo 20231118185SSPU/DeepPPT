@@ -41,7 +41,7 @@ _SENSITIVE_KEY_RE = re.compile(
 _IMAGE_OP_RE = re.compile(r"image[_-]?(gen|search|attempt)", re.IGNORECASE)
 _ANNOTATION_OP_RE = re.compile(r"annotation|live[_-]?preview", re.IGNORECASE)
 _REGENERATION_OP_RE = re.compile(r"regen|svg[_-]?regenerat", re.IGNORECASE)
-_REEXPORT_OP_RE = re.compile(r"re-?export|reexport", re.IGNORECASE)
+_REEXPORT_OP_RE = re.compile(r"re-?export|reexport|pptx_export", re.IGNORECASE)
 _LEGACY_EVENT = "legacy event (no schema_version)"
 
 
@@ -236,6 +236,26 @@ def _final_results(project: Path) -> dict[str, Any]:
     return results
 
 
+def _annotation_count(
+    project: Path,
+    events: list[dict[str, Any]],
+    warnings: list[str],
+) -> int | None:
+    """Live-preview annotations: count `<project>/annotations.jsonl` records
+    (written by svg_editor server), falling back to trace events."""
+    jsonl = project / "annotations.jsonl"
+    if jsonl.is_file():
+        try:
+            records = [
+                line for line in jsonl.read_text(encoding="utf-8").splitlines() if line.strip()
+            ]
+        except OSError:
+            records = []
+        if records:
+            return len(records)
+    return _counted_metric(events, _ANNOTATION_OP_RE, "live-preview annotations", warnings)
+
+
 def build_summary(project: Path) -> dict[str, Any]:
     events, warnings = _load_trace(project)
     final = _final_results(project)
@@ -244,9 +264,7 @@ def build_summary(project: Path) -> dict[str, Any]:
     )
     image_attempts = _counted_metric(events, _IMAGE_OP_RE, "image attempts", warnings)
     annotations = {
-        "live_preview_count": _counted_metric(
-            events, _ANNOTATION_OP_RE, "live-preview annotations", warnings
-        ),
+        "live_preview_count": _annotation_count(project, events, warnings),
         "svg_regeneration_count": _counted_metric(
             events, _REGENERATION_OP_RE, "svg regeneration", warnings
         ),

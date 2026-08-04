@@ -874,6 +874,36 @@ def _should_trigger_fallback(
     )
 
 
+def _trace_image_attempt(
+    manifest_path: str,
+    item: dict,
+    attempt: int,
+    status: str,
+    error_code: str | None = None,
+) -> None:
+    """Emit one non-sensitive image attempt trace event (no prompt body).
+
+    Project path derives from the manifest location (``<project>/images/``).
+    Best-effort: trace write failures never block generation (T5.3).
+    """
+    try:
+        from dashboard.trace_writer import trace_event
+    except ImportError:
+        return
+    filename = str(item.get("filename") or "")
+    project = str(Path(manifest_path).resolve().parent.parent)
+    trace_event(
+        project,
+        "image_gen_attempt",
+        f"{status} attempt {attempt} for {filename}",
+        operation=f"image_gen:{Path(filename).stem}",
+        status=status,
+        attempt=attempt,
+        error_code=error_code,
+        route="generate",
+    )
+
+
 def _run_manifest(manifest: dict, manifest_path: str, backend_module, *,
                   initial_concurrency: int,
                   image_size: str,
@@ -988,8 +1018,10 @@ def _run_manifest(manifest: dict, manifest_path: str, backend_module, *,
                         pass  # Pillow not available, skip resize
                     except (OSError, ValueError) as crop_exc:
                         print(f"  [WARN] {item['filename']}: crop failed: {crop_exc}")
+                _trace_image_attempt(manifest_path, item, attempt, "PASS")
                 return idx, saved_path, None
             except Exception as exc:  # noqa: BLE001 — backend raises arbitrary types
+                _trace_image_attempt(manifest_path, item, attempt, "FAIL", error_code=type(exc).__name__)
                 last_exc = exc
                 if attempt < max_attempts:
                     delay = min(10, 2 * attempt)

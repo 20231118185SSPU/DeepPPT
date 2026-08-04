@@ -8,3 +8,4 @@
 {"detail": "zero ms", "duration_ms": 0, "operation": "noop", "route": "generate", "schema_version": 1, "step": 9, "ts": "2026-08-04T10:00:08.000+00:00", "type": "step_complete"}
 {"detail": "legacy shape event", "ts": "2026-08-04T10:00:09.000+00:00", "type": "bridge_status"}
 {"detail": "search failed", "error_code": "IMG_E001", "operation": "image_search", "route": "generate", "schema_version": 1, "ts": "2026-08-04T10:00:10.000+00:00", "type": "error"}
+{"detail": "export rc=0", "duration_ms": 3400, "operation": "pptx_export", "route": "generate", "schema_version": 1, "status": "PASS", "step": 7, "ts": "2026-08-04T10:00:11.000+00:00", "type": "pptx_export"}

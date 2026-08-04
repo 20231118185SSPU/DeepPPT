@@ -39,6 +39,10 @@
 | 失败率 | `status == "FAIL"`（或 `type == "error"`）事件数 / 事件总数 | 按 route/step 分组 |
 | 重试率 | 相同 `operation` 短时间内重复事件 | 需要 operation 命名稳定 |
 | gate 错误分布 | `quality/harness.json` details + trace `gate_result.failed_scripts` | 每 gate 独立计数 |
+| 图片生成/搜索尝试 | `image_gen.py` 每 manifest 尝试发 `image_gen_attempt`（operation `image_gen:<stem>`，status PASS/FAIL，error_code；**不含 prompt 正文**） | `run_summary.image_attempts` 消费 |
+| PPTX 导出/重导出 | `svg_to_pptx.py` 包装器每次导出发 `pptx_export`（status/duration_ms） | `run_summary.pptx_reexport_count` 消费 |
+| Live Preview 标注数 | `<project>/annotations.jsonl`（svg_editor server 写入） | `run_summary.live_preview_count` 消费；无文件时回退 trace 事件 |
+| SVG 重生成次数 | **未采集**（重生成是 agent 手改 SVG，无脚本钩子） | `run_summary` 报 null + not-wired |
 | 用户修订次数 | **未采集**（无 artifact 承载；确认修订回执时可手工记录） | 不伪造默认值 |
 | Prompt tokens | `prompt_audit.py --json` 回执 | 阶段回执附带 |
 

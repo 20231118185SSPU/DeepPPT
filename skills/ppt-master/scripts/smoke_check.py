@@ -683,7 +683,7 @@ print("partial states OK")
                     ("schema v1", summary.get("schema") == "ppt-master.run-summary.v1"),
                     ("route generate", summary.get("route") == "generate"),
                     ("slide_count 3", summary.get("slide_count") == 3),
-                    ("events_total 10", summary.get("events_total") == 10),
+                    ("events_total 11", summary.get("events_total") == 11),
                     ("stage strategist 2000ms", summary.get("stages", {}).get("strategist", {}).get("duration_ms") == 2000),
                     ("stage images null (not measured)", summary.get("stages", {}).get("images", {}).get("duration_ms") is None),
                     ("stage noop 0 preserved (real zero)", summary.get("stages", {}).get("noop", {}).get("duration_ms") == 0),
@@ -691,7 +691,9 @@ print("partial states OK")
                     ("error by_code IMG_E001", summary.get("errors", {}).get("by_code") == {"IMG_E001": 1}),
                     ("retry_count 1", summary.get("retry_count") == 1),
                     ("image_attempts 2", summary.get("image_attempts") == 2),
-                    ("annotations null (not wired)", summary.get("annotations", {}).get("live_preview_count") is None),
+                    ("annotations live_preview 3", summary.get("annotations", {}).get("live_preview_count") == 3),
+                    ("annotations reexport 1", summary.get("annotations", {}).get("pptx_reexport_count") == 1),
+                    ("annotations svg_regen null", summary.get("annotations", {}).get("svg_regeneration_count") is None),
                     ("final e2e PASS", summary.get("final_results", {}).get("e2e") == "PASS"),
                     ("final visual null", summary.get("final_results", {}).get("visual") is None),
                 ]
@@ -889,6 +891,53 @@ print("partial states OK")
                 failed += 1
             _run([python, str(scripts_dir / "space_report.py"), str(fixture_tmp / "no_such_root")],
                  "space_report bad root -> 2", expect_exit=2)
+
+        # --- Test 14: trace wiring — image_gen manifest attempt events ---
+        print("\n  [14] image_gen manifest attempt trace wiring")
+        probe = '''import sys, tempfile, json
+from pathlib import Path
+sys.path.insert(0, r"{SCRIPTS}")
+import image_gen
+
+class StubBackend:
+    def generate(self, **kw):
+        return "fake.png"
+
+tmp = Path(tempfile.mkdtemp())
+proj = tmp / "proj"
+(proj / "images").mkdir(parents=True)
+mp = proj / "images" / "image_prompts.json"
+manifest = {
+    "items": [{"filename": "cover_01.png", "prompt": "synthetic prompt body", "aspect_ratio": "1:1", "status": "Pending"}]
+}
+image_gen._run_manifest(
+    manifest, str(mp), StubBackend(),
+    initial_concurrency=1, image_size="1K", output_dir=str(proj / "images"),
+    model="stub", backend_name="stub", fallback_enabled=False,
+)
+trace = proj / "trace.jsonl"
+assert trace.is_file(), "trace.jsonl missing"
+events = [json.loads(l) for l in trace.read_text(encoding="utf-8").splitlines() if l.strip()]
+assert events, "no trace events emitted"
+ev = events[0]
+assert ev["operation"].startswith("image_gen:"), ev.get("operation")
+assert ev["status"] in ("PASS", "FAIL"), ev.get("status")
+dump = json.dumps(ev)
+assert "prompt" not in dump and "synthetic prompt body" not in dump, "prompt body leaked"
+print("image_gen trace OK:", ev["operation"], ev["status"])
+'''.replace("{SCRIPTS}", str(scripts_dir))
+        try:
+            r = subprocess.run([python, "-c", probe], capture_output=True, text=True,
+                               encoding="utf-8", errors="replace", timeout=60)
+            if r.returncode == 0:
+                print(f"  [PASS] image_gen attempt trace event (no prompt leak): {r.stdout.strip()[-60:]}")
+                passed += 1
+            else:
+                print(f"  [FAIL] image_gen trace wiring — {(r.stdout + r.stderr).strip()[:200]}")
+                failed += 1
+        except subprocess.TimeoutExpired:
+            print("  [FAIL] image_gen trace wiring probe timed out (60s)")
+            failed += 1
 
     finally:
         # Cleanup temp directory
