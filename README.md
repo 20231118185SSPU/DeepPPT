@@ -18,7 +18,8 @@ Latest production hardening includes:
 - **Complete page-expression lifecycle** - the Strategist-owned `page_expression.json` remains authoritative across continuous, split, resume, and refine-spec paths; compliance checks enforce page coverage and visible assertions, and the contract is sealed together with `spec_lock.md`.
 - **Evidence-backed consulting narratives** - when consulting evidence is enabled, research preserves traceable evidence rows and resolves exactly 2-3 SCR alternatives into one recommendation with evidence IDs, caveats, and explicit rejection reasons.
 - **Artifact showcase Dashboard** - the Dashboard is positioned as an online viewing platform for everything a project produces: the deck-making journey (research → content selection → detailed outline → visual strategy) alongside the artifacts themselves (SVG pages, exports, notes, images, quality reports), browsable by four phases (制作思路 / 设计契约 / 生成页面 / 导出成品) and searchable locally via `dashboard/artifacts_index.json`.
-- **Prompt context governance** - `prompt_audit.py` + `prompt_audit_manifest.json` audit the full prompt corpus (172 documents, o200k_base token budgets): seven real load sets model what an agent actually loads per route (global / research / generate / image / template / native), coverage exemptions and 22 accepted shared-contract duplicates keep the corpus accounting closed (errors=0).
+- **Prompt context governance** - `prompt_audit.py` + `prompt_audit_manifest.json` audit the full prompt corpus (173 documents, o200k_base token budgets): six route-level load sets plus a `generate-on-demand` set model what an agent actually loads per route, with concern-level authority edges, six live registries (modes / visual styles / image catalogs / charts), and two schema-grammar owners enforcing single-definition contracts. Generate-route typical load dropped **21.4%** (165.7K → 130.2K tokens) by moving on-demand references (effects catalog, animations, structured-mode markers, optional workflows) into their own load set with real `load_event` triggers; coverage exemptions and 22 accepted shared-contract duplicates keep the corpus accounting closed (errors=0).
+- **System optimization Phase 1-8 (2026-08-04)** - convergence pass over the whole repo: pipeline state and artifact paths now have a single source of truth (`project_utils` canonical accessors + `derive_pipeline_state`; checkpoint and Dashboard agree on `exports/*.pptx`), `spec_lock.md` is parsed by exactly one owner (`spec_lock_reader.py`), trace events carry a versioned envelope, `pptx_animations.py` was split into `animation_constants` + `animation_effects` (characterization 18/18 identical), all 85 CLI entries exit through `raise SystemExit(main())`, and the CI smoke job now runs the full 187-check integration suite. Verification: guard/governance/prompt-audit all green, examples 29/29 checker + e2e, 3-fixed-brief end-to-end rehearsal 3/3. Reports: `docs/reviews/deepppt2-system-optimization-baseline-2026-08.md` + `-final-2026-08.md`.
 - **Intent-first composition QA** - the Executor composes from `content_relation`, `information_anchor`, and `visual_act` before choosing layout patterns. Sparse composition, one-sided whitespace, and large image-text gaps remain review signals rather than prompts to add filler; fixes are batched before one re-check.
 
 ---
@@ -33,7 +34,7 @@ DeepPPT 是一个端到端的 AI PPT 生成系统。给定一个主题或源文�
 
 **2026-08-03 完成 v4.3.0 大规模迁移收尾**：重构版导出器（真实文字度量硬错误、transform 感知溢出契约、21 类 SVG→DrawingML 语法契约）与 `svg_quality` 诊断包整体接线，`structured` 模板导出模式落地；29 个公开示例全部通过 `svg_quality_checker` + `e2e_validate` 双门（29/29），GitHub Actions CI 三 job 全绿，GitHub Pages 已上线。Dashboard 重新定位为**产物在线观看平台**——按「制作思路 → 设计契约 → 生成页面 → 导出成品」四阶段浏览项目全过程产物，并生成本地可搜找的产物索引。
 
-**2026-08-04 完成治理收口**：`prompt_audit` 契约从空壳重建为真实 load-set 设计（7 个加载集 + 1 个豁免 + 22 个有意共享重复声明，172 文档语料 token 预算审计 rc=0 / errors=0 / coverage 闭合）；仓库盘点、性能基线、执行契约三份治理文档状态同步（Phase 2/3/4 全部完成，CI 风险关闭）；`.align` 经验归档至 50 条上限内并建立决策日志。
+**2026-08-04 完成系统优化收尾（Phase 1-8）**：`prompt_audit` 契约从空壳重建为真实 load-set 设计（6 个路由加载集 + 1 个 generate-on-demand 加载集、9 条权威边、6 个活注册表、2 个 schema-grammar 所有者、22 个有意共享重复声明；173 文档语料 token 预算审计 rc=0 / errors=0 / coverage 闭合，Generate 路由典型加载 −21.4%）；管线状态与产物路径收敛为单一事实源（`project_utils` 规范 accessors + `derive_pipeline_state`，checkpoint 与 Dashboard 一致认 `exports/*.pptx`）；`spec_lock.md` 由唯一解析所有者 `spec_lock_reader.py` 承载；trace 事件携带版本化信封；`pptx_animations` 拆分为 `animation_constants` + `animation_effects`（特征化 18/18 无差异）；全部 85 个 CLI 入口统一 `raise SystemExit(main())`；CI smoke job 升级为 187 项集成套件。基线/收尾双报告见 `docs/reviews/deepppt2-system-optimization-*.md`，三份治理文档状态同步、`.align` 经验归档至 50 条上限并建立决策日志。
 
 **支持 13 个主流 AI Agent 平台**，克隆即用：Claude Code / Cursor / Windsurf / GitHub Copilot / OpenAI Codex / Pi / Cline / Roo Code / Aider / Amazon Q / Kiro / Junie / Hermes Agent。
 
@@ -284,6 +285,16 @@ DeepPPT/
 | [Scripts & Tools](skills/ppt-master/scripts/README.md) | 工具脚本文档 |
 
 ## 更新日志
+
+### 2026-08-04 — 系统优化收尾（Phase 1-8）：单一事实源 + 契约治理 + CLI 卫生
+
+- 单一事实源收敛：`project_utils` 新增 12 个规范 accessors（latest_export / has_export / svg_pages / spec_lock_path / find_quality_report 等）+ `PROJECT_ARTIFACT_DIRS` + `derive_pipeline_state`；`project_manager.checkpoint_save` 与 Dashboard `artifact_registry` 全部委托同一实现（F5 漂移修复：checker 只读 `exports/*.pptx`，项目根 `*.pptx` 永不 authoritative）
+- `spec_lock.md` 解析收敛为唯一所有者 `spec_lock_reader.py`（类型化 accessor + raw-text `images()`），`update_spec` / `e2e_validate` / `layout_capacity_check` / `svg_quality/checker` 全部经 wrapper 委托；checker 幽灵 import 移除并加 `_ANCHOR_COMPARE_ENABLED` 门（0 行为变化）
+- `prompt_audit` 契约增补 generate-on-demand 加载集（effects 目录 / 动画 / structured 标记 / 可选工作流移入按需加载，配真实 `load_event` 触发）：Generate 路由典型加载 165.7K → 130.2K tokens（−21.4%），语料 173 文档 coverage 闭合 rc=0
+- trace 事件统一版本化信封 v1（schema_version / operation / route / status / duration_ms / error_code，null≠0 语义），契约见 `scripts/docs/trace-contract.md`；`confirm_ui.md` 补 result.json schema 契约
+- `pptx_animations.py` 拆分为 `animation_constants` + `animation_effects`（严格单向依赖），characterization fixture 18 键 0 差异，public symbol 完整性校验通过
+- 85 个 CLI 入口统一 `raise SystemExit(main())`（错误路径 0 silent）；smoke_check 增补 Test 7-9（状态链 + gate 场景），CI smoke job 升级为 `--integration` 187 项集成套件
+- 验证：guard / governance / prompt-audit 全绿，examples 29/29 checker + e2e，三份固定简报端到端演练 3/3；基线/收尾双报告见 `docs/reviews/deepppt2-system-optimization-baseline-2026-08.md` 与 `-final-2026-08.md`
 
 ### 2026-08-04 — 治理收口：prompt audit 契约重建 + 治理文档状态同步
 
