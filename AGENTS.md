@@ -109,6 +109,14 @@ python3 skills/ppt-master/scripts/svg_to_pptx.py <project_path>
 python3 skills/ppt-master/scripts/e2e_validate.py <project_path> --pptx exports/<exported_file>.pptx
 python3 skills/ppt-master/scripts/pptx_quality_check.py <project_path>/exports/<exported_file>.pptx --json-out <project_path>/quality/pptx_quality.json  # optional strict post-export structure QA
 # Mergeable dy-stacked paragraph blocks collapse into one editable text frame by default; add --no-merge to keep every line as its own frame (strict line fidelity). See SKILL.md Step 7.3.
+
+# Delivery-quality / observability tools (read-only unless noted)
+python3 skills/ppt-master/scripts/svg_geometry_audit.py <project_path>            # advisory glyph-box layout audit (always exit 0; --strict exits 1 on errors)
+python3 skills/ppt-master/scripts/pptx_render_export.py --pptx <file.pptx> -o <dir>  # PowerPoint COM real render (Windows+Office; exit 2 without)
+python3 skills/ppt-master/scripts/run_summary.py <project_path>                   # aggregate trace.jsonl + sidecars -> quality/run_summary.json (null/0 semantics; sensitive keys fail-closed rc=1)
+python3 skills/ppt-master/scripts/project_manager.py diagnose <project_path>      # read-only interruption diagnosis (step/evidence/blockers/unique next action; bad path rc=2)
+python3 skills/ppt-master/scripts/space_report.py <projects_root>                 # read-only space report by artifact type; --archive-plan = dry-run only, never deletes
+# Route/converter/diagnosis regression fixtures live in skills/ppt-master/fixtures/ (synthetic, non-sensitive; rebuild via rebuild_*.py); contract checks run in smoke --integration Tests 10-14.
 ```
 
 ## Core Directories

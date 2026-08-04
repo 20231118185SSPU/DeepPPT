@@ -230,6 +230,17 @@ def _final_results(project: Path) -> dict[str, Any]:
     else:
         results["delivery"] = None
         results["slide_count"] = None
+    # pptx_quality_check.v1 has no status field — fall back to the latest
+    # export postflight report (validation/<stem>.report.json).
+    if results["delivery"] is None:
+        reports = sorted(
+            (project / "validation").glob("*.report.json")
+        ) if (project / "validation").is_dir() else []
+        for report_path in reversed(reports):
+            report = read_json(f"validation/{report_path.name}")
+            if report is not None and report.get("status"):
+                results["delivery"] = report.get("status")
+                break
 
     visual = read_json("quality/rendered_visual_gate.json")
     results["visual"] = (visual or {}).get("status") if visual is not None else None
@@ -273,6 +284,17 @@ def build_summary(project: Path) -> dict[str, Any]:
         ),
     }
     stages = _stage_durations(events)
+    # Fallback: when no step_start/step_complete pairs exist, surface
+    # duration-bearing operations (e.g. pptx_export) as stages so "which step
+    # is slowest" stays answerable from real measurements.
+    if not stages:
+        for event in events:
+            op = _op(event)
+            if op in {"pptx_export"} and event.get("duration_ms") is not None:
+                stage: dict[str, Any] = {"duration_ms": event["duration_ms"]}
+                if event.get("ts"):
+                    stage["end"] = str(event["ts"])
+                stages[op] = stage
     return {
         "schema": SUMMARY_SCHEMA,
         "project": str(project),

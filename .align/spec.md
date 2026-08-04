@@ -39,7 +39,7 @@
 ## 测试与验证命令
 
 - 无 `tests/` 目录、无 `test_*.py`；自动化验证 = `smoke_check.py`（80 个入口脚本 import + `--help` + 集成测试），由 CI 自动运行 `[原文]`（2026-08-03 修订，原「无自动化测试」语义过窄；入口数随动画合并 -1，2026-08-03 实测修正）
-- 脚本冒烟检查：`python skills/ppt-master/scripts/smoke_check.py --skip-help` `[原文]`；当前基线 77 passed / 0 failed / 3 skipped / 80 checks（完整模式 156/0/4 / 160 checks）`[原文]`（2026-08-03 实测修正：初版 78/0/3 + 158/0/4 系动画合并前基线）
+- 脚本冒烟检查：`python skills/ppt-master/scripts/smoke_check.py --skip-help` `[原文]`；当前基线 82 passed / 0 failed / 3 skipped / 85 checks（完整模式 170/0/4 / 174 checks；`--integration` 270/0/4 / 274 checks，含 Test 8-14 契约断言）`[原文]`（2026-08-04 实测修正：+2 新脚本 ×2 checks + Test 10-14；Test 10 路线契约/Test 11 run_summary/Test 12 diagnose/Test 13 space_report/Test 14 image_gen trace）
 - 聚合质量门：`python skills/ppt-master/scripts/harness_gate.py <project_path> --quick` `[原文]`
 - 端到端验证：`python skills/ppt-master/scripts/e2e_validate.py <project_path> --pptx <pptx_path>` `[原文]`
 - 代码修改前必须先跑 smoke_check 建立基线，修改后再次验证 `[原文]`
