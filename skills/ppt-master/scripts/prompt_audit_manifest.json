@@ -30,56 +30,93 @@
     "research": {
       "description": "Pre-pipeline research chain for topic-only input (ppt-briefing -> deep-research 7 steps -> planning chain)",
       "scope": "on-demand",
-      "include": ["global"],
+      "include": [
+        "global"
+      ],
       "files": [
         "skills/ppt-master/workflows/ppt-briefing.md",
         "skills/ppt-master/workflows/deep-research.md",
         "skills/ppt-master/workflows/content-selection.md",
         "skills/ppt-master/workflows/detailed-outline.md",
         "skills/ppt-master/workflows/image-text-linking.md",
-        {"glob": "skills/ppt-master/workflows/research/*.md", "select": 7}
+        {
+          "glob": "skills/ppt-master/workflows/research/*.md",
+          "select": 7,
+          "load_event": "deep-research Step 3 search-path sub-steps (only when the selected platform path is used)"
+        }
       ],
       "max_tokens": 60000
     },
     "generate": {
       "description": "Generate PPTX route: route authority, role references, mode/visual-style catalogs, stages, profiles, and script docs",
       "scope": "on-demand",
-      "include": ["global"],
+      "include": [
+        "global"
+      ],
       "files": [
         "skills/ppt-master/workflows/generate-pptx.md",
-        "skills/ppt-master/workflows/batch-review.md",
-        "skills/ppt-master/workflows/revision-loop.md",
-        {"glob": "skills/ppt-master/workflows/stages/*.md", "select": 2},
-        {"glob": "skills/ppt-master/workflows/profiles/*.md", "select": 1},
+        {
+          "glob": "skills/ppt-master/workflows/stages/*.md",
+          "select": 2,
+          "load_event": "Stage workflow activation inside the Generate route (resume-execute on fresh chat; live-preview on request; visual-review before post-processing)"
+        },
+        {
+          "glob": "skills/ppt-master/workflows/profiles/*.md",
+          "select": 1,
+          "load_event": "Profile activation (quick-generate on explicit quick intent; beautify-pptx on 1:1 re-layout request)"
+        },
         "skills/ppt-master/references/strategist.md",
         "skills/ppt-master/references/executor-base.md",
         "skills/ppt-master/references/shared-standards.md",
         "skills/ppt-master/references/shared-standards-core.md",
         "skills/ppt-master/references/canvas-formats.md",
-        "skills/ppt-master/references/animations.md",
         "skills/ppt-master/references/svg-image-embedding.md",
-        "skills/ppt-master/references/visual-review.md",
-        "skills/ppt-master/references/reviser.md",
-        "skills/ppt-master/references/semantic-svg.md",
-        "skills/ppt-master/references/pptx-structure-interface.md",
-        "skills/ppt-master/references/svg-effects.md",
-        {"glob": "skills/ppt-master/references/modes/*.md", "select": 2},
-        {"glob": "skills/ppt-master/references/visual-styles/*.md", "select": 2},
-        "skills/ppt-master/scripts/README.md",
+        {
+          "glob": "skills/ppt-master/references/modes/*.md",
+          "select": 2,
+          "load_event": "spec_lock mode locked at Step 4; Executor Step 6 reads only the one locked mode file"
+        },
+        {
+          "glob": "skills/ppt-master/references/visual-styles/*.md",
+          "select": 2,
+          "load_event": "spec_lock visual_style locked at Step 4; Executor Step 6 reads only the one locked style file"
+        },
         {
           "glob": "skills/ppt-master/scripts/docs/*.md",
-          "exclude": ["**/pptx-transitions.md"],
-          "select": 2
+          "exclude": [
+            "**/pptx-transitions.md"
+          ],
+          "select": 2,
+          "load_event": "Per-tool documentation on demand (confirm_ui.md at Step 4; pptx-transitions.md at Step 7)"
         },
         "skills/ppt-master/templates/design_spec_reference.md",
         "skills/ppt-master/templates/spec_lock_reference.md"
       ],
       "max_tokens": 190000
     },
+    "generate-on-demand": {
+      "description": "Generate-route on-demand references: loaded individually through existing pointers (generate-pptx Step 7 animation list, spec_lock structured markers, routing stage/profiles table, tool README) — never as a bundle",
+      "scope": "on-demand",
+      "include": [],
+      "files": [
+        "skills/ppt-master/references/animations.md",
+        "skills/ppt-master/references/svg-effects.md",
+        "skills/ppt-master/references/semantic-svg.md",
+        "skills/ppt-master/references/pptx-structure-interface.md",
+        "skills/ppt-master/scripts/README.md",
+        "skills/ppt-master/workflows/batch-review.md",
+        "skills/ppt-master/workflows/revision-loop.md",
+        "skills/ppt-master/references/visual-review.md",
+        "skills/ppt-master/references/reviser.md"
+      ],
+      "max_tokens": 40000
+    },
     "image": {
       "description": "Image acquisition (Step 5): image-base/generator/searcher references plus rendering/palette/type catalogs and ai-image-comparison",
       "scope": "on-demand",
-      "include": ["global"],
+      "include": [
+        "global"
+      ],
       "files": [
         "skills/ppt-master/references/image-base.md",
         "skills/ppt-master/references/image-generator.md",
@@ -87,17 +124,35 @@
         "skills/ppt-master/references/image-layout-patterns.md",
         "skills/ppt-master/references/image-layout-spec.md",
         "skills/ppt-master/references/image-source-routing.md",
-        {"glob": "skills/ppt-master/references/image-renderings/*.md", "select": 2},
-        {"glob": "skills/ppt-master/references/image-palettes/*.md", "select": 2},
-        {"glob": "skills/ppt-master/references/image-type-templates/*.md", "select": 2},
-        {"glob": "skills/ppt-master/references/ai-image-comparison/**/*.md", "select": 3}
+        {
+          "glob": "skills/ppt-master/references/image-renderings/*.md",
+          "select": 2,
+          "load_event": "Step 5 AI generation when image_usage includes ai (h.5 rendering/palette lock)"
+        },
+        {
+          "glob": "skills/ppt-master/references/image-palettes/*.md",
+          "select": 2,
+          "load_event": "Step 5 AI generation when image_usage includes ai (h.5 palette selection)"
+        },
+        {
+          "glob": "skills/ppt-master/references/image-type-templates/*.md",
+          "select": 2,
+          "load_event": "Step 5 AI generation when a type template is applicable"
+        },
+        {
+          "glob": "skills/ppt-master/references/ai-image-comparison/**/*.md",
+          "select": 3,
+          "load_event": "Step 5 AI generation — rendering/palette/type catalog comparison on demand"
+        }
       ],
       "max_tokens": 80000
     },
     "template": {
       "description": "Create Template route: create-template/create-brand workflows, template-designer reference, template library docs and design_specs",
       "scope": "on-demand",
-      "include": ["global"],
+      "include": [
+        "global"
+      ],
       "files": [
         "skills/ppt-master/workflows/create-template.md",
         "skills/ppt-master/workflows/create-brand.md",
@@ -110,16 +165,30 @@
         "skills/ppt-master/templates/icons/README.md",
         "skills/ppt-master/templates/charts/charts_index.json",
         "skills/ppt-master/templates/charts/CHART_STYLE_GUIDE.md",
-        {"glob": "skills/ppt-master/templates/brands/*/design_spec.md", "select": 1},
-        {"glob": "skills/ppt-master/templates/decks/*/design_spec.md", "select": 1},
-        {"glob": "skills/ppt-master/templates/layouts/*/design_spec.md", "select": 1}
+        {
+          "glob": "skills/ppt-master/templates/brands/*/design_spec.md",
+          "select": 1,
+          "load_event": "Create Template route for brand kind (identity-only bundle)"
+        },
+        {
+          "glob": "skills/ppt-master/templates/decks/*/design_spec.md",
+          "select": 1,
+          "load_event": "Create Template route for deck kind (identity + structure + middle segments)"
+        },
+        {
+          "glob": "skills/ppt-master/templates/layouts/*/design_spec.md",
+          "select": 1,
+          "load_event": "Create Template route for layout kind (structure-only bundle)"
+        }
       ],
       "max_tokens": 70000
     },
     "native": {
       "description": "Native PPTX routes: Fill / Enhance workflows and the native OOXML data/shape contracts",
       "scope": "on-demand",
-      "include": ["global"],
+      "include": [
+        "global"
+      ],
       "files": [
         "skills/ppt-master/workflows/native-enhance-pptx.md",
         "skills/ppt-master/workflows/template-fill-pptx.md",
@@ -352,9 +421,165 @@
       }
     ]
   },
-  "authority_edges": [],
-  "registries": [],
-  "schema_grammars": [],
+  "authority_edges": [
+    {
+      "from": "skills/ppt-master/SKILL.md",
+      "to": "skills/ppt-master/workflows/routing.md",
+      "concern": "route_selection"
+    },
+    {
+      "from": "skills/ppt-master/workflows/routing.md",
+      "to": "skills/ppt-master/workflows/generate-pptx.md",
+      "concern": "route_authority"
+    },
+    {
+      "from": "skills/ppt-master/workflows/routing.md",
+      "to": "skills/ppt-master/workflows/create-template.md",
+      "concern": "route_authority"
+    },
+    {
+      "from": "skills/ppt-master/workflows/routing.md",
+      "to": "skills/ppt-master/workflows/template-fill-pptx.md",
+      "concern": "route_authority"
+    },
+    {
+      "from": "skills/ppt-master/workflows/routing.md",
+      "to": "skills/ppt-master/workflows/native-enhance-pptx.md",
+      "concern": "route_authority"
+    },
+    {
+      "from": "skills/ppt-master/workflows/generate-pptx.md",
+      "to": "skills/ppt-master/workflows/stages/resume-execute.md",
+      "concern": "stage_dispatch"
+    },
+    {
+      "from": "skills/ppt-master/workflows/generate-pptx.md",
+      "to": "skills/ppt-master/workflows/stages/live-preview.md",
+      "concern": "stage_dispatch"
+    },
+    {
+      "from": "skills/ppt-master/workflows/generate-pptx.md",
+      "to": "skills/ppt-master/scripts/docs/confirm_ui.md",
+      "concern": "confirm_schema"
+    },
+    {
+      "from": "skills/ppt-master/SKILL.md",
+      "to": "skills/ppt-master/workflows/governance/failure-recovery.md",
+      "concern": "failure_recovery"
+    }
+  ],
+  "registries": [
+    {
+      "name": "modes",
+      "kind": "directory",
+      "source": "skills/ppt-master/references/modes/_index.md",
+      "glob": "skills/ppt-master/references/modes/*.md",
+      "exclude": [
+        "**/_index.md"
+      ],
+      "validate_index_links": true,
+      "reference_terms": [
+        "modes"
+      ],
+      "claim_nouns": [
+        "modes"
+      ]
+    },
+    {
+      "name": "visual_styles",
+      "kind": "directory",
+      "source": "skills/ppt-master/references/visual-styles/_index.md",
+      "glob": "skills/ppt-master/references/visual-styles/*.md",
+      "exclude": [
+        "**/_index.md"
+      ],
+      "validate_index_links": true,
+      "reference_terms": [
+        "visual styles"
+      ],
+      "claim_nouns": [
+        "visual styles"
+      ]
+    },
+    {
+      "name": "image_renderings",
+      "kind": "directory",
+      "source": "skills/ppt-master/references/image-renderings/_index.md",
+      "glob": "skills/ppt-master/references/image-renderings/*.md",
+      "exclude": [
+        "**/_index.md"
+      ],
+      "validate_index_links": true,
+      "reference_terms": [
+        "renderings"
+      ],
+      "claim_nouns": [
+        "renderings"
+      ]
+    },
+    {
+      "name": "image_palettes",
+      "kind": "directory",
+      "source": "skills/ppt-master/references/image-palettes/_index.md",
+      "glob": "skills/ppt-master/references/image-palettes/*.md",
+      "exclude": [
+        "**/_index.md"
+      ],
+      "validate_index_links": true,
+      "reference_terms": [
+        "palettes"
+      ],
+      "claim_nouns": [
+        "palettes"
+      ]
+    },
+    {
+      "name": "image_type_templates",
+      "kind": "directory",
+      "source": "skills/ppt-master/references/image-type-templates/_index.md",
+      "glob": "skills/ppt-master/references/image-type-templates/*.md",
+      "exclude": [
+        "**/_index.md"
+      ],
+      "validate_index_links": true,
+      "reference_terms": [
+        "type templates"
+      ],
+      "claim_nouns": [
+        "type templates"
+      ]
+    },
+    {
+      "name": "charts",
+      "kind": "json_collection",
+      "source": "skills/ppt-master/templates/charts/charts_index.json",
+      "key": "charts",
+      "reference_terms": [
+        "chart template"
+      ],
+      "claim_nouns": [
+        "charts",
+        "chart templates"
+      ]
+    }
+  ],
+  "schema_grammars": [
+    {
+      "source": "skills/ppt-master/templates/spec_lock_reference.md"
+    },
+    {
+      "source": "skills/ppt-master/scripts/docs/confirm_ui.md",
+      "fields": [
+        "status",
+        "stage",
+        "confirmed_at",
+        "fallback_confirmed",
+        "generation_mode",
+        "refine_spec",
+        "template_selection"
+      ]
+    }
+  ],
   "coverage": {
     "exempt": [
       {

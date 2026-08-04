@@ -22,6 +22,95 @@
 ---
 
 ## Log
+### 2026-08-04 — Phase 7 依赖/Provider/CLI 卫生：入口统一 SystemExit + 盘点验证
+- **Files**: `analyze_images.py`、`finalize_svg.py`、`gemini_watermark_remover.py`、`generate_examples_index.py`、`image_gen.py`、`pptx_animations.py`、`svg_patch.py`、`svg_quality_checker.py`、`total_md_split.py`、`vision_check.py`（10 个入口 `main()` 裸调用 → `raise SystemExit(main())`）
+- **Reason**: `plans/deepppt2-system-optimization-agent-brief.md` Phase 7 T7.6；裸调用会在 main 未来返回非 0 int 时静默丢 rc（当前 main 均返回 None，错误靠内部 sys.exit——行为零变化，契约显式化）。
+- **Before**: 10 个入口 `if __name__ == "__main__": main()`（无 SystemExit 包装）；依赖/Provider/凭据边界无系统复核。
+- **After**: 全部 85 个顶层入口统一 `raise SystemExit(main())`（复核 NONE 裸调用）；T7.1 依赖盘点（requirements 无未使用依赖，5 个"未见"均为别名 bs4/PIL/fitz/pptx/google）；T7.2 Provider 软失败验证（backend 按需 `__import__` + ImportError 友好 pip 提示；无凭据 --help 全 rc=0）；T7.3 三 backend 接口一致；T7.4 凭据仅经 require_api_key 读环境变量，无值打印/写入；T7.7 JSON 输出纯净（harness/spec_compliance/prompt_audit --json 实测）；T7.8 29 脚本 utf8 处理；T7.9 分类（19 satellite 子目录 + 85 顶层 + 8 helper）。
+- **Verified**: guard rc=0；完整 smoke 166/0/4/170（与上批一致）；integration 187/0/4/191；governance drift 5 PASS；13.1 性能结论：无热点批次（干净基线健康 + Known constraint 不重试懒加载）。
+- **Risk**: low（10 个入口行为等价——main 均返回 None，SystemExit(None)=exit 0；坏参数 rc 由 argparse/内部 sys.exit 决定，实测不变）
+- **Human reviewed**: pending
+
+### 2026-08-04 — Phase 6 pptx_animations 拆分：animation_constants + animation_effects 抽取
+- **Files**: `skills/ppt-master/scripts/animation_constants.py`（新增：动画常量/预设目录/效果池，295 行）、`skills/ppt-master/scripts/animation_effects.py`（新增：效果归一化/目标类/语义池，~700 行）、`skills/ppt-master/scripts/pptx_animations.py`（保留时序/校验组 + 全公开面 re-export，2993 行）
+- **Reason**: `plans/deepppt2-system-optimization-agent-brief.md` Phase 6（热点评分 10/12 达拆分门槛，用户批准）；pptx_animations churn 18、8 消费者、77 顶层符号——常量/效果/时序/校验四职责混于 3900 行。
+- **Before**: 单文件 3900 行四职责混排；任何动画改动触及全部消费者。
+- **After**: 严格单向依赖链 constants←effects←pptx_animations（AST 验证无环）；`pptx_animations.py` 保留全部 35 个公开符号 + 消费者所用私有符号（公开面完整性检查 missing=0）；7/7 真实消费者 import 通过。
+- **Verified**: characterization fixture 18 keys 前后 0 diffs（旧版 git HEAD vs 新版行为一致）；guard rc=0；完整 smoke 162→166（+2 新模块 ×2 checks）/0/4/170；integration 187/0/4/191；带动画导出（-a auto -t fade）rc=0 且 8/8 slide 含 p:timing XML。
+- **Risk**: low-medium（机械抽取 + 兼容面验证；残余风险=未覆盖的动画边缘路径——characterization 覆盖核心 API，导出抽查覆盖端到端）
+- **Human reviewed**: pending
+
+### 2026-08-04 — Phase 5 运行可观测性：trace event envelope v1 + trace 契约文档
+- **Files**: `skills/ppt-master/scripts/dashboard/trace_writer.py`（envelope 规范化：schema_version/operation/route/status/duration_ms/error_code 槽位）、`skills/ppt-master/scripts/docs/trace-contract.md`（新增：envelope 契约 + 敏感禁令 + 指标来源表 + null/0 语义）
+- **Reason**: `plans/deepppt2-system-optimization-agent-brief.md` Phase 5（T5.1-T5.6）；trace 事件无统一 envelope（各写点自由传字段）、无 schema 版本、指标来源未文档化。
+- **Before**: `trace_event` 只写 {ts, type, detail} + 自由 extra；无 schema_version；reader 已容错但契约未文档化。
+- **After**: `trace_writer._normalize_event` 强制 v1 envelope（schema_version=1、operation 默认=type、route/status/duration_ms/error_code 显式 null 槽位——null=未测量、0=实测，T5.6）；旧事件（无 schema_version）reader 继续容忍（实测新旧混合可读）；敏感禁令与指标来源表写入 trace-contract.md（阶段耗时/失败率/重试率/gate 错误分布可从 trace+harness.json 获取；用户修订次数明确"未采集"不伪造）。
+- **Verified**: guard rc=0；smoke --skip-help 80/0/3/83；integration 183/0/4/187（与上批一致）；envelope 单测（新事件带 schema_version/operation/null 槽、调用方值保留、旧事件原样可读）；Dashboard /api/log 读 trace_store 正常。
+- **Risk**: low（写侧纯增量字段；reader 兼容性实测通过；无运行行为变化）
+- **Human reviewed**: pending
+
+### 2026-08-04 — Phase 4 契约回归：CLI 错误路径探测 + gate 状态场景 + 双门全量
+- **Files**: `skills/ppt-master/scripts/smoke_check.py`（integration Test 9：confirm_ui_gate 状态场景 5 断言）；其余为验证记录（无运行代码变更）
+- **Reason**: `plans/deepppt2-system-optimization-agent-brief.md` Phase 4（Gate G1 已批准）；T4.2 全 CLI 错误路径无回归覆盖；T4.5 gate 状态场景（pending template/stale/fallback）无断言；T4.8 双门全量未跑。
+- **Before**: Test 8 只覆盖 gate 坏输入；CLI 错误路径无系统探测；e2e 全量未验证。
+- **After**: T4.2 探测 65 个 argparse CLI 入口坏参数 0 静默 + 12 个项目类 CLI 缺文件 0 静默；Test 9 覆盖 pending template_selection / chat fallback（±--allow-fallback）/ stale confirmed_at / fresh browser result；T4.6 harness_gate `--read-only` 实测零写入（hash 对比）+ 写模式 quality/harness.json（12 键）与 trace.jsonl（gate_result envelope）schema 稳定；T4.8 examples checker 29/29 + e2e 29/29 双门全绿。
+- **Verified**: guard rc=0；完整 smoke 162/0/4/166；integration 183/0/4/187（+5 Test 9）；governance drift 5 PASS；T4.7 CI 评估完成（smoke job 可加 `--integration`，预计 +60s；prompt_audit 需 tiktoken——**本批未改 CI**，待批准）。
+- **Risk**: low（纯验证 + 测试追加）
+- **Human reviewed**: pending
+
+### 2026-08-04 — Phase 3(9.1-9.2) Prompt 治理元数据 + 加载策略收敛：Generate typical -21.2%
+- **Files**: `skills/ppt-master/scripts/prompt_audit_manifest.json`（authority_edges 9 条 + registries 6 个 + schema_grammars 2 个 + 13 个 selector load_event + 新建 generate-on-demand load set）、`skills/ppt-master/references/shared-standards.md`（§7 加 svg-effects on-demand 指针 1 行）
+- **Reason**: `plans/deepppt2-system-optimization-agent-brief.md` Phase 3（Gate G1 已批准）；F7 治理元数据全空；Generate typical 165,611 中 9 个文档为按需/低频（svg-effects 13.5k 无任何必读引用、animations 仅 Step 7 引用、semantic-svg/pptx-structure-interface 仅 structured 模式、README 工具索引、batch-review/revision-loop/reviser 可选流程、visual-review 仅 stages 版引用）。
+- **Before**: authority_edges/registries/schema_grammars = []；selector load_event 全空；generate fixed 23 个文档（165,662 typical）；svg-effects 无可发现指针。
+- **After**: 9 条权威边（全真实链接、无环）+ 6 个 registry（modes 5/visual_styles 18/renderings 20/palettes 14/type_templates 11/charts 71，index 链接与数量声明一致）+ 2 个 schema grammar owner（spec_lock_reference、confirm_ui）+ 13 个 load_event；9 个按需文档移入新 `generate-on-demand` load set（coverage 闭合 171+1，非 exempt 扩大、非漏登记）；generate typical **165,662 → 130,528（-21.2%）**，全部 load set status=pass。
+- **Verified**: prompt_audit rc=0 / errors=0 / warnings=8（7 个 schema multi-def 候选=编排文档行为描述已记录 + 1 个 near-duplicates 184 对）；guard rc=0；smoke --skip-help 80/0/3/83；完整 smoke 162/0/4/166；integration 178/0/4/182；governance drift 5 PASS；hard-rule 文件（SKILL.md/generate-pptx/routing/executor-base）本批零改动；每按需文档有既有引用路径（svg-effects 新指针补全）。
+- **Risk**: low-medium（文档内容零修改，仅加载配置变窄——硬约束与质量规则不动；残余风险=Agent 少读按需文档的可能行为差异，需真实演练/固定 Brief A/B 验证，属 G2/用户授权范围）
+- **Human reviewed**: pending
+
+### 2026-08-04 — Phase 2(8.2) JSON 契约：result.json schema 文档化 + confirm_ui_gate 坏输入回归
+- **Files**: `skills/ppt-master/scripts/docs/confirm_ui.md`（新增 result.json schema contract 声明）、`skills/ppt-master/scripts/smoke_check.py`（integration Test 8：confirm_ui_gate 坏输入断言）
+- **Reason**: `plans/deepppt2-system-optimization-agent-brief.md` T2.7-T2.10（Gate G1 已批准）；result.json 无 schema_version 且无消费者读取；gate 是 fail-closed 门禁但坏输入行为无回归覆盖。
+- **Before**: result.json schema 约定散落在文档与代码；坏输入行为（缺 status/stage、坏 confirmed_at、坏路径）无自动化断言。
+- **After**: confirm_ui.md 显式声明 schema contract（无强制 schema_version——加了零读者；字段 owner=本文档；legacy 单次 result 兼容策略；未知字段容忍；坏输入 rc 非零且提示可行动）；smoke `--integration` Test 8 覆盖 5 种坏输入 + 1 种合法含未知字段。
+- **Verified**: guard rc=0；完整 smoke 162/0/4/166（与上批一致）；`--skip-help` 80/0/3/83；`--integration` 178/0/4/182（+5 Test 8）；T2.8 枚举盘点（generation_mode 值域 continuous/None 与文档一致；route 三值与 generate-pptx.md 一致——无代码变更）；T2.9 复核（quality 报告读侧已收敛 find_quality_report、trace.jsonl 读写同源、checkpoint schema Phase 1 已定——无代码变更）。
+- **Risk**: low（文档 + 测试追加；无运行行为变化）
+- **Human reviewed**: pending
+
+### 2026-08-04 — Phase 2(8.1) spec_lock 单一 parser owner：spec_lock_reader + 消费者迁移
+- **Files**: `skills/ppt-master/scripts/spec_lock_reader.py`（新增：canonical spec_lock.md reader）、`skills/ppt-master/scripts/update_spec.py`（`parse_lock` 变兼容 wrapper）、`skills/ppt-master/scripts/e2e_validate.py`（两个自研解析改为 canonical wrapper）、`skills/ppt-master/scripts/layout_capacity_check.py`（`parse_spec_lock` 改为 canonical wrapper）、`skills/ppt-master/scripts/svg_quality/checker.py`（幽灵 import 消除 + `_ANCHOR_COMPARE_ENABLED` 旗标）
+- **Reason**: `plans/deepppt2-system-optimization-agent-brief.md` T2.1-T2.6（Gate G1 已批准）；F6 多套局部解析：e2e/layout_capacity/checker 各自维护 section 正则；checker 的 `_parse_spec_lock` 来自不存在的 `project_management.project_specs`（try/except 静默降级，anchor/typography 检查从未生效）。
+- **Before**: parse_lock（update_spec）被 state_reader/spec_compliance 复用，其余消费者自研；checker 幽灵 import 静默禁用检查；`- body: 18px` 与 `18` 两种格式；page_rhythm 表格格式仅 e2e 支持。
+- **After**: `spec_lock_reader.py`（纯标准库）成为唯一 parser owner（`parse_spec_lock` + `page_ids`/`images`/`narrative_mode`/`structure_mode`/`canvas_dimensions`/`body_size` 类型化 accessor；images 支持 label/无 label/`| no-crop`/`# 注释`；body 支持 px 后缀）；`update_spec.parse_lock` 委托（兼容）；e2e/layout_capacity 迁移为 wrapper（语义零变化，表格格式与 P 过滤保留在消费者）；checker 幽灵 import 消除（接入 canonical，anchor 检查保留在 `_ANCHOR_COMPARE_ENABLED=False` 旗标后——激活会暴露 examples 240+ legacy 漂移，激活决策待用户）。
+- **Verified**: parse_lock wrapper ≡ canonical（严格相等）；e2e 差分 29/29 一致；layout_capacity 差分 63 项目 0 差异（含 `18px` 变体）；page_ids 交叉验证 31 示例 0 异常（表格 3 项目行为保留）；`--all examples` checker rc=0（与幽灵基线一致，0 回归）；guard rc=0；完整 smoke 160→162（spec_lock_reader +2 checks）/0/4/166；integration 173/0/4/177。
+- **Risk**: low（所有消费者迁移保持语义零变化；唯一行为风险是 checker anchor 检查激活——已用旗标隔离并实测 0 回归）
+- **Human reviewed**: pending
+
+### 2026-08-04 — Phase 1 状态单一事实源：canonical artifact accessors + derive_pipeline_state + checkpoint 收敛
+- **Files**: `skills/ppt-master/scripts/project_utils.py`（新增 canonical accessors + `derive_pipeline_state`）、`skills/ppt-master/scripts/dashboard/artifact_registry.py`（`latest_pptx` 委托 + `quality/`/`validation/` 补入扫描表）、`skills/ppt-master/scripts/project_manager.py`（`checkpoint_save` 收敛）、`skills/ppt-master/scripts/smoke_check.py`（integration Test 7 状态契约断言）
+- **Reason**: `plans/deepppt2-system-optimization-agent-brief.md` Phase 1（Gate G1 已批准）；F4/F5 漂移：checkpoint 认项目根 `*.pptx`（导出后误判 7c-export）、Dashboard 认 `exports/*.pptx`，两套状态推断并存；`quality/`/`validation/` 未注册。
+- **Before**: checkpoint 独立推断 8 档 step（项目根 `*.pptx`）；`artifact_registry.latest_pptx` 自带 exports glob；`_SCAN_DIRS` 缺 quality/validation；`content_selection.md`/`detailed_outline.md`（过时，实际产物为 .json）。
+- **After**: `project_utils.py` 成为纯标准库 canonical accessor 层（latest_export/has_export/svg_pages/final_svg_pages/notes_total/spec_lock_path/design_spec_path/confirmation_result/find_quality_report + `PROJECT_ARTIFACT_DIRS` 17 目录注册 + `derive_pipeline_state`）；`checkpoint_save` 委托 derive（exports/*.pptx → 8-export，F5 修复；content_selection 改认 .json）；dashboard `latest_pptx` 委托同源；smoke `--integration` 新增 Test 7 状态链断言（1-init→8-export + 确定性）。
+- **Verified**: guard rc=0；完整 smoke 160/0/4/164（与基线一致）；`--integration` 171/0/4/175（+1 Test 7）；`checkpoint save` 对已导出项目判 8-export（F5 断言）；derive 状态链 11 步 + 确定性断言全过；Dashboard /api/artifacts 兼容（type 集不变）；真实项目 chip_journal/rudeus 判 8-export。
+- **Risk**: low（checkpoint 行为变化仅导出判定修正 + .md→.json 收敛，两处均与实际产物一致；dashboard 仅委托 + 展示新增 quality/validation 条目）
+- **Human reviewed**: pending
+
+### 2026-08-04 — 审计工具落地：svg_geometry_audit + pptx_render_export + visual_review --scale + 布局预算规则
+- **Files**: `skills/ppt-master/scripts/svg_geometry_audit.py`（新增：字形盒级几何审计）、`skills/ppt-master/scripts/pptx_render_export.py`（新增：PowerPoint COM Slide.Export 渲染导出）、`skills/ppt-master/scripts/visual_review.py`（`--scale N`，默认 1.0 零变化）、`skills/ppt-master/references/executor-base.md`（§14.7 垂直/横向预算规则 + 图片最小尺寸）、`skills/ppt-master/workflows/stages/visual-review.md`（Step 4b PowerPoint 真实渲染复核 + --scale 放大复核）
+- **Reason**: 全链路测试暴露 4 处"底部文字×页脚"字形交叠（2.4–13px）、P11 断言撞卡片 2px、P13 断言超条底 3-4px——视觉模型全页检查对 12-13px 小字有盲区，且 Chromium 与 PowerPoint 字体度量不同；需把"保守布局原则"固化为可计算工具与规则。
+- **Before**: 无字形盒级审计（rendered_layout_check 为行盒级）；无 PowerPoint 真实渲染复核工具；visual_review 固定 1280×720；布局约束无底部/横向预算规则。
+- **After**: `svg_geometry_audit.py`（text-text 字形交叠/tspan dy 累积/页脚贴边 ≥6px/后绘 rect 遮挡/文字超 rect 底/图片短边 ≥150px；宽度复用 svg_to_pptx 权威度量；输出 quality/geometry_audit.json，--strict 有 error exit 1）；`pptx_render_export.py`（Windows+Office COM 渲染，非 Windows exit 2 优雅退出）；`visual_review.py --scale 2` 渲染 2560×1440；executor-base §14.7 固化预算规则。
+- **Verified**: 修复前备份回归——工具精确复现全部 4 处手工修复问题（P05 -2.4px、P07 9.2px、P11 13.0px、P13 -3.4px + 超条底 5.3px），并新发现 P07 修复残留（来源×下一步 x 重叠 34.5px，已修）；当前项目 0 error 0 warning（1 info 为设计性图注白条）；smoke 156→160 passed 0 failed（2 新脚本自动进 import+--help 覆盖）；pptx_render_export 14 页渲染 + e2e 7/7。
+- **Risk**: low（2 新脚本 advisory 定位不改现有 gate；visual_review 默认路径零变化；PowerPoint COM 仅 Windows 可用）
+- **Human reviewed**: pending
+
+### 2026-08-04 — 全链路能力测试 6 项短板修复（spec_lock 模式感知 / docx 表格恢复 / 渲染等待 / 词边界 / font-size / 断言契约文档）
+- **Files**: `skills/ppt-master/scripts/spec_lock_validate.py`、`skills/ppt-master/scripts/research/asset_gate.py`、`skills/ppt-master/scripts/svg_quality/deepppt_extensions.py`、`skills/ppt-master/scripts/visual_review.py`、`skills/ppt-master/scripts/source_to_md/doc_to_md.py`、`skills/ppt-master/references/executor-base.md`；项目侧：`projects/gan_hemt_trap_test_ppt169_20260804/`（P05 箱线图 8 值修正、test_report.md 更新、浏览器预览复核修复 P04/P05 两处文字遮挡——P05 ⑦ 标注 x=962→940 避卡片、P04 蓝圈 ⑦ 移位 + 白色遮盖图片图例区 + SVG 重绘正确编号图例）
+- **Reason**: `projects/gan_hemt_trap_test_ppt169_20260804/test_report.md` 测试暴露 6 项短板，按用户批准顺序（①⑤⑥③②④）实施；docx 表格恢复复核对账又暴露初版 P05 图表漏 8 个源值（⑤ 1 个 0.63、⑥ 7 个且误归 0.57）。
+- **Before**: ① validate 在 flat 模式强制要求 `page_layouts`（与 checker 冲突，flat 项目恒 exit 1）；⑤ asset_gate 拉丁词条子串匹配（"discipline" 命中 "ip"）+ `detailed_outline.json` 无条件强制（直接源项目恒 FAIL）；⑥ 宽度估计用页面首个 font-size（150px 装饰数字串扰）；③ visual_review 100ms 固定等待（图片空白）；② doc_to_md 摊平合并表格、Wingdings 圈号丢失；④ executor-base.md 未写断言精确契约。
+- **After**: ① validate 模式感知（flat 免查、出现报 WARN）；⑤ 词边界 `\b…\b` + research_active 条件化；⑥ 逐元素 font-size；③ load/error 事件 Promise 等待（单图 3s 上限）；② stdlib XML 恢复原生表格（gridSpan 列重复、vMerge 重启格归属、Wingdings 2 F06A–F073 与 Wingdings F081–F08A 双字体圈号映射）；④ §2.1 补「Exact assertion contract」段（id 精确 `lead`/`subtitle`、单 `<text>` 整句、≥body、对应检查名）。
+- **Verified**: 各修复针对测试项目复验通过（flat spec_lock PASS；直接源 asset_gate PASS；P05 坐标公式复核 0 mismatch；渲染门 must_fix 0）；P05 重导出 e2e_validate 7/7、pptx_quality 仅 5× 设计意图 FULL_SLIDE_IMAGE_RISK（SHAPE_OUTSIDE_SLIDE 已消解）；smoke_check 156/0/4/160 与基线一致。
+- **Risk**: low–medium（doc_to_md 行为变化：转换输出追加 `## 原生表格（docx tables 恢复，含合并单元格）` 节；其余为门禁/渲染/文档修复）
+- **Human reviewed**: pending
 
 ### 2026-08-04 — prompt audit manifest 重写（真实 load-set 设计）+ 治理收口
 - **Files**: `skills/ppt-master/scripts/prompt_audit_manifest.json`（重写：7 个 load_sets（global/research/generate/image/template/native，glob 条目带 `select` 按需语义，子集 `include: ["global"]`）+ 1 个 coverage exempt（`pptx_shapes/data/NOTICE.md` 上游版权声明）+ 22 个 exact 重复 accepted（模板族共享契约表/自动生成头/共享引用句）+ corpus `max_tokens` 400k→430k、generate 预算 190k）；配套同步：`plans/deep-ppt-reorganization-contract.md`（D5/D6/D7 与 Phase 2/3/4 状态、`31298372` 标记为迁移基线提交、CI 风险关闭记录）、`docs/reviews/deep-ppt-repository-inventory-2026-08.md`（§0.1 治理后当前快照，原始 Phase 0 基线保留）、`docs/reviews/perf-baseline-2026-08.md`（§3 标记历史 CI 风险已关闭）、`.align/lessons.md`（51→48 条 + 归档最旧 6 条至 `.align/lessons-2026-08-03.archive.md` + 追加 3 条 audit 教训）、`.align/spec.md`（smoke 基线勘误 78/0/3+158/0/4 → 77/0/3/80+156/0/4/160）、`.align/decisions.log.md`（8 条已批准决策）

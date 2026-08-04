@@ -273,6 +273,46 @@ def _dashboard_log(project: Path) -> Path:
     return project / "dashboard" / "dashboard.log"
 
 
+def check_state_derivation(scripts_dir: Path, tmp_path: Path) -> tuple[bool, str]:
+    """Exercise project_utils.derive_pipeline_state across the staged chain.
+
+    Builds one artifact at a time in a temp project and asserts the derived
+    step advances 1-init -> ... -> 8-export, plus determinism on repeat calls.
+    Returns (ok, detail).
+    """
+    probe = '''import sys, pathlib
+sys.path.insert(0, r"{SCRIPTS}")
+from project_utils import derive_pipeline_state
+p = pathlib.Path(r"{PROJ}")
+def mk(*parts):
+    (p.joinpath(*parts)).parent.mkdir(parents=True, exist_ok=True)
+    (p.joinpath(*parts)).write_text("x", encoding="utf-8")
+expect = ["1-init", "2-sources", "3-content-selection", "3-outline",
+          "4-design-spec", "5-spec-lock", "6-images", "7a-svg-gen",
+          "7b-postprocess", "7c-export", "8-export"]
+got = [derive_pipeline_state(p)["step"]]
+mk("sources", "s.md"); got.append(derive_pipeline_state(p)["step"])
+mk("content_selection.json"); got.append(derive_pipeline_state(p)["step"])
+mk("detailed_outline.json"); got.append(derive_pipeline_state(p)["step"])
+mk("design_spec.md"); got.append(derive_pipeline_state(p)["step"])
+mk("spec_lock.md"); got.append(derive_pipeline_state(p)["step"])
+mk("images", "a.png"); got.append(derive_pipeline_state(p)["step"])
+mk("svg_output", "01_a.svg"); got.append(derive_pipeline_state(p)["step"])
+mk("notes", "total.md"); got.append(derive_pipeline_state(p)["step"])
+mk("svg_final", "01_a.svg"); got.append(derive_pipeline_state(p)["step"])
+mk("exports", "deck.pptx"); got.append(derive_pipeline_state(p)["step"])
+assert got == expect, f"chain mismatch: {got} != {expect}"
+assert derive_pipeline_state(p) == derive_pipeline_state(p), "non-deterministic"
+print("state chain OK")
+'''.replace("{SCRIPTS}", str(scripts_dir)).replace("{PROJ}", str(tmp_path / "state_project"))
+    try:
+        r = subprocess.run([sys.executable, "-c", probe], capture_output=True, text=True,
+                           encoding="utf-8", errors="replace", timeout=20)
+        return r.returncode == 0, (r.stdout or "") + (r.stderr or "")
+    except subprocess.TimeoutExpired:
+        return False, "timed out (20s)"
+
+
 def integration_smoke(scripts_dir: Path) -> tuple[int, int, int]:
     """Run integration-level smoke tests on core scripts.
 
@@ -420,6 +460,107 @@ def integration_smoke(scripts_dir: Path) -> tuple[int, int, int]:
             _run([python, str(sqc), "--help"], "svg_quality_checker.py --help")
         else:
             print(f"  [SKIP] svg_quality_checker.py not found")
+            skipped += 1
+
+        # --- Test 7: project_utils canonical state derivation ---
+        print("\n  [7] project_utils.derive_pipeline_state staged chain")
+        state_script = scripts_dir / "project_utils.py"
+        if state_script.is_file():
+            ok, detail = check_state_derivation(scripts_dir, tmp_path)
+            if ok:
+                print("  [PASS] project_utils.derive_pipeline_state staged chain + determinism")
+                passed += 1
+            else:
+                print("  [FAIL] project_utils.derive_pipeline_state staged chain + determinism")
+                print(f"         {detail.strip()[:300]}")
+                failed += 1
+        else:
+            print(f"  [SKIP] project_utils.py not found")
+            skipped += 1
+
+        # --- Test 8: confirm_ui_gate.py bad inputs (fail closed) ---
+        print("\n  [8] confirm_ui_gate.py bad inputs (fail closed)")
+        gate_script = scripts_dir / "confirm_ui_gate.py"
+        if gate_script.is_file():
+            bad_proj = tmp_path / "gate_bad"
+            (bad_proj / "confirm_ui").mkdir(parents=True, exist_ok=True)
+            (bad_proj / "confirm_ui" / "recommendations.stage3.json").write_text(
+                "{}", encoding="utf-8"
+            )
+            result_path = bad_proj / "confirm_ui" / "result.json"
+
+            def _write_result(content: str) -> None:
+                result_path.write_text(content, encoding="utf-8")
+
+            _write_result('{"stage": "final", "confirmed_at": "2026-08-04T00:00:00"}')
+            _run([python, str(gate_script), str(bad_proj)],
+                 "result.json missing status -> non-zero", expect_exit=1)
+            _write_result('{"status": "confirmed", "confirmed_at": "2026-08-04T00:00:00"}')
+            _run([python, str(gate_script), str(bad_proj)],
+                 "result.json missing stage -> non-zero", expect_exit=1)
+            _write_result('{"status": "confirmed", "stage": "final", "confirmed_at": "not-a-time"}')
+            _run([python, str(gate_script), str(bad_proj)],
+                 "result.json bad confirmed_at -> non-zero", expect_exit=1)
+            _run([python, str(gate_script), str(tmp_path / "nonexistent_proj")],
+                 "missing project -> exit 2", expect_exit=2)
+            _write_result(
+                '{"status": "confirmed", "stage": "final", '
+                '"confirmed_at": "2099-01-01T00:00:00", '
+                '"generation_mode": "continuous", "future_field": 42}'
+            )
+            _run([python, str(gate_script), str(bad_proj)],
+                 "valid result with unknown field tolerated -> 0", expect_exit=0)
+        else:
+            print(f"  [SKIP] confirm_ui_gate.py not found")
+            skipped += 1
+
+        # --- Test 9: confirm_ui_gate.py state scenarios ---
+        print("\n  [9] confirm_ui_gate.py state scenarios")
+        gate_script = scripts_dir / "confirm_ui_gate.py"
+        if gate_script.is_file():
+            state_proj = tmp_path / "gate_state"
+            (state_proj / "confirm_ui").mkdir(parents=True, exist_ok=True)
+            (state_proj / "confirm_ui" / "recommendations.stage3.json").write_text(
+                "{}", encoding="utf-8"
+            )
+            state_result = state_proj / "confirm_ui" / "result.json"
+
+            def _write_state_result(content: str) -> None:
+                state_result.write_text(content, encoding="utf-8")
+
+            # pending template selection blocks the gate
+            _write_state_result(
+                '{"status": "confirmed", "stage": "final", '
+                '"confirmed_at": "2099-01-01T00:00:00", '
+                '"template_selection": {"action": "apply_template", "path": "templates/decks/x"}}'
+            )
+            _run([python, str(gate_script), str(state_proj)],
+                 "pending template_selection -> non-zero", expect_exit=1)
+            # chat fallback without --allow-fallback blocks; with it passes
+            _write_state_result(
+                '{"status": "confirmed", "stage": "final", '
+                '"confirmed_at": "2099-01-01T00:00:00", "fallback_confirmed": true}'
+            )
+            _run([python, str(gate_script), str(state_proj)],
+                 "chat fallback without --allow-fallback -> non-zero", expect_exit=1)
+            _run([python, str(gate_script), str(state_proj), "--allow-fallback"],
+                 "chat fallback with --allow-fallback -> 0", expect_exit=0)
+            # stale result (confirmed_at before recommendations mtime) blocks
+            _write_state_result(
+                '{"status": "confirmed", "stage": "final", '
+                '"confirmed_at": "2000-01-01T00:00:00"}'
+            )
+            _run([python, str(gate_script), str(state_proj)],
+                 "stale confirmed_at -> non-zero", expect_exit=1)
+            # fresh browser result passes
+            _write_state_result(
+                '{"status": "confirmed", "stage": "final", '
+                '"confirmed_at": "2099-01-01T00:00:00"}'
+            )
+            _run([python, str(gate_script), str(state_proj)],
+                 "fresh browser result -> 0", expect_exit=0)
+        else:
+            print(f"  [SKIP] confirm_ui_gate.py not found")
             skipped += 1
 
     finally:

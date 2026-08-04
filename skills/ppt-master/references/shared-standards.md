@@ -591,6 +591,11 @@ Best for: slides needing strong visual brand identity.
 
 ## 7. Stroke, Text & Shape Effects
 
+> Extended effect syntax catalog (filters, gradients, transitions between
+> renderers): read [`references/svg-effects.md`](svg-effects.md) **on demand**
+> when a page needs an effect beyond the patterns in this section — never as a
+> bulk load. This section stays the authoritative baseline.
+
 ### stroke-dasharray — Dashed / Dotted Lines
 
 Converts to native PPTX `<a:prstDash>`. Use preset patterns for best results:

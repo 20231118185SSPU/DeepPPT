@@ -29,6 +29,13 @@ import re
 from datetime import datetime, timezone
 from pathlib import Path
 
+from spec_lock_reader import (  # noqa: E402
+    body_size as read_body_size,
+    canvas_dimensions,
+    parse_spec_lock as parse_spec_lock_canonical,
+)
+
+
 DEFAULT_LINE_HEIGHT = 1.4
 DEFAULT_BODY_SIZE = 22
 DEFAULT_CANVAS = (1280, 720)
@@ -74,7 +81,12 @@ def load_json(path):
 
 
 def parse_spec_lock(project_path):
-    """Extract body font size and canvas from spec_lock.md."""
+    """Extract body font size and canvas from spec_lock.md.
+
+    Compatibility wrapper over the canonical ``spec_lock_reader`` (single
+    parser owner); the ``typography.body`` / ``canvas.viewBox`` semantics are
+    unchanged (those rows only ever appear inside their owning sections).
+    """
     spec_path = Path(project_path) / "spec_lock.md"
     body_size = DEFAULT_BODY_SIZE
     canvas_w, canvas_h = DEFAULT_CANVAS
@@ -82,13 +94,13 @@ def parse_spec_lock(project_path):
     if not spec_path.exists():
         return body_size, canvas_w, canvas_h
 
-    text = spec_path.read_text(encoding="utf-8")
-    m = re.search(r"^- body:\s*(\d+)", text, re.MULTILINE)
-    if m:
-        body_size = int(m.group(1))
-    m = re.search(r"^- viewBox:\s*0\s+0\s+(\d+)\s+(\d+)", text, re.MULTILINE)
-    if m:
-        canvas_w, canvas_h = int(m.group(1)), int(m.group(2))
+    spec = parse_spec_lock_canonical(spec_path)
+    size = read_body_size(spec)
+    if size is not None:
+        body_size = size
+    dims = canvas_dimensions(spec)
+    if dims is not None:
+        canvas_w, canvas_h = dims
     return body_size, canvas_w, canvas_h
 
 

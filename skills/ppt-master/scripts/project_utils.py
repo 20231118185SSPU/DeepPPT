@@ -7,6 +7,7 @@ reusable by other tools.
 """
 
 import argparse
+import json
 import re
 from pathlib import Path
 from datetime import datetime
@@ -448,6 +449,228 @@ def get_project_stats(project_path: str) -> Dict:
                 stack.append((entry, depth + 1))
 
     return stats
+
+
+# ---------------------------------------------------------------------------
+# Canonical artifact accessors (single source of truth for project paths)
+#
+# Consumers: project_manager checkpoint, dashboard artifact_registry/state_reader,
+# and any script that must read a project's produced artifacts. Pure stdlib only
+# (no Flask / Provider SDK / PPTX SDK) so every layer can call these.
+# ---------------------------------------------------------------------------
+
+# Directories the pipeline may populate. init/README.md documents lazily-created
+# ones; this tuple is the canonical registry both writers and readers agree on.
+PROJECT_ARTIFACT_DIRS = (
+    "sources",
+    "analysis",
+    "images",
+    "icons",
+    "svg_output",
+    "svg_final",
+    "notes",
+    "exports",
+    "backup",
+    "quality",
+    "validation",
+    "confirm_ui",
+    "dashboard",
+    "live_preview",
+    "audio",
+    "templates",
+    "_research",
+)
+
+# Where quality reports may have been written across versions. New writes target
+# ``validation/`` (structural gates) and ``quality/`` (visual/pptx QA); older
+# runs also wrote into ``analysis/``. Readers use find_quality_report() below
+# instead of maintaining their own fallback lists.
+_QUALITY_REPORT_CANDIDATE_DIRS = ("quality", "validation", "analysis")
+
+
+def latest_export(project_path) -> Optional[Path]:
+    """Return the newest ``exports/*.pptx`` for a project, or None.
+
+    ``exports/`` is the canonical export location (svg_to_pptx.py writes here);
+    project-root ``*.pptx`` is never the export source of truth.
+    """
+    exports = Path(project_path) / "exports"
+    if not exports.is_dir():
+        return None
+    pptx_files = sorted(exports.glob("*.pptx"), key=lambda p: p.stat().st_mtime, reverse=True)
+    return pptx_files[0] if pptx_files else None
+
+
+def has_export(project_path) -> bool:
+    """True when the project has at least one canonical exported PPTX."""
+    return latest_export(project_path) is not None
+
+
+def svg_pages(project_path) -> List[Path]:
+    """Sorted raw SVG pages in ``svg_output/`` (Executor's hand-written pages)."""
+    svg_dir = Path(project_path) / "svg_output"
+    if not svg_dir.is_dir():
+        return []
+    return sorted(svg_dir.glob("*.svg"))
+
+
+def final_svg_pages(project_path) -> List[Path]:
+    """Sorted finalized SVG pages in ``svg_final/``."""
+    svg_dir = Path(project_path) / "svg_final"
+    if not svg_dir.is_dir():
+        return []
+    return sorted(svg_dir.glob("*.svg"))
+
+
+def notes_total(project_path) -> Optional[Path]:
+    """Path to ``notes/total.md`` (Executor's speaker-notes source), or None."""
+    path = Path(project_path) / "notes" / "total.md"
+    return path if path.is_file() else None
+
+
+def has_notes_total(project_path) -> bool:
+    return notes_total(project_path) is not None
+
+
+def spec_lock_path(project_path) -> Path:
+    """Canonical ``spec_lock.md`` path (file may not exist yet)."""
+    return Path(project_path) / "spec_lock.md"
+
+
+def has_spec_lock(project_path) -> bool:
+    return spec_lock_path(project_path).is_file()
+
+
+def design_spec_path(project_path) -> Path:
+    """Canonical ``design_spec.md`` path (file may not exist yet)."""
+    return Path(project_path) / "design_spec.md"
+
+
+def has_design_spec(project_path) -> bool:
+    return design_spec_path(project_path).is_file()
+
+
+def confirmation_result(project_path) -> Optional[Dict]:
+    """Read ``confirm_ui/result.json`` as dict, or None when absent/invalid.
+
+    The Confirm UI schema is owned by ``scripts/docs/confirm_ui.md``; this is
+    only the canonical read accessor, not a schema definition.
+    """
+    result_path = Path(project_path) / "confirm_ui" / "result.json"
+    if not result_path.is_file():
+        return None
+    try:
+        payload = json.loads(result_path.read_text(encoding="utf-8"))
+    except (OSError, ValueError):
+        return None
+    return payload if isinstance(payload, dict) else None
+
+
+def find_quality_report(project_path, basename: str) -> Optional[Path]:
+    """Locate a quality report by basename across the historical candidate dirs.
+
+    Order: ``quality/``, ``validation/``, ``analysis/``. New gates write to the
+    first two; the ``analysis/`` fallback keeps legacy runs readable.
+    """
+    project = Path(project_path)
+    for sub in _QUALITY_REPORT_CANDIDATE_DIRS:
+        candidate = project / sub / basename
+        if candidate.is_file():
+            return candidate
+    return None
+
+
+def derive_pipeline_state(project_path) -> Dict:
+    """Deterministically derive the pipeline step from produced artifacts.
+
+    Single source of truth for pipeline-state derivation; project_manager's
+    ``checkpoint_save`` and dashboard state readers both consume this instead of
+    maintaining their own inference. Returned dict: ``{step, artifacts,
+    next_step}`` (stable across repeated calls on the same fixture; no time
+    fields). ``exports/*.pptx`` is the export fact (project-root ``*.pptx`` is
+    never authoritative).
+    """
+    p = Path(project_path)
+
+    has_sources = any((p / "sources").iterdir()) if (p / "sources").is_dir() else False
+    has_spec_lock = spec_lock_path(project_path).is_file()
+    has_design_spec = design_spec_path(project_path).is_file()
+    has_notes = any((p / "notes").glob("*.md")) if (p / "notes").is_dir() else False
+    has_total_md = notes_total(project_path) is not None
+    has_images = any(
+        f.suffix.lower() in {".png", ".jpg", ".jpeg", ".webp", ".gif"}
+        for f in (p / "images").iterdir()
+    ) if (p / "images").is_dir() else False
+    has_svgs = bool(svg_pages(project_path))
+    has_final_svgs = bool(final_svg_pages(project_path))
+    has_export = latest_export(project_path) is not None
+    has_content_sel = (p / "content_selection.json").is_file()
+    has_detailed_outline = (p / "detailed_outline.json").is_file()
+    has_research = (p / "research_report.md").is_file()
+
+    # Build artifact list (mirrors the historical checkpoint inventory)
+    artifacts: List[str] = []
+    if has_sources:
+        artifacts.append("sources/")
+    if has_research:
+        artifacts.append("research_report.md")
+    if has_content_sel:
+        artifacts.append("content_selection.json")
+    if has_detailed_outline:
+        artifacts.append("detailed_outline.json")
+    if has_design_spec:
+        artifacts.append("design_spec.md")
+    if has_spec_lock:
+        artifacts.append("spec_lock.md")
+    if has_images:
+        artifacts.append("images/")
+    if has_svgs:
+        artifacts.append("svg_output/")
+    if has_notes:
+        artifacts.append("notes/")
+    if has_total_md:
+        artifacts.append("notes/total.md")
+    if has_final_svgs:
+        artifacts.append("svg_final/")
+    if has_export:
+        artifacts.append("exports/*.pptx")
+
+    # Step inference (order matters — first match wins, mirrors the pipeline)
+    if has_export:
+        step = "8-export"
+        next_step = "Done. Validate with e2e_validate.py or present."
+    elif has_final_svgs:
+        step = "7c-export"
+        next_step = "Run svg_to_pptx.py to export PPTX."
+    elif has_svgs and has_total_md:
+        step = "7b-postprocess"
+        next_step = "Run total_md_split.py, then finalize_svg.py, then svg_to_pptx.py."
+    elif has_svgs:
+        step = "7a-svg-gen"
+        next_step = "Complete SVG generation, run quality check, generate speaker notes."
+    elif has_images:
+        step = "6-images"
+        next_step = "Generate SVG pages (Step 6 in SKILL.md)."
+    elif has_spec_lock:
+        step = "5-spec-lock"
+        next_step = "Run Image_Generator for images, then begin Executor SVG generation."
+    elif has_design_spec:
+        step = "4-design-spec"
+        next_step = "Complete Eight Confirmations, seal spec_lock.md."
+    elif has_detailed_outline:
+        step = "3-outline"
+        next_step = "Run Strategist Eight Confirmations."
+    elif has_content_sel:
+        step = "3-content-selection"
+        next_step = "Generate detailed outline."
+    elif has_sources or has_research:
+        step = "2-sources"
+        next_step = "Read SKILL.md Step 1-2. Select template, run Content Selection if research exists."
+    else:
+        step = "1-init"
+        next_step = "Import source materials or run research workflow."
+
+    return {"step": step, "artifacts": artifacts, "next_step": next_step}
 
 
 def build_parser() -> argparse.ArgumentParser:

@@ -37,6 +37,8 @@ import re
 import sys
 from pathlib import Path
 
+from spec_lock_reader import parse_spec_lock  # noqa: E402
+
 HEX_RE = re.compile(r"^#(?:[0-9A-Fa-f]{3,4}|[0-9A-Fa-f]{6}|[0-9A-Fa-f]{8})$")
 FONT_FAMILY_RE = re.compile(r"""(font-family\s*=\s*)(["'])(.*?)\2""")
 
@@ -47,21 +49,11 @@ def parse_lock(lock_path: Path) -> dict[str, dict[str, str]]:
     The format is:
         ## section
         - key: value
+
+    Compatibility wrapper — the canonical implementation lives in
+    ``spec_lock_reader.parse_spec_lock`` (single parser owner).
     """
-    sections: dict[str, dict[str, str]] = {}
-    current: str | None = None
-    for raw in lock_path.read_text(encoding="utf-8").splitlines():
-        line = raw.rstrip()
-        if line.startswith("## "):
-            current = line[3:].strip()
-            sections.setdefault(current, {})
-            continue
-        if current is None:
-            continue
-        m = re.match(r"^-\s+([A-Za-z0-9_]+)\s*:\s*(.+?)\s*$", line)
-        if m:
-            sections[current][m.group(1)] = m.group(2)
-    return sections
+    return parse_spec_lock(lock_path)
 
 
 def rewrite_lock(lock_path: Path, section: str, key: str, new_value: str) -> None:

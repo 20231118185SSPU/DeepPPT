@@ -58,4 +58,4 @@ __all__ = [
 
 if __name__ == "__main__":
     require_skill_integrity()
-    main()
+    raise SystemExit(main())

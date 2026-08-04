@@ -19,9 +19,16 @@ from __future__ import annotations
 
 import json
 import re
+import sys
 import xml.etree.ElementTree as ET
 from pathlib import Path
 from typing import Optional
+
+_SCRIPTS_DIR = Path(__file__).resolve().parent.parent
+if str(_SCRIPTS_DIR) not in sys.path:
+    sys.path.insert(0, str(_SCRIPTS_DIR))
+
+from project_utils import latest_export  # noqa: E402
 
 
 _SCAN_DIRS = {
@@ -35,6 +42,8 @@ _SCAN_DIRS = {
     "notes",
     "exports",
     "backup",
+    "quality",
+    "validation",
     "audio",
     "confirm_ui",
     "live_preview",
@@ -302,11 +311,10 @@ def list_artifacts(
 
 
 def latest_pptx(project: Path) -> str | None:
-    """Return the latest exported PPTX path relative to the project."""
-    exports = project / "exports"
-    if not exports.is_dir():
-        return None
-    pptx_files = sorted(exports.glob("*.pptx"), key=lambda p: p.stat().st_mtime, reverse=True)
-    if not pptx_files:
-        return None
-    return pptx_files[0].relative_to(project).as_posix()
+    """Return the latest exported PPTX path relative to the project.
+
+    Delegates to the canonical ``project_utils.latest_export`` (exports/ is the
+    single source of truth for exported decks).
+    """
+    export = latest_export(project)
+    return export.relative_to(project).as_posix() if export else None

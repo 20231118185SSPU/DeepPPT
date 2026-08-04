@@ -40,6 +40,7 @@ try:
     )
     from project_utils import (
         CANVAS_FORMATS,
+        derive_pipeline_state,
         get_project_info as get_project_info_common,
         normalize_canvas_format,
         validate_project_structure,
@@ -55,6 +56,7 @@ except ImportError:
     )
     from project_utils import (  # type: ignore
         CANVAS_FORMATS,
+        derive_pipeline_state,
         get_project_info as get_project_info_common,
         normalize_canvas_format,
         validate_project_structure,
@@ -1001,99 +1003,22 @@ class ProjectManager:
         }
 
     def checkpoint_save(self, project_path: str, *, notes: str = "") -> dict[str, object]:
-        """Inspect the project and save a checkpoint recording current pipeline state."""
+        """Inspect the project and save a checkpoint recording current pipeline state.
+
+        State derivation is delegated to ``project_utils.derive_pipeline_state``
+        (single source of truth; ``exports/*.pptx`` is the export fact).
+        """
         p = Path(project_path)
         if not p.is_dir():
             raise FileNotFoundError(f"Project directory not found: {p}")
 
-        # Detect pipeline step by inspecting produced artifacts
-        artifacts: list[str] = []
-        step = "unknown"
-        next_step = ""
-
-        has_sources = any((p / "sources").iterdir()) if (p / "sources").is_dir() else False
-        has_spec_lock = (p / "spec_lock.md").exists()
-        has_design_spec = (p / "design_spec.md").exists()
-        has_notes = any((p / "notes").glob("*.md")) if (p / "notes").is_dir() else False
-        has_images = any(
-            f.suffix.lower() in {".png", ".jpg", ".jpeg", ".webp", ".gif"}
-            for f in (p / "images").iterdir()
-        ) if (p / "images").is_dir() else False
-        svg_dir = p / "svg_output"
-        has_svgs = any(svg_dir.glob("P*.svg")) if svg_dir.is_dir() else False
-        svg_final_dir = p / "svg_final"
-        has_final_svgs = any(svg_final_dir.glob("P*.svg")) if svg_final_dir.is_dir() else False
-        has_pptx = any(p.glob("*.pptx"))
-        has_total_md = (p / "notes" / "total.md").exists()
-        has_content_sel = (p / "content_selection.md").exists()
-        has_detailed_outline = (p / "detailed_outline.md").exists()
-        has_research = (p / "research_report.md").exists()
-
-        # Build artifact list
-        if has_sources:
-            artifacts.append("sources/")
-        if has_research:
-            artifacts.append("research_report.md")
-        if has_content_sel:
-            artifacts.append("content_selection.md")
-        if has_detailed_outline:
-            artifacts.append("detailed_outline.md")
-        if has_design_spec:
-            artifacts.append("design_spec.md")
-        if has_spec_lock:
-            artifacts.append("spec_lock.md")
-        if has_images:
-            artifacts.append("images/")
-        if has_svgs:
-            artifacts.append("svg_output/")
-        if has_total_md:
-            artifacts.append("notes/total.md")
-        if has_final_svgs:
-            artifacts.append("svg_final/")
-        if has_pptx:
-            artifacts.append("*.pptx")
-
-        # Determine pipeline step
-        if has_pptx:
-            step = "8-export"
-            next_step = "Done. Validate with e2e_validate.py or present."
-        elif has_final_svgs:
-            step = "7c-export"
-            next_step = "Run svg_to_pptx.py to export PPTX."
-        elif has_svgs and has_total_md:
-            step = "7b-postprocess"
-            next_step = "Run total_md_split.py, then finalize_svg.py, then svg_to_pptx.py."
-        elif has_svgs:
-            step = "7a-svg-gen"
-            next_step = "Complete SVG generation, run quality check, generate speaker notes."
-        elif has_images:
-            step = "6-images"
-            next_step = "Generate SVG pages (Step 6 in SKILL.md)."
-        elif has_spec_lock:
-            step = "5-spec-lock"
-            next_step = "Run Image_Generator for images, then begin Executor SVG generation."
-        elif has_design_spec:
-            step = "4-design-spec"
-            next_step = "Complete Eight Confirmations, seal spec_lock.md."
-        elif has_detailed_outline:
-            step = "3-outline"
-            next_step = "Run Strategist Eight Confirmations."
-        elif has_content_sel:
-            step = "3-content-selection"
-            next_step = "Generate detailed outline."
-        elif has_sources or has_research:
-            step = "2-sources"
-            next_step = "Read SKILL.md Step 1-2. Select template, run Content Selection if research exists."
-        else:
-            step = "1-init"
-            next_step = "Import source materials or run research workflow."
-
-        checkpoint = {
+        state = derive_pipeline_state(project_path)
+        checkpoint: dict[str, object] = {
             "saved_at": datetime.now().isoformat(timespec="seconds"),
             "project": str(p),
-            "step": step,
-            "artifacts": artifacts,
-            "next_step": next_step,
+            "step": state["step"],
+            "artifacts": state["artifacts"],
+            "next_step": state["next_step"],
         }
         if notes:
             checkpoint["notes"] = notes

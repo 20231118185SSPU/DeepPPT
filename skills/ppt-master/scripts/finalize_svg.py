@@ -532,4 +532,4 @@ Aliases (still accepted):
 
 if __name__ == '__main__':
     configure_utf8_stdio()
-    main()
+    raise SystemExit(main())

@@ -35,6 +35,7 @@ if str(_SCRIPTS_DIR) not in sys.path:
     sys.path.insert(0, str(_SCRIPTS_DIR))
 
 from console_encoding import configure_utf8_stdio  # noqa: E402
+from spec_lock_reader import images, page_ids, parse_spec_lock  # noqa: E402
 
 OFFICE_VECTOR_EXTENSIONS = {".emf", ".wmf"}
 
@@ -46,10 +47,16 @@ OFFICE_VECTOR_EXTENSIONS = {".emf", ".wmf"}
 def parse_page_ids_from_spec_lock(spec_lock_path: Path) -> list[str]:
     """Extract page IDs (P01, P02, ...) from spec_lock.md's page_rhythm section.
 
-    Supports both table format (| P01 | anchor |) and list format (- P01: anchor).
+    Compatibility wrapper: list rows are read through the canonical
+    ``spec_lock_reader`` (single parser owner); the legacy table format
+    (``| P01 | anchor |``) and the strict ``P\\d+`` filter keep the historical
+    semantics unchanged.
     """
+    spec = parse_spec_lock(spec_lock_path)
+    ids = [key for key in page_ids(spec) if re.match(r"^P\d+$", key)]
+    # Legacy table format: | P01 | anchor | ... (not representable in the
+    # canonical section dict, so read those rows directly).
     text = spec_lock_path.read_text(encoding="utf-8")
-    ids: list[str] = []
     in_rhythm = False
     for line in text.splitlines():
         stripped = line.strip()
@@ -60,14 +67,8 @@ def parse_page_ids_from_spec_lock(spec_lock_path: Path) -> list[str]:
             break
         if not in_rhythm:
             continue
-        # Table format: | P01 | anchor | ...
         m = re.match(r"^\|\s*(P\d+)\s*\|", stripped)
-        if m:
-            ids.append(m.group(1))
-            continue
-        # List format: - P01: anchor
-        m = re.match(r"^[-*]\s*(P\d+)\s*:", stripped)
-        if m:
+        if m and m.group(1) not in ids:
             ids.append(m.group(1))
     return ids
 
@@ -75,33 +76,11 @@ def parse_page_ids_from_spec_lock(spec_lock_path: Path) -> list[str]:
 def parse_image_refs_from_spec_lock(spec_lock_path: Path) -> list[str]:
     """Extract image filenames from spec_lock.md's images section.
 
-    Supports formats:
-      - images/image_001.png
-      - images/image_001.png | no-crop
-      - P01_cover_bg: images/P01_cover_bg.png
-      - label: images/foo.png | no-crop
+    Compatibility wrapper over the canonical ``spec_lock_reader.images``; the
+    image-suffix filter keeps the historical semantics unchanged.
     """
-    text = spec_lock_path.read_text(encoding="utf-8")
     refs: list[str] = []
-    in_images = False
-    for line in text.splitlines():
-        stripped = line.strip()
-        if stripped.lower().startswith("## images"):
-            in_images = True
-            continue
-        if in_images and stripped.startswith("## "):
-            break
-        if not in_images or not stripped.startswith("- "):
-            continue
-        # Strip leading "- "
-        content = stripped[2:].split("|")[0].split("#")[0].strip()
-        if not content:
-            continue
-        # Handle "label: images/foo.png" → extract the path after ":"
-        if ":" in content:
-            path_part = content.split(":", 1)[1].strip()
-        else:
-            path_part = content
+    for path_part in images(spec_lock_path):
         suffix = Path(path_part).suffix.lower()
         if path_part and (
             "images/" in path_part

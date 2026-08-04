@@ -51,13 +51,23 @@ from svg_to_pptx.canvas_contract import (
 )
 
 try:
-    from project_management.project_specs import (
-        parse_spec_lock as _parse_spec_lock,
-        parse_spec_lock_image_value as _parse_spec_lock_image_value,
-    )
-except ImportError:
-    _parse_spec_lock = None  # spec_lock anchor comparison will be skipped
-    _parse_spec_lock_image_value = None
+    from spec_lock_reader import parse_spec_lock as _parse_spec_lock
+except ImportError:  # pragma: no cover - reader is repo-local
+    _parse_spec_lock = None
+
+# Anchor/typography comparisons against spec_lock rows were never active in
+# this repo (the upstream parser module was missing) — enabling them today
+# surfaces 240+ legacy drift errors across examples (unitless-px rows,
+# undeclared recurring sizes). Parser convergence is done; keeping the checks
+# behind an explicit flag until their activation is separately approved
+# (system-optimization Phase 2/T2.4 boundary).
+_ANCHOR_COMPARE_ENABLED = False
+
+# The upstream image-row parser (``project_management.project_specs``) is not
+# part of this repo and was never importable here; the image-lock check stays
+# disabled until a canonical row parser is designed (Phase 2/T2.5 boundary —
+# the canonical images() reader covers e2e needs).
+_parse_spec_lock_image_value = None
 
 try:
     from svg_to_pptx.animation_config import (
@@ -3960,7 +3970,7 @@ class SVGQualityChecker:
         """
         if self.quick_generate:
             return None
-        if _parse_spec_lock is None:
+        if _parse_spec_lock is None or not _ANCHOR_COMPARE_ENABLED:
             return None
         for candidate in (svg_path.parent / 'spec_lock.md',
                           svg_path.parent.parent / 'spec_lock.md'):
@@ -5513,7 +5523,7 @@ class SVGQualityChecker:
         lock_path = project_path / 'spec_lock.md'
         if not lock_path.exists():
             return {}, f"{lock_path} does not exist"
-        if _parse_spec_lock is None:
+        if _parse_spec_lock is None or not _ANCHOR_COMPARE_ENABLED:
             return {}, "spec_lock parser is unavailable"
         if _parse_spec_lock_image_value is None:
             return {}, "spec_lock image parser is unavailable"

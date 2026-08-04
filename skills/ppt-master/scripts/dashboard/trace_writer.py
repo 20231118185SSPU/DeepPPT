@@ -20,6 +20,25 @@ from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any
 
+# Canonical trace event envelope (system-optimization T5.2).
+# Every event carries: schema_version, ts (ISO-8601 UTC), type, operation
+# (defaults to type), detail, plus optional slots. `route` / `status` /
+# `duration_ms` / `error_code` stay None when unknown — never 0 (T5.6: null
+# means "not measured", 0 is a real measurement). Readers must tolerate events
+# without these slots (pre-v1 traces). Writers must never record source text,
+# prompt bodies, credentials, or other sensitive content (T5.3).
+TRACE_SCHEMA_VERSION = 1
+_ENVELOPE_OPTIONAL_SLOTS = ("route", "status", "duration_ms", "error_code")
+
+
+def _normalize_event(event: dict[str, Any]) -> dict[str, Any]:
+    """Fill the canonical envelope without overwriting caller-provided values."""
+    event.setdefault("schema_version", TRACE_SCHEMA_VERSION)
+    event.setdefault("operation", event.get("type"))
+    for slot in _ENVELOPE_OPTIONAL_SLOTS:
+        event.setdefault(slot, None)
+    return event
+
 
 def trace_event(project: str | Path, event_type: str, detail: str = "", **extra: Any) -> None:
     """Append one normalized event to ``<project>/trace.jsonl``."""
@@ -35,7 +54,7 @@ def trace_event(project: str | Path, event_type: str, detail: str = "", **extra:
 
     try:
         with (project_path / "trace.jsonl").open("a", encoding="utf-8") as handle:
-            handle.write(json.dumps(event, ensure_ascii=False, sort_keys=True) + "\n")
+            handle.write(json.dumps(_normalize_event(event), ensure_ascii=False, sort_keys=True) + "\n")
     except OSError:
         pass
 
