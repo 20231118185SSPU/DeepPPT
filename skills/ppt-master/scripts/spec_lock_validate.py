@@ -63,10 +63,30 @@ def validate_spec_lock(project_path: str, *, as_json: bool = False) -> int:
             "spec_lock.md must not contain ## page_expression; use page_expression.json"
         )
 
+    # page_layouts is a structured-mode-only contract: flat-mode decks must
+    # omit the section entirely (svg_quality_checker rejects its presence when
+    # pptx_structure.mode is flat). Only require it in structured mode.
+    structure_m = re.search(
+        r"^## pptx_structure\s*\n(.*?)(?=^## |\Z)", text, re.MULTILINE | re.DOTALL
+    )
+    structured_mode = bool(
+        structure_m
+        and re.search(r"^- mode:\s*structured", structure_m.group(1), re.MULTILINE)
+    )
+    required_sections = list(REQUIRED_SECTIONS)
+    if not structured_mode:
+        required_sections.remove("page_layouts")
+
     # Check required sections
-    for section in REQUIRED_SECTIONS:
+    for section in required_sections:
         if section not in found_sections:
             errors.append(f"Missing required section: ## {section}")
+
+    if not structured_mode and "page_layouts" in found_sections:
+        warnings.append(
+            "## page_layouts present in flat mode — svg_quality_checker rejects "
+            "the section when pptx_structure.mode is flat; free-design decks omit it entirely"
+        )
 
     # Check for empty sections (## heading followed immediately by another ## or EOF)
     section_content_pattern = re.compile(

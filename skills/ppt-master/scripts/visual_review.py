@@ -129,7 +129,12 @@ def fetch_slide_text(server_url: str, page_name: str, timeout: float = 5.0) -> i
     return len(payload['content'])
 
 
-def render_pages(server_url: str, pages: list[str], preview_dir: Path) -> list[dict]:
+def render_pages(
+    server_url: str,
+    pages: list[str],
+    preview_dir: Path,
+    scale: float = 1.0,
+) -> list[dict]:
     """Render all requested pages in a single browser session.
 
     Each render: page.goto(server_url) anchors the base URL so the SVG's
@@ -139,6 +144,9 @@ def render_pages(server_url: str, pages: list[str], preview_dir: Path) -> list[d
     """
     from playwright.sync_api import sync_playwright
 
+    scale = max(0.25, min(4.0, scale))
+    view_w = int(round(1280 * scale))
+    view_h = int(round(720 * scale))
     preview_dir.mkdir(parents=True, exist_ok=True)
     records: list[dict] = []
 
@@ -149,16 +157,33 @@ async (pageName) => {
     const data = await res.json();
     document.documentElement.innerHTML =
         '<head><style>html,body{margin:0;padding:0;background:#0E1116;overflow:hidden}'
-        + ' svg{display:block;width:1280px;height:720px}</style></head>'
+        + ' svg{display:block;width:__W__px;height:__H__px}</style></head>'
         + '<body>' + data.content + '</body>';
+    // <image href> resources fetch asynchronously after injection; the old
+    // fixed short wait captured them blank. Settle on load/error per image
+    // (3s cap) so screenshots show the real layout, not white placeholder
+    // regions — the live-preview surface must match what export embeds.
+    const imgs = Array.from(document.querySelectorAll('image'));
+    await Promise.all(imgs.map((img) => new Promise((resolve) => {
+        const href = img.getAttribute('href');
+        if (!href) { resolve(true); return; }
+        let done = false;
+        const finish = () => { if (!done) { done = true; resolve(true); } };
+        img.addEventListener('load', finish, { once: true });
+        img.addEventListener('error', finish, { once: true });
+        setTimeout(finish, 3000);
+    })));
     return { len: data.content.length };
 }
 """
+    inject_js = (
+        inject_js.replace('__W__', str(view_w)).replace('__H__', str(view_h))
+    )
 
     with sync_playwright() as p:
         browser = p.chromium.launch()
         try:
-            context = browser.new_context(viewport={'width': 1280, 'height': 720})
+            context = browser.new_context(viewport={'width': view_w, 'height': view_h})
             for page_name in pages:
                 rec: dict = {'page': page_name, 'ok': False}
                 try:
@@ -248,7 +273,14 @@ def main() -> int:
         '--lock-timeout', type=float, default=30.0,
         help='Seconds to wait for render lock (default: 30)',
     )
+    parser.add_argument(
+        '--scale', type=float, default=1.0,
+        help='Render scale factor (default: 1.0). >1 enlarges the canvas '
+             '(e.g. 2.0 renders 2560x1440) for close-up review of small text '
+             'regions; <1 shrinks. Clamped to [0.25, 4.0].',
+    )
     args = parser.parse_args()
+
 
     project_path = Path(args.project_path).resolve()
     if not project_path.is_dir():
@@ -287,7 +319,7 @@ def main() -> int:
 
     with file_lock(lock_path, timeout=args.lock_timeout):
         try:
-            records = render_pages(args.server_url, pages, preview_dir)
+            records = render_pages(args.server_url, pages, preview_dir, scale=args.scale)
         except Exception as e:  # noqa: BLE001 — browser launch failure
             _safe_print(f'browser session failed: {type(e).__name__}: {e}')
             _safe_print(

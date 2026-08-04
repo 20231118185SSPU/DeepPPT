@@ -112,7 +112,21 @@ class AssetGate:
             print("Fix: pass the canonical project folder created by project_manager.py.", file=sys.stderr)
             return 2
 
-        outline = self._load_json("detailed_outline.json", "Detailed Outline")
+        # detailed_outline.json is a research-chain artifact: the
+        # content-selection -> detailed-outline chain runs only when
+        # deep-research produced a research report (generate-pptx.md Step 2/4).
+        # Direct-source projects legitimately skip it, so require the file only
+        # when the research chain is active.
+        research_active = (
+            (self.project / "research_report.md").exists()
+            or (self.project / "content_selection.json").exists()
+            or (self.project / "analysis" / "content_selection.json").exists()
+        )
+        outline = self._load_json(
+            "detailed_outline.json",
+            "Detailed Outline",
+            required=research_active,
+        )
         visual = self._load_json("analysis/visual_strategy.json", "deep-research Step 7", required=False)
         if visual is None:
             visual = self._load_json("_research/step7_visual/visual_strategy.json", "deep-research Step 7", required=False)
@@ -123,7 +137,7 @@ class AssetGate:
 
         if isinstance(outline, dict):
             self._check_outline(outline, visual if isinstance(visual, dict) else {})
-        elif outline is None:
+        elif outline is None and research_active:
             self._error(
                 "Missing detailed_outline.json.",
                 "Detailed Outline",
@@ -674,25 +688,23 @@ def _basename(value: str) -> str:
     return Path(clean).name
 
 
+# English subject terms are matched at word boundaries: bare substring matching
+# misfires on ordinary words containing the term (e.g. "ip" inside "discipline").
+# CJK terms are multi-character words that do not occur inside other words, so
+# plain substring matching is safe for them.
+_LATIN_CONCRETE_RE = re.compile(
+    r"\b(?:person|people|portrait|product|object|place|character|ip)\b",
+    re.IGNORECASE,
+)
+_CJK_CONCRETE_TERMS = ("人物", "产品", "物品", "地点", "角色", "真实场景")
+
+
 def _looks_concrete_subject(item: dict[str, Any]) -> bool:
     text = " ".join(str(item.get(key) or "") for key in ("prompt", "subject", "purpose", "description"))
-    concrete_terms = [
-        "person",
-        "people",
-        "portrait",
-        "product",
-        "object",
-        "place",
-        "character",
-        "ip",
-        "人物",
-        "产品",
-        "物品",
-        "地点",
-        "角色",
-        "真实场景",
-    ]
-    return any(term.lower() in text.lower() for term in concrete_terms)
+    if _LATIN_CONCRETE_RE.search(text):
+        return True
+    lowered = text.lower()
+    return any(term in lowered for term in _CJK_CONCRETE_TERMS)
 
 
 def _as_bool(value: Any) -> bool:

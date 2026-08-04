@@ -206,6 +206,21 @@ The partition is a thinking aid, not a structural split — both live in one fil
 
 **Visible assertion (HARD rule)**: every applicable `assertion` must appear verbatim as editable SVG `<text>` in a top-level `lead` or `subtitle` semantic group. Its font size MUST be `>= typography.body`. Use the locked `lead` slot when the assertion is the page's primary headline; use `subtitle` when it supports a separate topic title. If the required role/size is absent, return to Strategist and extend `spec_lock.md typography` before drawing — never hide the assertion in body text, speaker notes, or a raster image, and never shrink it to make a layout fit.
 
+**Exact assertion contract (machine-checked by `spec_compliance_check.py` — differs from the schematic examples)**:
+
+- The semantic group `id` MUST be exactly `lead` or `subtitle` — a top-level `<g id="lead">` / `<g id="subtitle">`. Variants such as `lead-assertion`, `lead_title`, or `subtitle-claim` are NOT recognized: the checker matches the exact id string, and a page with no exact match fails `page-expression-role-missing`.
+- The assertion MUST be the entire text of a **single** `<text>` element inside that group. Line wraps use `<tspan>` children of that one `<text>` (reset `x` per line, advance `dy`); do not split the sentence across sibling `<text>` elements. The checker works in two stages: the group's joined text must contain the assertion (`page-expression-assertion-not-visible` otherwise), then some single `<text>` element's text must equal it exactly (`page-expression-assertion-not-editable` when it only exists across siblings).
+- The element font-size MUST be `>= typography.body`; any run below that fails `page-expression-assertion-too-small` (unreadable sizes fail `page-expression-assertion-size-missing`).
+- The assertion text must match `page_expression.json` verbatim, including punctuation; normalize only whitespace runs (a single space inside the SVG is fine where the JSON has a newline).
+
+Example that passes (exact id, single `<text>`, tspan wraps):
+
+```svg
+<g id="lead">
+  <text x="86" y="642" font-family="'Microsoft YaHei', Arial, sans-serif" font-size="24" fill="#0A2E5C">断言原文整句…<tspan x="86" dy="33">第二行。</tspan></text>
+</g>
+```
+
 > Note: block-level phrasing, applied *within* the page's `page_rhythm` density (below), not against it.
 
 **If `spec_lock.md` is missing**: emit `warning: spec_lock.md missing — generating without execution lock` once, then proceed using `design_spec.md` values. Expected only for legacy projects; new projects MUST have it (see [strategist.md](strategist.md) §6 step 4).
@@ -807,6 +822,23 @@ Used for: deep-dive side images, data page illustrations, comparison page visual
 | 11 | Page colors consistent with other pages in the deck | ≤3 new colors per page |
 
 This checklist is enforced by `svg_quality_checker.py` post-generation but catching violations at authoring time prevents rework.
+
+### 14.7 Vertical & Horizontal Budget Rules (垂直/横向预算规则)
+
+**Hard rule**: footer-based pages must satisfy the bottom-stack budget and the horizontal-clearance budget below. These rules exist because text boxes in Chromium and PowerPoint measure differently — a 2px clearance in one renderer is a visible overlap in the other.
+
+**Bottom-stack budget** (footer baseline = **688**):
+- The last line of any text above the footer (assertion, summary, body, caption) MUST sit at `baseline ≤ 664` (24px glyph bottom ≈ 673 vs footer glyph top ≈ 678 → ≥5px clearance). When the stack "caption + assertion + footer" does not fit the available space, prefer **single-lining the assertion** (contract text ≤ ~900px at 24px fits one line on a 1220px canvas) or **embedding the caption into a white strip at the bottom of the image** — never let the assertion bottom edge touch the footer.
+- `svg_geometry_audit.py` enforces a ≥6px glyph gap between footer rows (baseline ≥ 680) and the text above them.
+
+**Horizontal-clearance budget**:
+- Any single-line text MUST end at least **8px before** the left edge of the next element to its right (cards, panels, images). Estimate width with the authoritative metric (`svg_to_pptx/drawingml/utils.py estimate_text_width`), not a 0.55× rough guess — a 2px miss reads as "text clipped by the card".
+- When a card/panel sits to the right of a text column, prefer breaking the text into two shorter lines (each ending < the card's left edge) over one long line that approaches the card.
+
+**Image minimum size**:
+- Content-type source images (schematics, source figures) MUST render at a short side ≥ **150px** in the SVG `<image>` element. Below that, enlarge the image and reclaim space from neighboring text (or drop the image), rather than keeping a postage-stamp figure.
+
+These budgets are checked mechanically by `svg_geometry_audit.py` (advisory; see `scripts/docs/` if present) and visually confirmed by the PowerPoint render export (`pptx_render_export.py`) during visual review.
 
 ## 15. Character Consistency Rule (角色一致性规则)
 

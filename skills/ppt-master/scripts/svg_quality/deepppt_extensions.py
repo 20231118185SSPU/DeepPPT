@@ -195,13 +195,13 @@ def check_layout_bounds(content: str, result: dict) -> None:
         overflow_count += _check_single_text_bounds(
             m.group(1), m.group(2), m.group(3), global_fs,
             right_bound, bottom_bound, left_bound, top_bound, result,
-            m.group(0)[:60],
+            m.group(0),
         )
     for m in tspan_pat.finditer(content):
         overflow_count += _check_single_text_bounds(
             m.group(1), m.group(2), m.group(3), global_fs,
             right_bound, bottom_bound, left_bound, top_bound, result,
-            m.group(0)[:60],
+            m.group(0),
         )
 
     if overflow_count > 0:
@@ -236,7 +236,16 @@ def _check_single_text_bounds(x_str, y_str, text, global_fs,
     except ValueError:
         return 0
 
+    # Use the element's own font-size when declared — the page-level
+    # global_fs (first font-size in the file) is wrong for most elements on
+    # pages with a large decorative number, producing inflated width estimates.
     fs = global_fs if global_fs else 20
+    fs_m = re.search(r'font-size="([^"]+)"', snippet)
+    if fs_m:
+        try:
+            fs = float(fs_m.group(1).replace('px', '').strip())
+        except ValueError:
+            pass
     char_width = fs * 1.0 if _is_cjk(text) else fs * 0.55
     est_width = len(text.strip()) * char_width
     anchor = 'start'

@@ -676,6 +676,130 @@ def _docx_inject_math_latex(
 # DOCX → Markdown (mammoth)
 # ─────────────────────────────────────────────────────────────
 
+_W_NS = "http://schemas.openxmlformats.org/wordprocessingml/2006/main"
+
+
+def _docx_sym_char(font: str, code: int) -> str:
+    """Map a symbol-font codepoint to Unicode, or "" when unmapped.
+
+    Circled digits appear in two encodings in the wild: Wingdings 2
+    (F06A..F073) and legacy Wingdings (F081..F08A); both map to U+2460..U+2469.
+    """
+    if font == "Wingdings 2" and 0xF06A <= code <= 0xF073:
+        return chr(0x2460 + code - 0xF06A)
+    if font == "Wingdings" and 0xF081 <= code <= 0xF08A:
+        return chr(0x2460 + code - 0xF081)
+    return ""
+
+
+def _docx_cell_text(tc: ET.Element) -> str:
+    """Collect a table cell's text, mapping symbol runs to Unicode.
+
+    ``<w:sym>`` runs carry the actual glyph for symbol-font characters —
+    notably the circled-digit region codes (see ``_docx_sym_char``). Paragraphs
+    inside one cell are joined with a space so stacked values stay separable.
+    """
+    paras: list[str] = []
+    for p in tc.findall(f"{{{_W_NS}}}p"):
+        parts: list[str] = []
+        for el in p.iter():
+            tag = el.tag.rsplit("}", 1)[-1]
+            if tag == "t":
+                parts.append(el.text or "")
+            elif tag == "sym":
+                font = el.attrib.get(f"{{{_W_NS}}}font", "")
+                char = el.attrib.get(f"{{{_W_NS}}}char", "")
+                if char:
+                    try:
+                        code = int(char, 16)
+                    except ValueError:
+                        code = -1
+                    parts.append(_docx_sym_char(font, code))
+        paras.append("".join(parts))
+    return re.sub(r"\s+", " ", " ".join(paras)).strip()
+
+
+def _recover_docx_tables(input_file: Path) -> str:
+    """Reconstruct native Word tables as Markdown, merged cells included.
+
+    mammoth flattens vertically-merged tables (``<w:vMerge>``) into loose
+    paragraph lines, losing the row/column structure that downstream roles
+    need for faithful table -> chart work. python-docx is not a dependency,
+    so ``word/document.xml`` is parsed directly with stdlib ElementTree.
+    ``w:gridSpan`` colspans repeat the cell text; vertical merges keep the
+    value in the restart row and blank continuation rows (never fabricated).
+    Returns "" when the document has no tables or cannot be parsed.
+    """
+    try:
+        with zipfile.ZipFile(input_file) as z:
+            if "word/document.xml" not in z.namelist():
+                return ""
+            doc_root = ET.fromstring(z.read("word/document.xml"))
+    except (KeyError, ET.ParseError, zipfile.BadZipFile, OSError):
+        return ""
+
+    blocks: list[str] = []
+    for tbl_index, tbl in enumerate(doc_root.iter(f"{{{_W_NS}}}tbl"), 1):
+        grid = tbl.find(f"{{{_W_NS}}}tblGrid")
+        ncols = len(grid.findall(f"{{{_W_NS}}}gridCol")) if grid is not None else 0
+        if ncols == 0:
+            continue
+        md_rows: list[list[str]] = []
+        # Vertical merges: a restart cell owns the content; a fully-continue
+        # row (every cell `<w:vMerge/>`, no content) is a phantom row that
+        # belongs to the restart row's merged span — skip it. Partially merged
+        # columns repeat the restart cell's text so per-row attribution is
+        # preserved for downstream data work.
+        merge_texts: dict[int, str] = {}
+        for tr in tbl.findall(f"{{{_W_NS}}}tr"):
+            tcs = tr.findall(f"{{{_W_NS}}}tc")
+            vmerges = [
+                tc.find(f"{{{_W_NS}}}tcPr/{{{_W_NS}}}vMerge")
+                for tc in tcs
+            ]
+            if vmerges and all(vm is not None for vm in vmerges) and all(
+                vm.attrib.get(f"{{{_W_NS}}}val", "continue") != "restart"
+                for vm in vmerges
+            ):
+                continue
+            cells: list[str] = []
+            col = 0
+            for tc in tcs:
+                tcpr = tc.find(f"{{{_W_NS}}}tcPr")
+                vm = tcpr.find(f"{{{_W_NS}}}vMerge") if tcpr is not None else None
+                if vm is not None:
+                    if vm.attrib.get(f"{{{_W_NS}}}val", "continue") == "restart":
+                        text = _docx_cell_text(tc)
+                        merge_texts[col] = text
+                    else:
+                        text = merge_texts.get(col, "")
+                else:
+                    text = _docx_cell_text(tc)
+                    merge_texts.pop(col, None)
+                span = tc.find(f"{{{_W_NS}}}tcPr/{{{_W_NS}}}gridSpan")
+                colspan = 1
+                if span is not None:
+                    try:
+                        colspan = int(span.attrib.get(f"{{{_W_NS}}}val", "1"))
+                    except ValueError:
+                        colspan = 1
+                cells.extend([text] * max(colspan, 1))
+                col += max(colspan, 1)
+            if len(cells) < ncols:
+                cells.extend([""] * (ncols - len(cells)))
+            md_rows.append(cells[:ncols])
+        if not md_rows:
+            continue
+        lines = [
+            "| " + " | ".join(md_rows[0]) + " |",
+            "|" + "---|" * ncols,
+        ]
+        lines.extend("| " + " | ".join(row) + " |" for row in md_rows[1:])
+        blocks.append(f"### 原生表格 Table {tbl_index}\n\n" + "\n".join(lines))
+
+    return "\n\n".join(blocks)
+
+
 def _convert_docx(input_file: Path, out_file: Path) -> str:
     try:
         import mammoth
@@ -753,6 +877,13 @@ def _convert_docx(input_file: Path, out_file: Path) -> str:
     for token, latex in math_replacements.items():
         markdown = markdown.replace(token, latex)
     markdown = _html_img_to_md(markdown)
+    recovered_tables = _recover_docx_tables(input_file)
+    if recovered_tables:
+        markdown += (
+            "\n\n---\n\n## 原生表格（docx tables 恢复，含合并单元格）\n\n"
+            + recovered_tables
+            + "\n"
+        )
     out_file.write_text(markdown, encoding="utf-8")
 
     if manifest and media_dir is not None:

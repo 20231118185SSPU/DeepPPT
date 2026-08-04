@@ -175,6 +175,23 @@ For each row in the table:
 
 If `brand_review.json` is non-empty, that's a single decision applied across the deck (e.g., bump footer text color from `#6E7681` to `#8B949E` — one change, every page benefits). Do this once, then optionally re-run visual-review for the affected pages only.
 
+---
+
+## Step 4b — PowerPoint real-render recheck (optional, Windows + Office)
+
+Chromium SVG preview and PowerPoint measure text differently (YaHei line height, width headroom). Text that clears by 2px in the browser can visibly overlap or clip in PowerPoint. After `svg_to_pptx.py` produces the PPTX, optionally recheck with the real renderer:
+
+```bash
+python3 skills/ppt-master/scripts/pptx_render_export.py \
+    --pptx <project_path>/exports/<exported>.pptx \
+    -o <project_path>/quality/pptx_render
+```
+
+- Renders every slide via PowerPoint COM (`Slide.Export`, 1280×720 PNG per page) into `quality/pptx_render/` plus `render_summary.json`.
+- Feed those PNGs to `vision_check.py` (external vision) or review them directly with a vision-capable model / human. Prefer these PNGs over the Chromium renders as the final layout truth.
+- Non-Windows or no-Office machines: the tool exits 2 with a clear message — skip this step, don't block the pipeline.
+- **Zoom recheck**: for suspected small-text regions (12-13px footnotes, captions), re-render a single page at higher fidelity with `visual_review.py --pages <token> --scale 2` (renders 2560×1440) before deciding.
+
 After the table is clean, continue to post-processing per [`SKILL.md`](../../SKILL.md) Step 7:
 
 ```bash
