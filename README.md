@@ -11,20 +11,12 @@
 
 DeepPPT turns a topic or source document into a natively editable PPTX. It coordinates research, narrative and visual planning, asset acquisition, SVG authoring, validation, and export while preserving explicit machine contracts across resumable workflows.
 
-Latest production hardening includes:
+**Capabilities at a glance:**
 
-- **v4.3.0 migration completed** - the SVG→DrawingML exporter was replaced with the refactored upstream package (real text-metric hard errors, transform-aware overflow contracts, 21 SVG→DrawingML syntax contracts) plus the `svg_quality` diagnostic pack, while all DeepPPT-specific CLI flags and quality gates were preserved. `pptx_structure.mode: flat|structured` is wired (structured compiles real Master/Layout parts).
-- **Deterministic chart recall** - `chart_recall.py` ranks up to the requested number of candidates from the live visualization catalog using 3-8 content-shape tags, gates semantic fallback on low lexical confidence, and validates exact selected keys.
-- **Complete page-expression lifecycle** - the Strategist-owned `page_expression.json` remains authoritative across continuous, split, resume, and refine-spec paths; compliance checks enforce page coverage and visible assertions, and the contract is sealed together with `spec_lock.md`.
-- **Evidence-backed consulting narratives** - when consulting evidence is enabled, research preserves traceable evidence rows and resolves exactly 2-3 SCR alternatives into one recommendation with evidence IDs, caveats, and explicit rejection reasons.
-- **Artifact showcase Dashboard** - the Dashboard is positioned as an online viewing platform for everything a project produces: the deck-making journey (research → content selection → detailed outline → visual strategy) alongside the artifacts themselves (SVG pages, exports, notes, images, quality reports), browsable by four phases (制作思路 / 设计契约 / 生成页面 / 导出成品) and searchable locally via `dashboard/artifacts_index.json`.
-- **Prompt context governance** - `prompt_audit.py` + `prompt_audit_manifest.json` audit the full prompt corpus (173 documents, o200k_base token budgets): six route-level load sets plus a `generate-on-demand` set model what an agent actually loads per route, with concern-level authority edges, six live registries (modes / visual styles / image catalogs / charts), and two schema-grammar owners enforcing single-definition contracts. Generate-route typical load dropped **21.4%** (165.7K → 130.2K tokens) by moving on-demand references (effects catalog, animations, structured-mode markers, optional workflows) into their own load set with real `load_event` triggers; coverage exemptions and 22 accepted shared-contract duplicates keep the corpus accounting closed (errors=0).
-- **System optimization Phase 1-8 (2026-08-04)** - convergence pass over the whole repo: pipeline state and artifact paths now have a single source of truth (`project_utils` canonical accessors + `derive_pipeline_state`; checkpoint and Dashboard agree on `exports/*.pptx`), `spec_lock.md` is parsed by exactly one owner (`spec_lock_reader.py`), trace events carry a versioned envelope, `pptx_animations.py` was split into `animation_constants` + `animation_effects` (characterization 18/18 identical), all 85 CLI entries exit through `raise SystemExit(main())`, and the CI smoke job now runs the full 187-check integration suite. Verification: guard/governance/prompt-audit all green, examples 29/29 checker + e2e, 3-fixed-brief end-to-end rehearsal 3/3. Reports: `docs/reviews/deepppt2-system-optimization-baseline-2026-08.md` + `-final-2026-08.md`.
-- **Practical delivery optimization Phase 1-6 (2026-08-04)** - PowerPoint real render is now the final layout truth: `pptx_render_export.py` renders exported decks via PowerPoint COM (`Slide.Export` PNG per slide; exit 2 without Office), and the calibrated `svg_geometry_audit.py` glyph-box audit is the advisory first pass — Golden Set calibration eliminated 74 false positives (inline-tspan + unexpanded-transform bugs), known-defect recall 5/5, and it stays advisory (precision 67% below the 95% upgrade bar; PowerPoint PNGs adjudicate disputes). Nine synthetic route fixtures under `fixtures/` (template-fill / enhance / structured / 15 partial-state scenarios / DOCX+PPTX source fidelity / trace calibration / space report / beautify 1:1) ship with rebuild scripts and run as smoke integration Tests 10-14 (282 checks in the CI smoke job). Source fidelity reconciles DOCX merged cells (vMerge/gridSpan) + Wingdings circled digits and PPTX merged tables / notes / symbol runs exactly; corrupted inputs fail closed. Local run metrics: `run_summary.py` aggregates trace + sidecars into versioned `quality/run_summary.json` (null≠0 semantics; image attempts / pptx exports / live-preview annotations wired; sensitive keys abort rc=1). Interruption recovery: `project_manager.py diagnose` returns step / evidence / stable blockers / one next action for 15 partial states (read-only, deterministic). Space governance: `space_report.py` read-only report + archive dry-run plan (first authorized cleanup released 307 MiB of old snapshots). First real CI runs are green after fixing fixture line-ending/digest drift, gitignore'd test assets, and the push path filter; pip cache active. Final report: `docs/reviews/deepppt2-practical-delivery-optimization-final-2026-08.md`.
-- **OfficeCLI deep integration Phase 1-4 (2026-08-04)** - iOfficeAI/OfficeCLI v1.0.143 is now a fixed local Office capability layer: ① **Pinned runtime & bridge** — SHA-256-locked install to `.tools/officecli/`, typed zero-shell bridge with 14 stable error codes, 8-platform lock manifest (Windows/Linux/macOS x64/arm64); ② **Native PPTX revision** — read-only inventory → browser-based element selection → confirmed atomic plan → temp-copy apply with 7-gate postflight (baseline-delta validate, slide-roster comparison, COM render, SVG-divergence recording), full rollback on partial failure; ③ **Office source enrichment** — `office_sources.json` auto-generated on `import-sources` (format-specific stats for DOCX/PPTX/XLSX), opt-in copy-only DOCX/XLSX repair with converter re-run; ④ **Dashboard & CI** — `/api/state` displays `officecli_runtime` / `office_sources` / `native_revision` state; CI smoke job installs the pinned binary on Linux and validates the checksum. All mutation is temp-copy–only; original files are never modified. 22 files changed, +4051 lines. Plan: `plans/officecli-deep-integration-agent-brief.md`.
-- **Intent-first composition QA** - the Executor composes from `content_relation`, `information_anchor`, and `visual_act` before choosing layout patterns. Sparse composition, one-sided whitespace, and large image-text gaps remain review signals rather than prompts to add filler; fixes are batched before one re-check.
-
----
+- **End-to-end generation pipeline** — topic-only input goes through an explicit PPT Briefing confirmation, then a 7-step deep-research orchestrator (multi-AI browser automation), Eight Confirmations, a sealed `page_expression.json` contract, deterministic chart recall, dual-track image acquisition, hand-written SVG pages, quality gates, and export. Optional `quick-generate` fast lane and 1:1 `beautify` re-layout.
+- **Native Office capability layer** — OfficeCLI v1.0.143 as a pinned, SHA-256-locked local runtime: native PPTX revision (read-only inspect → browser element selection → confirmed atomic plan → temp-copy apply with full rollback → PowerPoint COM final render → SVG-divergence recording), Office source enrichment (`office_sources.json` on import), and opt-in copy-only DOCX/XLSX repair. User originals are never modified.
+- **Quality gates & observability** — staged confirm/research/asset/visual/harness/e2e gates plus the refactored `svg_quality` diagnostic pack; PowerPoint COM real render as the final layout truth with an advisory glyph-box audit; unified Dashboard artifact showcase; versioned trace envelope + `run_summary` metrics.
+- **Engineering governance & cross-platform** — 13 mainstream AI agent platforms work out of the box, synthetic non-sensitive regression fixtures with smoke integration contracts (291 checks), three green CI jobs (Linux runner installs the pinned OfficeCLI binary), single-source-of-truth project accessors, read-only interruption diagnostics, and prompt-corpus governance.
 
 ## 简介
 
@@ -32,17 +24,49 @@ DeepPPT 是一个端到端的 AI PPT 生成系统。给定一个主题或源文�
 
 当输入只有一个主题时，DeepPPT 会先生成可确认的 `ppt_brief.md` / `ppt_brief.json`，明确目标、受众、叙事、素材策略和验收标准；用户确认后才进入深度调研，避免在方向未锁定时直接搜索和生成。
 
-当前版本进一步将页面表达、图表选型和执行可观测性收敛为机器合同：`page_expression.json` 贯穿连续生成、分段交接、恢复执行和规格精修路径，并与 `spec_lock.md` 一同封存；图表候选从实时目录中确定性召回并校验精确键；Dashboard 和 Harness 会显示并验证合同摘要状态，防止恢复或修改过程中的静默漂移。
+> 完整变更记录见 [docs/change-log.md](docs/change-log.md)；最近成果见文末[更新日志](#更新日志)。
 
-**2026-08-03 完成 v4.3.0 大规模迁移收尾**：重构版导出器（真实文字度量硬错误、transform 感知溢出契约、21 类 SVG→DrawingML 语法契约）与 `svg_quality` 诊断包整体接线，`structured` 模板导出模式落地；29 个公开示例全部通过 `svg_quality_checker` + `e2e_validate` 双门（29/29），GitHub Actions CI 三 job 全绿，GitHub Pages 已上线。Dashboard 重新定位为**产物在线观看平台**——按「制作思路 → 设计契约 → 生成页面 → 导出成品」四阶段浏览项目全过程产物，并生成本地可搜找的产物索引。
+### 核心能力
 
-**2026-08-04 完成系统优化收尾（Phase 1-8）**：`prompt_audit` 契约从空壳重建为真实 load-set 设计（6 个路由加载集 + 1 个 generate-on-demand 加载集、9 条权威边、6 个活注册表、2 个 schema-grammar 所有者、22 个有意共享重复声明；173 文档语料 token 预算审计 rc=0 / errors=0 / coverage 闭合，Generate 路由典型加载 −21.4%）；管线状态与产物路径收敛为单一事实源（`project_utils` 规范 accessors + `derive_pipeline_state`，checkpoint 与 Dashboard 一致认 `exports/*.pptx`）；`spec_lock.md` 由唯一解析所有者 `spec_lock_reader.py` 承载；trace 事件携带版本化信封；`pptx_animations` 拆分为 `animation_constants` + `animation_effects`（特征化 18/18 无差异）；全部 85 个 CLI 入口统一 `raise SystemExit(main())`；CI smoke job 升级为 187 项集成套件。基线/收尾双报告见 `docs/reviews/deepppt2-system-optimization-*.md`，三份治理文档状态同步、`.align` 经验归档至 50 条上限并建立决策日志。
+#### 1. 端到端生成管线
 
-**2026-08-04 完成实际交付优化收尾（Phase 1-6）**：以 PowerPoint 真实渲染为最终版式依据（`pptx_render_export.py` 经本机 COM `Slide.Export` 逐页出图，非 Windows 优雅 exit 2；`svg_geometry_audit.py` 字形盒级审计为 advisory 首道防线——Golden Set 校准消除 74 条误报、已知缺陷注入召回 5/5、precision 67% 未达 95% 升级线故保持不阻断，争议由 PowerPoint PNG 裁决）；9 套合成非敏感路线 fixture 入库 `skills/ppt-master/fixtures/`（template-fill / enhance / structured / 15 个 partial 状态 / DOCX+PPTX 内容保真 / trace 校准 / 空间报告 / beautify 1:1，附 rebuild 脚本），smoke integration Tests 10-14（282 项断言，CI smoke job 自动运行）；源内容保真对账（DOCX vMerge/gridSpan/双字体圈号/多段落/图片、PPTX 合并表格/备注/符号关键数字逐项一致，损坏输入 fail-closed）；本地运行指标闭环（`run_summary.py` → 版本化 `quality/run_summary.json`，null≠0 语义，图片尝试/导出次数/预览标注已埋点，敏感字段 fail-closed rc=1）；中断恢复只读诊断（`project_manager.py diagnose`：15 态稳定 blocker + 唯一 next action，零写入）；只读空间报告 + 归档 dry-run（已批准清理 307.2 MiB 旧快照，4.82 → 4.52 GiB）。首次真实 CI 跑测修复三类问题（fixtures 行尾/digest 漂移、gitignore 吞测试资产、push paths 过滤器缺 fixtures/**），当前三 job 全绿、pip cache 生效。收尾报告：`docs/reviews/deepppt2-practical-delivery-optimization-final-2026-08.md`。
+- **主题直达**：仅给主题时先走 `ppt-briefing` 前置构思并等待确认，再进入 7 步独立深度调研（大纲 → 搜索拆分 → 多 AI 逐页搜索 → 汇总 → 分析 → 叙事 → 视觉策略），支持 Agent-Reach / 平台 / 浏览器自动化三条搜索路径
+- **机器合同贯穿**：`page_expression.json` 逐页锁定主张、证据、视觉动作、结论与叙事衔接，与 `spec_lock.md` 一同封存，在连续生成 / 分段交接 / 恢复执行 / 规格精修全路径上防漂移
+- **确定性图表选型**：基于 3-8 个内容形态标签从实时目录召回候选，低置信度才开放语义 fallback，入锁前校验精确键
+- **图片来源路由 + 双轨生成**：按人物 / 产品 / 学术 / 历史 / 近期事件 / 通用氛围选择来源包，视觉页 AI 生图 + 信息页网络素材，15+ 图片后端
+- **SVG 逐页手写生成**：Executor 按内容关系、信息锚点、视觉动作构图，配合实时预览；页面类型 11 种（含讲解页、对比页、数据页、时间线页）
+- **快速通道**：`quick-generate` 直通 profile（显式快速意图 → 手写 SVG → lockless 检查 → 导出）；`beautify-pptx` 1:1 重排版（内容逐字保留、源版式为准）
+- **咨询证据链（可选）**：证据表、2-3 条 SCR 备选、每页 evidence IDs / caveats / SO WHAT / content density
 
-**支持 13 个主流 AI Agent 平台**，克隆即用：Claude Code / Cursor / Windsurf / GitHub Copilot / OpenAI Codex / Pi / Cline / Roo Code / Aider / Amazon Q / Kiro / Junie / Hermes Agent。
+#### 2. 原生 Office 能力（OfficeCLI v1.0.143 固定运行时）
 
-**核心差异化**（相比上游 ppt-master）：
+- **固定运行时与零 shell 桥接**：SHA-256 校验安装到 gitignored `.tools/officecli/`，8 平台 lock manifest，typed bridge + 14 个稳定错误码，原子 batch，无 PATH fallback / MCP / SDK / 自动升级
+- **原生 PPTX 修订子工作流**：只读 inspect（对象树 / 格式 / 问题 / 稳定 `@id=` 路径）→ 浏览器 watch 选择对象 → 确认 plan（V1 allowlist：set/add/remove/move/swap）→ 临时副本原子 apply → 7 门禁 postflight（baseline-delta validate、slide roster、未寻址 parts 保护、COM render、SVG divergence 记录），任一失败整批回滚、不发布产物
+- **Office 源文件结构增强**：`import-sources` 自动生成 `analysis/office_sources.json`（DOCX/PPTX/XLSX 格式感知计数、问题报告、converter 映射），检查前后源 SHA-256 不变
+- **副本式 DOCX/XLSX 修复（opt-in）**：原件永不为 mutation target，修复副本发布到 `sources/repaired/` 并重跑原 converter 产出新 Markdown（不覆盖旧）
+- **原生增强**：追加式补丁已完成 PPTX（备注 / 音频 / 时序 / 转场，不重建幻灯片）；PowerPoint COM 编码 MP4 视频导出
+- **权威边界**：四条顶层路由（Generate / Create Template / Fill Native PPTX / Enhance Native PPTX）不变，上述能力均为共享子工作流；SVG 生成与 Markdown converters 仍是生成权威
+
+#### 3. 质量门禁与可观测性
+
+- **多阶段门禁**：confirm / research depth / asset completeness / rendered visual / harness / e2e，外加重构版 `svg_quality` 诊断包（真实文字度量硬错误、transform 感知溢出契约、21 类 SVG→DrawingML 语法契约）
+- **PowerPoint 真实渲染终裁**：`pptx_render_export.py` 经 COM `Slide.Export` 逐页出图作为版式最终依据；`svg_geometry_audit.py` 字形盒级审计为 advisory 首道防线；浏览器预览不冒充最终视觉通过
+- **Dashboard 产物展台**：按「制作思路 → 设计契约 → 生成页面 → 导出成品」四阶段浏览项目全过程产物，本地 `artifacts_index.json` 可搜找，`/api/state` 展示 OfficeCLI runtime / sources / revision 状态与 SVG divergence
+- **运行指标闭环**：trace 版本化信封 + `run_summary.py` 聚合（null≠0 语义、敏感字段 fail-closed）；`pptx_quality_check.py` 导出后 PPTX 结构 QA
+- **prompt 语料治理**：`prompt_audit.py` 按路由 load-set 审计 173 文档 token 预算（Generate 路由典型加载 −21.4%，coverage 闭合）
+
+#### 4. 工程治理与跨平台协同
+
+- **13 个主流 AI Agent 平台克隆即用**：Claude Code / Cursor / Windsurf / GitHub Copilot / OpenAI Codex / Pi / Cline / Roo Code / Aider / Amazon Q / Kiro / Junie / Hermes Agent
+- **回归与 CI**：合成非敏感 fixture（template-fill / enhance / structured / partial 15 态 / DOCX+PPTX 保真 / trace 校准 / space / beautify 1:1 / officecli，附 rebuild 脚本）驱动 smoke integration Tests 10-17（291 checks）；CI 三 job 全绿，Linux runner 自动安装 pinned OfficeCLI 并校验校验和
+- **单一事实源**：`project_utils` 规范 accessors + `derive_pipeline_state`；`spec_lock.md` 由唯一解析所有者承载；trace 事件版本化信封
+- **中断恢复与空间治理**：`project_manager.py diagnose` 15 态只读诊断（稳定 blocker + 唯一 next action）；`space_report.py` 只读空间报告 + 归档 dry-run；`attribution_guard.py` 技能完整性 fail-closed 门禁
+
+## 与 ppt-master 的关系
+
+本项目是 [hugohe3/ppt-master](https://github.com/hugohe3/ppt-master) 的**扩展分支**。上游提供了完整 PPT 生成管线（源文件转换 → 项目管理 → 八项确认 → SVG 逐页生成 → 后处理 → PPTX 导出），DeepPPT 在此基础上做面向生产工作流的增强。
+
+**核心差异化**：
 
 | 能力 | ppt-master (上游) | DeepPPT (本项目) |
 |------|-------------------|------------------|
@@ -52,57 +76,26 @@ DeepPPT 是一个端到端的 AI PPT 生成系统。给定一个主题或源文�
 | 搜索 | 内置 WebSearch | deep-research 计划搜索路径（Agent-Reach / 平台 / 浏览器自动化），内置 WebSearch 仅作记录式 fallback |
 | 叙事 | 模板化大纲 | 故事弧线 + 转折点 + 过渡标记 |
 | 视觉 | 通用设计规范 | 从调研内容中提取视觉身份 |
-| 工作台 | 分散脚本输出 | 统一 Dashboard **产物展台**——按制作思路/设计契约/生成页面/导出成品四阶段浏览项目全过程产物，本地 `artifacts_index.json` 可搜找；桥接 Confirm / Live Preview |
-| 门禁 | 基础脚本校验 | confirm / research / asset / rendered visual / harness / e2e 多阶段质量门禁 + 重构版 `svg_quality` 诊断包（真实文字度量、transform 感知溢出契约、21 类语法契约） |
-| 页面表达合同 | 无独立逐页机器合同 | `page_expression.json` 锁定 assertion / evidence / visual act / takeaway / next beat，并覆盖 continuous / split / resume / refine 生命周期 |
+| 工作台 | 分散脚本输出 | 统一 Dashboard **产物展台**——按制作思路/设计契约/生成页面/导出成品四阶段浏览，本地 `artifacts_index.json` 可搜找；桥接 Confirm / Live Preview |
+| 门禁 | 基础脚本校验 | confirm / research / asset / rendered visual / harness / e2e 多阶段质量门禁 + 重构版 `svg_quality` 诊断包 |
+| 页面表达合同 | 无独立逐页机器合同 | `page_expression.json` 锁定 assertion / evidence / visual act / takeaway / next beat，覆盖 continuous / split / resume / refine 生命周期 |
 | 图表选型 | 手动浏览图表索引 | 基于 3-8 个内容形态标签确定性召回候选，低置信度时才开放语义 fallback，入锁前校验精确键 |
-| 协同性治理 | 依赖人工维护 | 链接扫描、workflow Exit Evidence、脚本分层、语言规则现实化和审计修复记录 |
-| 排版 | 无自动检测 | 重构版导出器真实文字度量硬错误（负 letter-spacing、文本超模块 bounds 量化溢出）+ 静态合同检查 + 本地渲染截图门禁 + 意图优先的留白审查；宽松构图只提示复核，不用填充物“修正” |
+| 排版 | 无自动检测 | 重构版导出器真实文字度量硬错误 + 静态合同检查 + 本地渲染截图门禁 + 意图优先的留白审查 |
 | 视觉审查 | 无独立视觉回看 | 视觉检查工作流 + OpenAI/Anthropic/Ollama 兼容后端 |
-| 动画 | 通用动画 | 默认页间转场；页内元素动画显式 opt-in，可用 `customize-animations` 调整对象级顺序/效果/时序；完整动画链（seq_targets → timing XML → trace 富化）支持导出期校验 |
+| 动画 | 通用动画 | 默认页间转场；页内元素动画显式 opt-in，`customize-animations` 调整对象级顺序/效果/时序 |
 | 视频导出 | 无原生视频链路 | 本机 PowerPoint COM 编码 MP4（h264 1080p）+ 动效规划 + 字幕对齐 + 旁白指纹同步 |
-| 原生增强 | 重建幻灯片 | 追加式补丁已完成的 PPTX（备注/音频/时序/转场，不重建幻灯片） |
-| 快速通道 | 无 | `quick-generate` 直通 profile：显式快速意图 → 手写 SVG → lockless 检查 → 导出，不建 spec/lock |
+| 原生增强 | 重建幻灯片 | 追加式补丁（备注/音频/时序/转场，不重建幻灯片） |
+| 原生修订 | 重建幻灯片 | OfficeCLI v1.0.143 固定运行时：原生 PPTX 对象树读取 + 浏览器选择 + 原子化可回滚修改（set/add/remove/move/swap）+ 副本修复 DOCX/XLSX + SVG divergence 状态 |
+| 快速通道 | 无 | `quick-generate` 直通 profile |
 | 原生形状 | 基础图元 | 187 个锁定 Office 预设 + 反向转换（beautify 复用同事实源）；structured 模板导出为文档化 opt-in |
 | 模板治理 | 基础模板库 | 模板发现、质量审查、低分模板下线和显式路径应用 |
-| 原生修订 | 重建幻灯片 | OfficeCLI v1.0.143 固定运行时：AI 可读取原生 PPTX 对象树/格式/问题，浏览器预览选择对象，原子化可回滚的原生修改（set/add/remove/move/swap），副本修复 DOCX/XLSX，Dashboard 显示 SVG divergence 状态 |
 | 页面类型 | 6 种基础类型 | 11 种（含讲解页、对比页、数据页、时间线页等） |
 | 图片策略 | 单轨（AI 或网络） | 来源路由 + 双轨——视觉页 AI 生图 + 信息页网络素材 |
 | 咨询报告 | 通用大纲 | 可选证据表、SCR 备选、每页 SO WHAT / caveat / evidence IDs |
 | 可编辑性 | SVG 导出为 PPTX | 可编辑信息层规则 + post-export PPTX 结构检查 |
-| 内容深度 | 单页展示 | 证据和可读性驱动的页面拆分；主张与主要证据优先同页，不设置讲解页数量配额 |
+| 内容深度 | 单页展示 | 证据和可读性驱动的页面拆分；主张与主要证据优先同页 |
 
-## 与 ppt-master 的关系
-
-本项目是 [hugohe3/ppt-master](https://github.com/hugohe3/ppt-master) 的**扩展分支**。
-
-- **上游 ppt-master** 提供了完整的 PPT 生成管线：源文件转换 → 项目管理 → 八项确认 → SVG 逐页生成 → 后处理 → PPTX 导出
-- **DeepPPT** 在此基础上新增了：
-  - [`ppt-briefing`](skills/ppt-master/workflows/ppt-briefing.md) 前置构思工作流——主题输入先确认目标、受众、叙事、素材策略和风险，再进入深度调研
-  - [`deep-research`](skills/ppt-master/workflows/deep-research.md) 编排器——7 步独立调研工作流，协调计划搜索路径；普通 WebSearch 只作为 deep-research Step 3 内部记录式 fallback
-  - [`browse_ai.py`](skills/ppt-master/scripts/research/browse_ai.py)——Playwright CDP 浏览器自动化，支持 Grok / Kimi / DeepSeek / 通义千问 / ChatGLM / Perplexity
-  - [`dashboard`](skills/ppt-master/scripts/dashboard/)——统一只读 Dashboard，集中展示项目状态、产物、质量报告、执行轨迹、模板预览和 Confirm / Live Preview 入口
-  - [`chart_recall.py`](skills/ppt-master/scripts/chart_recall.py)——从实时图表目录确定性召回候选，在低词法置信度时约束语义 fallback，并校验进入 `page_charts` 的精确键
-  - `page_expression.json` 全生命周期合同——逐页锁定主张、证据、视觉动作、结论和叙事衔接，与 `spec_lock.md` 一同封存并由 compliance / Harness / Dashboard 验证
-  - [`confirm_ui_gate.py`](skills/ppt-master/scripts/confirm_ui_gate.py)、[`research_gate.py`](skills/ppt-master/scripts/research/research_gate.py)、[`asset_gate.py`](skills/ppt-master/scripts/research/asset_gate.py)——确认、研究深度和素材完整性门禁
-  - [`image_source_router.py`](skills/ppt-master/scripts/image_source_router.py) + [`image-source-routing.md`](skills/ppt-master/references/image-source-routing.md)——按主题域选择官方、学术、开放版权、通用氛围图等来源包，降低错图和版权风险
-  - [`rendered_layout_check.py`](skills/ppt-master/scripts/rendered_layout_check.py)——基于本地渲染截图的布局门禁，补足静态 SVG 检查无法发现的重叠、踩线和异常留白
-  - 咨询类可选规则层——`deep-research` / `detailed-outline` / Strategist 支持 `evidence_table`、2-3 条 SCR 候选故事线、每页 `evidence_ids` / `caveats` / `so_what` / `content_density`
-  - [`consulting_content_lock.py`](skills/ppt-master/scripts/consulting_content_lock.py)——从 detailed outline / spec lock 生成 `analysis/slide_content_lock.json`，锁定咨询页标题、KPI、图表、表格、注释和证据 ID
-  - [`pptx_quality_check.py`](skills/ppt-master/scripts/pptx_quality_check.py)——导出后直接读取 PPTX ZIP/XML，检查画布比例、越界形状、占位符、整页图片风险、native text 数量和最小字号
-  - [`icon_sync.py search`](skills/ppt-master/scripts/icon_sync.py)——按图标文件名和 SVG 头部标签搜索候选 `lib/name`，再沿用现有 icon sync 复制流程
-  - [`vision_check.py`](skills/ppt-master/scripts/vision_check.py) + [`vision_backends`](skills/ppt-master/scripts/vision_backends/)——可插拔视觉检查后端
-  - [`docs/reviews/`](docs/reviews/) + [`docs/rules/`](docs/rules/)——管线协同性审计、修复状态记录和仓库级语言 / 文档治理规则
-  - [`batch-review`](skills/ppt-master/workflows/batch-review.md)——按批生成与审阅的可选工作流
-  - 模板库质量治理——Dashboard / Confirm UI 统一展示候选预览，低分模板经审查和用户确认后从索引下线
-  - [`story_driven`](skills/ppt-master/templates/layouts/story_driven/) 布局模板——封面/目录/过渡/内容/讲解/金句/对比/数据/时间线/全图/封底
-  - [`img2img-support`](docs/design/img2img-support.md)——图生图支持的非运行时设计说明，不是可直接调用的 standalone workflow
-  - 排版稳定性检测（布局溢出/元素间距/垂直分布）+ 自动修正
-  - 默认页间转场 + 显式 opt-in 的对象级动画配置
-  - 多后端 AI 图片生成（OpenAI / Gemini / Replicate / Stability / 通义千问 / 智谱 / SiliconFlow 等 15+ 后端）
-  - **OfficeCLI 深度集成（2026-08-04）**——以 iOfficeAI/OfficeCLI v1.0.143 为固定本地 Office 能力层，提供：① 固定运行时桥接层（SHA-256 校验、14 个稳定错误码、原子 batch）；② 原生 PPTX 修订子工作流（只读 inspect → 浏览器 watch 选择 → 确认 plan → temp-copy atomic apply → COM render → 记录 SVG divergence）；③ Office 源文件结构增强（DOCX/PPTX/XLSX 自动生成格式感知清单和问题报告）；④ 副本式 DOCX/XLSX 修复（原件永不修改，修复副本重跑 converter 产出新 Markdown）；⑤ Dashboard `/api/state` 展示 runtime/sources/revision 状态；⑥ CI 自动安装 pinned 二进制并校验
-
-DeepPPT 沿用上游管线脚本（`project_manager.py`、`svg_editor/`、`confirm_ui/`、`svg_to_pptx.py` 等），并在交互确认、实时预览、质量检查、研究门禁、视觉审查和导出校验上做了面向生产工作流的增强。
+DeepPPT 新增的代表性模块：`ppt-briefing`、`deep-research` 编排器、`browse_ai.py` 浏览器自动化、统一 Dashboard、`chart_recall.py`、`confirm_ui_gate.py` / `research_gate.py` / `asset_gate.py`、`image_source_router.py`、`rendered_layout_check.py`、`pptx_quality_check.py`、`icon_sync.py search`、`vision_check.py` + 多后端、OfficeCLI 集成套件（`install_officecli.py` / `officecli_bridge.py` / `native_revision_pptx.py` / `office_source_inspect.py` / `office_source_repair.py`）、`run_summary.py` / `space_report.py` / `project_manager.py diagnose` 治理工具。
 
 **感谢上游作者 [Hugo He](https://www.hehugo.com/) 的开创性工作。** 如果本项目对你有帮助，也请给上游 [ppt-master](https://github.com/hugohe3/ppt-master) 一个 ⭐。
 
@@ -199,21 +192,24 @@ DeepPPT/
 │   │   ├── svg_quality/      # 重构版质量诊断包（真实文字度量/溢出契约）
 │   │   ├── svg_to_pptx/      # 重构版导出器（drawingml/pptx_package/native_objects）
 │   │   ├── image_backends/   # 15+ AI 图片后端
-│   │   ├── image_source_router.py  # 图片来源路由
-│   │   ├── chart_recall.py         # 确定性图表候选召回与键校验
-│   │   ├── rendered_layout_check.py # 渲染级布局检查
-│   │   ├── pptx_quality_check.py    # 导出后 PPTX 结构 QA
-│   │   ├── consulting_content_lock.py # 咨询内容锁 sidecar
-│   │   ├── attribution_guard.py     # 技能完整性门禁（fail-closed）
-│   │   ├── prompt_audit.py          # prompt 语料审计（load_sets/token 预算/重复声明）
-│   │   ├── svg_geometry_audit.py     # 字形盒级几何审计（advisory 首道防线）
-│   │   ├── pptx_render_export.py     # PowerPoint COM 真实渲染导出（最终版式依据）
-│   │   ├── run_summary.py            # 本地运行指标聚合（quality/run_summary.json）
-│   │   ├── space_report.py           # 只读空间报告 + 归档 dry-run
+│   │   ├── install_officecli.py / officecli_bridge.py  # OfficeCLI 固定运行时与桥接层
+│   │   ├── native_revision_pptx.py     # 原生 PPTX 修订子工作流（inspect/watch/plan/apply）
+│   │   ├── office_source_inspect.py / office_source_repair.py  # Office 源增强与副本修复
+│   │   ├── image_source_router.py      # 图片来源路由
+│   │   ├── chart_recall.py             # 确定性图表候选召回与键校验
+│   │   ├── rendered_layout_check.py    # 渲染级布局检查
+│   │   ├── pptx_quality_check.py       # 导出后 PPTX 结构 QA
+│   │   ├── consulting_content_lock.py  # 咨询内容锁 sidecar
+│   │   ├── attribution_guard.py        # 技能完整性门禁（fail-closed）
+│   │   ├── prompt_audit.py             # prompt 语料审计（load_sets/token 预算/重复声明）
+│   │   ├── svg_geometry_audit.py       # 字形盒级几何审计（advisory 首道防线）
+│   │   ├── pptx_render_export.py       # PowerPoint COM 真实渲染导出（最终版式依据）
+│   │   ├── run_summary.py              # 本地运行指标聚合（quality/run_summary.json）
+│   │   ├── space_report.py             # 只读空间报告 + 归档 dry-run
 │   │   ├── vision_backends/  # 视觉检查后端
 │   │   ├── source_to_md/     # 源文件转换器
 │   │   └── research/         # 浏览器自动化搜索和研究/素材门禁
-│   ├── fixtures/             # 合成路线回归 fixture（template-fill/enhance/structured/partial 15 态/保真/trace/space/beautify 1:1，rebuild 脚本可重建）
+│   ├── fixtures/             # 合成路线回归 fixture（template-fill/enhance/structured/partial 15 态/保真/trace/space/beautify 1:1/officecli，rebuild 脚本可重建）
 │   ├── templates/            # 布局模板、图表模板、图标库、品牌预设
 │   └── workflows/            # 路由 + 独立工作流
 │       ├── routing.md        # 四路由选择权威（Generate/Template/Fill/Enhance）
@@ -221,7 +217,7 @@ DeepPPT/
 │       ├── ppt-briefing.md   # 主题输入前置构思与确认
 │       ├── deep-research.md  # 深度调研编排器 (7步协调)
 │       ├── research/         # 7步独立工作流
-│       ├── stages/           # 阶段工作流（resume/refine/live-preview/verify-charts/visual-review/animations/audio）
+│       ├── stages/           # 阶段工作流（resume/refine/live-preview/verify-charts/visual-review/animations/audio/native-revision）
 │       ├── profiles/         # 生成 profile（quick-generate / beautify-pptx）
 │       ├── create-template.md / create-brand.md / template-fill-pptx.md / native-enhance-pptx.md
 │       └── governance/       # failure-recovery 恢复矩阵
@@ -288,182 +284,45 @@ DeepPPT/
 | [ppt-briefing.md](skills/ppt-master/workflows/ppt-briefing.md) | 主题输入前置构思与确认 |
 | [deep-research.md](skills/ppt-master/workflows/deep-research.md) | 深度调研编排器 |
 | [research/](skills/ppt-master/workflows/research/) | 7 步独立调研工作流 |
+| [native-revision.md](skills/ppt-master/workflows/stages/native-revision.md) | 原生 PPTX 修订子工作流（OfficeCLI） |
+| [officecli.md](skills/ppt-master/scripts/docs/officecli.md) | OfficeCLI 集成（运行时/桥接/修订/源增强/修复） |
 | [image-source-routing.md](skills/ppt-master/references/image-source-routing.md) | 图片来源路由和版权风险策略 |
 | [ai-browser-setup.md](docs/ai-browser-setup.md) | 浏览器自动化配置（CDP Chrome） |
 | [dashboard-unified-design.md](docs/design/dashboard-unified-design.md) | 统一 Dashboard 设计说明 |
-| [pipeline-coherence-audit-2026-07.md](docs/reviews/pipeline-coherence-audit-2026-07.md) | 管线成熟度与协同性审计及修复状态 |
 | [Canvas Formats](skills/ppt-master/references/canvas-formats.md) | 画布格式列表 |
 | [Scripts & Tools](skills/ppt-master/scripts/README.md) | 工具脚本文档 |
+| [Change Log](docs/change-log.md) | 完整变更记录 |
 
 ## 更新日志
 
-### 2026-08-04 — 实际交付优化（Phase 1-6）：PowerPoint 真实渲染终裁 + 路线 fixture + 运行指标 + 中断诊断
+### 2026-08-05 — OfficeCLI 深度集成 Phase 1-4 契约收尾
 
-- PowerPoint 真实渲染成为最终版式依据：`pptx_render_export.py`（COM `Slide.Export` 逐页 PNG，非 Windows exit 2 优雅退出）；`svg_geometry_audit.py` 字形盒级审计（文字交叠/行距/页脚贴边/rect 遮挡/越界/图片尺寸；translate 展开、行内 tspan 误报修复）——Golden Set 44 页校准 74 条 FP → 0，已知缺陷注入召回 5/5，precision 67% 未达 95% 升级线，保持 advisory
-- 9 套合成非敏感 fixture 入库 `skills/ppt-master/fixtures/`（template-fill / enhance / structured / partial 15 态 / DOCX+PPTX 保真 / trace 校准 / space / beautify 1:1，含 rebuild 脚本与 README），smoke integration Tests 10-14（+95 checks → 282）
-- 源内容完整性对账：DOCX vMerge/gridSpan/双字体圈号/多段落/图片与 PPTX 合并表格/备注/符号关键数字逐项一致；损坏输入（坏 zip / 坏 XML / 截断）全部 fail-closed rc≠0
-- 运行指标闭环：`run_summary.py` 聚合 trace + sidecar → 版本化 `quality/run_summary.json`（null≠0 语义、retry/image/标注/导出计数、敏感字段 rc=1 不写文件）；写侧埋点：image_gen 每 manifest 尝试、svg_to_pptx 每次导出、annotations.jsonl 计数
-- 中断恢复：`project_manager.py diagnose`（owner=`project_utils.diagnose_project`）15 态稳定 blocker + 唯一 next action，只读零写入、确定性（除 checked_at）；真实项目 gan_hemt 实测暴露并修复 spec_lock digest 过期
-- 空间治理：`space_report.py` 只读报告 + 归档 dry-run；已批准清理 4 个旧快照 backup（307.2 MiB，4.82 → 4.52 GiB）
-- CI：pip cache 三 job 生效；push paths 补 `fixtures/**`；首次真实跑测修复 fixture 行尾/digest 漂移与 gitignore 吞测试资产；当前三 job 全绿（smoke-check 282 项 / svg-quality 29 项目 / e2e 29 项目）
-- 验证：guard / governance drift / prompt audit 全绿；收尾报告 `docs/reviews/deepppt2-practical-delivery-optimization-final-2026-08.md`
+- **固定运行时**：OfficeCLI v1.0.143 安装到 gitignored `.tools/officecli/`（SHA-256 锁、8 平台 manifest、无 PATH fallback）；`install/check/path --json` 公共命令契约修复（子命令前后 `--json` 均可），checksum/version 负例 fail-closed
+- **原生 PPTX 修订**：inspect / watch / selected / check-plan / apply / validate 八子命令；check-plan 实测 target 存在性与 expect fingerprint；apply 七门禁 postflight（baseline-delta validate、slide roster、未寻址 parts 语义保护、COM render、SVG divergence）；中途失败整批回滚不发布
+- **Office 源增强与副本修复**：`import-sources` 自动生成 `office_sources.json`（DOCX/PPTX/XLSX 格式感知计数 + 问题 + converter 映射，含 legacy 标记）；opt-in 副本式 DOCX/XLSX 修复（原件 SHA-256 不变、修复副本 + 新 Markdown + provenance）
+- **可观测性与 CI**：8 个稳定 trace operation（含 probe/validate）零敏感内容；Dashboard `/api/state` 三键只读展示；run_summary 消费 officecli 耗时；smoke integration Tests 15-17（291 checks）；CI 自动安装 pinned 二进制
+- 全部验证：guard rc=0；smoke 89/0/3/92、180/0/4/184、291/0/4/295；四顶层路由不变
+
+### 2026-08-04 — 实际交付优化（Phase 1-6）：PowerPoint 真实渲染终裁 + 路线 fixture + 运行指标
+
+- PowerPoint COM 真实渲染成为最终版式依据；`svg_geometry_audit.py` 字形盒审计（Golden Set 校准 74 FP → 0，保持 advisory）
+- 9 套合成非敏感 fixture 入库（含 rebuild 脚本），smoke integration Tests 10-14；DOCX/PPTX 源内容保真对账、损坏输入 fail-closed
+- `run_summary.py` 运行指标闭环（null≠0 语义）；`project_manager.py diagnose` 15 态只读诊断；`space_report.py` 空间治理（已批准清理 307 MiB）
+- CI 三 job 全绿（smoke-check 282 项 / svg-quality 29 项目 / e2e 29 项目）
 
 ### 2026-08-04 — 系统优化收尾（Phase 1-8）：单一事实源 + 契约治理 + CLI 卫生
 
-- 单一事实源收敛：`project_utils` 新增 12 个规范 accessors（latest_export / has_export / svg_pages / spec_lock_path / find_quality_report 等）+ `PROJECT_ARTIFACT_DIRS` + `derive_pipeline_state`；`project_manager.checkpoint_save` 与 Dashboard `artifact_registry` 全部委托同一实现（F5 漂移修复：checker 只读 `exports/*.pptx`，项目根 `*.pptx` 永不 authoritative）
-- `spec_lock.md` 解析收敛为唯一所有者 `spec_lock_reader.py`（类型化 accessor + raw-text `images()`），`update_spec` / `e2e_validate` / `layout_capacity_check` / `svg_quality/checker` 全部经 wrapper 委托；checker 幽灵 import 移除并加 `_ANCHOR_COMPARE_ENABLED` 门（0 行为变化）
-- `prompt_audit` 契约增补 generate-on-demand 加载集（effects 目录 / 动画 / structured 标记 / 可选工作流移入按需加载，配真实 `load_event` 触发）：Generate 路由典型加载 165.7K → 130.2K tokens（−21.4%），语料 173 文档 coverage 闭合 rc=0
-- trace 事件统一版本化信封 v1（schema_version / operation / route / status / duration_ms / error_code，null≠0 语义），契约见 `scripts/docs/trace-contract.md`；`confirm_ui.md` 补 result.json schema 契约
-- `pptx_animations.py` 拆分为 `animation_constants` + `animation_effects`（严格单向依赖），characterization fixture 18 键 0 差异，public symbol 完整性校验通过
-- 85 个 CLI 入口统一 `raise SystemExit(main())`（错误路径 0 silent）；smoke_check 增补 Test 7-9（状态链 + gate 场景），CI smoke job 升级为 `--integration` 187 项集成套件
-- 验证：guard / governance / prompt-audit 全绿，examples 29/29 checker + e2e，三份固定简报端到端演练 3/3；基线/收尾双报告见 `docs/reviews/deepppt2-system-optimization-baseline-2026-08.md` 与 `-final-2026-08.md`
-
-### 2026-08-04 — 治理收口：prompt audit 契约重建 + 治理文档状态同步
-
-- `prompt_audit_manifest.json` 从空壳重建：7 个真实 load_sets（global / research / generate / image / template / native，glob `select` 按需语义，子集 include global）、1 个 coverage exempt（上游版权 NOTICE）、22 个 exact 重复 accepted（模板族共享契约表 / 自动生成头 / 共享引用句）；audit rc=0 / errors=0 / coverage 172 闭合（原 173 errors）
-- 三份治理文档状态同步：执行契约 D5/D6/D7 与 Phase 2/3/4 全部完成，`31298372` 标记为迁移基线提交，CI 风险关闭记录；盘点报告新增「治理后当前快照」（原始 Phase 0 基线保留）；性能基线 §3 标记历史风险已关闭
-- `.align` 治理：lessons 归档至 48 条（最旧 6 条移入 `.align/lessons-2026-08-03.archive.md`），新增 3 条 audit 教训；`decisions.log.md` 记录 8 条已批准决策；spec.md smoke 基线勘误为当前实测（77/0/3/80 + 156/0/4/160）
-- 全量验证通过：smoke 156/0/4（160 checks）、attribution_guard、governance_drift_check、svg_quality_checker 29/29 examples、git diff --check
+- `project_utils` 规范 accessors + `derive_pipeline_state` 单一事实源；`spec_lock.md` 唯一解析所有者
+- `prompt_audit` 契约重建（Generate 路由典型加载 −21.4%，语料 coverage 闭合）；trace 版本化信封
+- 85 个 CLI 入口统一 `raise SystemExit(main())`；smoke integration 升级至 187 项
 
 ### 2026-08-03 — v4.3.0 迁移收尾：质量门全绿 + Dashboard 产物展台 + CI/Pages 上线
 
-**迁移收尾：**
-- 重构版导出器整体迁移（`svg_to_pptx` 40K 行：drawingml / pptx_package / native_objects）+ `svg_quality` 诊断包（真实文字度量硬错误、transform 感知 bounds 溢出契约、21 类 SVG→DrawingML 语法契约）；全部 DeepPPT 特有 CLI flag 保留
-- `pptx_structure.mode: flat|structured` 接线完成（structured 编译真实 Master/Layout 部件）；`svg_to_pptx.shape_boolean` 真实核心可用
-- 动画链完整移植（trace 的 page_role/animation/motion 字段 + 导出期校验）；视频导出（本机 PowerPoint 编码 MP4）+ 旁白/动效/字幕同步
+- 重构版导出器（真实文字度量 / 21 类 SVG→DrawingML 语法契约）+ `svg_quality` 诊断包整体接线；`structured` 模板导出落地
+- 29 个公开示例全部通过双门（29/29）；GitHub Actions CI 三 job 全绿；GitHub Pages 上线
+- Dashboard 重新定位为产物在线观看平台（四阶段浏览 + 本地索引）
 
-**质量门全绿：**
-- 29 个公开示例全部通过 `svg_quality_checker` + `e2e_validate` 双门（29/29）：批量回填 spec_lock 契约（pptx_structure.mode / typography / page_rhythm）、修复 SVG 合规（width/height、渐变 stroke、emoji 替换、filter/clip-path/marker 重构）、对齐图片与声明、svg 命名兼容
-- 修复 `spec_lock_reference` 模板 mode 行与解析器不一致、`spec_lock_validate` mode 跨节误读
-- GitHub Actions CI 三 job（smoke / svg-quality / e2e）全绿；GitHub Pages 上线
-
-**Dashboard 产物展台：**
-- Dashboard 重新定位为**产物在线观看平台**：默认路由进入产物展台，按「制作思路 → 设计契约 → 生成页面 → 导出成品」四阶段导航（计数 + 点击过滤）
-- 新增 research 产物分类（`_research/`、research_report、content_selection、detailed_outline、visual_strategy）——制作 PPT 的思路链完整可见
-- `/api/artifacts` 每次响应写 `<project>/dashboard/artifacts_index.json`，本地 grep/jq 即可搜找
-
-**治理：**
-- 动画双文件（`pptx_animations` / `native_pptx_animations` 同内容副本）合并；`.align` 事实刷新（CI 存在性、smoke 基线）
-- Phase 4 产物治理：`projects/` 生命周期规则（active/archive/disposable）+ 清理 34 个旧 backup 快照（~0.9 GB）与 `.codex` 缓存（256 MB）
-- 仓库盘点与性能基线报告：`docs/reviews/deep-ppt-repository-inventory-2026-08.md`、`docs/reviews/perf-baseline-2026-08.md`
-
-### 2026-08-03 — 五阶段迁移完成（对齐 ppt v4.3.0 并消化为自身架构）
-
-**阶段 1（Confirm UI）：** 三阶段确认向导迁移 + 完整性/审计工具（stage 基准验证、confirmation 门禁）。
-
-**阶段 2（四路由重构）：** `SKILL.md` 收敛为薄入口，`workflows/routing.md` 承载 Generate / Create Template / Fill / Enhance Native PPTX 路由矩阵；主流程提取到 `workflows/generate-pptx.md`，全仓链接重写。
-
-**阶段 3（原生增强）：** `native_enhance_pptx` 追加式补丁套件（备注、音频、时序、转场），不重建幻灯片；notesMaster 支持与 OPC 校验。
-
-**阶段 4（视频导出）：** 本机 PowerPoint 编码 MP4 + 动画链完整移植（seq_targets、trace 富化）+ 动效规划 + 字幕 + 旁白同步。
-
-**阶段 5（原生形状/模板）：** `pptx_shapes`（187 预设）+ `preset_shape_svg` / `prstgeom_to_svg`（beautify 反向闭环）+ 6 份规范文档接口映射 + `spec_lock` 的 `pptx_structure.mode` 声明（structured 导出为文档化 opt-in）；`quick-generate` 直通 profile 落地。
-
-### 2026-07-25 — 页面表达、图表召回与证据合同强化
-
-**规划与研究：**
-- `page_expression.json` 贯穿连续、分段、恢复和规格精修路径，并与 `spec_lock.md` 一同进行摘要封存和漂移检查。
-- 新增确定性图表候选召回；咨询研究在启用证据模式时保留可追溯证据，并从 2-3 条 SCR 备选中形成单一建议。
-
-**执行与质量：**
-- Dashboard / Harness 展示并验证页面表达及摘要状态；合同缺失、不可见 assertion 或摘要漂移会失败关闭。
-- Executor 先依据内容关系、信息锚点和视觉动作构图；宽松留白、单侧构图和较大图文间距只进入复核，不再诱导填充装饰。
-- 质量修复先集中收集、一次修正，再统一复检，减少逐项反复调用检查器。
-
-### 2026-07-04 — Dashboard / Confirm UI 预览与模板治理
-
-**交互与可视化：**
-- Dashboard 确认中心集中展示模板库候选，模板缩略图完整缩放，放大弹窗支持多页预览切换。
-- Confirm UI 升级为三阶段视觉确认，加入风格 SVG 预览、图标预览、AI 图像对比和多语言界面。
-- Dashboard 产物与日志页面优化产物类型布局，长文件名、大小和展开动作不再挤压重叠。
-
-**模板与质量：**
-- 完成模板质量审查并按用户确认下线低分模板，索引和模板指南同步更新。
-- Dashboard 增加逐页 layout 预览入口；公式渲染默认提高清晰度并改进 manifest 字段兼容。
-- 质量门禁默认采用非破坏性 layout suggest 模式，渲染截图统一写入 `quality/screenshots/` 便于复核。
-
-### 2026-07-03 — 管线协同性审计修复
-
-**协同一致性：**
-- 修复 `SKILL.md` 与 `strategist.md` 中的相对链接断链，补齐全仓链接扫描闭环。
-- 收敛 `batch-review`、`deep-research`、`image-text-linking` 的契约漂移，避免 UI 死触发、参考图门槛弱化和 prompt 模板段数不一致。
-- 将非运行时 `img2img-support` 设计说明迁入 `docs/design/`，保持 `workflows/` 只承载运行工作流。
-
-**治理与证据：**
-- `scripts/README.md` 按 runtime pipeline / workflow satellite / maintenance / internal helper 分层，顶层脚本全覆盖。
-- 轻量 workflow 补齐 Exit Evidence / completion block，便于恢复、复核和审计。
-- 语言规则现实化为目录主模式：workflows 可采用英文结构骨架 + 中文说明正文，references 主英文，docs 按子目录声明。
-- 修复状态已记录到 [docs/change-log.md](docs/change-log.md) 和 [pipeline-coherence-audit-2026-07.md](docs/reviews/pipeline-coherence-audit-2026-07.md)。
-
-### 2026-07-03 — 仓库介绍与治理工具对齐
-
-**文档对齐：**
-- README、SETUP、FAQ、getting-started、AI browser setup、Agent 入口摘要和脚本 README 对齐当前真实工作流。
-- 仅给主题时统一为 `ppt-briefing → 用户确认 → deep-research → 主流程`，不再描述为直接进入 deep-research。
-- Dashboard 默认行为统一为 `--daemon`，本地运行会自动打开浏览器；`--no-browser` 仅用于 headless / remote / 用户明确要求。
-- 模板和品牌应用明确要求显式目录路径；裸名称只用于发现，不会自动套用。
-
-**治理与发现：**
-- 新增 `governance_drift_check.py`，用于检查 topic-only 路由、Dashboard 默认命令、docs/rules 状态和路径漂移。
-- 模板索引和模板 `design_spec.md` 补齐 `summary_zh`，支持 Dashboard / Confirm UI 双语摘要和预览发现。
-- 更新日志已同步到 [docs/change-log.md](docs/change-log.md)。
-
-### 2026-07-02 — 咨询证据链 + PPTX 结构 QA + 图标搜索
-
-**工作流增强：**
-- deep-research / detailed-outline / Strategist 新增咨询类可选证据链：`evidence_table`、2-3 条 SCR 候选、每页 `evidence_ids`、`caveats`、`so_what` 和 `content_density`。
-- Executor 与 shared standards 明确“可编辑信息层 vs 复杂视觉资产层”，禁止整页截图伪装，补入 `pictures=0` 非目标和高密度页面 QA 术语。
-- 新增 `consulting_content_lock.py`，为高密度咨询页生成 `analysis/slide_content_lock.json` sidecar。
-- 新增 `pptx_quality_check.py`，在 `svg_to_pptx.py` 导出后做可选 PPTX ZIP/XML 结构检查。
-- `icon_sync.py` 新增 `search` 子命令，支持先搜索候选图标再同步复制。
-
-**边界：**
-- 不引入 PptxGenJS / COM 合并路线，不新增 `test_*.py`、`unittest` 或 `pytest`。
-- 所有新增能力服务现有 SVG → DrawingML 主线，均为可选增强或 post-export QA。
-
-### 2026-07-02 — PPT Briefing + 图片来源路由 + 渲染级视觉门禁
-
-**工作流增强：**
-- 新增 `ppt-briefing`：仅给主题时先生成并确认 PPT 创作蓝图，再进入 deep-research。
-- 新增图片来源路由规则：按人物、产品、IP、学术、历史、近期事件、通用氛围等场景选择 source pack，避免把通用图库误用于事实敏感素材。
-- 新增 `image_source_router.py`，把 `ppt_brief`、`detailed_outline`、`design_spec` 中的素材意图转成可执行的图片检索/生成路由。
-- 新增 `rendered_layout_check.py`，通过本地渲染截图检查重叠、踩线、异常留白和改后视觉退化风险。
-
-**文档同步：**
-- `AGENTS.md`、`SKILL.md`、脚本文档、模板说明和本 README 已同步新的入口、图片策略和质量门禁。
-
-### 2026-06-30 — 统一 Dashboard + 多阶段质量门禁
-
-**工作流增强：**
-- 新增统一 Dashboard，集中展示项目状态、产物、质量报告、执行轨迹，并桥接八项确认和实时预览。
-- 新增确认门禁、研究深度门禁、素材完整性门禁和聚合质量门禁，减少跨阶段遗漏。
-- 新增视觉检查入口与多后端适配，支持 OpenAI / Anthropic 格式和 Ollama。
-- 新增分批生成审阅工作流，适合长篇 deck 的阶段性视觉反馈。
-
-**工作区整理：**
-- 本地 Codex、Dashboard、Live Preview、浏览器缓存、服务日志和项目产物已通过 `.gitignore` 分离。
-- 新增共享 AI 规则文档，统一多 Agent 平台的项目入口说明。
-
-### 2026-06-28 — 深度调研重构 + 视频建议实施
-
-**架构变更：**
-- 🔄 **深度调研拆为 7 步独立工作流**（大纲→搜索拆分→多AI逐页搜索→汇总→分析→叙事→视觉策略），每步输出到独立文件夹
-- 🗑️ **移除 topic-research 快速模式**，所有输入统一走深度调研
-- 🤖 **新增多 AI 浏览器自动化**（`browse_ai.py`），通过 Playwright CDP 连接 Chrome；当前支持 Grok / Kimi / DeepSeek / 通义千问 / ChatGLM / Perplexity
-
-**质量提升：**
-- 📐 **排版稳定性检测**：svg_quality_checker.py 新增 3 项检查（布局溢出、元素间距、垂直分布）
-- 🔧 **自动修正**：finalize_svg.py 新增 fix-layout 步骤（文字溢出自动缩减字号）
-- 🎬 **动画策略收敛**：默认保留页间转场，页内元素动画改为显式 opt-in，避免不必要的自动级联
-- 🖼️ **视觉优先页规则**：executor-base.md §19，封面等关键页用全屏 AI 背景
-- 🧭 **模板治理**：模板库支持审查、下线和发现索引同步，低分候选不再作为默认可选项暴露
-
-**文档更新：**
-- 📖 SETUP.md 新增浏览器自动化设置章节
-- 📖 ai-browser-setup.md 新增 browse_ai.py 集成文档
-- 📖 所有文档移除 topic-research 引用
-
-> 完整变更记录见 [docs/change-log.md](docs/change-log.md)
+> 更早的完整变更记录见 [docs/change-log.md](docs/change-log.md)。
 
 ## 致谢
 
