@@ -386,9 +386,21 @@ def _build_parser() -> argparse.ArgumentParser:
     )
     sub = parser.add_subparsers(dest="command", required=True)
 
-    sub.add_parser("install", help="Download and install the pinned binary")
-    sub.add_parser("check", help="Verify installed binary (no network)")
-    sub.add_parser("path", help="Print the expected binary path")
+    # ``--json`` is accepted both before and after the subcommand, matching the
+    # public contract ``install --json`` / ``check --json`` / ``path --json``.
+    for name, help_text in (
+        ("install", "Download and install the pinned binary"),
+        ("check", "Verify installed binary (no network)"),
+        ("path", "Print the expected binary path"),
+    ):
+        sp = sub.add_parser(name, help=help_text)
+        sp.add_argument(
+            "--json",
+            action="store_true",
+            default=argparse.SUPPRESS,
+            dest="json_output",
+            help=argparse.SUPPRESS,
+        )
     return parser
 
 

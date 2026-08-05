@@ -18,6 +18,7 @@ import argparse
 import hashlib
 import json
 import sys
+import time
 from pathlib import Path
 from datetime import datetime, timezone
 from typing import Any, Optional
@@ -50,8 +51,12 @@ _PPTX_KEYS = {"slides", "totalShapes", "textBoxes", "pictures", "charts",
               "picturesWithoutAlt", "notesSlides"}
 _DOCX_KEYS = {"sections", "paragraphs", "tables", "images", "comments",
               "revisions", "equations", "words", "pages"}
-_XLSX_KEYS = {"sheets", "tables", "charts", "pivotTables", "formulas",
-              "validations", "namedRanges", "rows", "columns"}
+_XLSX_KEYS = {"sheets", "formulaCells", "totalCells", "emptyCells",
+              "errorCells", "oleObjects"}
+# Outline keys merged into summary per format (OfficeCLI reports structure
+# counts such as tables/images in outline rather than stats).
+_DOCX_OUTLINE_KEYS = {"tables", "images", "equations", "paragraphs"}
+_XLSX_OUTLINE_KEYS = {"formulas", "tables", "charts", "rows"}
 
 
 def _sha256(path: Path) -> str:
@@ -112,6 +117,34 @@ def _inspect_one(source_path: Path, project_root: Path) -> dict[str, object]:
         result["status"] = "warning"
         result["summary"] = {"error": stats_result.message}
 
+    # Run outline (format-specific structure counts and limited outline)
+    outline_result = run_officecli(
+        ["view", str(source_path), "outline", "--json"],
+        timeout_s=30.0,
+    )
+    if outline_result.success:
+        odata = outline_result.data.get("data", outline_result.data)
+        if isinstance(odata, dict):
+            if fmt == "docx":
+                for k in _DOCX_OUTLINE_KEYS:
+                    if k in odata:
+                        result["summary"][k] = odata[k]
+            elif fmt == "xlsx":
+                sheets = odata.get("sheets", [])
+                if isinstance(sheets, list):
+                    result["outline"] = sheets[:50]
+                    for k in _XLSX_OUTLINE_KEYS:
+                        total = sum(
+                            s.get(k, 0) for s in sheets if isinstance(s, dict)
+                            and isinstance(s.get(k), int)
+                        )
+                        if total:
+                            result["summary"][k] = total
+            elif fmt == "pptx":
+                slides = odata.get("slides", [])
+                if isinstance(slides, list):
+                    result["outline"] = slides[:100]
+
     # Run issues
     issues_result = run_officecli(
         ["view", str(source_path), "issues", "--json"],
@@ -122,7 +155,11 @@ def _inspect_one(source_path: Path, project_root: Path) -> dict[str, object]:
         if isinstance(issues_data, list):
             result["issues"] = issues_data[:50]  # limit to 50 issues
         elif isinstance(issues_data, dict):
-            result["issues"] = [issues_data]
+            inner_issues = issues_data.get("issues", [])
+            if isinstance(inner_issues, list):
+                result["issues"] = inner_issues[:50]  # limit to 50 issues
+            else:
+                result["issues"] = [issues_data]
 
     # Verify source unchanged
     assert _sha256(source_path) == source_hash, (
@@ -134,6 +171,7 @@ def _inspect_one(source_path: Path, project_root: Path) -> dict[str, object]:
 
 def _cmd_inspect(project_path: str, json_output: bool = False) -> int:
     """Main entry: scan project sources/ and write manifest."""
+    t0 = time.perf_counter()
     project = Path(project_path).resolve()
     if not project.is_dir():
         print(f"Not a directory: {project}", file=sys.stderr)
@@ -151,6 +189,16 @@ def _cmd_inspect(project_path: str, json_output: bool = False) -> int:
         else:
             print(msg)
         return 0  # Not a hard error — just skip enrichment
+
+    _trace_event(
+        project,
+        "officecli_probe",
+        f"Runtime ready (v{runtime.actual_version}, {runtime.platform})",
+        status="PASS",
+        runtime_version=runtime.actual_version,
+        platform=runtime.platform,
+        duration_ms=int((time.perf_counter() - t0) * 1000),
+    )
 
     # Find Office source files
     sources_dir = project / "sources"
@@ -181,6 +229,13 @@ def _cmd_inspect(project_path: str, json_output: bool = False) -> int:
         entry = _inspect_one(src_file, project)
         sources_list.append(entry)
 
+    # Mark legacy/plugin-only formats as unsupported enrichment (no fake support)
+    legacy_extensions = {".doc", ".xls", ".docm", ".xlsm", ".odt", ".ods", ".odp"}
+    unsupported = sorted(
+        f.name for f in sources_dir.iterdir()
+        if f.is_file() and f.suffix.lower() in legacy_extensions
+    )
+
     # Build manifest
     manifest: dict[str, object] = {
         "schema": MANIFEST_SCHEMA,
@@ -189,6 +244,7 @@ def _cmd_inspect(project_path: str, json_output: bool = False) -> int:
             "status": runtime.status,
         },
         "sources": sources_list,
+        "unsupported_enrichment": unsupported,
         "inspected_at": datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ"),
     }
 
@@ -218,6 +274,7 @@ def _cmd_inspect(project_path: str, json_output: bool = False) -> int:
         status="PASS",
         source_count=len(sources_list),
         formats=[s.get("format") for s in sources_list],
+        duration_ms=int((time.perf_counter() - t0) * 1000),
     )
 
     return 0

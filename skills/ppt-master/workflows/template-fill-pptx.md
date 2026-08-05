@@ -291,6 +291,12 @@ If the extracted text is correct but visual overflow is likely, reduce the text 
 
 ## Current Boundary
 
+**Last-mile native edits (OfficeCLI)**: after `apply` succeeds, a further
+revision of the *filled export* (text/color/position of specific objects) goes
+through the shared [`native-revision`](stages/native-revision.md) child when the
+user explicitly asks for it. Never bypass the fill plan to redo the initial
+fill — re-running `template_fill_pptx.py apply` is the only way to redo filling.
+
 | Capability | Status |
 |---|---|
 | Select / reorder / repeat source slides | Supported |

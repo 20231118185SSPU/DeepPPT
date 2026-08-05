@@ -9,6 +9,7 @@ Run from the repo root:
 """
 
 import io
+import zipfile
 from pathlib import Path
 
 from PIL import Image
@@ -20,6 +21,58 @@ from pptx.dml.color import RGBColor
 
 OUT = Path(__file__).resolve().parent / "native_revision_source.pptx"
 REPO_ROOT = Path(__file__).resolve().parent.parent.parent.parent.parent
+
+
+class _LenientZip(zipfile.ZipFile):
+    """python-pptx chart embeds may carry a bad CRC; PowerPoint tolerates it."""
+
+    def _update_crc(self, newdata, eof=False):  # type: ignore[override]
+        pass
+
+
+_FIXED_STAMP = "1980-01-01T00:00:00Z"
+
+
+def _normalize_embedded_xlsx(data: bytes) -> bytes:
+    """Neutralize python-pptx chart embed core.xml timestamps for determinism."""
+    import io as _io
+    import re
+
+    with _LenientZip(_io.BytesIO(data)) as z:
+        entries = {i.filename: z.read(i.filename) for i in z.infolist()}
+    core = entries.get("docProps/core.xml", b"")
+    if core:
+        text = core.decode("utf-8")
+        text = re.sub(
+            r"(?<=\>)\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}Z(?=</dcterms:(?:created|modified)>)",
+            _FIXED_STAMP,
+            text,
+        )
+        entries["docProps/core.xml"] = text.encode("utf-8")
+    buf = _io.BytesIO()
+    with zipfile.ZipFile(buf, "w", zipfile.ZIP_DEFLATED) as out:
+        for name in sorted(entries):
+            out.writestr(zipfile.ZipInfo(name, (1980, 1, 1, 0, 0, 0)), entries[name])
+    return buf.getvalue()
+
+
+def _deterministic_rewrite(path: Path) -> None:
+    """Rezip with fixed timestamps/attrs so repeated rebuilds are byte-identical."""
+    tmp = path.with_name(path.name + ".tmp")
+    with _LenientZip(path) as src, zipfile.ZipFile(tmp, "w", zipfile.ZIP_DEFLATED) as out:
+        for item in src.infolist():
+            data = src.read(item.filename)
+            if item.filename == "ppt/embeddings/Microsoft_Excel_Sheet1.xlsx":
+                data = _normalize_embedded_xlsx(data)
+            item.date_time = (1980, 1, 1, 0, 0, 0)
+            item.create_system = 0
+            item.external_attr = 0
+            item.compress_type = zipfile.ZIP_DEFLATED
+            item.extra = b""
+            item.comment = b""
+            out.writestr(item, data)
+    path.unlink()
+    tmp.replace(path)
 
 
 def _add_title(slide, text, top=Inches(0.3), left=Inches(0.5)):
@@ -141,6 +194,7 @@ def main() -> int:
     # Save
     OUT.parent.mkdir(parents=True, exist_ok=True)
     prs.save(OUT)
+    _deterministic_rewrite(OUT)
     print(f"Written {OUT}")
     print(f"  Slides: {len(prs.slides)}")
     return 0

@@ -7,12 +7,29 @@ Synthetic, non-sensitive, rebuildable PPTX fixtures for OfficeCLI integration te
 | File | Slides | Content | Purpose |
 |---|---|---|---|
 | `native_revision_source.pptx` | 4 | Text shapes, table, chart, picture, grouped shapes | Native revision plan/apply/rollback testing |
+| `docx_source.docx` | — | 2 body-level tables, 1 inline image, 4 paragraphs | Office source inspection / copy-only repair |
+| `xlsx_source.xlsx` | — | 2 sheets, 7 formulas, 1 Excel table, 1 named range, 1 data validation | Office source inspection / copy-only repair |
+
+## OfficeCLI Ledger (expected counts)
+
+| File | Key counts (OfficeCLI `view stats`/`view outline`) |
+|---|---|
+| `docx_source.docx` | paragraphs 4, tables 2, images 1, equations 0; `validate` clean |
+| `xlsx_source.xlsx` | sheets 2, formulaCells 7, formulas 7 (outline sum), tables 1, rows 8; `validate` clean |
+| `native_revision_source.pptx` | slides 4, totalShapes 13, charts 1, pictures 1, textBoxes 12; `validate` reports 6 chart axId schema errors (known python-pptx artifact) |
 
 ## Rebuild
 
 ```bash
 python skills/ppt-master/fixtures/officecli/rebuild_native_revision_source.py
+python skills/ppt-master/fixtures/officecli/rebuild_docx_source.py
+python skills/ppt-master/fixtures/officecli/rebuild_xlsx_source.py
 ```
+
+Deterministic: repeated rebuilds produce byte-identical files (fixed zip
+timestamps; the embedded chart workbook's core.xml timestamps and openpyxl's
+core timestamps are neutralized; the openpyxl default font is reordered to the
+Excel order OfficeCLI's schema validator expects).
 
 ## Properties
 

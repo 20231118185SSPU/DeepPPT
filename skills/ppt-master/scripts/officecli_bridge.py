@@ -388,48 +388,57 @@ def run_officecli(
         except json.JSONDecodeError:
             pass
 
-    if not parsed_ok and proc.stdout.strip():
+    # Non-zero exit always fails. Prefer COMMAND_FAILED so callers see a
+    # failed command rather than a protocol error, while keeping any
+    # parseable envelope for diagnostics.
+    if proc.returncode != 0:
+        message = proc.stderr.strip() or "Non-zero exit"
+        if parsed_ok:
+            message = data.get("message", message)  # type: ignore[assignment]
         return OfficeCliResult(
             success=False,
             returncode=proc.returncode,
-            message=f"Invalid JSON: {proc.stdout[:200]}",
+            data=data,
+            message=message,
             duration_ms=duration_ms,
-            error_code=OFFICECLI_INVALID_JSON,
+            error_code=OFFICECLI_COMMAND_FAILED,
         )
 
-    if parsed_ok:
-        if data.get("success") is False or proc.returncode != 0:
+    if not parsed_ok and proc.stdout.strip():
+        # rc == 0 but a machine call produced no JSON envelope: fail closed.
+        if "--json" in args:
             return OfficeCliResult(
                 success=False,
-                returncode=proc.returncode,
-                data=data,
-                message=data.get("message", proc.stderr.strip() or "Command failed"),
+                returncode=0,
+                message=f"Invalid JSON: {proc.stdout[:200]}",
                 duration_ms=duration_ms,
-                error_code=OFFICECLI_COMMAND_FAILED,
+                error_code=OFFICECLI_INVALID_JSON,
             )
+        # Plain-text output from non-machine commands is tolerated.
         return OfficeCliResult(
             success=True,
-            returncode=proc.returncode,
-            data=data,
-            message=data.get("message", ""),
+            returncode=0,
+            data={},
+            message="",
             duration_ms=duration_ms,
             error_code=None,
         )
 
-    if proc.returncode != 0:
+    if parsed_ok and data.get("success") is False:
         return OfficeCliResult(
             success=False,
-            returncode=proc.returncode,
-            message=proc.stderr.strip() or "Non-zero exit",
+            returncode=0,
+            data=data,
+            message=data.get("message", proc.stderr.strip() or "Command failed"),
             duration_ms=duration_ms,
             error_code=OFFICECLI_COMMAND_FAILED,
         )
 
     return OfficeCliResult(
         success=True,
-        returncode=0,
-        data={},
-        message="",
+        returncode=proc.returncode,
+        data=data,
+        message=data.get("message", ""),
         duration_ms=duration_ms,
         error_code=None,
     )
@@ -473,8 +482,14 @@ def run_atomic_batch(
         )
 
     if not result.success:
-        # Check if OfficeCLI reported atomic rollback
-        rollback = result.data.get("atomicRolledBack")
+        # OfficeCLI reports rollback inside data.summary; check the top-level
+        # envelope as a fallback for other envelope shapes.
+        envelope = result.data or {}
+        inner = envelope.get("data", {})
+        summary = inner.get("summary", {}) if isinstance(inner, dict) else {}
+        rollback = summary.get("atomicRolledBack") if isinstance(summary, dict) else None
+        if rollback is None:
+            rollback = envelope.get("atomicRolledBack")
         if rollback is True:
             result.error_code = OFFICECLI_BATCH_ROLLED_BACK
             result.message = result.data.get("message", "Batch rolled back")

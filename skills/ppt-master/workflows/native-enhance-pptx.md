@@ -62,6 +62,8 @@ source.pptx
 
 **Object animation boundary**: `delivery.check` reports existing object-animation presence, and apply proves its fingerprint is unchanged. It does not author or edit object animations. The shared animation writer builds a complete timing tree for generated slides and is not safe to append to an arbitrary native slide.
 
+**Visible-object boundary (OfficeCLI)**: changing an existing object's text / color / position / shape is outside this route's write scope. Those go to the shared [`native-revision`](stages/native-revision.md) child (always opt-in). When the user asks for both kinds of change at once, run native revision first, then hand its output (copy-only) to this route for notes / audio / timings / transitions.
+
 ---
 
 ## 3. When to Run

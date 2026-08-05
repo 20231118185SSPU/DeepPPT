@@ -313,6 +313,21 @@ print("state chain OK")
         return False, "timed out (20s)"
 
 
+def _officecli_binary_installed(installer: Path, python: str) -> bool:
+    """Detect whether the pinned OfficeCLI binary is installed (offline)."""
+    try:
+        r = subprocess.run(
+            [python, str(installer), "path", "--json"],
+            capture_output=True, text=True, encoding="utf-8", errors="replace",
+            timeout=30,
+        )
+        if r.returncode == 0:
+            return bool(json.loads(r.stdout).get("exists"))
+    except Exception:
+        pass
+    return False
+
+
 def integration_smoke(scripts_dir: Path) -> tuple[int, int, int]:
     """Run integration-level smoke tests on core scripts.
 
@@ -956,6 +971,281 @@ print("image_gen trace OK:", ev["operation"], ev["status"])
         except subprocess.TimeoutExpired:
             print("  [FAIL] image_gen trace wiring probe timed out (60s)")
             failed += 1
+
+        # --- Test 15: OfficeCLI pinned runtime + bridge contract ---
+        print("\n  [15] OfficeCLI pinned runtime + bridge contract")
+        installer = scripts_dir / "install_officecli.py"
+        if not installer.is_file():
+            print("  [SKIP] install_officecli.py not present")
+            skipped += 1
+        elif not _officecli_binary_installed(installer, python):
+            print("  [SKIP] OfficeCLI binary not installed — run "
+                  "python skills/ppt-master/scripts/install_officecli.py install")
+            skipped += 1
+        else:
+                probe = r'''
+import sys, json, subprocess
+from pathlib import Path
+sys.path.insert(0, r"{SCRIPTS}")
+import install_officecli as inst
+import officecli_bridge as br
+
+# Installer public contract: check --json / path --json (offline)
+out = subprocess.run(
+    [sys.executable, r"{SCRIPTS}/install_officecli.py", "check", "--json"],
+    capture_output=True, text=True, encoding="utf-8", errors="replace", timeout=60)
+d = json.loads(out.stdout)
+assert out.returncode == 0 and d.get("success") is True, out.stdout[:200]
+assert d.get("status") == "ready" and d.get("version") == "1.0.143", d
+print("installer check --json ready OK")
+
+# Installer error paths rc != 0
+for argv in (["bogus"], ["check", "--nope"]):
+    r = subprocess.run([sys.executable, r"{SCRIPTS}/install_officecli.py"] + argv,
+                       capture_output=True, text=True, timeout=30)
+    assert r.returncode != 0, f"installer {argv} rc=0"
+print("installer error paths rc!=0 OK")
+
+# Fail closed: checksum + version mismatch via mutated lock copy (no install change)
+lock = inst._load_lock()
+plat = inst._detect_platform(lock)
+bad_sha = json.loads(json.dumps(lock))
+bad_sha["platforms"] = {k: dict(v) for k, v in lock["platforms"].items()}
+bad_sha["platforms"][plat]["sha256"] = "0" * 64
+assert inst._check(bad_sha, plat, True) == 1, "checksum negative did not fail closed"
+bad_ver = json.loads(json.dumps(lock))
+bad_ver["version"] = "9.9.9"
+real = inst._binary_path(lock, plat)
+orig = inst._binary_path
+inst._binary_path = lambda l, p: real
+try:
+    assert inst._check(bad_ver, plat, True) == 1, "version negative did not fail closed"
+finally:
+    inst._binary_path = orig
+print("fail-closed checksum/version OK")
+
+# Bridge: probe, envelope, error classification, validate
+rt = br.probe_officecli()
+assert rt.status == "ready" and rt.actual_version == "1.0.143", rt
+r = br.run_officecli(["frobnicate", "--bogus"])
+assert not r.success and r.error_code == "OFFICECLI_COMMAND_FAILED", r.error_code
+r = br.run_officecli(["--version"])
+assert r.success, r.error_code
+r = br.validate_office_file(
+    Path(r"{SCRIPTS}") / ".." / "fixtures" / "beautify_1to1" / "sources" / "beautify_source.pptx")
+assert r.success, r.message
+print("bridge probe/validate OK")
+'''.replace("{SCRIPTS}", str(scripts_dir))
+                try:
+                    r = subprocess.run([python, "-c", probe], capture_output=True, text=True,
+                                       encoding="utf-8", errors="replace", timeout=120)
+                    if r.returncode == 0:
+                        print(f"  [PASS] OfficeCLI runtime + bridge contract: {r.stdout.strip()[-60:]}")
+                        passed += 1
+                    else:
+                        print(f"  [FAIL] OfficeCLI runtime + bridge contract — {(r.stdout + r.stderr).strip()[:300]}")
+                        failed += 1
+                except subprocess.TimeoutExpired:
+                    print("  [FAIL] OfficeCLI runtime + bridge contract probe timed out (120s)")
+                    failed += 1
+
+        # --- Test 16: native revision fixture lifecycle ---
+        print("\n  [16] native revision fixture lifecycle (init/inspect/check-plan/apply/rollback)")
+        if not installer.is_file() or not _officecli_binary_installed(installer, python):
+            print("  [SKIP] OfficeCLI binary not installed — run "
+                  "python skills/ppt-master/scripts/install_officecli.py install")
+            skipped += 1
+        else:
+            probe = r'''
+import sys, json, subprocess, hashlib, glob, shutil
+from pathlib import Path
+SCRIPTS = Path(r"{SCRIPTS}")
+FIX = Path(r"{FIXTURES}")
+TMP = Path(r"{TMP}")
+
+def run(*args, timeout=300):
+    r = subprocess.run([sys.executable, str(SCRIPTS / "native_revision_pptx.py")] + list(args),
+                       capture_output=True, text=True, encoding="utf-8", errors="replace", timeout=timeout)
+    return r.returncode, (r.stdout + r.stderr)
+
+def sha(p):
+    return hashlib.sha256(Path(p).read_bytes()).hexdigest()
+
+src = FIX / "native_revision_source.pptx"
+proj_dir = TMP / "nr16"
+if proj_dir.exists():
+    shutil.rmtree(proj_dir)
+proj_dir.mkdir(parents=True)
+
+rc, out = run("init", str(src), "--name", "nr16", "--project-dir", str(proj_dir))
+assert rc == 0, out
+proj = proj_dir / "_revision_nr16"
+assert proj.is_dir(), "project not created under --project-dir"
+
+rc, out = run("inspect", str(proj))
+assert rc == 0 and "Slides: 4" in out, out
+assert sha(proj / "sources" / src.name) == sha(src), "source copy mismatch"
+src_hash = sha(proj / "sources" / src.name)
+
+plan = {
+    "schema": "ppt_master.native_revision_plan.v1",
+    "status": "draft",
+    "officecli_version": "1.0.143",
+    "source": {"path": str(proj / "sources" / src.name), "sha256": src_hash,
+               "slide_count": 4, "origin": "standalone"},
+    "operations": [
+        {"id": "R001", "command": "set", "path": "/slide[1]/shape[@id=2]",
+         "props": {"text": "Smoke 修订"},
+         "expect": {"type": "textbox", "text": "Page 1 - Text Shapes"},
+         "reason": "smoke: 标题修订"}
+    ],
+    "invariants": {"preserve_slide_count": True, "preserve_masters": True,
+                   "preserve_unaddressed_objects": True, "allow_svg_divergence": True},
+    "confirmation": {"confirmed_at": None, "confirmed_by": None},
+}
+plan_path = proj / "analysis" / "native_revision_plan.json"
+plan_path.write_text(json.dumps(plan, indent=2), encoding="utf-8")
+rc, out = run("check-plan", str(proj))
+assert rc == 0, out
+
+# Negative: missing target fails closed
+bad = json.loads(json.dumps(plan))
+bad["operations"] = [dict(plan["operations"][0], path="/slide[1]/shape[@id=99999]")]
+plan_path.write_text(json.dumps(bad, indent=2), encoding="utf-8")
+rc, out = run("check-plan", str(proj))
+assert rc != 0, "missing target must fail check-plan"
+
+# Confirmed apply success
+plan["status"] = "confirmed"
+plan["confirmation"] = {"confirmed_at": "2026-08-05T00:00:00Z", "confirmed_by": "smoke"}
+plan_path.write_text(json.dumps(plan, indent=2), encoding="utf-8")
+exports_before = set(glob.glob(str(proj / "exports" / "*.pptx")))
+rc, out = run("apply", str(proj))
+assert rc == 0, out
+new_exports = set(glob.glob(str(proj / "exports" / "*.pptx"))) - exports_before
+assert len(new_exports) == 1, new_exports
+assert sha(proj / "sources" / src.name) == src_hash, "source changed during apply!"
+res = json.loads((proj / "analysis" / "native_revision_result.json").read_text(encoding="utf-8"))
+assert res["success"] is True
+assert res["visual_render"] in ("ok", "not_available"), res
+
+# Atomic rollback: add a failing op (invalid prop) -> whole batch rolls back
+plan2 = json.loads(json.dumps(plan))
+plan2["operations"].append(
+    {"id": "R002", "command": "set", "path": "/slide[2]/table[@id=3]",
+     "props": {"text": "x", "height": "not-a-size"},
+     "expect": {"type": "table"}, "reason": "smoke: 注入失败"})
+plan_path.write_text(json.dumps(plan2, indent=2), encoding="utf-8")
+exports_before = set(glob.glob(str(proj / "exports" / "*.pptx")))
+rc, out = run("apply", str(proj))
+assert rc != 0, "rollback apply must fail"
+assert set(glob.glob(str(proj / "exports" / "*.pptx"))) == exports_before, "export published on failure!"
+assert sha(proj / "sources" / src.name) == src_hash
+res = json.loads((proj / "analysis" / "native_revision_result.json").read_text(encoding="utf-8"))
+assert res["success"] is False and res["candidate_rolled_back"] is True, res
+print("native revision lifecycle OK")
+'''.replace("{SCRIPTS}", str(scripts_dir)).replace(
+    "{FIXTURES}", str(scripts_dir.parent / "fixtures" / "officecli")).replace(
+    "{TMP}", str(tmp_path))
+            try:
+                r = subprocess.run([python, "-c", probe], capture_output=True, text=True,
+                                   encoding="utf-8", errors="replace", timeout=300)
+                if r.returncode == 0:
+                    print(f"  [PASS] native revision lifecycle: {r.stdout.strip()[-60:]}")
+                    passed += 1
+                else:
+                    print(f"  [FAIL] native revision lifecycle — {(r.stdout + r.stderr).strip()[:400]}")
+                    failed += 1
+            except subprocess.TimeoutExpired:
+                print("  [FAIL] native revision lifecycle probe timed out (300s)")
+                failed += 1
+
+        # --- Test 17: office source inspect + copy-only repair lifecycle ---
+        print("\n  [17] office source inspect + repair fixture lifecycle")
+        if not installer.is_file() or not _officecli_binary_installed(installer, python):
+            print("  [SKIP] OfficeCLI binary not installed — run "
+                  "python skills/ppt-master/scripts/install_officecli.py install")
+            skipped += 1
+        else:
+            probe = r'''
+import sys, json, subprocess, hashlib, shutil
+from pathlib import Path
+SCRIPTS = Path(r"{SCRIPTS}")
+FIX = Path(r"{FIXTURES}")
+TMP = Path(r"{TMP}")
+
+def run_script(name, *args, timeout=180):
+    r = subprocess.run([sys.executable, str(SCRIPTS / name)] + list(args),
+                       capture_output=True, text=True, encoding="utf-8", errors="replace", timeout=timeout)
+    return r.returncode, (r.stdout + r.stderr)
+
+def sha(p):
+    return hashlib.sha256(Path(p).read_bytes()).hexdigest()
+
+proj = TMP / "os17"
+if proj.exists():
+    shutil.rmtree(proj)
+(proj / "sources").mkdir(parents=True)
+(proj / "analysis").mkdir()
+(proj / "project.json").write_text(json.dumps({"name": "os17", "kind": "smoke"}), encoding="utf-8")
+shutil.copy2(FIX / "docx_source.docx", proj / "sources" / "docx_source.docx")
+shutil.copy2(FIX / "xlsx_source.xlsx", proj / "sources" / "xlsx_source.xlsx")
+docx_hash = sha(proj / "sources" / "docx_source.docx")
+
+# Inspection manifest with reconciled counts
+rc, out = run_script("office_source_inspect.py", str(proj))
+assert rc == 0, out
+m = json.loads((proj / "analysis" / "office_sources.json").read_text(encoding="utf-8"))
+assert m["schema"] == "ppt_master.office_sources.v1"
+by_fmt = {s["format"]: s for s in m["sources"]}
+assert by_fmt["docx"]["summary"]["tables"] == 2, by_fmt["docx"]["summary"]
+assert by_fmt["docx"]["summary"]["images"] == 1
+assert by_fmt["xlsx"]["summary"]["sheets"] == 2
+assert by_fmt["xlsx"]["summary"]["formulas"] == 7
+assert sha(proj / "sources" / "docx_source.docx") == docx_hash, "inspect mutated source!"
+
+# Repair: unconfirmed rejected, confirmed apply publishes copy + markdown
+rc, out = run_script("office_source_repair.py", "scaffold", str(proj), "--source", "sources/docx_source.docx")
+assert rc == 0, out
+plan_path = proj / "analysis" / "source_repair_plan.json"
+plan = json.loads(plan_path.read_text(encoding="utf-8"))
+plan["operations"] = [
+    {"id": "P001", "command": "set", "path": "/body/p[1]",
+     "props": {"text": "Smoke 修复"},
+     "expect": {"type": "paragraph", "text": "OfficeCLI DOCX inspection fixture"},
+     "reason": "smoke: 修复"}
+]
+plan_path.write_text(json.dumps(plan, indent=2), encoding="utf-8")
+rc, out = run_script("office_source_repair.py", "check-plan", str(proj))
+assert rc == 0, out
+rc, out = run_script("office_source_repair.py", "apply", str(proj))
+assert rc != 0, "unconfirmed apply must fail"
+plan["status"] = "confirmed"
+plan["confirmation"] = {"confirmed_at": "2026-08-05T00:00:00Z", "confirmed_by": "smoke"}
+plan_path.write_text(json.dumps(plan, indent=2), encoding="utf-8")
+rc, out = run_script("office_source_repair.py", "apply", str(proj))
+assert rc == 0, out
+repaired = list((proj / "sources" / "repaired").glob("docx_source_repaired_*.docx"))
+assert len(repaired) == 1, repaired
+assert sha(proj / "sources" / "docx_source.docx") == docx_hash, "repair mutated original!"
+res = json.loads((proj / "analysis" / "source_repair_result.json").read_text(encoding="utf-8"))
+assert res["operation_digest"] and res["converter"]["markdown_sha256"], res
+print("source inspect + repair lifecycle OK")
+'''.replace("{SCRIPTS}", str(scripts_dir)).replace(
+    "{FIXTURES}", str(scripts_dir.parent / "fixtures" / "officecli")).replace(
+    "{TMP}", str(tmp_path))
+            try:
+                r = subprocess.run([python, "-c", probe], capture_output=True, text=True,
+                                   encoding="utf-8", errors="replace", timeout=300)
+                if r.returncode == 0:
+                    print(f"  [PASS] source inspect + repair lifecycle: {r.stdout.strip()[-60:]}")
+                    passed += 1
+                else:
+                    print(f"  [FAIL] source inspect + repair lifecycle — {(r.stdout + r.stderr).strip()[:400]}")
+                    failed += 1
+            except subprocess.TimeoutExpired:
+                print("  [FAIL] source inspect + repair lifecycle probe timed out (300s)")
+                failed += 1
 
     finally:
         # Cleanup temp directory

@@ -42,3 +42,44 @@ from officecli_bridge import run_atomic_batch, validate_office_file, inspect_off
 `OFFICECLI_COMMAND_FAILED`, `OFFICECLI_PLAN_INVALID`, `OFFICECLI_PLAN_STALE`,
 `OFFICECLI_TARGET_MISSING`, `OFFICECLI_BATCH_ROLLED_BACK`, `OFFICECLI_VALIDATION_FAILED`,
 `OFFICECLI_PREVIEW_UNAVAILABLE`, `OFFICECLI_VISUAL_REVIEW_REQUIRED`
+
+## Native PPTX Revision (Phase 2)
+
+```powershell
+python skills/ppt-master/scripts/native_revision_pptx.py init <pptx-or-project> [--name <slug>]
+python skills/ppt-master/scripts/native_revision_pptx.py inspect <project>
+python skills/ppt-master/scripts/native_revision_pptx.py watch <project> [--port 26315]
+python skills/ppt-master/scripts/native_revision_pptx.py selected <project> --json
+python skills/ppt-master/scripts/native_revision_pptx.py unwatch <project>
+python skills/ppt-master/scripts/native_revision_pptx.py check-plan <project>
+python skills/ppt-master/scripts/native_revision_pptx.py apply <project>
+python skills/ppt-master/scripts/native_revision_pptx.py validate <project> --pptx <candidate>
+```
+
+Read-only inspection → browser preview/selection → confirmed atomic plan → temp-copy
+apply with postflight gates (OfficeCLI validate baseline-delta, slide roster,
+unaddressed-parts preservation, PowerPoint COM render, SVG-divergence record).
+Full rollback on any batch item failure; no export is published on failure.
+V1 mutation allowlist: `set` / `add` / `remove` / `move` / `swap`.
+Workflow: `workflows/stages/native-revision.md`.
+
+## Office Source Inspection & Repair (Phase 3)
+
+```powershell
+# Read-only structure manifest for .docx/.xlsx/.pptx sources (auto-run on import-sources)
+python skills/ppt-master/scripts/office_source_inspect.py <project> [--json]
+
+# Opt-in copy-only DOCX/XLSX repair
+python skills/ppt-master/scripts/office_source_repair.py scaffold <project> --source <relative-path>
+python skills/ppt-master/scripts/office_source_repair.py check-plan <project>
+python skills/ppt-master/scripts/office_source_repair.py apply <project>
+```
+
+`office_source_inspect.py` writes `analysis/office_sources.json`
+(schema `ppt_master.office_sources.v1`) with format-specific counts, limited
+outline, issues and converter mapping; sources are never modified. Legacy
+formats (`.doc` / `.xls` / …) are listed under `unsupported_enrichment` without
+inspection. Repair executes on a temp copy, publishes a timestamped copy to
+`sources/repaired/`, re-runs the original converter to a new Markdown, and
+records original/repaired/Markdown hashes, operation digest and issues delta;
+the user's original file is never opened for mutation.

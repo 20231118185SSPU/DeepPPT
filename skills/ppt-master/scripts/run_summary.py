@@ -285,12 +285,18 @@ def build_summary(project: Path) -> dict[str, Any]:
     }
     stages = _stage_durations(events)
     # Fallback: when no step_start/step_complete pairs exist, surface
-    # duration-bearing operations (e.g. pptx_export) as stages so "which step
-    # is slowest" stays answerable from real measurements.
+    # duration-bearing operations (e.g. pptx_export, OfficeCLI ops) as stages
+    # so "which step is slowest" stays answerable from real measurements.
     if not stages:
+        _fallback_stage_ops = {
+            "pptx_export", "officecli_probe", "office_source_inspect",
+            "native_revision_inspect", "native_revision_preview",
+            "native_revision_plan", "native_revision_apply",
+            "office_source_repair", "officecli_validate",
+        }
         for event in events:
             op = _op(event)
-            if op in {"pptx_export"} and event.get("duration_ms") is not None:
+            if op in _fallback_stage_ops and event.get("duration_ms") is not None:
                 stage: dict[str, Any] = {"duration_ms": event["duration_ms"]}
                 if event.get("ts"):
                     stage["end"] = str(event["ts"])

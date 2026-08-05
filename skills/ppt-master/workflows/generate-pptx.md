@@ -724,6 +724,14 @@ python3 ${SKILL_DIR}/scripts/svg_to_pptx.py <project_path>
 > SVG visual reference, so it's only needed when you want a self-contained file
 > to share. Pass `-s output` or `-s final` to force a single source if you need it.
 
+> **Last-mile native edits (opt-in, OfficeCLI)**: after Step 7 export, ordinary
+> content/layout rework still goes back through the SVG pipeline. Only when the
+> user *explicitly* asks for a last-mile native edit on the exported PPTX
+> (text/color/position of specific objects, preserving native format) do you
+> enter the shared [`native-revision`](stages/native-revision.md) child — never
+> automatically. Such a revision is a derivative: it records `svg_divergence`
+> and does not write back to `svg_output/`.
+
 > **Paragraph editability vs line fidelity** — by default, mergeable dy-stacked
 > paragraph blocks collapse into one editable PowerPoint text frame with multiple
 > `<a:p>`, improving body-text editing and resize/reflow behavior. Add `--no-merge`

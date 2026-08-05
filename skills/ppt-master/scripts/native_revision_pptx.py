@@ -24,6 +24,7 @@ import argparse
 import hashlib
 import json
 import os
+import re
 import shutil
 import sys
 import time
@@ -151,8 +152,9 @@ def _read_json(path: Path) -> dict[str, object]:
         return json.load(fh)
 
 
-def _probe_or_die() -> tuple[Path, OfficeCliRuntime]:
+def _probe_or_die(project: Optional[Path] = None) -> tuple[Path, OfficeCliRuntime]:
     """Probe OfficeCLI runtime; exit non-zero if not ready."""
+    t0 = time.perf_counter()
     runtime = probe_officecli()
     if runtime.status != "ready":
         print(
@@ -165,13 +167,24 @@ def _probe_or_die() -> tuple[Path, OfficeCliRuntime]:
             file=sys.stderr,
         )
         raise SystemExit(1)
+    if project is not None:
+        _trace_event(
+            project,
+            "officecli_probe",
+            f"Runtime ready (v{runtime.actual_version}, {runtime.platform})",
+            status="PASS",
+            runtime_version=runtime.actual_version,
+            platform=runtime.platform,
+            duration_ms=int((time.perf_counter() - t0) * 1000),
+        )
     return resolve_officecli(), runtime
 
 
 # ---------------------------------------------------------------------------
 # init
 # ---------------------------------------------------------------------------
-def _cmd_init(pptx_path: str, name: Optional[str] = None) -> int:
+def _cmd_init(pptx_path: str, name: Optional[str] = None,
+              project_dir: Optional[Path] = None) -> int:
     """Create a native revision project from a PPTX or existing project."""
     source, is_project = _resolve_source(pptx_path)
 
@@ -188,10 +201,11 @@ def _cmd_init(pptx_path: str, name: Optional[str] = None) -> int:
     else:
         # Create a new standalone project
         stem = name or source.stem
-        project = _REPO_ROOT / "projects" / f"_revision_{stem}"
+        base_dir = project_dir or (_REPO_ROOT / "projects")
+        project = base_dir / f"_revision_{stem}"
         if project.exists():
             stamp = datetime.now().strftime("%Y%m%d_%H%M%S")
-            project = _REPO_ROOT / "projects" / f"_revision_{stem}_{stamp}"
+            project = base_dir / f"_revision_{stem}_{stamp}"
         project.mkdir(parents=True, exist_ok=True)
 
         # Copy source to sources/
@@ -226,6 +240,7 @@ def _cmd_init(pptx_path: str, name: Optional[str] = None) -> int:
 # ---------------------------------------------------------------------------
 def _cmd_inspect(project_path: str) -> int:
     """Generate native_revision_inventory.json for the project."""
+    t0 = time.perf_counter()
     project = Path(project_path).resolve()
     if not project.is_dir():
         raise SystemExit(f"Not a directory: {project}")
@@ -285,6 +300,7 @@ def _cmd_inspect(project_path: str) -> int:
         status="PASS",
         slide_count=slides,
         shape_count=shapes,
+        duration_ms=int((time.perf_counter() - t0) * 1000),
     )
     return 0
 
@@ -341,14 +357,20 @@ def _count_issues(issues: object) -> int:
 
 
 def _count_validation_issues(result: OfficeCliResult) -> int:
-    """Count warning/error entries in a validation result."""
+    """Count error entries in an OfficeCLI validation result envelope."""
     if result.success:
         return 0
-    data = result.data
-    warnings = data.get("warnings", [])
-    if isinstance(warnings, list):
-        return len(warnings)
-    return 1  # non-zero failure but no countable warnings
+    envelope = result.data or {}
+    inner = envelope.get("data", {})
+    if not isinstance(inner, dict):
+        return 1  # non-zero failure but no countable errors
+    errors = inner.get("errors")
+    if isinstance(errors, list):
+        return len(errors)
+    count = inner.get("count")
+    if isinstance(count, int):
+        return count
+    return 1
 
 
 # ---------------------------------------------------------------------------
@@ -356,9 +378,10 @@ def _count_validation_issues(result: OfficeCliResult) -> int:
 # ---------------------------------------------------------------------------
 def _cmd_watch(project_path: str, port: int = 26315) -> int:
     """Start OfficeCLI live preview for the source PPTX."""
+    t0 = time.perf_counter()
     project = Path(project_path).resolve()
     source_pptx = _find_source_pptx(project)
-    binary, runtime = _probe_or_die()
+    binary, runtime = _probe_or_die(project)
 
     source_hash = _sha256(source_pptx)
 
@@ -411,6 +434,7 @@ def _cmd_watch(project_path: str, port: int = 26315) -> int:
         f"Watch preview started (PID={proc.pid})",
         status="PASS",
         port=port,
+        duration_ms=int((time.perf_counter() - t0) * 1000),
     )
     return 0
 
@@ -458,69 +482,71 @@ def _cmd_unwatch(project_path: str) -> int:
 
 
 # ---------------------------------------------------------------------------
-# check-plan
+# Plan validation (shared by check-plan and apply)
 # ---------------------------------------------------------------------------
-def _cmd_check_plan(project_path: str) -> int:
-    """Validate the revision plan against current source state."""
-    project = Path(project_path).resolve()
-    source_pptx = _find_source_pptx(project)
+def _slide_indices(path: str) -> set[int]:
+    """Extract 1-based slide indices referenced by a document path."""
+    return {int(m) for m in re.findall(r"/slide\[(\d+)\]", path)}
 
-    # Load plan
-    plan_path = project / "analysis" / "native_revision_plan.json"
-    if not plan_path.exists():
-        raise SystemExit(f"No plan found at {plan_path}. Create one first.")
-    plan = _read_json(plan_path)
 
-    # Validate schema
+def _resolve_get_node(result: OfficeCliResult) -> dict[str, object]:
+    """Return the first matched node from a ``get`` result envelope."""
+    if not result.success:
+        return {}
+    envelope = result.data or {}
+    inner = envelope.get("data", {})
+    if not isinstance(inner, dict):
+        return {}
+    results = inner.get("results", [])
+    if isinstance(results, list) and results and isinstance(results[0], dict):
+        return results[0]
+    return {}
+
+
+def _verify_expect(node: dict[str, object], expect: object, op_id: str) -> list[str]:
+    """Verify an expect fingerprint against a live document node."""
+    errors: list[str] = []
+    if not isinstance(expect, dict):
+        return [f"{op_id}: expect must be an object"]
+    for key, value in expect.items():
+        if key not in node:
+            errors.append(f"{op_id}: expect key '{key}' not present on target node")
+        elif node.get(key) != value:
+            errors.append(
+                f"{op_id}: expect '{key}' mismatch: want {value!r}, got {node.get(key)!r}"
+            )
+    return errors
+
+
+def _plan_errors(project: Path, source_pptx: Path, plan: dict[str, object]) -> list[str]:
+    """Validate a plan against the current source; return a list of errors.
+
+    Covers plan schema/status, source hash freshness, slide-roster invariant,
+    V1 mutation allowlist, required fields, and — against the live document —
+    target/parent existence plus ``expect`` fingerprints (§6.3 rule 6).
+    """
+    errors: list[str] = []
+
     if plan.get("schema") != PLAN_SCHEMA:
-        print(f"ERROR: Unknown plan schema: {plan.get('schema')}")
-        return 1
-
-    # Check status
+        errors.append(f"Unknown plan schema: {plan.get('schema')}")
     status = plan.get("status", "")
     if status not in VALID_PLAN_STATUSES:
-        print(f"ERROR: Invalid plan status: {status}")
-        return 1
+        errors.append(f"Invalid plan status: {status}")
 
-    # Verify source hash matches
+    # Source hash freshness
     current_hash = _sha256(source_pptx)
     plan_hash = plan.get("source", {}).get("sha256", "")
-    if plan_hash != current_hash:
-        print(f"ERROR: Source hash mismatch (plan is stale)")
-        print(f"  plan:    {plan_hash}")
-        print(f"  current: {current_hash}")
-        return 1
+    if plan_hash and plan_hash != current_hash:
+        errors.append(
+            f"Source hash mismatch (plan is stale): "
+            f"plan={plan_hash[:16]}... current={current_hash[:16]}..."
+        )
 
-    # Verify operations
     operations = plan.get("operations", [])
     if not isinstance(operations, list) or len(operations) == 0:
-        print("WARNING: Plan has no operations.")
-        return 0
+        errors.append("Plan has no operations")
 
-    errors = []
-    for i, op in enumerate(operations):
-        op_id = op.get("id", f"op[{i}]")
-        command = op.get("command", "")
-
-        # Check allowlist
-        if command not in V1_MUTATION_ALLOWLIST:
-            errors.append(f"{op_id}: command '{command}' not in V1 allowlist {V1_MUTATION_ALLOWLIST}")
-
-        # Check required fields
-        if "path" not in op and "parent" not in op:
-            errors.append(f"{op_id}: missing 'path' or 'parent'")
-        if "reason" not in op:
-            errors.append(f"{op_id}: missing 'reason'")
-        if command != "add" and "expect" not in op:
-            errors.append(f"{op_id}: missing 'expect' fingerprint for non-add operation")
-
-    if errors:
-        print("Plan validation errors:")
-        for e in errors:
-            print(f"  - {e}")
-        return 1
-
-    # Verify slide count invariance if declared
+    # Slide-roster invariant
     invariants = plan.get("invariants", {})
     if invariants.get("preserve_slide_count"):
         stats_result = run_officecli(
@@ -530,10 +556,84 @@ def _cmd_check_plan(project_path: str) -> int:
         if stats_result.success:
             current_slides = _count_slides(stats_result.data)
             plan_slides = plan.get("source", {}).get("slide_count", 0)
-            if current_slides != plan_slides:
-                print(f"ERROR: Slide count changed: plan={plan_slides}, current={current_slides}")
-                return 1
+            if plan_slides and current_slides != plan_slides:
+                errors.append(
+                    f"Slide count changed: plan={plan_slides}, current={current_slides}"
+                )
 
+    for i, op in enumerate(operations):
+        if not isinstance(op, dict):
+            errors.append(f"op[{i}]: not an object")
+            continue
+        op_id = op.get("id", f"op[{i}]")
+        command = op.get("command", "")
+        if command not in V1_MUTATION_ALLOWLIST:
+            errors.append(
+                f"{op_id}: command '{command}' not in V1 allowlist "
+                f"{sorted(V1_MUTATION_ALLOWLIST)}"
+            )
+            continue
+        path = op.get("path", "")
+        parent = op.get("parent", "")
+        if command != "add" and not path:
+            errors.append(f"{op_id}: missing 'path'")
+        if command == "add" and not parent:
+            errors.append(f"{op_id}: missing 'parent'")
+        if "reason" not in op:
+            errors.append(f"{op_id}: missing 'reason'")
+        if command != "add" and "expect" not in op:
+            errors.append(f"{op_id}: missing 'expect' fingerprint for non-add operation")
+
+        # Target / parent existence + expect fingerprint against the live document
+        targets = [parent] if command == "add" else [path]
+        if command == "swap":
+            targets.append(op.get("path2", ""))
+        for target in targets:
+            if not target:
+                continue
+            get_result = run_officecli(
+                ["get", str(source_pptx), target, "--json"],
+                timeout_s=15.0,
+            )
+            if not get_result.success:
+                errors.append(f"{op_id}: target not found: {target}")
+                continue
+            if command != "add":
+                node = _resolve_get_node(get_result)
+                errors.extend(_verify_expect(node, op.get("expect"), op_id))
+
+    return errors
+
+
+# ---------------------------------------------------------------------------
+# check-plan
+# ---------------------------------------------------------------------------
+def _cmd_check_plan(project_path: str) -> int:
+    """Validate the revision plan against current source state."""
+    t0 = time.perf_counter()
+    project = Path(project_path).resolve()
+    source_pptx = _find_source_pptx(project)
+
+    # Load plan
+    plan_path = project / "analysis" / "native_revision_plan.json"
+    if not plan_path.exists():
+        raise SystemExit(f"No plan found at {plan_path}. Create one first.")
+    plan = _read_json(plan_path)
+
+    errors = _plan_errors(project, source_pptx, plan)
+    if errors:
+        print("Plan validation errors:")
+        for e in errors:
+            print(f"  - {e}")
+        return 1
+
+    operations = plan.get("operations", [])
+    if not isinstance(operations, list) or len(operations) == 0:
+        print("WARNING: Plan has no operations.")
+        return 0
+
+    status = plan.get("status", "")
+    current_hash = _sha256(source_pptx)
     print("Plan check passed.")
     print(f"  Status: {status}")
     print(f"  Operations: {len(operations)}")
@@ -545,6 +645,7 @@ def _cmd_check_plan(project_path: str) -> int:
         f"Plan check: {len(operations)} ops, status={status}",
         status="PASS",
         operation_count=len(operations),
+        duration_ms=int((time.perf_counter() - t0) * 1000),
     )
     return 0
 
@@ -554,9 +655,10 @@ def _cmd_check_plan(project_path: str) -> int:
 # ---------------------------------------------------------------------------
 def _cmd_apply(project_path: str) -> int:
     """Apply a confirmed native revision plan atomically."""
+    t0 = time.perf_counter()
     project = Path(project_path).resolve()
     source_pptx = _find_source_pptx(project)
-    binary, runtime = _probe_or_die()
+    binary, runtime = _probe_or_die(project)
 
     # Load plan
     plan_path = project / "analysis" / "native_revision_plan.json"
@@ -567,6 +669,14 @@ def _cmd_apply(project_path: str) -> int:
     # Must be confirmed
     if plan.get("status") != "confirmed":
         print(f"ERROR: Plan status must be 'confirmed', got '{plan.get('status')}'")
+        return 1
+
+    # Gate 2: re-run plan validation (schema, hash freshness, targets, expect)
+    plan_errors = _plan_errors(project, source_pptx, plan)
+    if plan_errors:
+        print("Plan validation failed (apply aborted):")
+        for e in plan_errors:
+            print(f"  - {e}")
         return 1
 
     # Verify source hash
@@ -641,6 +751,7 @@ def _cmd_apply(project_path: str) -> int:
             status="FAIL",
             error_code=result.error_code,
             rolled_back=rolled_back,
+            duration_ms=int((time.perf_counter() - t0) * 1000),
         )
         return 1
 
@@ -648,6 +759,70 @@ def _cmd_apply(project_path: str) -> int:
     print("Batch applied successfully. Running postflight...")
     rc = _postflight(project, source_pptx, candidate, plan, binary, tmp_dir)
     return rc
+
+
+def _preservation_errors(source: Path, candidate: Path, touched_slides: set[int]) -> list[str]:
+    """Return differences in unaddressed parts between source and candidate.
+
+    OfficeCLI re-serializes the whole package on save and always adds an
+    empty ``docProps/custom.xml`` container, so the comparison is semantic:
+    - XML parts are canonicalized; ``[Content_Types].xml`` and ``_rels/.rels``
+      are compared with the custom.xml entries stripped.
+    - Slides addressed by the plan (and their rels) are excluded.
+    - Binary parts must be byte-identical; the only allowed new part is
+      ``docProps/custom.xml``.
+    """
+    import zipfile
+    import xml.etree.ElementTree as ET
+
+    class _LenientZip(zipfile.ZipFile):
+        # python-pptx chart embeds may carry a bad CRC; PowerPoint tolerates it.
+        def _update_crc(self, newdata, eof=False):  # type: ignore[override]
+            pass
+
+    def _read_parts(path: Path) -> dict[str, bytes]:
+        with _LenientZip(path) as z:
+            return {i.filename: z.read(i.filename) for i in z.infolist()}
+
+    def _canonical(data: bytes) -> str:
+        return ET.canonicalize(data.decode("utf-8", errors="replace"))
+
+    def _strip_custom(data: bytes) -> str:
+        root = ET.fromstring(data.decode("utf-8", errors="replace"))
+        for e in list(root):
+            if e.get("PartName", "").endswith("docProps/custom.xml") or \
+                    e.get("Target", "").endswith("docProps/custom.xml"):
+                root.remove(e)
+        return ET.canonicalize(ET.tostring(root))
+
+    src_parts = _read_parts(source)
+    cand_parts = _read_parts(candidate)
+
+    errors: list[str] = []
+    for name in sorted(set(src_parts) - set(cand_parts)):
+        errors.append(f"Part removed by revision: {name}")
+    for name in sorted(set(cand_parts) - set(src_parts)):
+        if name != "docProps/custom.xml":
+            errors.append(f"Unexpected new part: {name}")
+
+    for name in sorted(set(src_parts) & set(cand_parts)):
+        slide_m = re.match(r"ppt/slides/slide(\d+)\.xml$", name)
+        rel_m = re.match(r"ppt/slides/_rels/slide(\d+)\.xml\.rels$", name)
+        if (slide_m and int(slide_m.group(1)) in touched_slides) or \
+                (rel_m and int(rel_m.group(1)) in touched_slides):
+            continue  # addressed slide and its rels may change
+        a, b = src_parts[name], cand_parts[name]
+        if name.endswith(".xml") or name.endswith(".rels"):
+            if name in ("[Content_Types].xml", "_rels/.rels"):
+                equal = _strip_custom(a) == _strip_custom(b)
+            else:
+                equal = _canonical(a) == _canonical(b)
+        else:
+            equal = a == b
+        if not equal:
+            errors.append(f"Unaddressed part changed: {name}")
+
+    return errors
 
 
 def _postflight(
@@ -659,6 +834,7 @@ def _postflight(
     tmp_dir: Path,
 ) -> int:
     """Run all post-apply validation gates and publish on success."""
+    t0 = time.perf_counter()
     source_hash = _sha256(source_pptx)
     candidate_hash = _sha256(candidate)
     dirs = _ensure_project_dirs(project)
@@ -675,6 +851,15 @@ def _postflight(
             f"OfficeCLI validation: candidate has {cand_issues - source_issues} "
             f"new issues vs source baseline ({source_issues} pre-existing)"
         )
+    _trace_event(
+        project,
+        "officecli_validate",
+        f"Source issues={source_issues}, candidate issues={cand_issues}",
+        status="PASS" if cand_issues <= source_issues else "FAIL",
+        source_issue_count=source_issues,
+        candidate_issue_count=cand_issues,
+        duration_ms=int((time.perf_counter() - t0) * 1000),
+    )
 
     # Gate 5: Compare slide roster
     source_stats = run_officecli(["view", str(source_pptx), "stats", "--json"], timeout_s=30.0)
@@ -683,6 +868,20 @@ def _postflight(
     cand_slides = _count_slides(cand_stats.data) if cand_stats.success else -1
     if source_slides != cand_slides:
         errors.append(f"Slide count mismatch: source={source_slides}, candidate={cand_slides}")
+
+    # Gate 6: Unaddressed parts / objects preservation (masters, layouts,
+    # theme, untouched slides, media, motion fingerprints)
+    touched_slides: set[int] = set()
+    for op in plan.get("operations", []):
+        if not isinstance(op, dict):
+            continue
+        for key in ("path", "parent", "path2"):
+            p = op.get(key)
+            if isinstance(p, str):
+                touched_slides |= _slide_indices(p)
+    errors.extend(
+        f"Preservation: {e}" for e in _preservation_errors(source_pptx, candidate, touched_slides)
+    )
 
     # Gate 8: Readback — source unchanged
     source_hash_after = _sha256(source_pptx)
@@ -774,6 +973,8 @@ def _postflight(
         "candidate_sha256": candidate_hash,
         "output_sha256": _sha256(export_path),
         "validate_passed": cand_val.success,
+        "source_issue_count": source_issues,
+        "candidate_issue_count": cand_issues,
         "slide_count_match": source_slides == cand_slides,
         "source_unchanged": source_hash_after == source_hash,
         "status": "passed",
@@ -806,6 +1007,7 @@ def _postflight(
         status="PASS",
         svg_divergence=svg_divergence,
         visual_render="ok" if render_ok else "not_available",
+        duration_ms=int((time.perf_counter() - t0) * 1000),
     )
     return 0
 
@@ -847,6 +1049,8 @@ def _build_parser() -> argparse.ArgumentParser:
     p_init = sub.add_parser("init", help="Create a native revision project")
     p_init.add_argument("pptx_or_project", help="PPTX file path or existing project dir")
     p_init.add_argument("--name", help="Project slug (for standalone PPTX)")
+    p_init.add_argument("--project-dir", type=Path, default=None,
+                        help="Base directory for standalone projects (default: projects/)")
 
     p_inspect = sub.add_parser("inspect", help="Generate inventory for project")
     p_inspect.add_argument("project", help="Project directory")
@@ -882,7 +1086,8 @@ def main(argv: Optional[list[str]] = None) -> int:
     cmd = args.command
 
     if cmd == "init":
-        return _cmd_init(args.pptx_or_project, getattr(args, "name", None))
+        return _cmd_init(args.pptx_or_project, getattr(args, "name", None),
+                         getattr(args, "project_dir", None))
     elif cmd == "inspect":
         return _cmd_inspect(args.project)
     elif cmd == "watch":
